@@ -1,0 +1,11 @@
+/* Colouring for the logo in the header */
+.app-icon {
+    vertical-align: middle;
+    font-size: 25px;
+}
+.navbar-inverse .navbar-brand {
+    color: #009DCF;
+}
+.navbar-inverse .navbar-brand:hover {
+    color: #009DCF;
+}
