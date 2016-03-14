@@ -19,6 +19,8 @@ from django.views.generic.base import RedirectView
 urlpatterns = [
     # Static pages
     url(r'^$', 'pgperffarm.views.index', name='index'),
+    url(r'^/licence$', 'pgperffarm.views.licence', name='licence'),
+    url(r'^/ppolicy$', 'pgperffarm.views.ppolicy', name='ppolicy'),
     
     # Admin site
     url(r'^admin/', include(admin.site.urls)),
