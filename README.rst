@@ -20,12 +20,12 @@ For ease of future use, configure virtualenvs from your .bash_profile::
 
 To activate the environment in future sessions, run::
 
-  $ workon helpdesk
+  $ workon pgperffarm
 
 Then, install the required modules. Note that we use Django 1.8.11 as that's
 what is currently supported on the postgresql.org infrastructure::
 
-  $ PATH=$PATH:/usr/local/pgsql/bin pip install -r requirements.txt
+  $ PATH=$PATH:/usr/local/pgsql/bin pip install -r web/requirements.txt
   
 Next, create a settings_local.py file::
 
@@ -37,6 +37,7 @@ on your PostgreSQL server.
 
 Finally, synchronise the database::
 
+  $ cd web
   $ python manage.py syncdb
 
 That should be all. To test, run the following command and point a browser at 
