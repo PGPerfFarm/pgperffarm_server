@@ -14,7 +14,18 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
+from django.views.generic.base import RedirectView
 
 urlpatterns = [
+    # Static pages
+    url(r'^$', 'pgperffarm.views.index', name='index'),
+    
+    # Admin site
     url(r'^admin/', include(admin.site.urls)),
+    
+    # This should not happen in production - serve with lightty!
+    url(r'^static/(.*)$', 'django.views.static.serve', {
+        'document_root': '/static',
+    }),
+    url(r'^favicon\.ico$', RedirectView.as_view(url='/static/favicon.ico'))
 ]

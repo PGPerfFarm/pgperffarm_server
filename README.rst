@@ -29,7 +29,7 @@ what is currently supported on the postgresql.org infrastructure::
   
 Next, create a settings_local.py file::
 
-  $ cp web/web/settings_local.py.in web/web/settings_local.py
+  $ cp web/pgperffarm/settings_local.py.in web/pgperffarm/settings_local.py
   
 Edit the file and change the database configuration and other settings to suit
 your environment. Make sure you create the required database and user account
