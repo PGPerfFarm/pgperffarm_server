@@ -1,0 +1,12 @@
+DEBUG=True
+
+DATABASES={
+        'default': {
+                'ENGINE': 'django.db.backends.postgresql_psycopg2',
+                'NAME': 'pgperffarm',
+                'USER': 'pgperffarm',
+                'PASSWORD': 'pgperffarm',
+                'HOST': '/tmp'
+                }
+        }
+

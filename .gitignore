@@ -1,0 +1,5 @@
+web/web/settings_local.py
+migrations
+*.pyc
+*.swp
+*.psp
