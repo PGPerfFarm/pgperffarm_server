@@ -1,5 +1,6 @@
-web/web/settings_local.py
+web/pgperffarm/settings_local.py
 migrations
 *.pyc
 *.swp
 *.psp
+.DS_Store

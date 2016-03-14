@@ -1,0 +1,85 @@
+{% extends "base.html" %}    
+{% load staticfiles %}
+{% load gravatar %}
+{% block body %}
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="{% url 'pgperffarm.views.index' %}">PG Performance Farm</a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Machines<b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="#">All</a></li>
+                <li><a href="#">Regressed</a></li>
+                <li><a href="#">Improved</a></li>
+              </ul>
+            </li>
+            <li><a href="mailto:webmaster@postgresql.org.com">Contact</a></li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% gravatar user.email 18 %} {{ request.user }}<b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                {% if request.user.is_superuser %}
+                <li><a href="{% url 'admin:index' %}">Admin Site</a></li>
+                <li><a href="{% url 'django-admindocs-docroot' %}">Admin Docs</a></li>
+                {% endif %}
+                <li><a href="#">Logout</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="row">
+        <div class="col-xs-8" style="padding-bottom: 10px">
+         <h1>{% block title2 %}{% endblock %}</h1>
+        </div>
+        <div class="col-xs-4 text-right">
+         <h1>{% block controls %}{% endblock %}</h1>
+        </div>
+      </div>
+
+      {% if messages %}
+      <div class="row">
+        <div class="col-xs-12">
+          {% for message in messages %}
+          {% if "warning" in message.tags %}
+          <div class="alert alert-warning">
+          {% elif "success" in message.tags %}
+          <div class="alert alert-success">
+          {% elif "info" in message.tags %}
+          <div class="alert alert-info">
+          {% else %}
+          <div class="alert alert-danger">
+          {% endif %}
+            <a href="#" class="close" data-dismiss="alert">&times;</a>
+          {{ message }}
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      {% block content %}{% endblock %}
+
+      <div class="row">
+        <div class="col-xs-12">
+
+          <hr>
+
+          <footer>
+            <p>&copy; 2016, The PostgreSQL Global Development Group</p>
+          </footer>
+        </div>
+      </div>
+    </div>
+
+{% block dialog %}{% endblock %}
+
+{% endblock %}

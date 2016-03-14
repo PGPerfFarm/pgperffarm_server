@@ -27,5 +27,5 @@ urlpatterns = [
     url(r'^static/(.*)$', 'django.views.static.serve', {
         'document_root': '/static',
     }),
-    url(r'^favicon\.ico$', RedirectView.as_view(url='/static/favicon.ico'))
+    url(r'^favicon\.ico$', RedirectView.as_view(url='/static/favicon.ico', permanent=True))
 ]
