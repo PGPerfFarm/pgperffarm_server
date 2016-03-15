@@ -106,5 +106,9 @@ STATICFILES_DIRS = [
     "static/",
 ]
 
+AUTHENTICATION_BACKENDS = (
+     'pgperffarm.auth.AuthBackend',
+)
+ 
 # Load local settings overrides
 from settings_local import *

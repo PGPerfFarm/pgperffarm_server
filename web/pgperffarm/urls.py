@@ -21,7 +21,12 @@ urlpatterns = [
     url(r'^$', 'pgperffarm.views.index', name='index'),
     url(r'^/licence$', 'pgperffarm.views.licence', name='licence'),
     url(r'^/ppolicy$', 'pgperffarm.views.ppolicy', name='ppolicy'),
-    
+
+    # Auth system integration
+    url(r'^(?:account/)?login/?$', 'pgperffarm.auth.login'),
+    url(r'^(?:account/)?logout/?$', 'pgperffarm.auth.logout'),
+    url(r'^auth_receive/$', 'pgperffarm.auth.auth_receive'),
+  
     # Admin site
     url(r'^admin/', include(admin.site.urls)),
     
