@@ -14,15 +14,19 @@ class PgBench(object):
 	# TODO allow running custom scripts, not just the default read-write/read-only tests
 	# TODO allow running 'prepared' mode
 
-	def __init__(self, bin_path, dbname):
+	def __init__(self, bin_path, dbname, runs = 3, duration = 60):
 		'''
 		bin_path   - path to PostgreSQL binaries (dropdb, createdb, psql commands)
 		dbname     - name of the database to use
+		runs       - number of runs (for each client count)
+		duration   - duration of each execution
 		'''
 
 		self._bin = bin_path
 		self._dbname = dbname
 		self._results = {}
+		self._duration = duration
+		self._runs = runs
 
 
 	@staticmethod
@@ -185,7 +189,7 @@ class PgBench(object):
 		return r
 
 
-	def run_tests(self, duration=10, runs=3):
+	def run_tests(self):
 		'execute the whole benchmark, including initialization, warmup and benchmark runs'
 
 		# derive configuration for the CPU count / RAM size
@@ -196,20 +200,22 @@ class PgBench(object):
 			# init for the dataset scale and warmup
 			self._init(config['scale'])
 
-			warmup = self._run(duration, cpu_count(), cpu_count())
+			warmup = self._run(self._duration, cpu_count(), cpu_count())
 			results = []
 
-			for run in range(runs):
+			for run in range(self._runs):
+
+				log("pgbench : run=%d" % (run,))
 
 				for clients in config['clients']:
 
 					# read-only
-					r = self._run(duration, clients, clients, True)
+					r = self._run(self._duration, clients, clients, True)
 					r.update({'run' : run})
 					results.append(r)
 
 					# read-write
-					r = self._run(duration, clients, clients, False)
+					r = self._run(self._duration, clients, clients, False)
 					r.update({'run' : run})
 					results.append(r)
 
