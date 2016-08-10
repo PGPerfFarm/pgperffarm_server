@@ -1,3 +1,5 @@
+import os.path
+
 from datetime import datetime, timedelta, time
 from utils.logging import log
 from utils.misc import run_cmd
@@ -23,10 +25,13 @@ class LinuxCollector(object):
 	def result(self):
 		'build the results'
 
-		r = {
-			'sar' : self._collect_sar_stats(),
-			'sysctl' : self._collect_sysctl()
-		}
+		r = {'sysctl' : self._collect_sysctl()}
+
+		# ignore sar if we've not found it
+		sar = self._collect_sar_stats()
+		if sar:
+			r['sar'] = sar
+
 		r.update(self._collect_system_info())
 
 		return r
@@ -44,25 +49,35 @@ class LinuxCollector(object):
 			# FIXME maybe skip if the file does not exist
 			filename = '%(path)s/sa%(day)s' % {'path' : self._sar, 'day' : d.strftime('%d')}
 
-			log("extracting sar data from '%s'" % (filename,))
+			# if the sar file does not exist, skip it
+			if os.path.isfile(filename):
 
-			# need to use the right combination of start/end timestamps
-			s = self._start_ts.strftime('%H:%M:%S')
-			e = self._end_ts.strftime('%H:%M:%S')
+				log("extracting sar data from '%s'" % (filename,))
 
-			if d == self._start_ts.date() and d == self._end_ts.date():
-				r = run_cmd(['sar', '-A', '-p', '-s', s, '-e', e, '-f', filename])
-			elif d == self._start_ts.date():
-				r = run_cmd(['sar', '-A', '-p', '-s', s, '-f', filename])
-			elif d == self._end_ts.date():
-				r = run_cmd(['sar', '-A', '-p', '-e', e, '-f', filename])
+				# need to use the right combination of start/end timestamps
+				s = self._start_ts.strftime('%H:%M:%S')
+				e = self._end_ts.strftime('%H:%M:%S')
+
+				if d == self._start_ts.date() and d == self._end_ts.date():
+					r = run_cmd(['sar', '-A', '-p', '-s', s, '-e', e, '-f', filename])
+				elif d == self._start_ts.date():
+					r = run_cmd(['sar', '-A', '-p', '-s', s, '-f', filename])
+				elif d == self._end_ts.date():
+					r = run_cmd(['sar', '-A', '-p', '-e', e, '-f', filename])
+				else:
+					r = run_cmd(['sar', '-A', '-p', '-f', filename])
+
+				sar[str(d)] = r[1]
+
 			else:
-				r = run_cmd(['sar', '-A', '-p', '-f', filename])
 
-			sar[str(d)] = r[1]
+				log("file '%s' does not exist, skipping" % (filename,))
 
 			# proceed to the next day
 			d += timedelta(days=1)
+
+		if not sar:
+			return None
 
 		return sar
 
