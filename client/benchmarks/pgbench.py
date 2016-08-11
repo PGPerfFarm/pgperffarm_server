@@ -1,5 +1,6 @@
 import math
 import os
+import os.path
 import re
 import time
 
@@ -153,6 +154,35 @@ class PgBench(object):
 			o.append('%s %d %d %d %d %d' % (t, r[t]['tps'], r[t]['lat_sum'], r[t]['lat_sum2'], r[t]['lat_min'], r[t]['lat_max']))
 
 		return '\n'.join(o)
+
+
+	def check_config(self):
+		'check pgbench configuration (existence of binaries etc.)'
+
+		issues = []
+
+		if not os.path.isdir(self._bin):
+			issues.append("bin_dir='%s' does not exist" % (self._bin,))
+		elif not os.path.exists('%s/pgbench' % (self._bin,)):
+			issues.append("pgbench not found in bin_dir='%s'" % (self._bin,))
+		elif not os.path.exists('%s/createdb' % (self._bin,)):
+			issues.append("createdb not found in bin_dir='%s'" % (self._bin,))
+		elif not os.path.exists('%s/dropdb' % (self._bin,)):
+			issues.append("dropdb not found in bin_dir='%s'" % (self._bin,))
+		elif not os.path.exists('%s/psql' % (self._bin,)):
+			issues.append("psql not found in bin_dir='%s'" % (self._bin,))
+
+		if type(self._duration) is not int:
+			issues.append("duration (%s) needs to be an integer" % (self._duration,))
+		elif not self._duration >= 1:
+			issues.append("duration (%s) needs to be >= 1" % (self._duration,))
+
+		if type(self._runs) is not int:
+			issues.append("runs (%s) needs to be an integer" % (self._duration,))
+		elif not self._runs >= 1:
+			issues.append("runs (%s) needs to be >= 1" % (self._runs,))
+
+		return issues
 
 
 	def _run(self, duration, nclients=1, njobs=1, read_only=False, aggregate=True):

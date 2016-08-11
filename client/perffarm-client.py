@@ -51,4 +51,13 @@ if __name__ == '__main__':
 								postgres_config = POSTGRES_CONFIG,
 								**PGBENCH_CONFIG)
 
-		runner.run()
+		# check configuration and report all issues
+		issues = runner.check()
+
+		if issues:
+			# print the issues
+			for k in issues:
+				for v in issues[k]:
+					print k, ':', v
+		else:
+			runner.run()

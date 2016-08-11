@@ -32,6 +32,38 @@ class BenchmarkRunner(object):
 		self._configs.update({config_name : {'benchmark' : benchmark_name, 'config' : kwargs, 'postgres' : postgres_config}})
 
 
+	def _check_config(self, config_name):
+		''
+
+		log("checking benchmark configuration '%s'" % (config_name,))
+
+		# construct the benchmark class for the given config name
+		config = self._configs[config_name]
+		bench = self._benchmarks[config['benchmark']]
+
+		# expand the attribute names
+		bench = bench(**config['config'])
+
+		# run the tests
+		return bench.check_config()
+
+
+	def check(self):
+		'check configurations for all benchmarks'
+
+		issues = {}
+
+		if os.path.exists(self._output):
+			issues['global'] = ["output directory '%s' already exists" % (self._output,)]
+
+		for config_name in self._configs:
+			t = self._check_config(config_name)
+			if t:
+				issues[config_name] = t
+
+		return issues
+
+
 	def _run_config(self, config_name):
 		''
 
@@ -75,7 +107,6 @@ class BenchmarkRunner(object):
 	def run(self):
 		'run all the configured benchmarks'
 
-		# FIXME check that the directory does not exist
 		os.mkdir(self._output)
 
 		for config_name in self._configs:
