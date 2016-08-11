@@ -26,10 +26,10 @@ class GitRepository(object):
 
 	def _clone(self):
 		''
-		log("cloning repository '%s' to '%s'" % (url, path))
+		log("cloning repository '%s' to '%s'" % (self._url, self._path))
 
 		with TemporaryFile() as strout:
-			call(['git', 'clone', url, path], stdout=strout, stderr=STDOUT)
+			call(['git', 'clone', self._url, self._path], stdout=strout, stderr=STDOUT)
 
 
 	def _update(self):
@@ -40,7 +40,7 @@ class GitRepository(object):
 		# simply call git-pull and redirect stdout/stderr
 		# FIXME should verify that the repository uses the proper upstream url
 		with TemporaryFile() as strout:
-			call(['git', 'pull', self._path], stdout=strout, stderr=STDOUT)
+			call(['git', 'pull'], cwd=self._path, stdout=strout, stderr=STDOUT)
 
 
 	def current_commit(self):
