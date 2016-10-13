@@ -185,7 +185,7 @@ class PgBench(object):
 		return issues
 
 
-	def _run(self, duration, nclients=1, njobs=1, read_only=False, aggregate=True):
+	def _run(self, duration, nclients=1, njobs=1, read_only=False, aggregate=True, csv_queue):
 		'run pgbench on the database (either a warmup or actual benchmark run)'
 
 		args = ['pgbench', '-c', str(nclients), '-j', str(njobs), '-T', str(duration)]
@@ -216,10 +216,13 @@ class PgBench(object):
 
 		r.update({'start' : start, 'end' : end})
 
+		if csv_queue:
+			csv_queue.put([start, end, r['scale'], nclients, njobs, mode, duration, latency, tps])
+
 		return r
 
 
-	def run_tests(self):
+	def run_tests(self, csv_queue):
 		'execute the whole benchmark, including initialization, warmup and benchmark runs'
 
 		# derive configuration for the CPU count / RAM size
@@ -240,12 +243,12 @@ class PgBench(object):
 				for clients in config['clients']:
 
 					# read-only
-					r = self._run(self._duration, clients, clients, True)
+					r = self._run(self._duration, clients, clients, True, True, csv_queue)
 					r.update({'run' : run})
 					results.append(r)
 
 					# read-write
-					r = self._run(self._duration, clients, clients, False)
+					r = self._run(self._duration, clients, clients, False, True, csv_queue)
 					r.update({'run' : run})
 					results.append(r)
 

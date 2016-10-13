@@ -31,7 +31,8 @@ OUTPUT_DIR = '/home/user/tmp/perf-output'
 #
 PGBENCH_CONFIG = {
 	'runs' : 3,
-	'duration' : 60		# duration of per-client-count benchmark
+	'duration' : 60,	# duration of per-client-count benchmark
+	'csv' : False
 }
 
 # ignore missing file with local config
