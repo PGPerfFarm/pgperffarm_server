@@ -1,3 +1,4 @@
+import sys
 import time
 
 def log(message):
@@ -7,3 +8,5 @@ def log(message):
 		'epoch' : time.time(),
 		'date' : time.strftime('%Y-%m-%d %H:%M:%S'),
 		'message' : message}
+
+	sys.stdout.flush()
