@@ -84,7 +84,7 @@ class BenchmarkRunner(object):
         # if requested output to CSV, create a queue and collector process
         csv_queue = None
         csv_collector = None
-        if config['benchmark']['csv']:
+        if 'csv' in config['config'] and config['config']['csv']:
             csv_queue = Queue()
             csv_collector = Process(target=csv_collect_results,
                                     args=(config_name, csv_queue))
