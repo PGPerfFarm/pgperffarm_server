@@ -16,7 +16,7 @@ class PgBench(object):
     #      read-write/read-only tests
     # TODO allow running 'prepared' mode
 
-    def __init__(self, bin_path, dbname, runs=3, duration=60):
+    def __init__(self, bin_path, dbname, runs=3, duration=60, csv=False):
         '''
         bin_path   - path to PostgreSQL binaries (dropdb, createdb, psql
                      commands)
@@ -26,10 +26,12 @@ class PgBench(object):
         '''
 
         self._bin = bin_path
+        self._csv = csv
         self._dbname = dbname
-        self._results = {}
         self._duration = duration
         self._runs = runs
+
+        self._results = {}
 
     @staticmethod
     def _configure(cpu_count, ram_mbs):
@@ -193,7 +195,7 @@ class PgBench(object):
         return issues
 
     def _run(self, duration, nclients=1, njobs=1, read_only=False,
-             aggregate=True, csv_queue):
+             aggregate=True, csv_queue=None):
         'run pgbench on the database (either a warmup or actual benchmark run)'
 
         args = ['pgbench', '-c', str(nclients), '-j', str(njobs), '-T',
@@ -227,7 +229,7 @@ class PgBench(object):
 
         r.update({'start': start, 'end': end})
 
-        if csv_queue:
+        if csv_queue is not None:
             csv_queue.put([start, end, r['scale'], nclients, njobs, mode,
                            duration, latency, tps])
 
