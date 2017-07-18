@@ -96,7 +96,7 @@ def run_collector(in_queue, out_queue, dbname, interval=1.0):
                     'FROM pg_stat_bgwriter')
 
         # on the first iteration, construct the CSV files
-        if not bgwriter_log:
+        if bgwriter_log is None:
             fields = [desc[0] for desc in cur.description]
             bgwriter_log = csv.DictWriter(open('bgwriter.csv', 'w'), fields)
             bgwriter_log.writeheader()
@@ -113,7 +113,7 @@ def run_collector(in_queue, out_queue, dbname, interval=1.0):
                     'USING (relid, schemaname, relname)')
 
         # on the first iteration, construct the CSV files
-        if not tables_log:
+        if tables_log is None:
             fields = [desc[0] for desc in cur.description]
             tables_log = csv.DictWriter(open('tables.csv', 'w'), fields)
             tables_log.writeheader()
@@ -127,7 +127,7 @@ def run_collector(in_queue, out_queue, dbname, interval=1.0):
                     'indexrelname)')
 
         # on the first iteration, construct the CSV files
-        if not indexes_log:
+        if indexes_log is None:
             fields = [desc[0] for desc in cur.description]
             indexes_log = csv.DictWriter(open('indexes.csv', 'w'), fields)
             indexes_log.writeheader()
@@ -139,7 +139,7 @@ def run_collector(in_queue, out_queue, dbname, interval=1.0):
                     'FROM pg_stat_database')
 
         # on the first iteration, construct the CSV files
-        if not database_log:
+        if database_log is None:
             fields = [desc[0] for desc in cur.description]
             database_log = csv.DictWriter(open('database.csv', 'w'), fields)
             database_log.writeheader()
@@ -158,23 +158,13 @@ def run_collector(in_queue, out_queue, dbname, interval=1.0):
 
     result = {}
 
-    with open('bgwriter.csv', 'r') as f:
-        result.update({'bgwriter': f.read()})
+    for file in ['bgwriter', 'tables', 'indexes', 'database']:
+        if os.path.isfile(''.join([file, '.csv'])):
+            with open(''.join([file, '.csv']), 'r') as f:
+                result.update({file : f.read()})
 
-    with open('tables.csv', 'r') as f:
-        result.update({'tables': f.read()})
-
-    with open('indexes.csv', 'r') as f:
-        result.update({'indexes': f.read()})
-
-    with open('database.csv', 'r') as f:
-        result.update({'database': f.read()})
-
-    # remove the files
-    os.remove('bgwriter.csv')
-    os.remove('tables.csv')
-    os.remove('indexes.csv')
-    os.remove('database.csv')
+                # remove the files
+                os.remove(''.join([file, '.csv']))
 
     out_queue.put(result)
 
