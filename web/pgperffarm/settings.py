@@ -1,3 +1,9 @@
+# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+import os
+
+# Load local settings overrides
+from settings_local import *
+
 """
 Django settings for pgperfarm project.
 
@@ -9,9 +15,6 @@ https://docs.djangoproject.com/en/1.8/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.8/ref/settings/
 """
-
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -56,7 +59,7 @@ ROOT_URLCONF = 'pgperffarm.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['templates/',],
+        'DIRS': ['templates/'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -109,6 +112,3 @@ STATICFILES_DIRS = [
 AUTHENTICATION_BACKENDS = (
      'pgperffarm.auth.AuthBackend',
 )
- 
-# Load local settings overrides
-from settings_local import *

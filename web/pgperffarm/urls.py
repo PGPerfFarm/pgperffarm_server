@@ -26,13 +26,14 @@ urlpatterns = [
     url(r'^(?:account/)?login/?$', 'pgperffarm.auth.login'),
     url(r'^(?:account/)?logout/?$', 'pgperffarm.auth.logout'),
     url(r'^auth_receive/$', 'pgperffarm.auth.auth_receive'),
-  
+
     # Admin site
     url(r'^admin/', include(admin.site.urls)),
-    
+
     # This should not happen in production - serve with lightty!
     url(r'^static/(.*)$', 'django.views.static.serve', {
         'document_root': '/static',
     }),
-    url(r'^favicon\.ico$', RedirectView.as_view(url='/static/favicon.ico', permanent=True))
+    url(r'^favicon\.ico$', RedirectView.as_view(url='/static/favicon.ico',
+                                                permanent=True))
 ]

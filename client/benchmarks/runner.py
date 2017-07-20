@@ -4,147 +4,147 @@ import os
 from utils.logging import log
 from multiprocessing import Process, Queue
 
+
 class BenchmarkRunner(object):
-	'manages runs of all the benchmarks, including cluster restarts etc.'
+    'manages runs of all the benchmarks, including cluster restarts etc.'
 
-	def __init__(self, out_dir, cluster, collector):
-		''
+    def __init__(self, out_dir, cluster, collector):
+        ''
 
-		self._output = out_dir	# where to store output files
-		self._benchmarks = {}	# bench name => class implementing the benchmark
-		self._configs = {}		# config name => (bench name, config)
-		self._cluster = cluster
-		self._collector = collector
+        self._output = out_dir  # where to store output files
+        self._benchmarks = {}  # bench name => class implementing the benchmark
+        self._configs = {}  # config name => (bench name, config)
+        self._cluster = cluster
+        self._collector = collector
 
+    def register_benchmark(self, benchmark_name, benchmark_class):
+        ''
 
-	def register_benchmark(self, benchmark_name, benchmark_class):
-		''
+        # FIXME check if a mapping for the same name already exists
+        self._benchmarks.update({benchmark_name: benchmark_class})
 
-		# FIXME check if a mapping for the same name already exists
-		self._benchmarks.update({benchmark_name : benchmark_class})
+    def register_config(self, config_name, benchmark_name, postgres_config,
+                        **kwargs):
+        ''
 
+        # FIXME check if a mapping for the same name already exists
+        # FIXME check that the benchmark mapping already exists
+        self._configs.update({config_name: {'benchmark': benchmark_name,
+                                            'config': kwargs,
+                                            'postgres': postgres_config}})
 
-	def register_config(self, config_name, benchmark_name, postgres_config, **kwargs):
-		''
+    def _check_config(self, config_name):
+        ''
 
-		# FIXME check if a mapping for the same name already exists
-		# FIXME check that the benchmark mapping already exists
-		self._configs.update({config_name : {'benchmark' : benchmark_name, 'config' : kwargs, 'postgres' : postgres_config}})
+        log("checking benchmark configuration '%s'" % (config_name,))
 
+        # construct the benchmark class for the given config name
+        config = self._configs[config_name]
+        bench = self._benchmarks[config['benchmark']]
 
-	def _check_config(self, config_name):
-		''
+        # expand the attribute names
+        bench = bench(**config['config'])
 
-		log("checking benchmark configuration '%s'" % (config_name,))
+        # run the tests
+        return bench.check_config()
 
-		# construct the benchmark class for the given config name
-		config = self._configs[config_name]
-		bench = self._benchmarks[config['benchmark']]
+    def check(self):
+        'check configurations for all benchmarks'
 
-		# expand the attribute names
-		bench = bench(**config['config'])
+        issues = {}
 
-		# run the tests
-		return bench.check_config()
+        if os.path.exists(self._output):
+            issues['global'] = ["output directory '%s' already exists" %
+                                (self._output,)]
 
+        for config_name in self._configs:
+            t = self._check_config(config_name)
+            if t:
+                issues[config_name] = t
 
-	def check(self):
-		'check configurations for all benchmarks'
+        return issues
 
-		issues = {}
+    def _run_config(self, config_name):
+        ''
 
-		if os.path.exists(self._output):
-			issues['global'] = ["output directory '%s' already exists" % (self._output,)]
+        log("running benchmark configuration '%s'" % (config_name,))
 
-		for config_name in self._configs:
-			t = self._check_config(config_name)
-			if t:
-				issues[config_name] = t
+        # construct the benchmark class for the given config name
+        config = self._configs[config_name]
+        bench = self._benchmarks[config['benchmark']]
 
-		return issues
+        # expand the attribute names
+        bench = bench(**config['config'])
 
+        self._cluster.start(config=config['postgres'])
 
-	def _run_config(self, config_name):
-		''
+        # start collector(s) of additional info
+        self._collector.start()
 
-		log("running benchmark configuration '%s'" % (config_name,))
+        # if requested output to CSV, create a queue and collector process
+        csv_queue = None
+        csv_collector = None
+        if config['benchmark']['csv']:
+            csv_queue = Queue()
+            csv_collector = Process(target=csv_collect_results,
+                                    args=(config_name, csv_queue))
+            csv_collector.start()
 
-		# construct the benchmark class for the given config name
-		config = self._configs[config_name]
-		bench = self._benchmarks[config['benchmark']]
+        # run the tests
+        r = bench.run_tests(csv_queue)
 
-		# expand the attribute names
-		bench = bench(**config['config'])
+        # notify the result collector to end and wait for it to terminate
+        if csv_queue:
+            csv_queue.put("STOP")
+            csv_collector.join()
 
-		self._cluster.start(config = config['postgres'])
+        # stop the cluster and collector
+        log("terminating collectors")
+        self._collector.stop()
+        self._cluster.stop()
 
-		# start collector(s) of additional info
-		self._collector.start()
+        # merge data from the collectors into the JSON document with results
+        r.update(self._collector.result())
 
-		# if requested output to CSV, create a queue and collector process
-		csv_queue = None
-		csv_collector = None
-		if config['benchmark']['csv']:
-			csv_queue = Queue()
-			csv_collector = Process(target=csv_collect_results, args=(config_name, csv_queue))
-			csv_collector.start()
+        # read the postgres log
+        with open('pg.log', 'r') as f:
+            r['postgres-log'] = f.read()
 
-		# run the tests
-		r = bench.run_tests(csv_queue)
+        r['meta'] = {'benchmark': config['benchmark'],
+                     'name': config_name}
 
-		# notify the result collector to end and wait for it to terminate
-		if csv_queue:
-			csv_queue.put("STOP")
-			csv_collector.join()
+        os.remove('pg.log')
 
-		# stop the cluster and collector
-		log("terminating collectors")
-		self._collector.stop()
-		self._cluster.stop()
+        with open('%s/%s.json' % (self._output, config_name), 'w') as f:
+            f.write(json.dumps(r, indent=4))
 
-		# merge data from the collectors into the JSON document with results
-		r.update(self._collector.result())
+    def run(self):
+        'run all the configured benchmarks'
 
-		# read the postgres log
-		with open('pg.log', 'r') as f:
-			r['postgres-log'] = f.read()
+        os.mkdir(self._output)
 
-		r['meta'] = {'benchmark' : config['benchmark'],
-					 'name' : config_name}
-
-		os.remove('pg.log')
-
-		with open('%s/%s.json' % (self._output, config_name), 'w') as f:
-			f.write(json.dumps(r, indent=4))
-
-
-	def run(self):
-		'run all the configured benchmarks'
-
-		os.mkdir(self._output)
-
-		for config_name in self._configs:
-			self._run_config(config_name)
+        for config_name in self._configs:
+            self._run_config(config_name)
 
 
 def csv_collect_results(bench_name, queue):
-	'collect results into a CSV files (through a queue)'
+    'collect results into a CSV files (through a queue)'
 
-	with open("%s.csv" % (bench_name,), 'w') as results_file:
+    with open("%s.csv" % (bench_name,), 'w') as results_file:
 
-		# collect data from the queue - once we get a plain string (instead of
-		# a list), it's a sign to terminate the collector
-		while True:
+        # collect data from the queue - once we get a plain string (instead of
+        # a list), it's a sign to terminate the collector
+        while True:
 
-			v = queue.get()
+            v = queue.get()
 
-			# if we got a string, it means 'terminate'
-			if isinstance(v, str):
-				log("terminating CSV result collector")
-				return
+            # if we got a string, it means 'terminate'
+            if isinstance(v, str):
+                log("terminating CSV result collector")
+                return
 
-			v = [str(x) for x in v]
+            v = [str(x) for x in v]
 
-			# otherwise we expect the value to be a list, and we just print it
-			results_file.write(bench_name + "\t" + "\t".join(v) + "\n")
-			results_file.flush()
+            # otherwise we expect the value to be a list, and we just print it
+            results_file.write(bench_name + "\t" + "\t".join(v) + "\n")
+            results_file.flush()

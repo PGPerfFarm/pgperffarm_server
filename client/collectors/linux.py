@@ -6,103 +6,99 @@ from utils.misc import run_cmd
 
 
 class LinuxCollector(object):
-	'collects various Linux-specific statistics (cpuinfo, mounts, sar)'
+    'collects various Linux-specific statistics (cpuinfo, mounts, sar)'
 
-	def __init__(self, sar_path = '/var/log/sa'):
-		self._start_ts = None
-		self._end_ts   = None
-		self._sar = sar_path
+    def __init__(self, sar_path='/var/log/sa'):
+        self._start_ts = None
+        self._end_ts = None
+        self._sar = sar_path
 
+    def start(self):
+        self._start_ts = datetime.now()
 
-	def start(self):
-		self._start_ts = datetime.now()
+    def stop(self):
+        self._end_ts = datetime.now()
 
+    def result(self):
+        'build the results'
 
-	def stop(self):
-		self._end_ts = datetime.now()
+        r = {'sysctl': self._collect_sysctl()}
 
+        # ignore sar if we've not found it
+        sar = self._collect_sar_stats()
+        if sar:
+            r['sar'] = sar
 
-	def result(self):
-		'build the results'
+        r.update(self._collect_system_info())
 
-		r = {'sysctl' : self._collect_sysctl()}
+        return r
 
-		# ignore sar if we've not found it
-		sar = self._collect_sar_stats()
-		if sar:
-			r['sar'] = sar
+    def _collect_sar_stats(self):
+        'extracts all data available in sar, filters by timestamp range'
 
-		r.update(self._collect_system_info())
+        sar = {}
+        log("collecting sar stats")
 
-		return r
+        d = self._start_ts.date()
+        while d <= self._end_ts.date():
 
+            # FIXME maybe skip if the file does not exist
+            filename = '%(path)s/sa%(day)s' % {'path': self._sar,
+                                               'day': d.strftime('%d')}
 
-	def _collect_sar_stats(self):
-		'extracts all data available in sar, filters by timestamp range'
+            # if the sar file does not exist, skip it
+            if os.path.isfile(filename):
 
-		sar = {}
-		log("collecting sar stats")
+                log("extracting sar data from '%s'" % (filename,))
 
-		d = self._start_ts.date()
-		while d <= self._end_ts.date():
+                # need to use the right combination of start/end timestamps
+                s = self._start_ts.strftime('%H:%M:%S')
+                e = self._end_ts.strftime('%H:%M:%S')
 
-			# FIXME maybe skip if the file does not exist
-			filename = '%(path)s/sa%(day)s' % {'path' : self._sar, 'day' : d.strftime('%d')}
+                if d == self._start_ts.date() and d == self._end_ts.date():
+                    r = run_cmd(['sar', '-A', '-p', '-s', s, '-e', e, '-f',
+                                 filename])
+                elif d == self._start_ts.date():
+                    r = run_cmd(['sar', '-A', '-p', '-s', s, '-f', filename])
+                elif d == self._end_ts.date():
+                    r = run_cmd(['sar', '-A', '-p', '-e', e, '-f', filename])
+                else:
+                    r = run_cmd(['sar', '-A', '-p', '-f', filename])
 
-			# if the sar file does not exist, skip it
-			if os.path.isfile(filename):
+                sar[str(d)] = r[1]
 
-				log("extracting sar data from '%s'" % (filename,))
+            else:
 
-				# need to use the right combination of start/end timestamps
-				s = self._start_ts.strftime('%H:%M:%S')
-				e = self._end_ts.strftime('%H:%M:%S')
+                log("file '%s' does not exist, skipping" % (filename,))
 
-				if d == self._start_ts.date() and d == self._end_ts.date():
-					r = run_cmd(['sar', '-A', '-p', '-s', s, '-e', e, '-f', filename])
-				elif d == self._start_ts.date():
-					r = run_cmd(['sar', '-A', '-p', '-s', s, '-f', filename])
-				elif d == self._end_ts.date():
-					r = run_cmd(['sar', '-A', '-p', '-e', e, '-f', filename])
-				else:
-					r = run_cmd(['sar', '-A', '-p', '-f', filename])
+            # proceed to the next day
+            d += timedelta(days=1)
 
-				sar[str(d)] = r[1]
+        if not sar:
+            return None
 
-			else:
+        return sar
 
-				log("file '%s' does not exist, skipping" % (filename,))
+    def _collect_sysctl(self):
+        'collect kernel configuration'
 
-			# proceed to the next day
-			d += timedelta(days=1)
+        log("collecting sysctl")
+        r = run_cmd(['/usr/sbin/sysctl', '-a'])
 
-		if not sar:
-			return None
+        return r[1]
 
-		return sar
+    def _collect_system_info(self):
+        'collect cpuinfo, meminfo, mounts'
 
+        system = {}
 
-	def _collect_sysctl(self):
-		'collect kernel configuration'
+        with open('/proc/cpuinfo', 'r') as f:
+            system['cpuinfo'] = f.read()
 
-		log("collecting sysctl")
-		r = run_cmd(['/usr/sbin/sysctl', '-a'])
+        with open('/proc/meminfo', 'r') as f:
+            system['meminfo'] = f.read()
 
-		return r[1]
+        with open('/proc/mounts', 'r') as f:
+            system['mounts'] = f.read()
 
-
-	def _collect_system_info(self):
-		'collect cpuinfo, meminfo, mounts'
-
-		system = {}
-
-		with open('/proc/cpuinfo', 'r') as f:
-			system['cpuinfo'] = f.read()
-
-		with open('/proc/meminfo', 'r') as f:
-			system['meminfo'] = f.read()
-
-		with open('/proc/mounts', 'r') as f:
-			system['mounts'] = f.read()
-
-		return system
+        return system
