@@ -80,3 +80,9 @@ class GitRepository(object):
                  stderr=STDOUT)
             call(['make', '-s', '-j', str(cpu_count()), 'install'],
                  cwd=self._path, stdout=strout, stderr=STDOUT)
+
+            # Install pgbench from contrib in the older versions
+            oldpgbenchdir = ''.join([self._path, '/', 'contrib/pgbench'])
+            if os.path.isdir(oldpgbenchdir):
+                call(['make', '-s', '-j', str(cpu_count()), 'install'],
+                     cwd=oldpgbenchdir, stdout=strout, stderr=STDOUT)
