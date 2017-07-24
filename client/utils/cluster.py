@@ -15,6 +15,8 @@ class PgCluster(object):
         self._bin = bin_path
         self._data = data_path
 
+        self._options = ""
+
     def _initdb(self):
         'initialize the data directory'
 
@@ -24,13 +26,10 @@ class PgCluster(object):
                  stdout=strout, stderr=STDOUT)
 
     def _configure(self, config):
-        'update configuration of a cluster (using postgresql.auto.conf)'
+        'build options list to use with pg_ctl'
 
-        log("configuring cluster in '%s'" % (self._data,))
-        with open('%s/postgresql.auto.conf' % (self._data,), 'a+') as f:
-            for k in config:
-                f.write("%(name)s = '%(value)s'\n" %
-                        {'name': k, 'value': config[k]})
+        for k in config:
+            self._options += ''.join([" -c ", k, "='", str(config[k]), "'"])
 
     def _destroy(self):
         """
@@ -59,8 +58,11 @@ class PgCluster(object):
         with TemporaryFile() as strout:
             log("starting cluster in '%s' using '%s' binaries" %
                 (self._data, self._bin))
-            call(['pg_ctl', '-D', self._data, '-l', 'pg.log', '-w', 'start'],
-                 env={'PATH': self._bin}, stdout=strout, stderr=STDOUT)
+            cmd = ['pg_ctl', '-D', self._data, '-l', 'pg.log', '-w']
+            if len(self._options) > 0:
+                cmd.extend(['-o', self._options])
+            cmd.append('start')
+            call(cmd, env={'PATH': self._bin}, stdout=strout, stderr=STDOUT)
 
     def stop(self, destroy=True):
         'stop the cluster'
