@@ -31,6 +31,9 @@ class PgBench(object):
         self._duration = duration
         self._runs = runs
 
+        self._env = os.environ
+        self._env['PATH'] = ':'.join([bin_path, self._env['PATH']])
+
         self._results = {}
 
     @staticmethod
@@ -58,13 +61,12 @@ class PgBench(object):
         self._results[scale] = {'init': None, 'warmup': None, 'runs': []}
 
         log("recreating '%s' database" % (self._dbname,))
-        run_cmd(['dropdb', '--if-exists', self._dbname],
-                env={'PATH': self._bin})
-        run_cmd(['createdb', self._dbname], env={'PATH': self._bin})
+        run_cmd(['dropdb', '--if-exists', self._dbname], env=self._env)
+        run_cmd(['createdb', self._dbname], env=self._env)
 
         log("initializing pgbench '%s' with scale %s" % (self._dbname, scale))
         r = run_cmd(['pgbench', '-i', '-s', str(scale), self._dbname],
-                    env={'PATH': self._bin})
+                    env=self._env)
 
         # remember the init duration
         self._results[scale]['init'] = r[2]
@@ -211,14 +213,13 @@ class PgBench(object):
         args.extend([self._dbname])
 
         # do an explicit checkpoint before each run
-        run_cmd(['psql', self._dbname, '-c', 'checkpoint'],
-                env={'PATH': self._bin})
+        run_cmd(['psql', self._dbname, '-c', 'checkpoint'], env=self._env)
 
         log("pgbench: clients=%d, jobs=%d, aggregate=%s, read-only=%s, "
             "duration=%d" % (nclients, njobs, aggregate, read_only, duration))
 
         start = time.time()
-        r = run_cmd(args, env={'PATH': self._bin})
+        r = run_cmd(args, env=self._env)
         end = time.time()
 
         r = PgBench._parse_results(r[1])

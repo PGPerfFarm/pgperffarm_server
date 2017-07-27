@@ -15,6 +15,9 @@ class PgCluster(object):
         self._bin = bin_path
         self._data = data_path
 
+        self._env = os.environ
+        self._env['PATH'] = ':'.join([bin_path, self._env['PATH']])
+
         self._options = ""
 
     def _initdb(self):
@@ -22,7 +25,7 @@ class PgCluster(object):
 
         with TemporaryFile() as strout:
             log("initializing cluster into '%s'" % (self._data,))
-            call(['pg_ctl', '-D', self._data, 'init'], env={'PATH': self._bin},
+            call(['pg_ctl', '-D', self._data, 'init'], env=self._env,
                  stdout=strout, stderr=STDOUT)
 
     def _configure(self, config):
@@ -62,7 +65,7 @@ class PgCluster(object):
             if len(self._options) > 0:
                 cmd.extend(['-o', self._options])
             cmd.append('start')
-            call(cmd, env={'PATH': self._bin}, stdout=strout, stderr=STDOUT)
+            call(cmd, env=self._env, stdout=strout, stderr=STDOUT)
 
     def stop(self, destroy=True):
         'stop the cluster'
@@ -71,7 +74,7 @@ class PgCluster(object):
             log("stopping cluster in '%s' using '%s' binaries" %
                 (self._data, self._bin))
             call(['pg_ctl', '-D', self._data, '-w', '-t', '60', 'stop'],
-                 env={'PATH': self._bin}, stdout=strout, stderr=STDOUT)
+                 env=self._env, stdout=strout, stderr=STDOUT)
 
         # kill any remaining processes, remove the data dir
         if destroy:
