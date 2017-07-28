@@ -108,15 +108,9 @@ class BenchmarkRunner(object):
         # merge data from the collectors into the JSON document with results
         r.update(self._collector.result())
 
-        # read the postgres log
-        with open('pg.log', 'r') as f:
-            r['postgres-log'] = f.read()
-
         r['meta'] = {'benchmark': config['benchmark'],
                      'date': strftime("%Y-%m-%d %H:%M:%S.000000+00", gmtime()),
                      'name': config_name}
-
-        os.remove('pg.log')
 
         with open('%s/%s.json' % (self._output, config_name), 'w') as f:
             f.write(json.dumps(r, indent=4))

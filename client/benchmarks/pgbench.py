@@ -119,54 +119,6 @@ class PgBench(object):
                 'latency': latency,
                 'tps': tps}
 
-    @staticmethod
-    def _merge_logs():
-        'merge log files produced by pgbench threads (aggregated per second)'
-
-        r = {}
-
-        # find pgbench transaction logs in current directory
-        logs = [v for v in os.listdir(os.getcwd())
-                if re.match('pgbench_log.[0-9]+(\.[0-9]+)?', v)]
-
-        # parse each transaction log, and merge it into the existing results
-        for l in logs:
-            worker_log = open(l, 'r')
-            for row in worker_log:
-                values = row.split(' ')
-
-                timestamp = values[0]
-                tps = int(values[1])
-                lat_sum = long(values[2])
-                lat_sum2 = long(values[3])
-                lat_min = int(values[4])
-                lat_max = int(values[5])
-
-                # if first record for the timestamp, store it, otherwise merge
-                if timestamp not in r:
-                    r[timestamp] = {'tps': tps,
-                                    'lat_sum': lat_sum, 'lat_sum2': lat_sum2,
-                                    'lat_min': lat_min, 'lat_max': lat_max}
-                else:
-                    r[timestamp]['tps'] += int(tps)
-                    r[timestamp]['lat_sum'] += long(lat_sum)
-                    r[timestamp]['lat_sum2'] += long(lat_sum2)
-                    r[timestamp]['lat_min'] = min(r[timestamp]['lat_min'],
-                                                  int(lat_min))
-                    r[timestamp]['lat_max'] = max(r[timestamp]['lat_max'],
-                                                  int(lat_max))
-
-            os.remove(l)
-
-        # now produce a simple text log sorted by the timestamp
-        o = []
-        for t in sorted(r.keys()):
-            o.append('%s %d %d %d %d %d' % (t, r[t]['tps'], r[t]['lat_sum'],
-                                            r[t]['lat_sum2'], r[t]['lat_min'],
-                                            r[t]['lat_max']))
-
-        return '\n'.join(o)
-
     def check_config(self):
         'check pgbench configuration (existence of binaries etc.)'
 
@@ -224,9 +176,6 @@ class PgBench(object):
 
         r = PgBench._parse_results(r[1])
         r.update({'read-only': read_only})
-
-        if aggregate:
-            r.update({'transaction-log': PgBench._merge_logs()})
 
         r.update({'start': start, 'end': end})
 

@@ -31,15 +31,17 @@ if __name__ == '__main__':
 
         # build and start a postgres cluster
 
-        cluster = PgCluster(bin_path=BIN_PATH, data_path=DATADIR_PATH)
+        cluster = PgCluster(OUTPUT_DIR, bin_path=BIN_PATH,
+                            data_path=DATADIR_PATH)
 
         # create collectors
 
         collectors = MultiCollector()
 
-        collectors.register('system', LinuxCollector())
-        collectors.register('postgres',
-                            PostgresCollector(dbname=DATABASE_NAME))
+        collectors.register('system', LinuxCollector(OUTPUT_DIR))
+        pg_collector = PostgresCollector(OUTPUT_DIR, dbname=DATABASE_NAME,
+                                         bin_path=('%s/bin' % (BUILD_PATH)))
+        collectors.register('postgres', pg_collector)
 
         runner = BenchmarkRunner(OUTPUT_DIR, cluster, collectors)
 

@@ -8,10 +8,12 @@ from utils.misc import run_cmd
 class LinuxCollector(object):
     'collects various Linux-specific statistics (cpuinfo, mounts, sar)'
 
-    def __init__(self, sar_path='/var/log/sa'):
+    def __init__(self, outdir, sar_path='/var/log/sa'):
+        self._outdir = outdir
+        self._sar = sar_path
+
         self._start_ts = None
         self._end_ts = None
-        self._sar = sar_path
 
     def start(self):
         self._start_ts = datetime.now()
@@ -25,9 +27,7 @@ class LinuxCollector(object):
         r = {'sysctl': self._collect_sysctl()}
 
         # ignore sar if we've not found it
-        sar = self._collect_sar_stats()
-        if sar:
-            r['sar'] = sar
+        self._collect_sar_stats()
 
         r.update(self._collect_system_info())
 
@@ -36,7 +36,6 @@ class LinuxCollector(object):
     def _collect_sar_stats(self):
         'extracts all data available in sar, filters by timestamp range'
 
-        sar = {}
         log("collecting sar stats")
 
         d = self._start_ts.date()
@@ -65,19 +64,17 @@ class LinuxCollector(object):
                 else:
                     r = run_cmd(['sar', '-A', '-p', '-f', filename])
 
-                sar[str(d)] = r[1]
-
+                with open(''.join([self._outdir, '/sar-', d.strftime('%d'),
+                                   '.txt']),
+                          'w') as f:
+                    f.write(r[1])
+                    f.close()
             else:
 
                 log("file '%s' does not exist, skipping" % (filename,))
 
             # proceed to the next day
             d += timedelta(days=1)
-
-        if not sar:
-            return None
-
-        return sar
 
     def _collect_sysctl(self):
         'collect kernel configuration'

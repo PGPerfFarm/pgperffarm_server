@@ -7,6 +7,7 @@ import time
 
 from multiprocessing import Process, Queue
 from utils.logging import log
+from utils.misc import run_cmd
 
 
 class PostgresCollector(object):
@@ -15,15 +16,18 @@ class PostgresCollector(object):
     indexes)
     """
 
-    def __init__(self, dbname):
+    def __init__(self, outdir, dbname, bin_path):
+        self._outdir = outdir
         self._dbname = dbname
+        self._bin_path = bin_path
 
     def start(self):
         self._in_queue = Queue()
         self._out_queue = Queue()
         self._worker = Process(target=run_collector,
                                args=(self._in_queue, self._out_queue,
-                                     self._dbname))
+                                     self._dbname, self._bin_path,
+                                     self._outdir))
         self._worker.start()
 
     def stop(self):
@@ -51,7 +55,7 @@ class PostgresCollector(object):
         return self._result
 
 
-def run_collector(in_queue, out_queue, dbname, interval=1.0):
+def run_collector(in_queue, out_queue, dbname, bin_path, outdir, interval=1.0):
     """
     collector code for a separate process, communicating through a pair of
     queues
@@ -98,7 +102,8 @@ def run_collector(in_queue, out_queue, dbname, interval=1.0):
         # on the first iteration, construct the CSV files
         if bgwriter_log is None:
             fields = [desc[0] for desc in cur.description]
-            bgwriter_log = csv.DictWriter(open('bgwriter.csv', 'w'), fields)
+            filename = ''.join([outdir, '/bgwriter.csv'])
+            bgwriter_log = csv.DictWriter(open(filename, 'w'), fields)
             bgwriter_log.writeheader()
 
         bgwriter_log.writerows(cur.fetchall())
@@ -115,7 +120,8 @@ def run_collector(in_queue, out_queue, dbname, interval=1.0):
         # on the first iteration, construct the CSV files
         if tables_log is None:
             fields = [desc[0] for desc in cur.description]
-            tables_log = csv.DictWriter(open('tables.csv', 'w'), fields)
+            filename = ''.join([outdir, '/tables.csv'])
+            tables_log = csv.DictWriter(open(filename, 'w'), fields)
             tables_log.writeheader()
 
         tables_log.writerows(cur.fetchall())
@@ -129,7 +135,8 @@ def run_collector(in_queue, out_queue, dbname, interval=1.0):
         # on the first iteration, construct the CSV files
         if indexes_log is None:
             fields = [desc[0] for desc in cur.description]
-            indexes_log = csv.DictWriter(open('indexes.csv', 'w'), fields)
+            filename = ''.join([outdir, '/indexes.csv'])
+            indexes_log = csv.DictWriter(open(filename, 'w'), fields)
             indexes_log.writeheader()
 
         indexes_log.writerows(cur.fetchall())
@@ -141,14 +148,27 @@ def run_collector(in_queue, out_queue, dbname, interval=1.0):
         # on the first iteration, construct the CSV files
         if database_log is None:
             fields = [desc[0] for desc in cur.description]
-            database_log = csv.DictWriter(open('database.csv', 'w'), fields)
+            filename = ''.join([outdir, '/database.csv'])
+            database_log = csv.DictWriter(open(filename, 'w'), fields)
             database_log.writeheader()
 
         database_log.writerows(cur.fetchall())
 
         conn.close()
 
-    log("PostgreSQL collector generates CSV results")
+    try:
+        conn = psycopg2.connect('host=localhost dbname=%s' % (dbname,))
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        cur.execute('SELECT name, setting, source '
+                    'FROM pg_settings ORDER BY lower(name)')
+        fields = [desc[0] for desc in cur.description]
+        filename = ''.join([outdir, '/settings.csv'])
+        settings_log = csv.DictWriter(open(filename, 'w'), fields)
+        settings_log.writeheader()
+        settings_log.writerows(cur.fetchall())
+        conn.close()
+    except Exception as ex:
+        pass
 
     # close the CSV writers
     bgwriter_log = None
@@ -158,13 +178,8 @@ def run_collector(in_queue, out_queue, dbname, interval=1.0):
 
     result = {}
 
-    for file in ['bgwriter', 'tables', 'indexes', 'database']:
-        if os.path.isfile(''.join([file, '.csv'])):
-            with open(''.join([file, '.csv']), 'r') as f:
-                result.update({file : f.read()})
-
-                # remove the files
-                os.remove(''.join([file, '.csv']))
+    r = run_cmd([bin_path + '/pg_config'])
+    result['config'] = r[1]
 
     out_queue.put(result)
 

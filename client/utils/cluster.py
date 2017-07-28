@@ -11,7 +11,8 @@ from utils.logging import log
 class PgCluster(object):
     'basic manipulation of postgres cluster (init, start, stop, destroy)'
 
-    def __init__(self, bin_path, data_path):
+    def __init__(self, outdir, bin_path, data_path):
+        self._outdir = outdir
         self._bin = bin_path
         self._data = data_path
 
@@ -61,7 +62,8 @@ class PgCluster(object):
         with TemporaryFile() as strout:
             log("starting cluster in '%s' using '%s' binaries" %
                 (self._data, self._bin))
-            cmd = ['pg_ctl', '-D', self._data, '-l', 'pg.log', '-w']
+            cmd = ['pg_ctl', '-D', self._data, '-l',
+                   ''.join([self._outdir, '/pg.log']), '-w']
             if len(self._options) > 0:
                 cmd.extend(['-o', self._options])
             cmd.append('start')
