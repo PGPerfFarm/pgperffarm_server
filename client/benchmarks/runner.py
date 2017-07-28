@@ -1,6 +1,8 @@
 import json
 import os
 
+from time import gmtime, strftime
+
 from utils.logging import log
 from multiprocessing import Process, Queue
 
@@ -111,6 +113,7 @@ class BenchmarkRunner(object):
             r['postgres-log'] = f.read()
 
         r['meta'] = {'benchmark': config['benchmark'],
+                     'date': strftime("%Y-%m-%d %H:%M:%S.000000+00", gmtime()),
                      'name': config_name}
 
         os.remove('pg.log')
