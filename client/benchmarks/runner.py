@@ -1,10 +1,11 @@
 import json
 import os
 
+from multiprocessing import Process, Queue
 from time import gmtime, strftime
+from subprocess import check_output
 
 from utils.logging import log
-from multiprocessing import Process, Queue
 
 
 class BenchmarkRunner(object):
@@ -108,9 +109,14 @@ class BenchmarkRunner(object):
         # merge data from the collectors into the JSON document with results
         r.update(self._collector.result())
 
-        r['meta'] = {'benchmark': config['benchmark'],
-                     'date': strftime("%Y-%m-%d %H:%M:%S.000000+00", gmtime()),
-                     'name': config_name}
+        uname = check_output(['uname', '-a'])
+
+        r['meta'] = {
+                'benchmark': config['benchmark'],
+                'date': strftime("%Y-%m-%d %H:%M:%S.000000+00", gmtime()),
+                'name': config_name,
+                'uname': uname,
+        }
 
         with open('%s/%s.json' % (self._output, config_name), 'w') as f:
             f.write(json.dumps(r, indent=4))
