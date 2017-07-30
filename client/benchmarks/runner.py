@@ -118,7 +118,7 @@ class BenchmarkRunner(object):
                 'uname': uname,
         }
 
-        with open('%s/%s.json' % (self._output, config_name), 'w') as f:
+        with open('%s/results.json' % self._output, 'w') as f:
             f.write(json.dumps(r, indent=4))
 
     def run(self):
