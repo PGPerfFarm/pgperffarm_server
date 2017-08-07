@@ -103,7 +103,8 @@ def run_collector(in_queue, out_queue, dbname, bin_path, outdir, interval=1.0):
         if bgwriter_log is None:
             fields = [desc[0] for desc in cur.description]
             filename = ''.join([outdir, '/bgwriter.csv'])
-            bgwriter_log = csv.DictWriter(open(filename, 'w'), fields)
+            bgwriter_log = csv.DictWriter(open(filename, 'w'), fields,
+                                          lineterminator='\n')
             bgwriter_log.writeheader()
 
         bgwriter_log.writerows(cur.fetchall())
@@ -121,7 +122,8 @@ def run_collector(in_queue, out_queue, dbname, bin_path, outdir, interval=1.0):
         if tables_log is None:
             fields = [desc[0] for desc in cur.description]
             filename = ''.join([outdir, '/tables.csv'])
-            tables_log = csv.DictWriter(open(filename, 'w'), fields)
+            tables_log = csv.DictWriter(open(filename, 'w'), fields,
+                                        lineterminator='\n')
             tables_log.writeheader()
 
         tables_log.writerows(cur.fetchall())
@@ -136,7 +138,8 @@ def run_collector(in_queue, out_queue, dbname, bin_path, outdir, interval=1.0):
         if indexes_log is None:
             fields = [desc[0] for desc in cur.description]
             filename = ''.join([outdir, '/indexes.csv'])
-            indexes_log = csv.DictWriter(open(filename, 'w'), fields)
+            indexes_log = csv.DictWriter(open(filename, 'w'), fields,
+                                         lineterminator='\n')
             indexes_log.writeheader()
 
         indexes_log.writerows(cur.fetchall())
@@ -149,7 +152,8 @@ def run_collector(in_queue, out_queue, dbname, bin_path, outdir, interval=1.0):
         if database_log is None:
             fields = [desc[0] for desc in cur.description]
             filename = ''.join([outdir, '/database.csv'])
-            database_log = csv.DictWriter(open(filename, 'w'), fields)
+            database_log = csv.DictWriter(open(filename, 'w'), fields,
+                                          lineterminator='\n')
             database_log.writeheader()
 
         database_log.writerows(cur.fetchall())
@@ -163,7 +167,8 @@ def run_collector(in_queue, out_queue, dbname, bin_path, outdir, interval=1.0):
                     'FROM pg_settings ORDER BY lower(name)')
         fields = [desc[0] for desc in cur.description]
         filename = ''.join([outdir, '/settings.csv'])
-        settings_log = csv.DictWriter(open(filename, 'w'), fields)
+        settings_log = csv.DictWriter(open(filename, 'w'), fields,
+                                      lineterminator='\n')
         settings_log.writeheader()
         settings_log.writerows(cur.fetchall())
         conn.close()
