@@ -6,79 +6,29 @@ from utils.misc import run_cmd
 
 
 class LinuxCollector(object):
-    'collects various Linux-specific statistics (cpuinfo, mounts, sar)'
+    'Collect various Linux-specific statistics (cpuinfo, mounts)'
 
-    def __init__(self, outdir, sar_path='/var/log/sa'):
+    def __init__(self, outdir):
         self._outdir = outdir
-        self._sar = sar_path
-
-        self._start_ts = None
-        self._end_ts = None
 
         # Hard code all possible places a packager might install sysctl.
         self._env = os.environ
         self._env['PATH'] = ':'.join(['/usr/sbin/', '/sbin/', self._env['PATH']])
 
     def start(self):
-        self._start_ts = datetime.now()
+        pass
 
     def stop(self):
-        self._end_ts = datetime.now()
+        pass
 
     def result(self):
         'build the results'
 
         r = {'sysctl': self._collect_sysctl()}
 
-        # ignore sar if we've not found it
-        self._collect_sar_stats()
-
         r.update(self._collect_system_info())
 
         return r
-
-    def _collect_sar_stats(self):
-        'extracts all data available in sar, filters by timestamp range'
-
-        log("collecting sar stats")
-
-        d = self._start_ts.date()
-        while d <= self._end_ts.date():
-
-            # FIXME maybe skip if the file does not exist
-            filename = '%(path)s/sa%(day)s' % {'path': self._sar,
-                                               'day': d.strftime('%d')}
-
-            # if the sar file does not exist, skip it
-            if os.path.isfile(filename):
-
-                log("extracting sar data from '%s'" % (filename,))
-
-                # need to use the right combination of start/end timestamps
-                s = self._start_ts.strftime('%H:%M:%S')
-                e = self._end_ts.strftime('%H:%M:%S')
-
-                if d == self._start_ts.date() and d == self._end_ts.date():
-                    r = run_cmd(['sar', '-A', '-p', '-s', s, '-e', e, '-f',
-                                 filename])
-                elif d == self._start_ts.date():
-                    r = run_cmd(['sar', '-A', '-p', '-s', s, '-f', filename])
-                elif d == self._end_ts.date():
-                    r = run_cmd(['sar', '-A', '-p', '-e', e, '-f', filename])
-                else:
-                    r = run_cmd(['sar', '-A', '-p', '-f', filename])
-
-                with open(''.join([self._outdir, '/sar-', d.strftime('%d'),
-                                   '.txt']),
-                          'w') as f:
-                    f.write(r[1])
-                    f.close()
-            else:
-
-                log("file '%s' does not exist, skipping" % (filename,))
-
-            # proceed to the next day
-            d += timedelta(days=1)
 
     def _collect_sysctl(self):
         'collect kernel configuration'

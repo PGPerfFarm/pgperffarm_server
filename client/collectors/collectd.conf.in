@@ -1,0 +1,423 @@
+##############################################################################
+# Global                                                                     #
+#----------------------------------------------------------------------------#
+# Global settings for the daemon.                                            #
+##############################################################################
+
+#Hostname    "localhost"
+#FQDNLookup   true
+#BaseDir     "/var/lib/collectd"
+#PIDFile     "/run/collectd/collectd.pid"
+#PluginDir   "/usr/lib64/collectd"
+#TypesDB     "/usr/share/collectd/types.db"
+
+#----------------------------------------------------------------------------#
+# Interval at which to query values. This may be overwritten on a per-plugin #
+# base by using the 'Interval' option of the LoadPlugin block:               #
+#   <LoadPlugin foo>                                                         #
+#       Interval 60                                                          #
+#   </LoadPlugin>                                                            #
+#----------------------------------------------------------------------------#
+Interval    60
+
+##############################################################################
+# Logging                                                                    #
+#----------------------------------------------------------------------------#
+# Plugins which provide logging functions should be loaded first, so log     #
+# messages generated when loading or configuring other plugins can be        #
+# accessed.                                                                  #
+##############################################################################
+
+LoadPlugin logfile
+
+<Plugin logfile>
+	LogLevel info
+	File STDOUT
+	Timestamp true
+	PrintSeverity false
+</Plugin>
+
+##############################################################################
+# LoadPlugin section                                                         #
+#----------------------------------------------------------------------------#
+# Lines beginning with a single `#' belong to plugins which have been built  #
+# but are disabled by default.                                               #
+#                                                                            #
+# Lines beginning with `##' belong to plugins which have not been built due  #
+# to missing dependencies or because they have been deactivated explicitly.  #
+##############################################################################
+
+%(modules)s
+
+##############################################################################
+# Plugin configuration                                                       #
+#----------------------------------------------------------------------------#
+# In this section configuration stubs for each plugin are provided. A desc-  #
+# ription of those options is available in the collectd.conf(5) manual page. #
+##############################################################################
+
+<Plugin aggregation>
+  <Aggregation>
+    Plugin "cpu"
+    Type "percent"
+
+    GroupBy "Host"
+    GroupBy "TypeInstance"
+
+    CalculateSum false
+    CalculateAverage true
+  </Aggregation>
+</Plugin>
+
+<Plugin cpu>
+  ReportByCpu true
+  ReportByState true
+  ValuesPercentage true
+</Plugin>
+
+<Plugin csv>
+	DataDir "%(datadir)s"
+	StoreRates false
+</Plugin>
+
+<Plugin postgresql>
+	<Query db_stats>
+		Statement "
+SELECT numbackends, xact_commit, xact_rollback, blks_read, blks_hit,
+       tup_returned, tup_fetched, tup_inserted, tup_updated, tup_deleted,
+       conflicts, temp_files, temp_bytes, deadlocks, blk_read_time,
+       blk_write_time
+FROM pg_stat_database
+WHERE datname = $1"
+		Param database
+		<Result>
+            Type "gauge"
+            InstancePrefix "database-numbackends"
+            ValuesFrom "numbackends"
+		</Result>
+		<Result>
+            Type "counter"
+            InstancePrefix "database-xact_rollback"
+            ValuesFrom "xact_rollback"
+		</Result>
+		<Result>
+            Type "counter"
+            InstancePrefix "database-xact_commit"
+            ValuesFrom "xact_commit"
+		</Result>
+		<Result>
+            Type "counter"
+            InstancePrefix "database-blks_read"
+            ValuesFrom "blks_read"
+		</Result>
+		<Result>
+            Type "counter"
+            InstancePrefix "database-blks_hit"
+            ValuesFrom "blks_hit"
+		</Result>
+		<Result>
+            Type "counter"
+            InstancePrefix "database-tup_returned"
+            ValuesFrom "tup_returned"
+		</Result>
+		<Result>
+            Type "counter"
+            InstancePrefix "database-tup_fetched"
+            ValuesFrom "tup_fetched"
+		</Result>
+		<Result>
+            Type "counter"
+            InstancePrefix "database-tup_inserted"
+            ValuesFrom "tup_inserted"
+		</Result>
+		<Result>
+            Type "counter"
+            InstancePrefix "database-tup_updated"
+            ValuesFrom "tup_updated"
+		</Result>
+		<Result>
+            Type "counter"
+            InstancePrefix "database-tup_deleted"
+            ValuesFrom "tup_deleted"
+		</Result>
+		<Result>
+            Type "counter"
+            InstancePrefix "database-conflicts"
+            ValuesFrom "conflicts"
+		</Result>
+		<Result>
+            Type "counter"
+            InstancePrefix "database-temp_files"
+            ValuesFrom "temp_files"
+		</Result>
+		<Result>
+            Type "counter"
+            InstancePrefix "database-temp_bytes"
+            ValuesFrom "temp_bytes"
+		</Result>
+		<Result>
+            Type "counter"
+            InstancePrefix "database-deadlocks"
+            ValuesFrom "deadlocks"
+		</Result>
+		<Result>
+            Type "counter"
+            InstancePrefix "database-blk_read_time"
+            ValuesFrom "blk_read_time"
+		</Result>
+		<Result>
+            Type "counter"
+            InstancePrefix "database-blk_write_time"
+            ValuesFrom "blk_write_time"
+		</Result>
+	</Query>
+    <Query table_stats>
+        Statement "\
+SELECT a.schemaname AS schema, a.relname AS tablename, \
+       seq_scan, seq_tup_read, COALESCE(idx_scan, 0) AS idx_scan, \
+       COALESCE(idx_tup_fetch, 0) AS idx_tup_fetch, n_tup_ins, n_tup_upd, \
+       n_tup_del, n_tup_hot_upd, n_live_tup, n_dead_tup, heap_blks_read, \
+       heap_blks_hit, COALESCE(idx_blks_read, 0) AS idx_blks_read, \
+       COALESCE(idx_blks_hit, 0) AS idx_blks_hit, \
+       COALESCE(toast_blks_read, 0) AS toast_blks_read, \
+       COALESCE(toast_blks_hit, 0) AS toast_blks_hit, \
+       COALESCE(tidx_blks_read, 0) AS tidx_blks_read, \
+       COALESCE(tidx_blks_hit, 0) AS tidx_blks_hit \
+FROM pg_statio_all_tables a, pg_stat_all_tables b \
+WHERE a.relid = b.relid;"
+        <Result>
+            Type "counter"
+            InstancePrefix "table-seq_scan"
+            InstancesFrom "schema" "tablename"
+            ValuesFrom "seq_scan"
+        </Result>
+        <Result>
+            Type "counter"
+            InstancePrefix "table-seq_tup_read"
+            InstancesFrom "schema" "tablename"
+            ValuesFrom "seq_tup_read"
+        </Result>
+        <Result>
+            Type "counter"
+            InstancePrefix "table-idx_scan"
+            InstancesFrom "schema" "tablename"
+            ValuesFrom "idx_scan"
+        </Result>
+        <Result>
+            Type "counter"
+            InstancePrefix "table-idx_tup_fetch"
+            InstancesFrom "schema" "tablename"
+            ValuesFrom "idx_tup_fetch"
+        </Result>
+        <Result>
+            Type "counter"
+            InstancePrefix "table-n_tup_ins"
+            InstancesFrom "schema" "tablename"
+            ValuesFrom "n_tup_ins"
+        </Result>
+        <Result>
+            Type "counter"
+            InstancePrefix "table-n_tup_upd"
+            InstancesFrom "schema" "tablename"
+            ValuesFrom "n_tup_upd"
+        </Result>
+        <Result>
+            Type "counter"
+            InstancePrefix "table-n_tup_del"
+            InstancesFrom "schema" "tablename"
+            ValuesFrom "n_tup_del"
+        </Result>
+        <Result>
+            Type "counter"
+            InstancePrefix "table-n_tup_hot_upd"
+            InstancesFrom "schema" "tablename"
+            ValuesFrom "n_tup_hot_upd"
+        </Result>
+        <Result>
+            Type "counter"
+            InstancePrefix "table-n_live_tup"
+            InstancesFrom "schema" "tablename"
+            ValuesFrom "n_live_tup"
+        </Result>
+        <Result>
+            Type "counter"
+            InstancePrefix "table-n_dead_tup"
+            InstancesFrom "schema" "tablename"
+            ValuesFrom "n_dead_tup"
+        </Result>
+        <Result>
+            Type "counter"
+            InstancePrefix "table-n_dead_tup"
+            InstancesFrom "schema" "tablename"
+            ValuesFrom "n_dead_tup"
+        </Result>
+        <Result>
+            Type "counter"
+            InstancePrefix "table-heap_blks_read"
+            InstancesFrom "schema" "tablename"
+            ValuesFrom "heap_blks_read"
+        </Result>
+        <Result>
+            Type "counter"
+            InstancePrefix "table-heap_blks_hit"
+            InstancesFrom "schema" "tablename"
+            ValuesFrom "heap_blks_hit"
+        </Result>
+        <Result>
+            Type "counter"
+            InstancePrefix "table-idx_blks_read"
+            InstancesFrom "schema" "tablename"
+            ValuesFrom "idx_blks_read"
+        </Result>
+        <Result>
+            Type "counter"
+            InstancePrefix "table-idx_blks_hit"
+            InstancesFrom "schema" "tablename"
+            ValuesFrom "idx_blks_read"
+        </Result>
+        <Result>
+            Type "counter"
+            InstancePrefix "table-idx_blks_hit"
+            InstancesFrom "schema" "tablename"
+            ValuesFrom "idx_blks_hit"
+        </Result>
+        <Result>
+            Type "counter"
+            InstancePrefix "table-toast_blks_read"
+            InstancesFrom "schema" "tablename"
+            ValuesFrom "toast_blks_read"
+        </Result>
+        <Result>
+            Type "counter"
+            InstancePrefix "table-toast_blks_hit"
+            InstancesFrom "schema" "tablename"
+            ValuesFrom "toast_blks_hit"
+        </Result>
+        <Result>
+            Type "counter"
+            InstancePrefix "table-tidx_blks_read"
+            InstancesFrom "schema" "tablename"
+            ValuesFrom "tidx_blks_read"
+        </Result>
+        <Result>
+            Type "counter"
+            InstancePrefix "table-tidx_blks_hit"
+            InstancesFrom "schema" "tablename"
+            ValuesFrom "tidx_blks_hit"
+        </Result>
+    </Query>
+    <Query index_stats>
+        Statement "\
+SELECT a.schemaname AS schema, a.relname AS tablename, \
+       a.indexrelname AS indexname, idx_scan, idx_tup_read, idx_tup_fetch, \
+       idx_blks_read, idx_blks_hit \
+FROM pg_stat_all_indexes a, pg_statio_all_indexes b \
+WHERE a.indexrelid = b.indexrelid;"
+        <Result>
+            Type "counter"
+            InstancePrefix "index-idx_scan"
+            InstancesFrom "schema" "tablename" "indexname"
+            ValuesFrom "idx_scan"
+        </Result>
+        <Result>
+            Type "counter"
+            InstancePrefix "index-idx_tup_read"
+            InstancesFrom "schema" "tablename" "indexname"
+            ValuesFrom "idx_tup_read"
+        </Result>
+        <Result>
+            Type "counter"
+            InstancePrefix "index-idx_tup_fetch"
+            InstancesFrom "schema" "tablename" "indexname"
+            ValuesFrom "idx_tup_fetch"
+        </Result>
+        <Result>
+            Type "counter"
+            InstancePrefix "index-idx_blks_read"
+            InstancesFrom "schema" "tablename" "indexname"
+            ValuesFrom "idx_blks_read"
+        </Result>
+        <Result>
+            Type "counter"
+            InstancePrefix "index-idx_blks_hit"
+            InstancesFrom "schema" "tablename" "indexname"
+            ValuesFrom "idx_blks_hit"
+        </Result>
+    </Query>
+    <Query index_stats>
+        Statement "\
+SELECT checkpoints_timed, checkpoints_req, checkpoint_write_time, \
+       checkpoint_sync_time, buffers_checkpoint, buffers_clean, \
+       maxwritten_clean, buffers_backend, buffers_backend_fsync,\
+        buffers_alloc \
+FROM pg_stat_bgwriter;"
+        <Result>
+            Type "counter"
+            InstancePrefix "bgwriter-checkpoints_timed"
+            ValuesFrom "checkpoints_timed"
+        </Result>
+        <Result>
+            Type "counter"
+            InstancePrefix "bgwriter-checkpoints_req"
+            ValuesFrom "checkpoints_req"
+        </Result>
+        <Result>
+            Type "counter"
+            InstancePrefix "bgwriter-checkpoint_write_time"
+            ValuesFrom "checkpoint_write_time"
+        </Result>
+        <Result>
+            Type "counter"
+            InstancePrefix "bgwriter-checkpoint_sync_time"
+            ValuesFrom "checkpoint_sync_time"
+        </Result>
+        <Result>
+            Type "counter"
+            InstancePrefix "bgwriter-buffers_checkpoint"
+            ValuesFrom "buffers_checkpoint"
+        </Result>
+        <Result>
+            Type "counter"
+            InstancePrefix "bgwriter-buffers_clean"
+            ValuesFrom "buffers_clean"
+        </Result>
+        <Result>
+            Type "counter"
+            InstancePrefix "bgwriter-maxwritten_clean"
+            ValuesFrom "maxwritten_clean"
+        </Result>
+        <Result>
+            Type "counter"
+            InstancePrefix "bgwriter-buffers_backend"
+            ValuesFrom "buffers_backend"
+        </Result>
+        <Result>
+            Type "counter"
+            InstancePrefix "bgwriter-buffers_backend_fsync"
+            ValuesFrom "buffers_backend_fsync"
+        </Result>
+        <Result>
+            Type "counter"
+            InstancePrefix "bgwriter-buffers_alloc"
+            ValuesFrom "buffers_alloc"
+        </Result>
+    </Query>
+	<Database %(database)s>
+		Host "localhost"
+		User "postgres"
+		Query db_stats
+		Query table_stats
+		Query index_stats
+	</Database>
+</Plugin>
+
+<Plugin swap>
+	ReportByDevice false
+	ReportBytes true
+	ValuesAbsolute true
+	ValuesPercentage false
+</Plugin>
+
+<Plugin vmem>
+	Verbose false
+</Plugin>

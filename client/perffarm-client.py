@@ -7,6 +7,7 @@ import os
 from benchmarks.pgbench import PgBench
 from benchmarks.runner import BenchmarkRunner
 
+from collectors.collectd import CollectdCollector
 from collectors.linux import LinuxCollector
 from collectors.postgres import PostgresCollector
 from collectors.collector import MultiCollector
@@ -44,7 +45,10 @@ if __name__ == '__main__':
 
         system = os.popen("uname").readlines()[0].split()[0]
         if system == 'Linux':
-            collectors.register('system', LinuxCollector(OUTPUT_DIR))
+            collectors.register('linux', LinuxCollector(OUTPUT_DIR))
+
+        collectors.register('collectd',
+                            CollectdCollector(OUTPUT_DIR, DATABASE_NAME, ''))
 
         pg_collector = PostgresCollector(OUTPUT_DIR, dbname=DATABASE_NAME,
                                          bin_path=('%s/bin' % (BUILD_PATH)))
