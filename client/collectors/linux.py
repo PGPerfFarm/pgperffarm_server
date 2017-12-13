@@ -15,6 +15,10 @@ class LinuxCollector(object):
         self._start_ts = None
         self._end_ts = None
 
+        # Hard code all possible places a packager might install sysctl.
+        self._env = os.environ
+        self._env['PATH'] = ':'.join(['/usr/sbin/', '/sbin/', self._env['PATH']])
+
     def start(self):
         self._start_ts = datetime.now()
 
@@ -80,7 +84,7 @@ class LinuxCollector(object):
         'collect kernel configuration'
 
         log("collecting sysctl")
-        r = run_cmd(['/usr/sbin/sysctl', '-a'])
+        r = run_cmd(['sysctl', '-a'], env=self._env)
 
         return r[1]
 
