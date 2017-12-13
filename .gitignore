@@ -4,3 +4,4 @@ migrations
 *.swp
 *.psp
 .DS_Store
+tags
