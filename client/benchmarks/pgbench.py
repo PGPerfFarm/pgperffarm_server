@@ -16,19 +16,22 @@ class PgBench(object):
     #      read-write/read-only tests
     # TODO allow running 'prepared' mode
 
-    def __init__(self, bin_path, dbname, runs=3, duration=60, csv=False):
+    def __init__(self, bin_path, dbname, runs=3, duration=60, csv=False,
+                 results_dir=None):
         '''
         bin_path   - path to PostgreSQL binaries (dropdb, createdb, psql
                      commands)
         dbname     - name of the database to use
-        runs       - number of runs (for each client count)
         duration   - duration of each execution
+        runs       - number of runs (for each client count)
+        out_dir    - output directory
         '''
 
         self._bin = bin_path
         self._csv = csv
         self._dbname = dbname
         self._duration = duration
+        self._outdir = results_dir
         self._runs = runs
 
         self._env = os.environ
@@ -66,7 +69,7 @@ class PgBench(object):
 
         log("initializing pgbench '%s' with scale %s" % (self._dbname, scale))
         r = run_cmd(['pgbench', '-i', '-s', str(scale), self._dbname],
-                    env=self._env)
+                    env=self._env, cwd=self._outdir)
 
         # remember the init duration
         self._results[scale]['init'] = r[2]
@@ -171,7 +174,7 @@ class PgBench(object):
             "duration=%d" % (nclients, njobs, aggregate, read_only, duration))
 
         start = time.time()
-        r = run_cmd(args, env=self._env)
+        r = run_cmd(args, env=self._env, cwd=self._outdir)
         end = time.time()
 
         r = PgBench._parse_results(r[1])

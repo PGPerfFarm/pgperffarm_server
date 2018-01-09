@@ -52,6 +52,7 @@ if __name__ == '__main__':
         # register one config for each benchmark (should be moved to a config
         # file)
 
+        PGBENCH_CONFIG['results_dir'] = OUTPUT_DIR
         runner.register_config('pgbench-basic',
                                'pgbench',
                                dbname=DATABASE_NAME,
