@@ -38,7 +38,10 @@ if __name__ == '__main__':
 
         collectors = MultiCollector()
 
-        collectors.register('system', LinuxCollector(OUTPUT_DIR))
+        system = os.popen("uname").readlines()[0].split()[0]
+        if system == 'Linux':
+            collectors.register('system', LinuxCollector(OUTPUT_DIR))
+
         pg_collector = PostgresCollector(OUTPUT_DIR, dbname=DATABASE_NAME,
                                          bin_path=('%s/bin' % (BUILD_PATH)))
         collectors.register('postgres', pg_collector)

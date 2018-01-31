@@ -10,7 +10,18 @@ from tempfile import TemporaryFile
 def available_ram():
     'determine amount of RAM in the system (in megabytes)'
 
-    return int(os.popen("free -m").readlines()[1].split()[1])
+    system = os.popen("uname").readlines()[0].split()[0]
+
+    if system == 'FreeBSD':
+        mem = int(os.popen("sysctl hw.physmem").readlines()[0].split()[1])
+        mem /= 1024
+        mem /= 1024
+    elif system == 'Linux':
+        mem = int(os.popen("free -m").readlines()[1].split()[1])
+    else:
+        mem = 0
+
+    return mem
 
 
 def run_cmd(args, env=None, cwd=None):
