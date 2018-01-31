@@ -3,10 +3,10 @@ import sys
 
 # global configuration
 GIT_URL = 'git@github.com:postgres/postgres.git'
-REPOSITORY_PATH = '/home/user/tmp/git-postgres'
-BUILD_PATH = '/home/user/tmp/bin-postgres'
+REPOSITORY_PATH = '/tmp/git-postgres'
+BUILD_PATH = '/tmp/bin-postgres'
 BIN_PATH = os.path.join(BUILD_PATH, 'bin')
-DATADIR_PATH = '/home/user/tmp/data-postgres'
+DATADIR_PATH = '/tmp/data-postgres'
 
 POSTGRES_CONFIG = {'shared_buffers': '1GB',
                    'work_mem': '64MB',
@@ -22,7 +22,7 @@ POSTGRES_CONFIG = {'shared_buffers': '1GB',
 
 DATABASE_NAME = 'perf'
 
-OUTPUT_DIR = '/home/user/tmp/perf-output'
+OUTPUT_DIR = '/tmp/perf-output'
 
 # configuration for PgBench
 #
