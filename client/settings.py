@@ -2,7 +2,7 @@ import os
 import sys
 
 # global configuration
-GIT_URL = 'git@github.com:postgres/postgres.git'
+GIT_URL = 'https://github.com/postgres/postgres.git'
 REPOSITORY_PATH = '/tmp/git-postgres'
 BUILD_PATH = '/tmp/bin-postgres'
 BIN_PATH = os.path.join(BUILD_PATH, 'bin')
