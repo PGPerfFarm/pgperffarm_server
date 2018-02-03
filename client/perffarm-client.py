@@ -20,6 +20,10 @@ from settings import *
 
 if __name__ == '__main__':
 
+    if os.path.exists(OUTPUT_DIR):
+        print "output directory '%s' already exists" % OUTPUT_DIR
+        sys.exit(1)
+
     with FileLock('.lock') as lock:
 
         # clone repository and build the sources

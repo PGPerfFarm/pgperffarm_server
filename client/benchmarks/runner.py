@@ -56,10 +56,6 @@ class BenchmarkRunner(object):
 
         issues = {}
 
-        if os.path.exists(self._output):
-            issues['global'] = ["output directory '%s' already exists" %
-                                (self._output,)]
-
         for config_name in self._configs:
             t = self._check_config(config_name)
             if t:
@@ -124,7 +120,12 @@ class BenchmarkRunner(object):
     def run(self):
         'run all the configured benchmarks'
 
-        os.mkdir(self._output)
+        # It's ok if the output directory already exists.  One of the other
+        # collector modules may have started before the benchmark.
+        try:
+            os.mkdir(self._output)
+        except OSError as e:
+            log("WARNING: output directory already exists: %s" % self._output)
 
         for config_name in self._configs:
             self._run_config(config_name)
