@@ -32,8 +32,8 @@ OUTPUT_DIR = '/tmp/perf-output'
 # duration - duration (in seconds) of a single benchmark (per client count)
 #
 PGBENCH_CONFIG = {
-    'runs': 3,
-    'duration': 600,
+    'runs': 1,
+    'duration': 60,
     'csv': False
 }
 
