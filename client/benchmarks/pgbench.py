@@ -4,6 +4,8 @@ import os.path
 import re
 import time
 
+from numpy import mean, median, std
+
 from multiprocessing import cpu_count
 from utils.logging import log
 from utils.misc import available_ram, run_cmd
@@ -61,7 +63,11 @@ class PgBench(object):
         """
 
         # initialize results for this dataset scale
-        self._results[scale] = {'init': None, 'warmup': None, 'runs': []}
+        self._results['results'] = {
+            'init': None,
+            'runs': [],
+            'warmup': None,
+        }
 
         log("recreating '%s' database" % (self._dbname,))
         run_cmd(['dropdb', '--if-exists', self._dbname], env=self._env)
@@ -72,7 +78,7 @@ class PgBench(object):
                     env=self._env, cwd=self._outdir)
 
         # remember the init duration
-        self._results[scale]['init'] = r[2]
+        self._results['results']['init'] = r[2]
 
     @staticmethod
     def _parse_results(data):
@@ -151,9 +157,18 @@ class PgBench(object):
 
         return issues
 
-    def _run(self, duration, nclients=1, njobs=1, read_only=False,
+    def _run(self, run, scale, duration, nclients=1, njobs=1, read_only=False,
              aggregate=True, csv_queue=None):
         'run pgbench on the database (either a warmup or actual benchmark run)'
+
+        # Create a separate directory for each pgbench run
+        if read_only:
+            rtag = "ro"
+        else:
+            rtag = "rw"
+        rdir = "%s/pgbench-%s-%d-%d-%s" % (self._outdir, rtag, scale, nclients,
+                                           str(run))
+        os.mkdir(rdir)
 
         args = ['pgbench', '-c', str(nclients), '-j', str(njobs), '-T',
                 str(duration)]
@@ -174,7 +189,7 @@ class PgBench(object):
             "duration=%d" % (nclients, njobs, aggregate, read_only, duration))
 
         start = time.time()
-        r = run_cmd(args, env=self._env, cwd=self._outdir)
+        r = run_cmd(args, env=self._env, cwd=rdir)
         end = time.time()
 
         r = PgBench._parse_results(r[1])
@@ -197,35 +212,49 @@ class PgBench(object):
         # derive configuration for the CPU count / RAM size
         configs = PgBench._configure(cpu_count(), available_ram())
 
+        results = {'ro': {}, 'rw': {}}
+        j = 0
         for config in configs:
+            scale = config['scale']
+
+            if scale not in results['ro']:
+                results['ro'][scale] = {}
+            if scale not in results['rw']:
+                results['rw'][scale] = {}
 
             # init for the dataset scale and warmup
-            self._init(config['scale'])
+            self._init(scale)
 
-            warmup = self._run(self._duration, cpu_count(), cpu_count())
-            results = []
+            warmup = self._run('w%d' % j, scale, self._duration, cpu_count(),
+                               cpu_count())
+            j += 1
 
-            for run in range(self._runs):
+            # read-only & read-write
+            for ro in [True, False]:
+                if ro:
+                    tag = 'ro'
+                else:
+                    tag = 'rw'
 
-                log("pgbench : run=%d" % (run,))
+                for i in range(self._runs):
+                    log("pgbench : %s run=%d" % (tag, i))
 
-                for clients in config['clients']:
+                    for clients in config['clients']:
+                        if clients not in results[tag][scale]:
+                            results[tag][scale][clients] = {}
+                            results[tag][scale][clients]['results'] = []
 
-                    # read-only
-                    r = self._run(self._duration, clients, clients, True, True,
-                                  csv_queue)
-                    r.update({'run': run})
-                    results.append(r)
+                        r = self._run(i, scale, self._duration, clients,
+                                      clients, ro, True, csv_queue)
+                        r.update({'run': i})
+                        results[tag][scale][clients]['results'].append(r)
 
-                    # read-write
-                    r = self._run(self._duration, clients, clients, False,
-                                  True, csv_queue)
-                    r.update({'run': run})
-                    results.append(r)
+                    tps = []
+                    for result in results[tag][scale][clients]['results']:
+                        tps.append(float(result['tps']))
+                    results[tag][scale][clients]['metric'] = mean(tps)
+                    results[tag][scale][clients]['median'] = median(tps)
+                    results[tag][scale][clients]['std'] = std(tps)
 
-            self._results[config['scale']] = {
-                'warmup': warmup,
-                'runs': results
-            }
-
+        self._results['pgbench'] = results
         return self._results
