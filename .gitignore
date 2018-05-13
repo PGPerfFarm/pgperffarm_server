@@ -5,3 +5,10 @@ migrations
 *.psp
 .DS_Store
 tags
+
+# front-end
+*.iml
+.idea
+dist
+node_modules
+*.log*

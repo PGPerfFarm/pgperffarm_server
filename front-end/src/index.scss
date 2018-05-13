@@ -1,0 +1,19 @@
+body {
+    background: url(image/slonik.png);
+    #app {
+        font-size: 100px;
+    }
+}
+.page-header-right{
+    position: absolute;
+    right: 15px;
+    top: 12px;
+}
+
+.switch-wrapper {
+    position: relative;
+}
+
+.switch-wrapper > div {
+    position: absolute;
+}
