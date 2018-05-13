@@ -6,7 +6,7 @@ import { spring, AnimatedRoute ,AnimatedSwitch} from 'react-router-transition';
 import Layout from 'component/layout/index.jsx'
 // page
 import Home from './page/home/index.jsx'
-import Status from './page/Status/index.jsx'
+import Status from './page/status/index.jsx'
 
 
 // we need to map the `scale` prop we define below
