@@ -17,23 +17,25 @@ from django.contrib import admin
 from django.views.generic.base import RedirectView
 
 urlpatterns = [
+    # url(r'^admin/', admin.site.urls),
+    url(r'^api-auth/', include('rest_framework.urls')),
+
+
     # Static pages
-    url(r'^$', 'pgperffarm.views.index', name='index'),
-    url(r'^/licence$', 'pgperffarm.views.licence', name='licence'),
-    url(r'^/ppolicy$', 'pgperffarm.views.ppolicy', name='ppolicy'),
-
-    # Auth system integration
-    url(r'^(?:account/)?login/?$', 'pgperffarm.auth.login'),
-    url(r'^(?:account/)?logout/?$', 'pgperffarm.auth.logout'),
-    url(r'^auth_receive/$', 'pgperffarm.auth.auth_receive'),
-
-    # Admin site
-    url(r'^admin/', include(admin.site.urls)),
-
-    # This should not happen in production - serve with lightty!
-    url(r'^static/(.*)$', 'django.views.static.serve', {
-        'document_root': '/static',
-    }),
-    url(r'^favicon\.ico$', RedirectView.as_view(url='/static/favicon.ico',
-                                                permanent=True))
+    # url(r'^$', 'pgperffarm.views.index', name='index'),
+    # url(r'^/licence$', 'pgperffarm.views.licence', name='licence'),
+    # url(r'^/ppolicy$', 'pgperffarm.views.ppolicy', name='ppolicy'),
+    #
+    # # Auth system integration
+    # url(r'^(?:account/)?login/?$', 'pgperffarm.auth.login'),
+    # url(r'^(?:account/)?logout/?$', 'pgperffarm.auth.logout'),
+    # url(r'^auth_receive/$', 'pgperffarm.auth.auth_receive'),
+    #
+    # # Admin site
+    # url(r'^admin/', include(admin.site.urls)),
+    #
+    # # This should not happen in production - serve with lightty!
+    # url(r'^static/(.*)$', 'django.views.static.serve', {
+    #     'document_root': '/static',
+    # }),
 ]

@@ -1,8 +1,8 @@
 from datetime import datetime
 
 from django.db import models
-from users.models import UserProfile
-from user_operation.models import UserMachine
+from apps.users.models import UserProfile
+from apps.user_operation.models import UserMachine
 
 # Create your models here.
 class TestBranch(models.Model):
@@ -18,7 +18,7 @@ class TestBranch(models.Model):
 
     def __str__(self):
         return self.branch_name
-    
+
 class TestCategory(models.Model):
     """
     tests category
