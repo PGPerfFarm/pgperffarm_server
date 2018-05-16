@@ -11,7 +11,7 @@ class Status extends React.Component{
                     Shown here is the latest status of each farm member for each branch it has reported on in the last 30 days.
                     Use the farm member link for history of that member on the relevant branch.
                 </p>
-                {/*<ResultFilter/>*/}
+                <ResultFilter/>
             </div>
         )
     }

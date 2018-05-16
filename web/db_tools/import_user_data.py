@@ -10,7 +10,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "PerfFarm.settings")
 import django
 django.setup()
 
-from users.models import UserProfile
+from apps.users.models import UserProfile
 from db_tools.data.user_date import row_data
 from django.contrib.auth.hashers import make_password
 
