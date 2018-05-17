@@ -86,7 +86,7 @@ class NavTop extends React.Component {
                 <ul className="nav navbar-top-links navbar-right">
 
                     <li className="dropdown sign-in">
-                        <a className="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
+                        <a className="dropdown-toggle" data-toggle="dropdown" href="/login" aria-expanded="false">
                             Sign in
                         </a>
 

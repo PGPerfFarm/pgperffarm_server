@@ -42,7 +42,7 @@ class ResultFilter extends React.Component {
                                 </a>
                                 <div className="title-selected-result">
                                     <span>--</span>
-                                    <button data-toggle="button" className="btn btn-primary-warn title-selected-btn" disabled={ this.state.isClear ? class1 : class2 }>
+                                    <button data-toggle="button" className="btn btn-primary-warn title-selected-btn" disabled={ this.state.isClear ? 'class1' : 'class2' }>
                                         clear
                                     </button>
                                     <button data-toggle="button" className="btn btn-primary title-selected-btn">apply

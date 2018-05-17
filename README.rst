@@ -38,7 +38,8 @@ on your PostgreSQL server.
 Finally, synchronise the database::
 
   $ cd web
-  $ python manage.py syncdb
+  $ python manage.py makemigrations
+  $ python manage.py migrate
 
 That should be all. To test, run the following command and point a browser at 
 the URL shown::

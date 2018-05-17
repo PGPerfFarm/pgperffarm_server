@@ -78,8 +78,10 @@ p {
 
 
 .nav .open > a, .nav .open > a:hover, .nav .open > a:focus {
-    background-color: #2497BA;
-    border-color: #428bca;
+    /*background-color: #2497BA;*/
+    /*border-color: #428bca;*/
+    background-color: #fff;
+    border-color: #fff;
 }
 
 .breadcrumb {

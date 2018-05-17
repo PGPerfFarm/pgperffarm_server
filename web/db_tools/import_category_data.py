@@ -10,5 +10,4 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "PerfFarm.settings")
 import django
 django.setup()
 
-from tests.models import TestsCategory
 # todo
