@@ -1,11 +1,13 @@
 import React from 'react';
 import ReactDom from 'react-dom';
-import { BrowserRouter as Router, Route, Link, Redirect, Switch } from 'react-router-dom';
-import { spring, AnimatedRoute ,AnimatedSwitch} from 'react-router-transition';
+import {BrowserRouter as Router, Route, Link, Redirect, Switch} from 'react-router-dom';
+import {spring, AnimatedRoute, AnimatedSwitch} from 'react-router-transition';
 // layout
 import Layout from 'component/layout/index.jsx'
 // page
+import Login from './page/login/index.jsx'
 import Home from './page/home/index.jsx'
+
 import Status from './page/status/index.jsx'
 
 
@@ -45,15 +47,26 @@ const bounceTransition = {
     },
 };
 
-class App extends React.Component{
-    constructor(props){
+class App extends React.Component {
+    constructor(props) {
         super(props);
     }
 
 
-    render(){
+    render() {
         let LayoutRouter = (
             <Layout>
+                    <Route exact path="/" component={Home}/>
+                    <Route exact path="/login" component={Login}/>
+                    <Route exact path="/home" component={Home}/>
+                    <Route exact path="/status" component={Status}/>
+                    {/*<Redirect exact from="/order" to="/order/index"/>*/}
+                    {/*<Redirect exact from="/user" to="/user/index"/>*/}
+                    {/*<Route component={ErrorPage}/>*/}
+            </Layout>
+        );
+        return (
+            <Router>
                 <AnimatedSwitch
                     atEnter={bounceTransition.atEnter}
                     atLeave={bounceTransition.atLeave}
@@ -61,21 +74,9 @@ class App extends React.Component{
                     mapStyles={mapStyles}
                     className="route-wrapper"
                 >
-                    <Route exact path="/" component={Home}/>
-                    <Route exact path="/home" component={Home}/>
-                    <Route exact path="/status" component={Status}/>
-                    {/*<Redirect exact from="/order" to="/order/index"/>*/}
-                    {/*<Redirect exact from="/user" to="/user/index"/>*/}
-                    {/*<Route component={ErrorPage}/>*/}
-                </AnimatedSwitch>
-            </Layout>
-        );
-        return (
-            <Router>
-                <Switch>
                     {/*<Route path="/login" component={Login}/>*/}
                     <Route path="/" render={ props => LayoutRouter}/>
-                </Switch>
+                </AnimatedSwitch>
             </Router>
         )
     }
