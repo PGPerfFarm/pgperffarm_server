@@ -34,7 +34,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 
 INSTALLED_APPS = (
@@ -46,9 +45,9 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django_gravatar',
     'rest_framework',
-    'apps.tests.apps.TestsConfig',
-    'apps.user_operation.apps.UserOperationConfig',
-    'apps.users.apps.UsersConfig'
+    'users',
+    'test',
+    'user_operation'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -82,7 +81,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'pgperffarm.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
@@ -107,7 +105,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
@@ -118,5 +115,6 @@ STATICFILES_DIRS = [
 ]
 
 AUTHENTICATION_BACKENDS = (
-     'pgperffarm.auth.AuthBackend',
+    'pgperffarm.auth.AuthBackend',
 )
+AUTH_USER_MODEL = 'users.UserProfile'

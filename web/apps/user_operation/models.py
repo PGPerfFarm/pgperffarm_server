@@ -1,45 +1,47 @@
 from datetime import datetime
 from django.db import models
-from tests.models import Tests,TestBranch
-from users.models import UserProfile
+
+from users.models import UserMachine
+from test.models import Test, TestBranch
 
 # Create your models here.
 
-class UserMachine(models.Model):
-    """
-    user machine
-    """
-    machine_sn = models.CharField(max_length=16, verbose_name="machine sn")
-    machine_secret = models.CharField(max_length=32, verbose_name="machine secret")
-    machine_owner = models.ForeignKey(UserProfile)
-    alias = models.CharField(max_length=16, verbose_name="alias")
-    os_name = models.CharField(max_length=32, verbose_name="operation system name")
-    os_version = models.CharField(max_length=32, verbose_name="operation system version")
-    comp_name = models.CharField(max_length=32, verbose_name="compiler name")
-    comp_version = models.CharField(max_length=32, verbose_name="compiler version")
-    add_time = models.DateTimeField(default=datetime.now, verbose_name="machine added time")
-
-    class Meta:
-        verbose_name = "user machines"
-        verbose_name_plural = "user machines"
-
-    def __str__(self):
-        return self.machine_sn
 
 class TestResult(models.Model):
     """
-    test result
-    """
-    test = models.ForeignKey(Tests)
-    machine = models.ForeignKey(UserMachine)
-    pg_config = models.TextField(verbose_name="postgresql config", help_text="postgresql config")
-    os_config = models.TextField(verbose_name="os config", help_text="os config")
-    result_desc = models.TextField(verbose_name="test result", help_text="test result")
-    test_branch = models.ForeignKey(TestBranch, verbose_name="test branch", help_text="branch of this test")
+    test result sample:
 
-    test_time = models.DateTimeField(verbose_name="test time")
+    "latency": -1,
+    "scale": "10",
+    "end": 1526184453.133798,
+    "clients": "2",
+    "start": 1526184333.102856,
+    "run": 0,
+    "threads": "2",
+    "mode": "simple",
+    "duration": "120",
+    "tps": "369.666116",
+    "read-only": false
+
+    """
+
+    test_item = models.ForeignKey(Test, verbose_name="test item", help_text="test item")
+    latency = models.IntegerField(verbose_name="latency", help_text="latency of the test result")
+    scale = models.IntegerField(verbose_name="scale", help_text="scale of the test result")
+    end = models.DecimalField(max_digits=16, decimal_places=6, verbose_name="end",
+                              help_text="endtime of the test result")
+    clients = models.IntegerField(verbose_name="clients", help_text="clients of the test result")
+    start = models.DecimalField(max_digits=16, decimal_places=6, verbose_name="start",
+                                help_text="starttime of the test result")
+    run = models.IntegerField(verbose_name="run", help_text="run number")
+    threads = models.IntegerField(verbose_name="threads", help_text="threads of the test result")
+
+    MODE_CHOICE = (
+        ('1', 'simple'),
+    )
+    mode = models.IntegerField(choices=MODE_CHOICE, verbose_name="mode", help_text="test mode")
+    add_time = models.DateTimeField(default=datetime.now, verbose_name="test result added time")
 
     class Meta:
         verbose_name = "test result"
         verbose_name_plural = "test result"
-
