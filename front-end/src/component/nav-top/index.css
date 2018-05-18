@@ -105,6 +105,7 @@
 
 .navbar-right {
     margin-right: 0px!important;
+    line-height:61px;
 }
 
 .panel-title {
@@ -121,4 +122,16 @@
 .title-selected-btn{
     float: right;
 
+}
+
+
+.loggedin .navbar-right {
+    margin-right: 0px!important;
+}
+
+.loggedin > a {
+    padding: 0px!important;
+}
+.user-head-pic {
+    height: 40px;
 }

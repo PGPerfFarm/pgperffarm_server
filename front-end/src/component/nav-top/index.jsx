@@ -8,6 +8,7 @@ import slonik from 'image/slonik.png'
 class NavTop extends React.Component {
     constructor(props) {
         super(props);
+        this.state = {isLoggedIn: true}
     }
 
     // log out
@@ -16,6 +17,43 @@ class NavTop extends React.Component {
     }
 
     render() {
+        const isLoggedIn = this.state.isLoggedIn;
+
+        let button = null;
+        if (isLoggedIn) {
+            button = <li className="dropdown loggedin">
+                <a className="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
+                    {/*<span className="glyphicon glyphicon-th-large" aria-hidden="true"></span> Help*/}
+                    {/*<span className="glyphicon glyphicon-menu-down" aria-hidden="true"></span>*/}
+                    <img className="img-circle img-thumbnail user-head-pic" src={require('image/slonik.png')} alt="headPic"/>
+                </a>
+                <ul className="dropdown-menu dropdown-alerts">
+                    <li>
+                        <a href="#">
+                            <div>
+                                <i className="fa fa-tasks fa-fw"></i> My machines
+                            </div>
+                        </a>
+                    </li>
+                    <li className="divider"></li>
+                    <li>
+                        <a href="#">
+                            <div>
+                                <i className="fa fa-upload fa-fw"></i> Log out
+                            </div>
+                        </a>
+                    </li>
+                    <li className="divider"></li>
+                </ul>
+            </li>;
+        } else {
+            button = <li className="dropdown sign-in">
+                <a className="" href="/login" aria-expanded="false">
+                    Sign in
+                </a>
+            </li>;
+        }
+
         return (
             <div className="navbar navbar-default top-navbar" role="navigation">
                 <div className="navbar-header">
@@ -55,7 +93,7 @@ class NavTop extends React.Component {
                             <li>
                                 <a href="#">
                                     <div>
-                                        <i className="fa fa-tasks fa-fw"></i>  Licence
+                                        <i className="fa fa-tasks fa-fw"></i> Licence
                                         {/*<span className="pull-right text-muted small">4 min</span>*/}
                                     </div>
                                 </a>
@@ -64,17 +102,17 @@ class NavTop extends React.Component {
                             <li>
                                 <a href="#">
                                     <div>
-                                        <i className="fa fa-upload fa-fw"></i>  Privacy Policy
+                                        <i className="fa fa-upload fa-fw"></i> Privacy Policy
                                         {/*<span className="pull-right text-muted small">4 min</span>*/}
                                     </div>
                                 </a>
                             </li>
                             <li className="divider"></li>
                             {/*<li>*/}
-                                {/*<a className="text-center" href="#">*/}
-                                    {/*<strong>See All Alerts</strong>*/}
-                                    {/*<i className="fa fa-angle-right"></i>*/}
-                                {/*</a>*/}
+                            {/*<a className="text-center" href="#">*/}
+                            {/*<strong>See All Alerts</strong>*/}
+                            {/*<i className="fa fa-angle-right"></i>*/}
+                            {/*</a>*/}
                             {/*</li>*/}
                         </ul>
 
@@ -84,14 +122,7 @@ class NavTop extends React.Component {
 
 
                 <ul className="nav navbar-top-links navbar-right">
-
-                    <li className="dropdown sign-in">
-                        <a className="dropdown-toggle" data-toggle="dropdown" href="/login" aria-expanded="false">
-                            Sign in
-                        </a>
-
-                    </li>
-
+                    {button}
                 </ul>
             </div>
         );
