@@ -23,8 +23,6 @@ class NavTop extends React.Component {
         if (isLoggedIn) {
             button = <li className="dropdown loggedin">
                 <a className="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
-                    {/*<span className="glyphicon glyphicon-th-large" aria-hidden="true"></span> Help*/}
-                    {/*<span className="glyphicon glyphicon-menu-down" aria-hidden="true"></span>*/}
                     <img className="img-circle img-thumbnail user-head-pic" src={require('image/slonik.png')} alt="headPic"/>
                 </a>
                 <ul className="dropdown-menu dropdown-alerts">

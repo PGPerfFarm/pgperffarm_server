@@ -132,6 +132,15 @@
 .loggedin > a {
     padding: 0px!important;
 }
+
+.loggedin > ul > li > a{
+    width: 30px;
+}
 .user-head-pic {
     height: 40px;
+    border: 2px solid #2497ba;
+}
+
+.user-head-pic:hover {
+    border: 2px solid skyblue;
 }
