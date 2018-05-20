@@ -64,7 +64,7 @@
     display: block;
 }
 .top-navbar .dropdown-menu {
-    min-width: 230px;
+    min-width: 140px;
     top: 98%;
     border-radius: 0 0 4px 4px;
 }
@@ -119,23 +119,15 @@
     width: 100%;
 }
 
-.title-selected-btn{
-    float: right;
-
-}
-
-
-.loggedin .navbar-right {
+.navbar-right .loggedin{
     margin-right: 0px!important;
+    padding-right: 10px!important;
 }
 
 .loggedin > a {
     padding: 0px!important;
 }
 
-.loggedin > ul > li > a{
-    width: 30px;
-}
 .user-head-pic {
     height: 40px;
     border: 2px solid #2497ba;

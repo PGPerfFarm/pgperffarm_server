@@ -80,7 +80,18 @@
 .select-no {
     color: #999
 }
+
 /*.select .select-result a{padding-right:20px;background:#f60 url("close.gif") right 9px no-repeat}*/
 .select .select-result a:hover {
     background-position: right -15px
+}
+
+.title-selected-btn {
+    float: right;
+}
+
+.title-selected-btn:focus, .title-selected-btn:active:focus, .title-selected-btn.active:focus, .title-selected-btn.focus, .title-selected-btn:active.focus, .title-selected-btn.active.focus {
+    outline: none;
+    /*border-color: transparent;*/
+    /*box-shadow: none;*/
 }

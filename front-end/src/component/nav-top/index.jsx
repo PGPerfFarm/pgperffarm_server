@@ -25,7 +25,7 @@ class NavTop extends React.Component {
                 <a className="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
                     <img className="img-circle img-thumbnail user-head-pic" src={require('image/slonik.png')} alt="headPic"/>
                 </a>
-                <ul className="dropdown-menu dropdown-alerts">
+                <ul className="dropdown-menu dropdown-alerts loggedin-ul">
                     <li>
                         <a href="#">
                             <div>
