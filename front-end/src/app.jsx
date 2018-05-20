@@ -56,8 +56,9 @@ class App extends React.Component {
     render() {
         let LayoutRouter = (
             <Layout>
-                    <Route exact path="/" component={Home}/>
                     <Route exact path="/login" component={Login}/>
+                    <Route exact path="/" component={Home}/>
+
                     <Route exact path="/home" component={Home}/>
                     <Route exact path="/status" component={Status}/>
                     {/*<Redirect exact from="/order" to="/order/index"/>*/}

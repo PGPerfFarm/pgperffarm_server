@@ -7,9 +7,28 @@ class ResultFilter extends React.Component {
         super(props);
 
         this.state = {
-            selected: {
-                'date': 'all',
-            },
+            selected: [{
+                'name': 'Category 1',
+                'data': [
+                    'All',
+                    'Improving',
+                    'Regressive'
+                ],
+            }, {
+                'name': 'Category 2',
+                'data': [
+                    'All',
+                    '7 days',
+                    '30 days'
+                ],
+            }, {
+                'name': 'Category 3',
+                'data': [
+                    'item3-1',
+                    'item3-2',
+                    'item3-3'
+                ],
+            }],
             isClear: false
         };
     }
@@ -18,7 +37,6 @@ class ResultFilter extends React.Component {
     handleClick() {
         console.log('clicked!!', this);
         var self = this;
-        $(self).nextAll().eq(0).collapse("collapse");
     }
 
     applyButtonClick() {
@@ -30,6 +48,28 @@ class ResultFilter extends React.Component {
     }
 
     render() {
+        let _this = this;
+        let filter = this.state.selected.map((item, i) => {
+            let filter_item=item["data"].map((s,index)=>{
+                return (
+                    <dd key={index} className="select-all selected"><a href="#">{s}ss</a></dd>
+                )
+            });
+
+            return (
+                <li className="select-list" item={item} key={i}>
+                    <dl id={'select'}>
+                        <dt>{item["name"]}:</dt>
+                        {filter_item}
+                        {/*<dd className="select-all selected"><a href="#">All</a></dd>*/}
+                        {/*<dd><a href="#">today</a></dd>*/}
+                        {/*<dd><a href="#">7 days</a></dd>*/}
+                        {/*<dd><a href="#">30 days</a></dd>*/}
+                    </dl>
+                </li>
+            )
+        });
+
         return (
             <div id="wrapper">
                 <div className="panel-group" id="accordion">
@@ -42,7 +82,8 @@ class ResultFilter extends React.Component {
                                 </a>
                                 <div className="title-selected-result">
                                     <span>--</span>
-                                    <button data-toggle="button" className="btn btn-primary-warn title-selected-btn" disabled={ this.state.isClear ? 'class1' : 'class2' }>
+                                    <button data-toggle="button" className="btn btn-primary-warn title-selected-btn"
+                                            disabled={ this.state.isClear ? "disabled" : "" }>
                                         clear
                                     </button>
                                     <button data-toggle="button" className="btn btn-primary title-selected-btn">apply
@@ -53,31 +94,34 @@ class ResultFilter extends React.Component {
                         <div id="panel1" className="panel-collapse collapse in">
                             <div className="panel-body">
                                 <ul className="select">
-                                    <li className="select-list">
-                                        <dl id="select1">
-                                            <dt>Category 1:</dt>
-                                            <dd className="select-all selected"><a href="#">All</a></dd>
-                                            <dd><a href="#">Improving</a></dd>
-                                            <dd><a href="#">Regressive</a></dd>
-                                        </dl>
-                                    </li>
-                                    <li className="select-list">
-                                        <dl id="select2">
-                                            <dt>Category 2:</dt>
-                                            <dd className="select-all selected"><a href="#">All</a></dd>
-                                            <dd><a href="#">today</a></dd>
-                                            <dd><a href="#">7 days</a></dd>
-                                            <dd><a href="#">30 days</a></dd>
-                                        </dl>
-                                    </li>
-                                    <li className="select-list">
-                                        <dl id="select3">
-                                            <dt>Category 3:</dt>
-                                            <dd className="select-all selected"><a href="#">All</a></dd>
-                                            <dd><a href="#">item1</a></dd>
-                                            <dd><a href="#">item2</a></dd>
-                                        </dl>
-                                    </li>
+
+                                    {filter}
+
+                                    {/*<li className="select-list">*/}
+                                    {/*<dl id="select1">*/}
+                                    {/*<dt>Category 1:</dt>*/}
+                                    {/*<dd className="select-all selected"><a href="#">All</a></dd>*/}
+                                    {/*<dd><a href="#">Improving</a></dd>*/}
+                                    {/*<dd><a href="#">Regressive</a></dd>*/}
+                                    {/*</dl>*/}
+                                    {/*</li>*/}
+                                    {/*<li className="select-list">*/}
+                                    {/*<dl id="select2">*/}
+                                    {/*<dt>Category 2:</dt>*/}
+                                    {/*<dd className="select-all selected"><a href="#">All</a></dd>*/}
+                                    {/*<dd><a href="#">today</a></dd>*/}
+                                    {/*<dd><a href="#">7 days</a></dd>*/}
+                                    {/*<dd><a href="#">30 days</a></dd>*/}
+                                    {/*</dl>*/}
+                                    {/*</li>*/}
+                                    {/*<li className="select-list">*/}
+                                    {/*<dl id="select3">*/}
+                                    {/*<dt>Category 3:</dt>*/}
+                                    {/*<dd className="select-all selected"><a href="#">All</a></dd>*/}
+                                    {/*<dd><a href="#">item1</a></dd>*/}
+                                    {/*<dd><a href="#">item2</a></dd>*/}
+                                    {/*</dl>*/}
+                                    {/*</li>*/}
                                 </ul>
                             </div>
                         </div>
@@ -117,19 +161,23 @@ class ResultFilter extends React.Component {
                                             aria-label="Rendering engine: activate to sort column ascending"
                                             style={{width: '225px'}}>Rendering engine
                                         </th>
-                                        <th className="sorting" colSpan="0" aria-controls="dataTables-example" rowSpan="1"
+                                        <th className="sorting" colSpan="0" aria-controls="dataTables-example"
+                                            rowSpan="1"
                                             colSpan="1" aria-label="Browser: activate to sort column ascending"
                                             style={{width: '299px'}}>Browser
                                         </th>
-                                        <th className="sorting" colSpan="0" aria-controls="dataTables-example" rowSpan="1"
+                                        <th className="sorting" colSpan="0" aria-controls="dataTables-example"
+                                            rowSpan="1"
                                             colSpan="1" aria-label="Platform(s): activate to sort column ascending"
                                             style={{width: '275px'}}>Platform(s)
                                         </th>
-                                        <th className="sorting" colSpan="0" aria-controls="dataTables-example" rowSpan="1"
+                                        <th className="sorting" colSpan="0" aria-controls="dataTables-example"
+                                            rowSpan="1"
                                             colSpan="1" aria-label="Engine version: activate to sort column ascending"
                                             style={{width: '189px'}}>Engine version
                                         </th>
-                                        <th className="sorting" colSpan="0" aria-controls="dataTables-example" rowSpan="1"
+                                        <th className="sorting" colSpan="0" aria-controls="dataTables-example"
+                                            rowSpan="1"
                                             colSpan="1" aria-label="CSS grade: activate to sort column ascending"
                                             style={{width: '132px'}}>CSS grade
                                         </th>
@@ -221,7 +269,8 @@ class ResultFilter extends React.Component {
                                                 <li className="paginate_button previous disabled"
                                                     aria-controls="dataTables-example" colSpan="0"
                                                     id="dataTables-example_previous"><a href="#123">Previous</a></li>
-                                                <li className="paginate_button active" aria-controls="dataTables-example"
+                                                <li className="paginate_button active"
+                                                    aria-controls="dataTables-example"
                                                     colSpan="0"><a href="#">1</a></li>
                                                 <li className="paginate_button " aria-controls="dataTables-example"
                                                     colSpan="0"><a href="#">2</a></li>

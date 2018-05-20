@@ -17,11 +17,11 @@ class Login extends React.Component{
                                     <div className="col-lg-12">
                                         <h4>Login Form</h4>
                                         <form role="form">
-                                            <div className="form-group has-success">
+                                            <div className="form-group">
                                                 {/*<label className="control-label" for="inputLogin"> login input</label>*/}
                                                 <input type="text" className="form-control" id="inputLogin" placeholder="Username or email"/>
                                             </div>
-                                            <div className="form-group has-warning">
+                                            <div className="form-group">
                                                 <input type="text" className="form-control" id="inputPwd" placeholder="password"/>
                                             </div>
                                             <button type="submit" className="btn btn-primary">Button</button>
