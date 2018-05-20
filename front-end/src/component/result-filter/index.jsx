@@ -37,7 +37,6 @@ class ResultFilter extends React.Component {
     handleClick() {
         console.log('clicked!!', this);
         var self = this;
-        $(self).nextAll().eq(0).collapse("collapse");
     }
 
     applyButtonClick() {
@@ -50,17 +49,22 @@ class ResultFilter extends React.Component {
 
     render() {
         let _this = this;
-
         let filter = this.state.selected.map((item, i) => {
-            return (
-                <li className="select-list" key={i}>
-                    <dl id={'select'}>
-                        <dt>{i}:</dt>
+            let filter_item=item["data"].map((s,index)=>{
+                return (
+                    <dd key={index} className="select-all selected"><a href="#">{s}ss</a></dd>
+                )
+            });
 
-                        <dd className="select-all selected"><a href="#">All</a></dd>
-                        <dd><a href="#">today</a></dd>
-                        <dd><a href="#">7 days</a></dd>
-                        <dd><a href="#">30 days</a></dd>
+            return (
+                <li className="select-list" item={item} key={i}>
+                    <dl id={'select'}>
+                        <dt>{item["name"]}:</dt>
+                        {filter_item}
+                        {/*<dd className="select-all selected"><a href="#">All</a></dd>*/}
+                        {/*<dd><a href="#">today</a></dd>*/}
+                        {/*<dd><a href="#">7 days</a></dd>*/}
+                        {/*<dd><a href="#">30 days</a></dd>*/}
                     </dl>
                 </li>
             )
@@ -90,9 +94,9 @@ class ResultFilter extends React.Component {
                         <div id="panel1" className="panel-collapse collapse in">
                             <div className="panel-body">
                                 <ul className="select">
-                                    {
-                                        {filter}
-                                    }
+
+                                    {filter}
+
                                     {/*<li className="select-list">*/}
                                     {/*<dl id="select1">*/}
                                     {/*<dt>Category 1:</dt>*/}
