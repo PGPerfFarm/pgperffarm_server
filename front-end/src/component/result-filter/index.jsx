@@ -1,5 +1,5 @@
 import React from 'react';
-
+import Pagination from 'util/pagination/index.jsx';
 import './index.css';
 
 class ResultFilter extends React.Component {
@@ -7,6 +7,7 @@ class ResultFilter extends React.Component {
         super(props);
 
         this.state = {
+            current: 3,
             selected: [{
                 'name': 'Category 1',
                 'data': [
@@ -47,12 +48,19 @@ class ResultFilter extends React.Component {
         //todo
     }
 
+    onChange(page) {
+        console.log(page);
+        this.setState({
+            current: page,
+        });
+    }
+
     render() {
         let _this = this;
         let filter = this.state.selected.map((item, i) => {
             let filter_item=item["data"].map((s,index)=>{
                 return (
-                    <dd key={index} className="select-all selected"><a href="#">{s}ss</a></dd>
+                    <dd key={index} className="select-all selected"><a href="#">{s}</a></dd>
                 )
             });
 
@@ -128,6 +136,8 @@ class ResultFilter extends React.Component {
                     </div>
 
                 </div>
+
+                <Pagination locale={en_US} onChange={this.onChange} current={this.state.current} total={25}></Pagination>
                 <div className="panel panel-default">
                     <div className="panel-heading">
                         Advanced Tables
