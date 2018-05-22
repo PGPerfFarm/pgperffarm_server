@@ -75,7 +75,7 @@ class ResultFilter extends React.Component {
         let selected_item = _this.state.selected_items.map((s, index) => {
             // let is_high_light = index == 0 ? "select-all selected" :"select-all"
             return (
-                <p key={index}>{s}</p>
+                <li key={index}>{s} <a href="javascript:void(0)">x</a></li>
             )
         });
 
@@ -84,7 +84,8 @@ class ResultFilter extends React.Component {
             let filter_item = item["data"].map((s, index) => {
                 let is_high_light = index == 0 ? "select-all selected" : "select-all"
                 return (
-                    <dd onClick={(e) => this.selectItemClick(e)} key={index} data-name={s} className={is_high_light}><a href="#">{s}</a></dd>
+                    <dd onClick={(e) => this.selectItemClick(e)} key={index} data-name={s} className={is_high_light}><a
+                        href="#">{s}</a></dd>
                 )
             });
 
@@ -124,8 +125,13 @@ class ResultFilter extends React.Component {
                             </div>
                         </div>
                         <div id="panel1" className="panel-collapse collapse in">
-                            {selected_item}
+
                             <div className="panel-body">
+                                <ul className="selected_item">
+                                    {selected_item}
+                                </ul>
+
+
                                 <ul className="select">
 
                                     {filter}

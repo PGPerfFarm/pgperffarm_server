@@ -2,6 +2,12 @@
     width: 860px;
 }
 
+.selected_item > li{
+    float: left;
+    margin-left: 10px;
+    list-style-type:none;
+    border: 1px solid slateblue;
+}
 /* select */
 .select {
     padding: 5px 10px;
