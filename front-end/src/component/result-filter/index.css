@@ -70,7 +70,8 @@
 
 .select .selected a {
     color: #fff;
-    background-color: #7354ff
+    /*background-color: #7354ff*/
+    background-color: #5e8fff
 }
 
 .select-result dt {
