@@ -6,8 +6,16 @@
     float: left;
     margin-left: 10px;
     list-style-type:none;
-    border: 1px solid slateblue;
+    border: 1px solid rgba(0, 0, 0, 0.3);
 }
+
+.selected_item > li:hover{
+    border: 1px solid #246fcd;
+}
+.selected_item > li > a{
+    border-left: 1px solid rgba(0, 0, 0, 0.3);
+}
+
 /* select */
 .select {
     padding: 5px 10px;

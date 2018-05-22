@@ -8,23 +8,25 @@ class ResultFilter extends React.Component {
 
         this.state = {
             current: 3,
-            selected_items: [],
+            selected_items: [
+                {'cate':'Category 2','name':'30 days'}
+            ],
             selected: [{
-                'name': 'Category 1',
+                'cate': 'Category 1',
                 'data': [
                     'All',
                     'Improving',
                     'Regressive'
                 ],
             }, {
-                'name': 'Category 2',
+                'cate': 'Category 2',
                 'data': [
                     'All',
                     '7 days',
                     '30 days'
                 ],
             }, {
-                'name': 'Category 3',
+                'cate': 'Category 3',
                 'data': [
                     'All',
                     'item3-1',
@@ -40,14 +42,27 @@ class ResultFilter extends React.Component {
 
     selectItemClick(e) {
         console.log('selectItemClick!!', this);
-        let item_name = e.currentTarget.getAttribute("data-name")
+        let item_name = e.currentTarget.getAttribute("data-item-name")
         console.log(item_name);
+        let cate_name = e.target.getAttribute("data-cate-name")
+        console.log(cate_name);
         this.setState({
+            //todo
             'selected_items': [...this.state.selected_items, item_name],
         });
 
     }
 
+    deleteSelectItemClick(e) {
+        console.log('deleteSelectItemClick!!', this);
+        let item_name = e.currentTarget.getAttribute("data-item-name")
+        console.log(item_name);
+        let cate_name = e.target.getAttribute("data-cate-name")
+        console.log(cate_name);
+        this.setState({
+            //todo
+        });
+    }
     handleClick() {
         console.log('handleClick!!', this);
         var self = this;
@@ -75,7 +90,7 @@ class ResultFilter extends React.Component {
         let selected_item = _this.state.selected_items.map((s, index) => {
             // let is_high_light = index == 0 ? "select-all selected" :"select-all"
             return (
-                <li key={index}>{s} <a href="javascript:void(0)">x</a></li>
+                <li key={index} data-item-name={s.name} data-cate-name={s.cate}>{s.cate + ': ' + s.name} <a href="javascript:void(0)" onClick={(e) => this.deleteSelectItemClick(e)}>x</a></li>
             )
         });
 
@@ -84,7 +99,7 @@ class ResultFilter extends React.Component {
             let filter_item = item["data"].map((s, index) => {
                 let is_high_light = index == 0 ? "select-all selected" : "select-all"
                 return (
-                    <dd onClick={(e) => this.selectItemClick(e)} key={index} data-name={s} className={is_high_light}><a
+                    <dd onClick={(e) => this.selectItemClick(e)} key={index} data-item-name={s} className={is_high_light}><a
                         href="#">{s}</a></dd>
                 )
             });
@@ -92,7 +107,7 @@ class ResultFilter extends React.Component {
             return (
                 <li className="select-list" item={item} key={i}>
                     <dl id={'select'}>
-                        <dt>{item["name"]}:</dt>
+                        <dt data-cate-name={item["cate"]}>{item["cate"]}:</dt>
                         {filter_item}
                         {/*<dd className="select-all selected"><a href="#">All</a></dd>*/}
                         {/*<dd><a href="#">today</a></dd>*/}
