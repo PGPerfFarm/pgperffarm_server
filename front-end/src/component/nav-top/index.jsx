@@ -98,7 +98,7 @@ class NavTop extends React.Component {
                             </li>
                             <li className="divider"></li>
                             <li>
-                                <a href="#">
+                                <a href="/ppolicy">
                                     <div>
                                         <i className="fa fa-upload fa-fw"></i> Privacy Policy
                                         {/*<span className="pull-right text-muted small">4 min</span>*/}
