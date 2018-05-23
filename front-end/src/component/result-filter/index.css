@@ -2,6 +2,20 @@
     width: 860px;
 }
 
+.selected_item > li{
+    float: left;
+    margin-left: 10px;
+    list-style-type:none;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+}
+
+.selected_item > li:hover{
+    border: 1px solid #246fcd;
+}
+.selected_item > li > a{
+    border-left: 1px solid rgba(0, 0, 0, 0.3);
+}
+
 /* select */
 .select {
     padding: 5px 10px;
@@ -70,7 +84,8 @@
 
 .select .selected a {
     color: #fff;
-    background-color: #7354ff
+    /*background-color: #7354ff*/
+    background-color: #5e8fff
 }
 
 .select-result dt {

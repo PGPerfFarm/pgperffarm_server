@@ -1,5 +1,5 @@
 import React from 'react';
-
+import Pagination from 'util/pagination/index.jsx';
 import './index.css';
 
 class ResultFilter extends React.Component {
@@ -7,35 +7,64 @@ class ResultFilter extends React.Component {
         super(props);
 
         this.state = {
+            current: 3,
+            selected_items: [
+                {'cate':'Category 2','name':'30 days'}
+            ],
             selected: [{
-                'name': 'Category 1',
+                'cate': 'Category 1',
                 'data': [
                     'All',
                     'Improving',
                     'Regressive'
                 ],
             }, {
-                'name': 'Category 2',
+                'cate': 'Category 2',
                 'data': [
                     'All',
                     '7 days',
                     '30 days'
                 ],
             }, {
-                'name': 'Category 3',
+                'cate': 'Category 3',
                 'data': [
+                    'All',
                     'item3-1',
-                    'item3-2',
-                    'item3-3'
+                    'item3-2'
                 ],
             }],
             isClear: false
         };
+
+        this.onChange = this.onChange.bind(this);
+        this.selectItemClick = this.selectItemClick.bind(this);
     }
 
+    selectItemClick(e) {
+        console.log('selectItemClick!!', this);
+        let item_name = e.currentTarget.getAttribute("data-item-name")
+        console.log(item_name);
+        let cate_name = e.target.getAttribute("data-cate-name")
+        console.log(cate_name);
+        this.setState({
+            //todo
+            'selected_items': [...this.state.selected_items, item_name],
+        });
 
+    }
+
+    deleteSelectItemClick(e) {
+        console.log('deleteSelectItemClick!!', this);
+        let item_name = e.currentTarget.getAttribute("data-item-name")
+        console.log(item_name);
+        let cate_name = e.target.getAttribute("data-cate-name")
+        console.log(cate_name);
+        this.setState({
+            //todo
+        });
+    }
     handleClick() {
-        console.log('clicked!!', this);
+        console.log('handleClick!!', this);
         var self = this;
     }
 
@@ -47,19 +76,38 @@ class ResultFilter extends React.Component {
         //todo
     }
 
+    onChange(page) {
+        console.log(page);
+        console.log(this);
+        this.setState({
+            current: page,
+        });
+    }
+
     render() {
         let _this = this;
+
+        let selected_item = _this.state.selected_items.map((s, index) => {
+            // let is_high_light = index == 0 ? "select-all selected" :"select-all"
+            return (
+                <li key={index} data-item-name={s.name} data-cate-name={s.cate}>{s.cate + ': ' + s.name} <a href="javascript:void(0)" onClick={(e) => this.deleteSelectItemClick(e)}>x</a></li>
+            )
+        });
+
         let filter = this.state.selected.map((item, i) => {
-            let filter_item=item["data"].map((s,index)=>{
+
+            let filter_item = item["data"].map((s, index) => {
+                let is_high_light = index == 0 ? "select-all selected" : "select-all"
                 return (
-                    <dd key={index} className="select-all selected"><a href="#">{s}ss</a></dd>
+                    <dd onClick={(e) => this.selectItemClick(e)} key={index} data-item-name={s} className={is_high_light}><a
+                        href="#">{s}</a></dd>
                 )
             });
 
             return (
                 <li className="select-list" item={item} key={i}>
                     <dl id={'select'}>
-                        <dt>{item["name"]}:</dt>
+                        <dt data-cate-name={item["cate"]}>{item["cate"]}:</dt>
                         {filter_item}
                         {/*<dd className="select-all selected"><a href="#">All</a></dd>*/}
                         {/*<dd><a href="#">today</a></dd>*/}
@@ -92,7 +140,13 @@ class ResultFilter extends React.Component {
                             </div>
                         </div>
                         <div id="panel1" className="panel-collapse collapse in">
+
                             <div className="panel-body">
+                                <ul className="selected_item">
+                                    {selected_item}
+                                </ul>
+
+
                                 <ul className="select">
 
                                     {filter}
@@ -128,6 +182,8 @@ class ResultFilter extends React.Component {
                     </div>
 
                 </div>
+                <p>...</p>
+                <Pagination onChange={this.onChange} current={this.state.current} total={25}></Pagination>
                 <div className="panel panel-default">
                     <div className="panel-heading">
                         Advanced Tables
