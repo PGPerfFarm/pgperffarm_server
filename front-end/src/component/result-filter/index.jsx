@@ -100,13 +100,13 @@ class ResultFilter extends React.Component {
     render() {
         let _this = this;
 
-        let selected_item = _this.state.selected_items.map((s, index) => {
-            // let is_high_light = index == 0 ? "select-all selected" :"select-all"
-            return (
-                <li key={index} data-item-name={s.name} data-cate-name={s.cate}>{s.cate + ': ' + s.name} <a
-                    href="javascript:void(0)" onClick={(e) => this.deleteSelectItemClick(e)}>x</a></li>
-            )
-        });
+        // let selected_item = _this.state.selected_items.map((s, index) => {
+        //     // let is_high_light = index == 0 ? "select-all selected" :"select-all"
+        //     return (
+        //         <li key={index} data-item-name={s.name} data-cate-name={s.cate}>{s.cate + ': ' + s.name} <a
+        //             href="javascript:void(0)" onClick={(e) => this.deleteSelectItemClick(e)}>x</a></li>
+        //     )
+        // });
 
         let filter = this.state.selected.map((item, i) => {
 
@@ -158,7 +158,7 @@ class ResultFilter extends React.Component {
 
                             <div className="panel-body">
                                 <ul className="selected_item">
-                                    {selected_item}
+                                    {/*{selected_item}*/}
                                 </ul>
 
 
