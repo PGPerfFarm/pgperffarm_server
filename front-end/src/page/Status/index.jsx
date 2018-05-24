@@ -1,6 +1,7 @@
 import React from 'react';
 // import './index.scss';
 import ResultFilter from 'component/result-filter/index.jsx';
+import RateBar from 'util/rate-bar/index.jsx';
 
 class Status extends React.Component{
     render(){
@@ -12,6 +13,7 @@ class Status extends React.Component{
                     Use the farm member link for history of that member on the relevant branch.
                 </p>
                 <ResultFilter/>
+                <RateBar/>
             </div>
         )
     }
