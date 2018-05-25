@@ -18,13 +18,17 @@ class RateBar extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-
+            std: 150000,
+            curMark: 143732,
         }
     }
 
     componentDidMount() {
+        let std = this.props.std;
+        let curMark = this.props.curMark;
+
         // init echarts
-        let myChart = echarts.init(document.getElementById('main'));
+        let myChart = echarts.init(this.refs.waterall);
         let option = {
             tooltip : {
                 trigger: 'axis',
@@ -42,11 +46,19 @@ class RateBar extends React.Component {
                 containLabel: true
             },
             xAxis:  {
-                type: 'value'
+                type: 'value',
+                show: false,
+                splitLine:{
+                    show: false
+                },
             },
             yAxis: {
                 type: 'category',
-                data: ['2 clients','4 clients']
+                show: false,
+                // splitLine:{
+                //     show: false
+                // },
+                data: ['2 clients']
             },
             series: [
                 {
@@ -59,10 +71,10 @@ class RateBar extends React.Component {
                             position: 'insideRight'
                         }
                     },
-                    data: [320, 302]
+                    data: [std]
                 },
                 {
-                    name: 'std',
+                    name: 'curMark',
                     type: 'bar',
                     stack: 'current',
                     label: {
@@ -71,7 +83,7 @@ class RateBar extends React.Component {
                             position: 'insideRight'
                         }
                     },
-                    data: [120, 132]
+                    data: [curMark]
                 },
             ]
         };
@@ -82,7 +94,7 @@ class RateBar extends React.Component {
     }
     render() {
         return (
-            <div id="main" style={{ width: 400, height: 400 }}></div>
+            <div ref="waterall" className="rate-bar" style={{ width: 220, height: 100 }}></div>
         );
     }
 }
