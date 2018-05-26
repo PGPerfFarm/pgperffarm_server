@@ -9,10 +9,12 @@ class ResultFilter extends React.Component {
         this.state = {
             current: 3,
             selected_items: [
-                {'cate':'Category 2','name':'30 days'}
+                {'cate': 'Category 2', 'name': '30 days'}
             ],
+            restoreNum: 0,
             selected: [{
                 'cate': 'Category 1',
+                'index': 2,
                 'data': [
                     'All',
                     'Improving',
@@ -20,6 +22,7 @@ class ResultFilter extends React.Component {
                 ],
             }, {
                 'cate': 'Category 2',
+                'index': 1,
                 'data': [
                     'All',
                     '7 days',
@@ -27,13 +30,14 @@ class ResultFilter extends React.Component {
                 ],
             }, {
                 'cate': 'Category 3',
+                'index': 1,
                 'data': [
                     'All',
                     'item3-1',
                     'item3-2'
                 ],
             }],
-            isClear: false
+            isClear: true
         };
 
         this.onChange = this.onChange.bind(this);
@@ -43,26 +47,30 @@ class ResultFilter extends React.Component {
     selectItemClick(e) {
         console.log('selectItemClick!!', this);
         let item_name = e.currentTarget.getAttribute("data-item-name")
-        console.log(item_name);
-        let cate_name = e.target.getAttribute("data-cate-name")
-        console.log(cate_name);
-        this.setState({
-            //todo
-            'selected_items': [...this.state.selected_items, item_name],
-        });
+        let item_index = e.currentTarget.getAttribute("data-item-index")
+
+        let cate_name = e.currentTarget.getAttribute("data-cate-name")
+        let cate_index = e.currentTarget.getAttribute("data-cate-index")
+
+        let newSelected = this.state.selected;
+
+        if(newSelected[cate_index]["index"] != item_index) {
+            newSelected[cate_index]["index"] = item_index;
+            this.setState({
+                selected: newSelected,
+                isClear: true
+            });
+        }
+
+
+
 
     }
 
     deleteSelectItemClick(e) {
-        console.log('deleteSelectItemClick!!', this);
-        let item_name = e.currentTarget.getAttribute("data-item-name")
-        console.log(item_name);
-        let cate_name = e.target.getAttribute("data-cate-name")
-        console.log(cate_name);
-        this.setState({
-            //todo
-        });
+
     }
+
     handleClick() {
         console.log('handleClick!!', this);
         var self = this;
@@ -73,7 +81,15 @@ class ResultFilter extends React.Component {
     }
 
     clearButtonClick() {
-        //todo
+        let newArr = this.state.selected;
+        newArr.forEach((_item,_index) => {
+            console.log(_item);
+            _item.index = this.state.restoreNum;
+        })
+        this.setState({
+            selected: newArr,
+            isClear: false
+        });
     }
 
     onChange(page) {
@@ -87,26 +103,28 @@ class ResultFilter extends React.Component {
     render() {
         let _this = this;
 
-        let selected_item = _this.state.selected_items.map((s, index) => {
-            // let is_high_light = index == 0 ? "select-all selected" :"select-all"
-            return (
-                <li key={index} data-item-name={s.name} data-cate-name={s.cate}>{s.cate + ': ' + s.name} <a href="javascript:void(0)" onClick={(e) => this.deleteSelectItemClick(e)}>x</a></li>
-            )
-        });
+        // let selected_item = _this.state.selected_items.map((s, index) => {
+        //     // let is_high_light = index == 0 ? "select-all selected" :"select-all"
+        //     return (
+        //         <li key={index} data-item-name={s.name} data-cate-name={s.cate}>{s.cate + ': ' + s.name} <a
+        //             href="javascript:void(0)" onClick={(e) => this.deleteSelectItemClick(e)}>x</a></li>
+        //     )
+        // });
 
         let filter = this.state.selected.map((item, i) => {
 
             let filter_item = item["data"].map((s, index) => {
-                let is_high_light = index == 0 ? "select-all selected" : "select-all"
+                let is_high_light = index == item["index"] ? "select-all selected" : "select-all"
                 return (
-                    <dd onClick={(e) => this.selectItemClick(e)} key={index} data-item-name={s} className={is_high_light}><a
-                        href="#">{s}</a></dd>
+                    <dd onClick={(e) => this.selectItemClick(e)} key={index} data-cate-name={item["cate"]} data-cate-index={i} data-item-index={index} data-item-name={s}
+                        className={is_high_light}><a
+                        href="javascript:void(0);">{s}</a></dd>
                 )
             });
 
             return (
-                <li className="select-list" item={item} key={i}>
-                    <dl id={'select'}>
+                <li className="select-list" item={item} key={i} data-cate-name={item["cate"]} data-cate-index={i}>
+                    <dl data-cate-name={item["cate"]} data-cate-index={i}>
                         <dt data-cate-name={item["cate"]}>{item["cate"]}:</dt>
                         {filter_item}
                         {/*<dd className="select-all selected"><a href="#">All</a></dd>*/}
@@ -131,7 +149,7 @@ class ResultFilter extends React.Component {
                                 <div className="title-selected-result">
                                     <span>--</span>
                                     <button data-toggle="button" className="btn btn-primary-warn title-selected-btn"
-                                            disabled={ this.state.isClear ? "disabled" : "" }>
+                                            disabled={ this.state.isClear ? "" : "disabled" } onClick={() => this.clearButtonClick()}>
                                         clear
                                     </button>
                                     <button data-toggle="button" className="btn btn-primary title-selected-btn">apply
@@ -143,7 +161,7 @@ class ResultFilter extends React.Component {
 
                             <div className="panel-body">
                                 <ul className="selected_item">
-                                    {selected_item}
+                                    {/*{selected_item}*/}
                                 </ul>
 
 

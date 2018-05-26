@@ -118,3 +118,21 @@ AUTHENTICATION_BACKENDS = (
     'pgperffarm.auth.AuthBackend',
 )
 AUTH_USER_MODEL = 'users.UserProfile'
+
+REST_FRAMEWORK = {
+
+    'DEFAULT_PERMISSION_CLASSES': (
+
+        'rest_framework.permissions.IsAuthenticated',
+
+    ),
+
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+
+        'rest_framework.authentication.TokenAuthentication',
+
+    ),
+
+    'PAGINATE_BY': 10
+
+}
