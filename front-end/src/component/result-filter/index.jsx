@@ -47,25 +47,28 @@ class ResultFilter extends React.Component {
     selectItemClick(e) {
         console.log('selectItemClick!!', this);
         let item_name = e.currentTarget.getAttribute("data-item-name")
-        console.log(item_name);
-        let cate_name = e.target.getAttribute("data-cate-name")
-        console.log(cate_name);
-        this.setState({
-            //todo
-            'selected_items': [...this.state.selected_items, item_name],
-        });
+        let item_index = e.currentTarget.getAttribute("data-item-index")
+
+        let cate_name = e.currentTarget.getAttribute("data-cate-name")
+        let cate_index = e.currentTarget.getAttribute("data-cate-index")
+
+        let newSelected = this.state.selected;
+
+        if(newSelected[cate_index]["index"] != item_index) {
+            newSelected[cate_index]["index"] = item_index;
+            this.setState({
+                selected: newSelected,
+                isClear: true
+            });
+        }
+
+
+
 
     }
 
     deleteSelectItemClick(e) {
-        console.log('deleteSelectItemClick!!', this);
-        let item_name = e.currentTarget.getAttribute("data-item-name")
-        console.log(item_name);
-        let cate_name = e.target.getAttribute("data-cate-name")
-        console.log(cate_name);
-        this.setState({
-            //todo
-        });
+
     }
 
     handleClick() {
@@ -113,15 +116,15 @@ class ResultFilter extends React.Component {
             let filter_item = item["data"].map((s, index) => {
                 let is_high_light = index == item["index"] ? "select-all selected" : "select-all"
                 return (
-                    <dd onClick={(e) => this.selectItemClick(e)} key={index} data-item-name={s}
+                    <dd onClick={(e) => this.selectItemClick(e)} key={index} data-cate-name={item["cate"]} data-cate-index={i} data-item-index={index} data-item-name={s}
                         className={is_high_light}><a
-                        href="#">{s}</a></dd>
+                        href="javascript:void(0);">{s}</a></dd>
                 )
             });
 
             return (
-                <li className="select-list" item={item} key={i}>
-                    <dl id={'select'}>
+                <li className="select-list" item={item} key={i} data-cate-name={item["cate"]} data-cate-index={i}>
+                    <dl data-cate-name={item["cate"]} data-cate-index={i}>
                         <dt data-cate-name={item["cate"]}>{item["cate"]}:</dt>
                         {filter_item}
                         {/*<dd className="select-all selected"><a href="#">All</a></dd>*/}
