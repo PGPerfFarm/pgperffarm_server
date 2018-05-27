@@ -7,7 +7,6 @@ class ResultFilter extends React.Component {
         super(props);
 
         this.state = {
-            current: 3,
             selected_items: [
                 {'cate': 'Category 2', 'name': '30 days'}
             ],
@@ -40,7 +39,7 @@ class ResultFilter extends React.Component {
             isClear: true
         };
 
-        this.onChange = this.onChange.bind(this);
+
         this.selectItemClick = this.selectItemClick.bind(this);
     }
 
@@ -54,17 +53,13 @@ class ResultFilter extends React.Component {
 
         let newSelected = this.state.selected;
 
-        if(newSelected[cate_index]["index"] != item_index) {
+        if (newSelected[cate_index]["index"] != item_index) {
             newSelected[cate_index]["index"] = item_index;
             this.setState({
                 selected: newSelected,
                 isClear: true
             });
         }
-
-
-
-
     }
 
     deleteSelectItemClick(e) {
@@ -77,12 +72,19 @@ class ResultFilter extends React.Component {
     }
 
     applyButtonClick() {
-        //todo
+        this.setState({
+            selected: newArr,
+            isClear: false
+        });
+    }
+
+    handleTemp(e) {
+        props.onTemperateChange(e.target.value)
     }
 
     clearButtonClick() {
         let newArr = this.state.selected;
-        newArr.forEach((_item,_index) => {
+        newArr.forEach((_item, _index) => {
             console.log(_item);
             _item.index = this.state.restoreNum;
         })
@@ -92,13 +94,6 @@ class ResultFilter extends React.Component {
         });
     }
 
-    onChange(page) {
-        console.log(page);
-        console.log(this);
-        this.setState({
-            current: page,
-        });
-    }
 
     render() {
         let _this = this;
@@ -116,7 +111,8 @@ class ResultFilter extends React.Component {
             let filter_item = item["data"].map((s, index) => {
                 let is_high_light = index == item["index"] ? "select-all selected" : "select-all"
                 return (
-                    <dd onClick={(e) => this.selectItemClick(e)} key={index} data-cate-name={item["cate"]} data-cate-index={i} data-item-index={index} data-item-name={s}
+                    <dd onClick={(e) => this.selectItemClick(e)} key={index} data-cate-name={item["cate"]}
+                        data-cate-index={i} data-item-index={index} data-item-name={s}
                         className={is_high_light}><a
                         href="javascript:void(0);">{s}</a></dd>
                 )
@@ -137,7 +133,9 @@ class ResultFilter extends React.Component {
         });
 
         return (
+
             <div id="wrapper">
+
                 <div className="panel-group" id="accordion">
                     <div className="panel panel-default">
                         <div className="panel-heading" onClick={() => this.handleClick()}>
@@ -148,12 +146,18 @@ class ResultFilter extends React.Component {
                                 </a>
                                 <div className="title-selected-result">
                                     <span>--</span>
-                                    <button data-toggle="button" className="btn btn-primary-warn title-selected-btn"
-                                            disabled={ this.state.isClear ? "" : "disabled" } onClick={() => this.clearButtonClick()}>
-                                        clear
-                                    </button>
-                                    <button data-toggle="button" className="btn btn-primary title-selected-btn">apply
-                                    </button>
+                                    {/*<button data-toggle="button" className="btn btn-primary-warn title-selected-btn"*/}
+                                    {/*disabled={ this.state.isClear ? "" : "disabled" } onClick={() => this.clearButtonClick()}>*/}
+                                    {/*clear*/}
+                                    {/*</button>*/}
+                                    <a className="btn btn-default btn-sm title-selected-btn" href="javascript:void(0)"
+                                       onClick={() => this.clearButtonClick()}
+                                       disabled={ this.state.isClear ? "" : "disabled" }>
+                                        <i className="fa fa-cog"></i> Reset</a>
+                                    <a className="btn btn-success btn-sm title-selected-btn" href="javascript:void(0)">
+                                        <i className="fa fa-hand-paper-o"></i> Apply</a>
+                                    {/*<button data-toggle="button" className="btn btn-primary title-selected-btn">apply*/}
+                                    {/*</button>*/}
                                 </div>
                             </div>
                         </div>
@@ -201,171 +205,6 @@ class ResultFilter extends React.Component {
 
                 </div>
                 <p>...</p>
-                <Pagination onChange={this.onChange} current={this.state.current} total={25}></Pagination>
-                <div className="panel panel-default">
-                    <div className="panel-heading">
-                        Advanced Tables
-                    </div>
-                    <div className="panel-body">
-                        <div className="table-responsive">
-                            <div id="dataTables-example_wrapper" className="dataTables_wrapper form-inline" role="grid">
-                                <div className="row">
-                                    <div className="col-sm-6">
-                                        <div className="dataTables_length" id="dataTables-example_length"><label><select
-                                            name="dataTables-example_length" aria-controls="dataTables-example"
-                                            className="form-control input-sm">
-                                            <option value="10">10</option>
-                                            <option value="25">25</option>
-                                            <option value="50">50</option>
-                                            <option value="100">100</option>
-                                        </select> records per page</label></div>
-                                    </div>
-                                    <div className="col-sm-6">
-                                        <div id="dataTables-example_filter" className="dataTables_filter">
-                                            <label>Search:<input type="search" className="form-control input-sm"
-                                                                 aria-controls="dataTables-example"/></label></div>
-                                    </div>
-                                </div>
-                                <table className="table table-striped table-bordered table-hover dataTable no-footer"
-                                       id="dataTables-example" aria-describedby="dataTables-example_info">
-                                    <thead>
-                                    <tr role="row">
-                                        <th className="sorting_asc" colSpan="0" aria-controls="dataTables-example"
-                                            rowSpan="1" colSpan="1" aria-sort="ascending"
-                                            aria-label="Rendering engine: activate to sort column ascending"
-                                            style={{width: '225px'}}>Rendering engine
-                                        </th>
-                                        <th className="sorting" colSpan="0" aria-controls="dataTables-example"
-                                            rowSpan="1"
-                                            colSpan="1" aria-label="Browser: activate to sort column ascending"
-                                            style={{width: '299px'}}>Browser
-                                        </th>
-                                        <th className="sorting" colSpan="0" aria-controls="dataTables-example"
-                                            rowSpan="1"
-                                            colSpan="1" aria-label="Platform(s): activate to sort column ascending"
-                                            style={{width: '275px'}}>Platform(s)
-                                        </th>
-                                        <th className="sorting" colSpan="0" aria-controls="dataTables-example"
-                                            rowSpan="1"
-                                            colSpan="1" aria-label="Engine version: activate to sort column ascending"
-                                            style={{width: '189px'}}>Engine version
-                                        </th>
-                                        <th className="sorting" colSpan="0" aria-controls="dataTables-example"
-                                            rowSpan="1"
-                                            colSpan="1" aria-label="CSS grade: activate to sort column ascending"
-                                            style={{width: '132px'}}>CSS grade
-                                        </th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr className="gradeA odd">
-                                        <td className="sorting_1">Gecko</td>
-                                        <td className=" ">Firefox 1.0</td>
-                                        <td className=" ">Win 98+ / OSX.2+</td>
-                                        <td className="center ">1.7</td>
-                                        <td className="center ">A</td>
-                                    </tr>
-                                    <tr className="gradeA even">
-                                        <td className="sorting_1">Gecko</td>
-                                        <td className=" ">Firefox 1.5</td>
-                                        <td className=" ">Win 98+ / OSX.2+</td>
-                                        <td className="center ">1.8</td>
-                                        <td className="center ">A</td>
-                                    </tr>
-                                    <tr className="gradeA odd">
-                                        <td className="sorting_1">Gecko</td>
-                                        <td className=" ">Firefox 2.0</td>
-                                        <td className=" ">Win 98+ / OSX.2+</td>
-                                        <td className="center ">1.8</td>
-                                        <td className="center ">A</td>
-                                    </tr>
-                                    <tr className="gradeA even">
-                                        <td className="sorting_1">Gecko</td>
-                                        <td className=" ">Firefox 3.0</td>
-                                        <td className=" ">Win 2k+ / OSX.3+</td>
-                                        <td className="center ">1.9</td>
-                                        <td className="center ">A</td>
-                                    </tr>
-                                    <tr className="gradeA odd">
-                                        <td className="sorting_1">Gecko</td>
-                                        <td className=" ">Camino 1.0</td>
-                                        <td className=" ">OSX.2+</td>
-                                        <td className="center ">1.8</td>
-                                        <td className="center ">A</td>
-                                    </tr>
-                                    <tr className="gradeA even">
-                                        <td className="sorting_1">Gecko</td>
-                                        <td className=" ">Camino 1.5</td>
-                                        <td className=" ">OSX.3+</td>
-                                        <td className="center ">1.8</td>
-                                        <td className="center ">A</td>
-                                    </tr>
-                                    <tr className="gradeA odd">
-                                        <td className="sorting_1">Gecko</td>
-                                        <td className=" ">Netscape 7.2</td>
-                                        <td className=" ">Win 95+ / Mac OS 8.6-9.2</td>
-                                        <td className="center ">1.7</td>
-                                        <td className="center ">A</td>
-                                    </tr>
-                                    <tr className="gradeA even">
-                                        <td className="sorting_1">Gecko</td>
-                                        <td className=" ">Netscape Browser 8</td>
-                                        <td className=" ">Win 98SE+</td>
-                                        <td className="center ">1.7</td>
-                                        <td className="center ">A</td>
-                                    </tr>
-                                    <tr className="gradeA odd">
-                                        <td className="sorting_1">Gecko</td>
-                                        <td className=" ">Netscape Navigator 9</td>
-                                        <td className=" ">Win 98+ / OSX.2+</td>
-                                        <td className="center ">1.8</td>
-                                        <td className="center ">A</td>
-                                    </tr>
-                                    <tr className="gradeA even">
-                                        <td className="sorting_1">Gecko</td>
-                                        <td className=" ">Mozilla 1.0</td>
-                                        <td className=" ">Win 95+ / OSX.1+</td>
-                                        <td className="center ">1</td>
-                                        <td className="center ">A</td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                                <div className="row">
-                                    <div className="col-sm-6">
-                                        <div className="dataTables_info" id="dataTables-example_info" role="alert"
-                                             aria-live="polite" aria-relevant="all">Showing 1 to 10 of 57 entries
-                                        </div>
-                                    </div>
-                                    <div className="col-sm-6">
-                                        <div className="dataTables_paginate paging_simple_numbers"
-                                             id="dataTables-example_paginate">
-                                            <ul className="pagination">
-                                                <li className="paginate_button previous disabled"
-                                                    aria-controls="dataTables-example" colSpan="0"
-                                                    id="dataTables-example_previous"><a href="#123">Previous</a></li>
-                                                <li className="paginate_button active"
-                                                    aria-controls="dataTables-example"
-                                                    colSpan="0"><a href="#">1</a></li>
-                                                <li className="paginate_button " aria-controls="dataTables-example"
-                                                    colSpan="0"><a href="#">2</a></li>
-                                                <li className="paginate_button " aria-controls="dataTables-example"
-                                                    colSpan="0"><a href="#">3</a></li>
-                                                <li className="paginate_button " aria-controls="dataTables-example"
-                                                    colSpan="0"><a href="#">4</a></li>
-                                                <li className="paginate_button " aria-controls="dataTables-example"
-                                                    colSpan="0"><a href="#">5</a></li>
-                                                <li className="paginate_button " aria-controls="dataTables-example"
-                                                    colSpan="0"><a href="#">6</a></li>
-                                                <li className="paginate_button next" aria-controls="dataTables-example"
-                                                    colSpan="0" id="dataTables-example_next"><a href="#">Next</a></li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         );
     }

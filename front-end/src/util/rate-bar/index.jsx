@@ -40,9 +40,10 @@ class RateBar extends React.Component {
                 data: ['std', 'current']
             },
             grid: {
-                left: '3%',
-                right: '4%',
-                bottom: '3%',
+                left: '2%',
+                right: '0%',
+                bottom: '20%',
+                top: '-20%',
                 containLabel: true
             },
             xAxis:  {
@@ -94,7 +95,7 @@ class RateBar extends React.Component {
     }
     render() {
         return (
-            <div ref="waterall" className="rate-bar" style={{ width: 220, height: 100 }}></div>
+            <div ref="waterall" className="rate-bar" style={{ width: 240, height: 60 }}></div>
         );
     }
 }
