@@ -7,7 +7,6 @@ import 'echarts/lib/component/grid'
 import 'echarts/lib/chart/bar'
 
 import 'echarts/lib/component/title';
-import lineChart from './lineChart';
 
 // import { pieOption, barOption, lineOption, scatterOption, mapOption, radarOption, candlestickOption } from './optionConfig/options'
 // const BarReact = asyncComponent(() => import(/* webpackChunkName: "BarReact" */'./EchartsDemo/BarReact')) // bar component
@@ -29,6 +28,10 @@ class RateBar extends React.Component {
 
         // init echarts
         let myChart = echarts.init(this.refs.waterall);
+        let colorList = [
+            '#C33531','#EFE42A','#64BD3D','#EE9201','#29AAE3',
+            '#B74AE5','#0AAF9F','#E89589'
+        ];
         let option = {
             tooltip : {
                 trigger: 'axis',
@@ -44,7 +47,7 @@ class RateBar extends React.Component {
                 right: '0%',
                 bottom: '20%',
                 top: '-20%',
-                containLabel: true
+                containLabel: false
             },
             xAxis:  {
                 type: 'value',
@@ -63,6 +66,11 @@ class RateBar extends React.Component {
             },
             series: [
                 {
+                    itemStyle:{
+                        normal:{
+                            color:'#0050b3'
+                        }
+                    },
                     name: 'std',
                     type: 'bar',
                     stack: 'current',
@@ -75,6 +83,11 @@ class RateBar extends React.Component {
                     data: [std]
                 },
                 {
+                    itemStyle:{
+                        normal:{
+                            color:'#13c2c2'
+                        }
+                    },
                     name: 'curMark',
                     type: 'bar',
                     stack: 'current',
@@ -90,12 +103,11 @@ class RateBar extends React.Component {
         };
 
         myChart.setOption(option);
-
-
     }
+
     render() {
         return (
-            <div ref="waterall" className="rate-bar" style={{ width: 240, height: 60 }}></div>
+            <div ref="waterall" className="rate-bar" style={{ width: 240, height: 30 }}></div>
         );
     }
 }
