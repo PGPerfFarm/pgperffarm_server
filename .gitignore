@@ -1,3 +1,6 @@
+[core]
+ignorecase = false
+
 web/pgperffarm/settings_local.py
 migrations
 *.pyc

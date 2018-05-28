@@ -4,7 +4,7 @@ import ResultFilter from 'component/result-filter/index.jsx';
 import Pagination from 'util/pagination/index.jsx';
 import RateBar from 'util/rate-bar/index.jsx';
 import TableList    from 'util/table-list/index.jsx';
-
+import BasicTable    from 'util/basic-table/index.jsx';
 class Status extends React.Component {
     constructor(props) {
         super(props);
@@ -22,7 +22,7 @@ class Status extends React.Component {
                 {
                     'alias': 'a_name',
                     'email': 'a_name@mail.com',
-                    'clients': [2],
+                    'clients': [2,3,4],
                     'mark': [140000,1,1],
                 }, {
                     'alias': 'b_name',
@@ -99,7 +99,7 @@ class Status extends React.Component {
                 <TableList tableHeads={['alias', 'email', 'clients', 'mark', 'date']}>
                     {listBody}
                 </TableList>
-
+                {/*<BasicTable></BasicTable>*/}
                 <Pagination style={style} onChange={this.onPageChange} current={this.state.currentPage} total={25}/>
                 <RateBar std={this.state.std} curMark={this.state.curMark1}/>
 
