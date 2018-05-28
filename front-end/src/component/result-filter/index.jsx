@@ -73,16 +73,20 @@ class ResultFilter extends React.Component {
 
     applyButtonClick() {
         this.setState({
-            selected: newArr,
+            // selected: newArr,
             isClear: false
         });
+        this.handleIsLoading();
+
+        console.log(this.props.isLoading)
     }
 
-    handleTemp(e) {
-        props.onTemperateChange(e.target.value)
+    handleIsLoading(e) {
+        // console.log(e.target.value)
+        this.props.onIsLoadingChange(true);
     }
 
-    clearButtonClick() {
+    resetButtonClick() {
         let newArr = this.state.selected;
         newArr.forEach((_item, _index) => {
             console.log(_item);
@@ -132,6 +136,20 @@ class ResultFilter extends React.Component {
             )
         });
 
+        let apply_btn;
+        if (this.props.isLoading == true) {
+            apply_btn = (
+                <a className="btn btn-primary btn-sm title-selected-btn" href="javascript:void(0)"
+                   disabled={"disabled"}>
+                    <i className="fa fa-spinner fa-pulse"></i> wait...</a>
+            )
+        } else {
+            apply_btn = (
+                <a className="btn btn-primary btn-sm title-selected-btn" href="javascript:void(0)"
+                   onClick={() => this.applyButtonClick()}>
+                    <i className="fa fa-hand-paper-o"></i> Apply</a>
+            )
+        }
         return (
 
             <div id="wrapper">
@@ -151,11 +169,11 @@ class ResultFilter extends React.Component {
                                     {/*clear*/}
                                     {/*</button>*/}
                                     <a className="btn btn-default btn-sm title-selected-btn" href="javascript:void(0)"
-                                       onClick={() => this.clearButtonClick()}
+                                       onClick={() => this.resetButtonClick()}
                                        disabled={ this.state.isClear ? "" : "disabled" }>
                                         <i className="fa fa-cog"></i> Reset</a>
-                                    <a className="btn btn-success btn-sm title-selected-btn" href="javascript:void(0)">
-                                        <i className="fa fa-hand-paper-o"></i> Apply</a>
+
+                                    {apply_btn}
                                     {/*<button data-toggle="button" className="btn btn-primary title-selected-btn">apply*/}
                                     {/*</button>*/}
                                 </div>

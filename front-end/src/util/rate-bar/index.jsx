@@ -44,7 +44,7 @@ class RateBar extends React.Component {
                 right: '0%',
                 bottom: '20%',
                 top: '-20%',
-                containLabel: true
+                containLabel: false
             },
             xAxis:  {
                 type: 'value',
@@ -95,7 +95,7 @@ class RateBar extends React.Component {
     }
     render() {
         return (
-            <div ref="waterall" className="rate-bar" style={{ width: 240, height: 60 }}></div>
+            <div ref="waterall" className="rate-bar" style={{ width: 240, height: 30 }}></div>
         );
     }
 }

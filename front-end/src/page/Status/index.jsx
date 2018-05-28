@@ -9,6 +9,7 @@ class Status extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            isLoading: false,
             currentPage: 3,
             std: 150000,
             curMark1: 243732,
@@ -21,19 +22,19 @@ class Status extends React.Component {
                 {
                     'alias': 'a_name',
                     'email': 'a_name@mail.com',
-                    'clients': '2',
-                    'mark': 140000,
+                    'clients': [2,4,6],
+                    'mark': [140000,1,1],
                 }, {
                     'alias': 'b_name',
                     'email': 'b_name@mail.com',
                     'clients': '4',
-                    'mark': 150000,
+                    'mark': 150000
                 }
             ]
 
         }
         this.onPageChange = this.onPageChange.bind(this);
-        this.handleisLoading = this.handleisLoading.bind(this);
+        this.handleIsLoading = this.handleIsLoading.bind(this);
     }
 
     onPageChange(page) {
@@ -44,7 +45,7 @@ class Status extends React.Component {
         });
     }
 
-    handleisLoading(isLoading) {
+    handleIsLoading(isLoading) {
         this.setState({
             isLoading: isLoading
         })
@@ -59,13 +60,24 @@ class Status extends React.Component {
         let listBody = this.state.list.map((machine, index) => {
             return (
                 <tr key={index}>
-                    <td>{machine.alias}</td>
-                    <td>{machine.email}</td>
-                    <td>{machine.clients}</td>
-                    <td>
 
-                        <p> {machine.mark}</p>
-                        <RateBar style={{zIndex: 999}} std={this.state.std} curMark={this.state.curMark1}/>
+                    <td>{machine.alias}</td>
+                    <td><a href={'mailto:' + machine.email}>{machine.email}</a></td>
+                    <td>
+                        {machine.clients}
+                        {/*<th rowspan="3"></th>*/}
+                        {/*<th rowspan="3">1-2</th>*/}
+                        {/*<th rowspan="2">1-3</th>*/}
+                        {/*<th rowspan="1">1-4</th>*/}
+                        {/*<th rowspan="3">1-5</th>*/}
+                    </td>
+
+                    <td>
+                        <div>
+                            <p>..</p>
+                            <RateBar style={{float: 'right', zIndex: 999}} std={this.state.std} curMark={this.state.curMark1}/>
+                        </div>
+                        {/*<div style={{float: 'left'}}> <p>{machine.mark}</p></div>*/}
                     </td>
                     <td>{new Date().toDateString()}</td>
                 </tr>
@@ -82,7 +94,9 @@ class Status extends React.Component {
                 </p>
 
 
-                <ResultFilter isLoading={this.state.isLoading} onIsLoadingChange={this.handleisLoading}/>
+                <ResultFilter isLoading={this.state.isLoading} onIsLoadingChange={this.handleIsLoading}/>
+
+                <p>...!!{this.state.isLoading}</p>
 
                 <TableList tableHeads={['alias', 'email', 'clients', 'mark', 'date']}>
                     {listBody}

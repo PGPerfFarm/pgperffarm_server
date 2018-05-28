@@ -103,10 +103,15 @@
 
 .title-selected-btn {
     float: right;
+    margin-left: 5px;
 }
 
 .title-selected-btn:focus, .title-selected-btn:active:focus, .title-selected-btn.active:focus, .title-selected-btn.focus, .title-selected-btn:active.focus, .title-selected-btn.active.focus {
     outline: none;
     /*border-color: transparent;*/
     /*box-shadow: none;*/
+}
+
+.title-selected-result {
+    padding-bottom: 8px;
 }
