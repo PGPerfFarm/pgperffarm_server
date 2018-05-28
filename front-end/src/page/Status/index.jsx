@@ -22,7 +22,7 @@ class Status extends React.Component {
                 {
                     'alias': 'a_name',
                     'email': 'a_name@mail.com',
-                    'clients': [2,4,6],
+                    'clients': [2],
                     'mark': [140000,1,1],
                 }, {
                     'alias': 'b_name',
@@ -75,7 +75,7 @@ class Status extends React.Component {
                     <td>
                         <div>
                             <p>..</p>
-                            <RateBar style={{float: 'right', zIndex: 999}} std={this.state.std} curMark={this.state.curMark1}/>
+                            <RateBar style={{float: 'right', zIndex: 999}} std={this.state.std} curMark={this.state.curMark2}/>
                         </div>
                         {/*<div style={{float: 'left'}}> <p>{machine.mark}</p></div>*/}
                     </td>
@@ -95,8 +95,6 @@ class Status extends React.Component {
 
 
                 <ResultFilter isLoading={this.state.isLoading} onIsLoadingChange={this.handleIsLoading}/>
-
-                <p>...!!{this.state.isLoading}</p>
 
                 <TableList tableHeads={['alias', 'email', 'clients', 'mark', 'date']}>
                     {listBody}

@@ -1,6 +1,6 @@
-import Util    from 'util/util.jsx'
+import PGUtil    from 'util/util.jsx'
 
-const _util       = new Util();
+const _util       = new PGUtil();
 
 class Status{
     // get status list
