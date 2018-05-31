@@ -21,6 +21,55 @@ class BasicTable extends React.Component {
                 name: 'Jason Maurer',
                 age: 23,
             }
+        },{
+            name: 'Tanner Linsley',
+            age: 26,
+            friend: {
+                name: 'Jason Maurer',
+                age: 23,
+            }
+        },{
+            name: 'Tanner Linsley',
+            age: 26,
+            friend: {
+                name: 'Jason Maurer',
+                age: 23,
+            }
+        },{
+            name: 'Tanner Linsley',
+            age: 26,
+            friend: {
+                name: 'Jason Maurer',
+                age: 23,
+            }
+        },{
+            name: 'Tanner Linsley',
+            age: 26,
+            friend: {
+                name: 'Jason Maurer',
+                age: 23,
+            }
+        },{
+            name: 'Tanner Linsley',
+            age: 26,
+            friend: {
+                name: 'Jason Maurer',
+                age: 23,
+            }
+        },{
+            name: 'Tanner Linsley',
+            age: 26,
+            friend: {
+                name: 'Jason Maurer',
+                age: 23,
+            }
+        },{
+            name: 'Tanner Linsley',
+            age: 26,
+            friend: {
+                name: 'Jason Maurer',
+                age: 23,
+            }
         }]
 
         const columns = [{
@@ -39,7 +88,7 @@ class BasicTable extends React.Component {
                 accessor: 'friend.age'
             }]
         return (
-            <ReactTable className="ReactTable" data = {data} columns = {columns}/>
+            <ReactTable className="ReactTable -striped -highlight" data = {data} columns = {columns}/>
         );
 
     }
