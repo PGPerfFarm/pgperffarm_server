@@ -249,12 +249,12 @@ class PgBench(object):
                         r.update({'run': i})
                         results[tag][scale][clients]['results'].append(r)
 
-                    tps = []
-                    for result in results[tag][scale][clients]['results']:
-                        tps.append(float(result['tps']))
-                    results[tag][scale][clients]['metric'] = mean(tps)
-                    results[tag][scale][clients]['median'] = median(tps)
-                    results[tag][scale][clients]['std'] = std(tps)
+                        tps = []
+                        for result in results[tag][scale][clients]['results']:
+                            tps.append(float(result['tps']))
+                        results[tag][scale][clients]['metric'] = mean(tps)
+                        results[tag][scale][clients]['median'] = median(tps)
+                        results[tag][scale][clients]['std'] = std(tps)
 
         self._results['pgbench'] = results
         return self._results
