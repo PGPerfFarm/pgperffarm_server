@@ -1,6 +1,6 @@
 import React from 'react';
 import './index.css';
-
+import TestResultCard from 'component/test-result-card/index.jsx';
 class DetailInfo extends React.Component{
     constructor(props) {
         super(props);
@@ -242,16 +242,37 @@ class DetailInfo extends React.Component{
     }
     render(){
         return (
-            <div id="page-wrapper" className="jumbotron">
-                <h1>DetailInfo, world!</h1>
-                <p>
-                    The PostgreSQL Performance Farm project is a community project to collect performance data from tests as code changes are made to PostgreSQL. To support this effort, a database needs to be created for storing results, and a Web site developed to review results.
-                    This project will focus on developing the Web site on top of the database.
-                    The database will be using PostgreSQL in the back-end. Test results will come in the form of JSON and flat files. The Web application will be developed using the Django Web framework.
-                </p>
-                <p>
-                    As an example, the PostgreSQL Build Farm site is a central repository for the results of testing source code changes for PostgreSQL as they occur, on a wide variety of platforms.
-                </p>
+            <div>
+                <TestResultCard></TestResultCard>
+                {/*<div className="ui card">*/}
+                    {/*<div class="content">*/}
+                        {/*<div class="header">Project Timeline</div>*/}
+                    {/*</div>*/}
+                    {/*<div class="content">*/}
+                        {/*<h4 class="ui sub header">活动</h4>*/}
+                        {/*<div class="ui small feed">*/}
+                            {/*<div class="event">*/}
+                                {/*<div class="content">*/}
+                                    {/*<div class="summary"><a>Elliot Fu</a> added <a>Jenny Hess</a> to the project </div>*/}
+                                {/*</div>*/}
+                            {/*</div>*/}
+                            {/*<div class="event">*/}
+                                {/*<div class="content">*/}
+                                    {/*<div class="summary"><a>Stevie Feliciano</a> was added as an <a>Administrator</a> </div>*/}
+                                {/*</div>*/}
+                            {/*</div>*/}
+                            {/*<div class="event">*/}
+                                {/*<div class="content">*/}
+                                    {/*<div class="summary"><a>Helen Troy</a> added two pictures </div>*/}
+                                {/*</div>*/}
+                            {/*</div>*/}
+                        {/*</div>*/}
+                    {/*</div>*/}
+                    {/*<div class="extra content">*/}
+                        {/*<button class="ui button">Join Project</button>*/}
+                    {/*</div>*/}
+                {/*</div>*/}
+
             </div>
         )
     }
