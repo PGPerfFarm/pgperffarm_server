@@ -404,7 +404,7 @@ FROM pg_stat_bgwriter;"
     </Query>
 	<Database %(database)s>
 		Host "localhost"
-		User "postgres"
+		User "%(pguser)s"
 		Query db_stats
 		Query table_stats
 		Query index_stats

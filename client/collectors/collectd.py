@@ -49,7 +49,8 @@ class CollectdCollector(object):
         config = open(COLLECTD_CONFIG, 'w')
         config.write(config_template.read() % {'database': dbname,
                                                'datadir': outdir,
-                                               'modules': modules})
+                                               'modules': modules,
+                                               'pguser': self._env['USER']})
         config.close()
         config_template.close()
 
