@@ -1,0 +1,11 @@
+.ReactTable .rt-th{
+    background-color: #ffffff;
+}
+
+.ReactTable .-pagination{
+    background-color: #ffffff;
+}
+
+.ReactTable .rt-tr-group:nth-child(2n) {
+    background-color: #ffffff;
+}

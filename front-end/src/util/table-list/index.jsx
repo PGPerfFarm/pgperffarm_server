@@ -41,7 +41,7 @@ class TableList extends React.Component {
         return (
             <div className="row">
                 <div className="col-md-12">
-                    <table className="table table-striped table-bordered">
+                    <table className="table table-striped table-hover table-condensed">
                         <thead>
                         <tr>
                             {tableHeader}
@@ -49,6 +49,7 @@ class TableList extends React.Component {
                         </thead>
                         <tbody>
                         {tableBody}
+
                         </tbody>
                     </table>
                 </div>

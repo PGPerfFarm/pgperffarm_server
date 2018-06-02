@@ -16,11 +16,18 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.views.generic.base import RedirectView
 
+from rest_framework.documentation import include_docs_urls
+
+from test_records.views import TestRecordListView
+# from test_records.view_base import TestListView
 urlpatterns = [
     # url(r'^admin/', admin.site.urls),
     url(r'^api-auth/', include('rest_framework.urls')),
 
+    url(r'status/$', TestRecordListView.as_view(), name='test-list'),
+    # url(r'status/$', TestListView.as_view(), name='test-list'),
 
+    url(r'docs/', include_docs_urls(title='pgperffarm')),
     # Static pages
     # url(r'^$', 'pgperffarm.views.index', name='index'),
     # url(r'^/licence$', 'pgperffarm.views.licence', name='licence'),
