@@ -25,9 +25,11 @@ class TestResultCard extends React.Component {
             'She enjoys the outdoors and currently resides in upstate New York.',
         ].join(' ');
         return (
-            <div>
-                <Card>
-                    <Card.Content header='About Amy'/>
+            <div >
+                <Card fluid>
+                    <Card.Content header='Abouwwt Amy'/>
+                    <Card.Content description={description}/>
+                    <Card.Content description={description}/>
                     <Card.Content description={description}/>
                     <Card.Content extra>
                         <Icon name='user'/>
