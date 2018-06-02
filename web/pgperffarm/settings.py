@@ -3,7 +3,7 @@ import os
 import sys
 
 # Load local settings overrides
-from settings_local import *
+from .settings_local import *
 
 """
 Django settings for pgperfarm project.
@@ -46,7 +46,7 @@ INSTALLED_APPS = (
     'django_gravatar',
     'rest_framework',
     'users',
-    'test',
+    'test_records',
     'user_operation'
 )
 
