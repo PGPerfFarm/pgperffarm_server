@@ -1,10 +1,42 @@
 from rest_framework import serializers
-from .models import TestRecord
+from test_records.models import TestRecord, PGInfo, LinuxInfo ,MetaInfo
+
+class PGInfoSerializer(serializers.ModelSerializer):
+
+    '''
+    use ModelSerializer
+    '''
+    class Meta:
+        model = PGInfo
+        fields = "__all__"
+
+class LinuxInfoSerializer(serializers.ModelSerializer):
+    '''
+    use ModelSerializer
+    '''
+
+    class Meta:
+        model = LinuxInfo
+        fields = "__all__"
+
+class MetaInfoSerializer(serializers.ModelSerializer):
+
+    '''
+    use ModelSerializer
+    '''
+    class Meta:
+        model = MetaInfo
+        fields = "__all__"
+
 class TestRecordSerializer(serializers.ModelSerializer):
 
     '''
     use ModelSerializer
     '''
+    pg_info =PGInfoSerializer()
+    linux_info = LinuxInfoSerializer()
+    meta_info = MetaInfoSerializer()
+
     class Meta:
         model = TestRecord
         fields = "__all__"
