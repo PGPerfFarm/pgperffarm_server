@@ -24,6 +24,7 @@ class TestRecordListViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, view
     queryset = TestRecord.objects.all()
     serializer_class = TestRecordSerializer
     pagination_class = StandardResultsSetPagination
+    # authentication_classes = None
     # def get(self, request, *args, **kwargs):
     #     return self.list(request, *args, **kwargs)
 

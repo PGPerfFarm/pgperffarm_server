@@ -28,7 +28,7 @@ from test_records.views import TestRecordListViewSet
 #     'post': 'create'
 # })
 router = DefaultRouter()
-router.register(r'status', views.TestRecordListViewSet)
+router.register(r'status', TestRecordListViewSet)
 
 urlpatterns = [
     # url(r'^admin/', admin.site.urls),
