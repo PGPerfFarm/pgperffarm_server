@@ -13,18 +13,29 @@ Including another URLconf
     1. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import include, url
+from rest_framework.authtoken import views
 from django.contrib import admin
 from django.views.generic.base import RedirectView
 
 from rest_framework.documentation import include_docs_urls
-
-from test_records.views import TestRecordListView
+from rest_framework.routers import DefaultRouter
+from test_records.views import TestRecordListViewSet
 # from test_records.view_base import TestListView
+
+# config test record url
+# test_record_list = TestRecordListViewSet.as_view({
+#     'get': 'list',
+#     'post': 'create'
+# })
+router = DefaultRouter()
+router.register(r'status', views.TestRecordListViewSet)
+
 urlpatterns = [
     # url(r'^admin/', admin.site.urls),
     url(r'^api-auth/', include('rest_framework.urls')),
-
-    url(r'status/$', TestRecordListView.as_view(), name='test-list'),
+    url(r'^api-token-auth/', views.obtain_auth_token),
+    url(r'^', include(router.urls)),
+    # url(r'status/$', test_record_list, name='test-list'),
     # url(r'status/$', TestListView.as_view(), name='test-list'),
 
     url(r'docs/', include_docs_urls(title='pgperffarm')),

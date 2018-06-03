@@ -45,6 +45,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django_gravatar',
     'rest_framework',
+    'rest_framework.authtoken',
     'users',
     'test_records',
     'user_operation'
@@ -122,17 +123,14 @@ AUTH_USER_MODEL = 'users.UserProfile'
 REST_FRAMEWORK = {
 
     'DEFAULT_PERMISSION_CLASSES': (
-
         'rest_framework.permissions.IsAuthenticated',
-
     ),
 
     'DEFAULT_AUTHENTICATION_CLASSES': (
-
         'rest_framework.authentication.TokenAuthentication',
-
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
     ),
 
-    'PAGINATE_BY': 10
-
+    'PAGE_SIZE': 20
 }
