@@ -17,9 +17,9 @@ class StandardResultsSetPagination(PageNumberPagination):
     page_size_query_param = 'page_size'
     max_page_size = 100
 
-class TestRecordListViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet):
+class TestRecordListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     """
-    List all records in status page, or create a new record.
+    List test records
     """
     queryset = TestRecord.objects.all()
     serializer_class = TestRecordSerializer
@@ -28,8 +28,8 @@ class TestRecordListViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, view
     # def get(self, request, *args, **kwargs):
     #     return self.list(request, *args, **kwargs)
 
-    def post(self, request, *args, **kwargs):
-        return self.create(request, *args, **kwargs)
+    # def post(self, request, *args, **kwargs):
+    #     return self.create(request, *args, **kwargs)
     # def get(self, request, format=None):
     #     testRecords = TestRecord.objects.all()
     #     records_serializer = TestRecordSerializer(testRecords, many=True)
@@ -41,3 +41,11 @@ class TestRecordListViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, view
     #         serializer.save()
     #         return Response(serializer.data, status=status.HTTP_201_CREATED)
     #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class TestRecordDetailViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    """
+    List test records
+    """
+    queryset = TestRecord.objects.all(Q)
+    serializer_class = TestRecordSerializer
+    pagination_class = StandardResultsSetPagination

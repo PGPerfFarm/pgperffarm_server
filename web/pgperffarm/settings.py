@@ -134,3 +134,10 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 20
 }
+
+DB_ENUM = {
+    "mode":{
+        "simple":1,
+        "other":2
+    }
+}
