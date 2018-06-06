@@ -141,3 +141,5 @@ DB_ENUM = {
         "other":2
     }
 }
+
+APPEND_SLAS = False

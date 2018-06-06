@@ -19,7 +19,8 @@ from django.views.generic.base import RedirectView
 
 from rest_framework.documentation import include_docs_urls
 from rest_framework.routers import DefaultRouter
-from test_records.views import TestRecordListViewSet
+from test_records.views import TestRecordListViewSet,TestRecordCreate
+from test_records.auth import MachineAuthToken
 # from test_records.view_base import TestListView
 
 # config test record url
@@ -34,10 +35,12 @@ urlpatterns = [
     # url(r'^admin/', admin.site.urls),
     url(r'^api-auth/', include('rest_framework.urls')),
     url(r'^api-token-auth/', views.obtain_auth_token),
+    url(r'^machine-token-auth/', MachineAuthToken.as_view()),
     url(r'^', include(router.urls)),
     # url(r'status/$', test_record_list, name='test-list'),
     # url(r'status/$', TestListView.as_view(), name='test-list'),
 
+    url(r'upload/$', TestRecordCreate, name='test-upload'),
     url(r'docs/', include_docs_urls(title='pgperffarm')),
     # Static pages
     # url(r'^$', 'pgperffarm.views.index', name='index'),
