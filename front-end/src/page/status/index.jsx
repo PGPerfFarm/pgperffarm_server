@@ -5,36 +5,61 @@ import Pagination from 'util/pagination/index.jsx';
 import RateBar from 'util/rate-bar/index.jsx';
 import TableList    from 'util/table-list/index.jsx';
 import BasicTable    from 'util/basic-table/index.jsx';
+import Record      from 'service/record-service.jsx'
+import PGUtil        from 'util/util.jsx'
+
+const _util           = new PGUtil();
+const _record = new Record();
 class Status extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             isLoading: false,
             currentPage: 3,
-            std: 150000,
-            curMark1: 243732,
-            curMark2: 143733,
-            curMark3: 43732,
-            curMark4: 3732,
-            curMark5: 32,
-            isLoading: false,
+            filter: {},
             list: [
-                {
-                    'alias': 'a_name',
-                    'email': 'a_name@mail.com',
-                    'clients': [2,3,4],
-                    'mark': [140000,1,1],
-                }, {
-                    'alias': 'b_name',
-                    'email': 'b_name@mail.com',
-                    'clients': '4',
-                    'mark': 150000
-                }
+                // {
+                //     'alias': 'a_name',
+                //     'email': 'a_name@mail.com',
+                //     'clients': [2,3,4],
+                //     'mark': [140000,1,1],
+                // }, {
+                //     'alias': 'b_name',
+                //     'email': 'b_name@mail.com',
+                //     'clients': '4',
+                //     'mark': 150000
+                // }
             ]
 
-        }
+        },
         this.onPageChange = this.onPageChange.bind(this);
         this.handleIsLoading = this.handleIsLoading.bind(this);
+    }
+
+    componentDidMount() {
+        this.loadRecordList();
+    }
+
+    // load record list
+    loadRecordList() {
+        let listParam = {};
+        listParam.filter = this.state.filter;
+        // listParam.pageNum = this.state.pageNum;
+
+        _record.getRecordList(listParam).then(res => {
+            console.log('res is:'+ res)
+            this.setState({
+                list: res.result
+            });
+        }, errMsg => {
+            this.setState({
+                list: []
+            });
+            _util.errorTips(errMsg);
+            console.log(errMsg)
+        });
+
+        console.log(this.state.list)
     }
 
     onPageChange(page) {
@@ -75,7 +100,7 @@ class Status extends React.Component {
                     <td>
                         <div>
                             <p>..</p>
-                            <RateBar style={{float: 'right', zIndex: 999}} std={this.state.std} curMark={this.state.curMark2}/>
+                            {/*<RateBar style={{float: 'right', zIndex: 999}} std={this.state.std} curMark={this.state.curMark2}/>*/}
                         </div>
                         {/*<div style={{float: 'left'}}> <p>{machine.mark}</p></div>*/}
                     </td>
@@ -101,7 +126,7 @@ class Status extends React.Component {
                 </TableList>
                 {/*<BasicTable></BasicTable>*/}
                 <Pagination style={style} onChange={this.onPageChange} current={this.state.currentPage} total={25}/>
-                <RateBar std={this.state.std} curMark={this.state.curMark1}/>
+                {/*<RateBar std={this.state.std} curMark={this.state.curMark1}/>*/}
 
             </div>
         )

@@ -19,7 +19,7 @@ from django.views.generic.base import RedirectView
 
 from rest_framework.documentation import include_docs_urls
 from rest_framework.routers import DefaultRouter
-from test_records.views import TestRecordListViewSet,TestRecordCreate
+from test_records.views import TestRecordListViewSet, TestRecordDetailViewSet, TestRecordCreate
 from test_records.auth import MachineAuthToken
 # from test_records.view_base import TestListView
 
@@ -29,7 +29,10 @@ from test_records.auth import MachineAuthToken
 #     'post': 'create'
 # })
 router = DefaultRouter()
-router.register(r'status', TestRecordListViewSet)
+router.register(r'records', TestRecordListViewSet,base_name="records")
+router.register(r'detail', TestRecordDetailViewSet ,base_name="detail")
+
+# router.register(r'detail', TestRecordListViewSet)
 
 urlpatterns = [
     # url(r'^admin/', admin.site.urls),

@@ -1,5 +1,6 @@
+const BASE_URL = '127.0.0.1:8000'
 class PGUtil {
-    request() {
+    request(param) {
         return new Promise((resolve, reject) => {
             $.ajax({
                 type: param.type || 'get',

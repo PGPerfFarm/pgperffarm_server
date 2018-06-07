@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 from django.shortcuts import render
 from rest_framework.pagination import PageNumberPagination
 
-from .serializer import TestRecordSerializer
+from .serializer import TestRecordSerializer, TestRecordDetailSerializer
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -13,7 +13,6 @@ from rest_framework import status
 from rest_framework import generics
 from rest_framework import viewsets
 from .models import TestRecord
-
 
 class StandardResultsSetPagination(PageNumberPagination):
     page_size = 10
@@ -47,12 +46,12 @@ class TestRecordListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class TestRecordDetailViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+class TestRecordDetailViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     """
     List test records
     """
     queryset = TestRecord.objects.all()
-    serializer_class = TestRecordSerializer
+    serializer_class = TestRecordDetailSerializer
     pagination_class = StandardResultsSetPagination
 
 
