@@ -27,24 +27,6 @@ class TestRecordListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = TestRecord.objects.all()
     serializer_class = TestRecordSerializer
     pagination_class = StandardResultsSetPagination
-    # authentication_classes = None
-    # def get(self, request, *args, **kwargs):
-    #     return self.list(request, *args, **kwargs)
-
-    # def post(self, request, *args, **kwargs):
-    #     return self.create(request, *args, **kwargs)
-    # def get(self, request, format=None):
-    #     testRecords = TestRecord.objects.all()
-    #     records_serializer = TestRecordSerializer(testRecords, many=True)
-    #     return Response(records_serializer.data)
-    #
-    # def post(self, request, format=None):
-    #     serializer = TestRecordSerializer(data=request.data)
-    #     if serializer.is_valid():
-    #         serializer.save()
-    #         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class TestRecordDetailViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     """
