@@ -124,7 +124,6 @@ class Status extends React.Component {
 
                     </td>
                     <td>
-                        1111
                         {/*<th rowspan="3"></th>*/}
                         {/*<th rowspan="3">1-2</th>*/}
                         {/*<th rowspan="2">1-3</th>*/}
@@ -165,8 +164,9 @@ class Status extends React.Component {
                 <TableList tableHeads={['alias', 'System', 'ro', 'rw', 'date']}>
                     {listBody}
                 </TableList>
-                {/*<BasicTable></BasicTable>*/}
-                <Pagination style={style} onChange={this.onPageChange} current={this.state.currentPage} total={25}/>
+                {/*<Pagination style={style} onChange={this.onPageChange} current={this.state.currentPage} total={25}/>*/}
+
+                <BasicTable list={this.state.list}></BasicTable>
                 {/*<RateBar std={this.state.std} curMark={this.state.curMark1}/>*/}
 
             </div>
