@@ -65,9 +65,6 @@ class MetaInfo(models.Model):
         verbose_name = "meta info"
         verbose_name_plural = "meta info"
 
-    def __str__(self):
-        return self.pg_branch
-
 class LinuxInfo(models.Model):
     """
     linux info
@@ -103,8 +100,18 @@ class TestRecord(models.Model):
         verbose_name = "tests"
         verbose_name_plural = "tests"
 
-    def __str__(self):
-        return self.test_name
+class TestDataSet(models.Model):
+
+    test_record_id = models.ForeignKey(TestRecord, verbose_name="test record id", help_text="test record id")
+    clients = models.IntegerField(verbose_name="clients", help_text="clients of the test dataset")
+    scale = models.IntegerField(verbose_name="scale", help_text="scale of the test dataset")
+    std = models.DecimalField(max_digits=16, decimal_places=6, verbose_name="std",help_text="std of the test dataset")
+    metric = models.DecimalField(max_digits=16, decimal_places=6, verbose_name="metric",help_text="metric of the test dataset")
+    median = models.DecimalField(max_digits=16, decimal_places=6, verbose_name="median",help_text="median of the test dataset")
+    add_time = models.DateTimeField(default=datetime.now, verbose_name="test dataset time")
+    class Meta:
+        verbose_name = "test dataset"
+        verbose_name_plural = "test dataset"
 
 class TestResult(models.Model):
     """
@@ -124,7 +131,7 @@ class TestResult(models.Model):
 
     """
 
-    test_record_id = models.ForeignKey(TestRecord, verbose_name="test item", help_text="test item")
+    test_dataset_id = models.ForeignKey(TestDataSet, verbose_name="test dataset id", help_text="test dataset id")
     test_cate = models.ForeignKey(TestCategory, verbose_name="test category", help_text="test category")
     latency = models.IntegerField(verbose_name="latency", help_text="latency of the test result")
     scale = models.IntegerField(verbose_name="scale", help_text="scale of the test result")
