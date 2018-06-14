@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from test_records.models import TestRecord, TestResult, PGInfo, LinuxInfo ,MetaInfo
+from test_records.models import TestRecord, TestResult, PGInfo, LinuxInfo ,MetaInfo, TestDataSet
 from users.serializer import UserMachineSerializer
 from users.models import UserMachine
 from django.db.models import Q
@@ -52,6 +52,15 @@ class CreateTestRecordSerializer(serializers.ModelSerializer):
         model = TestRecord
         fields = "__all__"
 
+class CreateTestDateSetSerializer(serializers.ModelSerializer):
+
+    '''
+    create TestDateSetSerializer
+    '''
+
+    class Meta:
+        model = TestDataSet
+        fields = "__all__"
 
 class TestRecordSerializer(serializers.ModelSerializer):
 

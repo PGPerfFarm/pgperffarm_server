@@ -6,7 +6,7 @@ from rest_framework.pagination import PageNumberPagination
 
 from models import UserMachine
 from .serializer import TestRecordSerializer, TestRecordDetailSerializer, LinuxInfoSerializer, MetaInfoSerializer, \
-    PGInfoSerializer, CreateTestRecordSerializer
+    PGInfoSerializer, CreateTestRecordSerializer, CreateTestDateSetSerializer
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -62,21 +62,24 @@ def TestRecordCreate(request, format=None):
 
     linux_data = json_data['linux']
     linuxInfo = LinuxInfoSerializer(data=linux_data)
-    linuxInfo.is_valid()
-    linuxInfoRet = linuxInfo.save()
+    linuxInfoRet = None
+    if linuxInfo.is_valid():
+        linuxInfoRet = linuxInfo.save()
 
     meta_data = json_data['meta']
     metaInfo = MetaInfoSerializer(data=meta_data)
-    metaInfo.is_valid()
-    metaInfoRet = metaInfo.save()
+    metaInfoRet = None
+    if metaInfo.is_valid():
+        metaInfoRet = metaInfo.save()
 
     # pg_data = json_data['postgres']
     pg_data = {
         'pg_branch':1
     }
     pgInfo = PGInfoSerializer(data=pg_data)
-    pgInfo.is_valid()
-    pgInfoRet = pgInfo.save()
+    pgInfoRet = None
+    if pgInfo.is_valid():
+        pgInfoRet = pgInfo.save()
 
     test_record_data = {
         'pg_info': pgInfoRet.id,
@@ -86,14 +89,33 @@ def TestRecordCreate(request, format=None):
         'test_desc': 'here is desc'
     }
     testRecord = CreateTestRecordSerializer(data=test_record_data)
-    testRecord.is_valid()
-    print testRecord.is_valid()
-    print testRecord
-    testRecord.save()
+    testRecordRet = None
+    if testRecord.is_valid():
+        testRecordRet = testRecord.save()
 
-    # ro = json_data['pgbench']['ro']
+    ro = json_data['pgbench']['ro']
     # print(type(ro))
-    # for scale, v in ro.iteritems():
-    #     print "ro[%s]=" % scale, v
+    for scale, dataset_list in ro.iteritems():
+        print "ro[%s]=" % scale, dataset_list
+        for client_num, dataset in dataset_list.iteritems():
+            print dataset['std']
+            test_dataset_data = {
+                'test_record_id': testRecordRet.id,
+                'clients': client_num,
+                'scale': scale,
+                'std': dataset['std'],
+                'metric': dataset['metric'],
+                'median': dataset['median']
+                # todo status,percentage
+            }
+            testDateSet = CreateTestDateSetSerializer(data=test_dataset_data)
+            testDateSetRet = None
+            if testDateSet.is_valid():
+                print 'dataset valid'
+                testDateSetRet = testDateSet.save()
+            else:
+                print testDateSet
+
+
     msg = 'upload ok'
     return Response(msg, status=status.HTTP_200_OK)
