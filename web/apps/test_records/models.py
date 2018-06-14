@@ -109,6 +109,14 @@ class TestDataSet(models.Model):
     metric = models.DecimalField(max_digits=16, decimal_places=6, verbose_name="metric",help_text="metric of the test dataset")
     median = models.DecimalField(max_digits=16, decimal_places=6, verbose_name="median",help_text="median of the test dataset")
     add_time = models.DateTimeField(default=datetime.now, verbose_name="test dataset time")
+    STATUS_CHOICE = (
+        ('-1', 'none'),
+        ('1', 'improved'),
+        ('2', 'quo'),
+        ('3', 'regressive'),
+    )
+    status = models.IntegerField(choices=STATUS_CHOICE, verbose_name="status", help_text="status of this dataset")
+    percentage = models.DecimalField(max_digits=8, decimal_places=4, verbose_name="percentage",help_text="percentage compared to previous dataset")
     class Meta:
         verbose_name = "test dataset"
         verbose_name_plural = "test dataset"

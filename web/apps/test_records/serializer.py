@@ -39,6 +39,20 @@ class TestResultSerializer(serializers.ModelSerializer):
         model = TestResult
         fields = "__all__"
 
+class CreateTestRecordSerializer(serializers.ModelSerializer):
+
+    '''
+    create ModelSerializer
+    '''
+    # pg_info =PGInfoSerializer()
+    # linux_info = LinuxInfoSerializer()
+    # meta_info = MetaInfoSerializer()
+
+    class Meta:
+        model = TestRecord
+        fields = "__all__"
+
+
 class TestRecordSerializer(serializers.ModelSerializer):
 
     '''
