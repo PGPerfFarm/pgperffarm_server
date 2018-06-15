@@ -4,14 +4,16 @@ import os
 # Use django's model independently
 pwd = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(pwd+ "../")
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "PerfFarm.settings")
+path = 'D:\GitSpace\pgperffarm\web\pgperffarm'
+sys.path.append(path)
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
 
 # Initialize django
 import django
 django.setup()
 
-from apps.users.models import UserProfile
-from db_tools.data.user_date import row_data
+from users.models import UserProfile
+from data.user_data import row_data
 from django.contrib.auth.hashers import make_password
 
 for user_deatil in row_data:

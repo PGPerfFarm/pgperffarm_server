@@ -1,5 +1,5 @@
 from datetime import datetime
-
+from django.utils import timezone
 from django.db import models
 
 # Create your models here.
@@ -11,7 +11,7 @@ class TestBranch(models.Model):
     test brand
     """
     branch_name = models.CharField(max_length=128, verbose_name="branch name", help_text="branch name")
-    add_time = models.DateTimeField(default=datetime.now, verbose_name="branch added time",
+    add_time = models.DateTimeField(default=timezone.now, verbose_name="branch added time",
                                     help_text="branch added time")
 
     class Meta:
@@ -27,9 +27,10 @@ class TestCategory(models.Model):
     tests category
     """
     cate_name = models.CharField(max_length=64, verbose_name="cate name", help_text="cate name")
+    cate_sn = models.CharField(max_length=32, unique=True, verbose_name="cate sn", help_text="cate sn")
     # cate_parent = models.ForeignKey("self", verbose_name="parent category", related_name="sub_cat", help_text="parent category")
     cate_order = models.IntegerField(verbose_name="cate order", help_text="order in the current level")
-    add_time = models.DateTimeField(default=datetime.now, verbose_name="add time", help_text="category added time")
+    add_time = models.DateTimeField(default=timezone.now, verbose_name="add time", help_text="category added time")
 
     class Meta:
         verbose_name = "tests category"
@@ -65,9 +66,6 @@ class MetaInfo(models.Model):
         verbose_name = "meta info"
         verbose_name_plural = "meta info"
 
-    def __str__(self):
-        return self.pg_branch
-
 class LinuxInfo(models.Model):
     """
     linux info
@@ -96,15 +94,37 @@ class TestRecord(models.Model):
 
     test_desc = models.TextField(verbose_name="test desc", help_text="test desc")
     # test_branch_id = models.ForeignKey(TestBranch, verbose_name="test category", help_text="test category")
-
-    add_time = models.DateTimeField(default=datetime.now, verbose_name="test added time")
+    meta_time = models.DateTimeField(default=timezone.now, verbose_name="meta time")
+    add_time = models.DateTimeField(default=timezone.now, verbose_name="test added time")
 
     class Meta:
         verbose_name = "tests"
         verbose_name_plural = "tests"
 
-    def __str__(self):
-        return self.test_name
+class TestDataSet(models.Model):
+
+
+    test_record = models.ForeignKey(TestRecord, verbose_name="test record id", help_text="test record id")
+    test_cate = models.ForeignKey(TestCategory, verbose_name="test cate id", help_text="test cate id")
+    clients = models.IntegerField(verbose_name="clients", help_text="clients of the test dataset")
+    scale = models.IntegerField(verbose_name="scale", help_text="scale of the test dataset")
+    std = models.DecimalField(max_digits=18, decimal_places=8, verbose_name="std",help_text="std of the test dataset")
+    metric = models.DecimalField(max_digits=18, decimal_places=8, verbose_name="metric",help_text="metric of the test dataset")
+    median = models.DecimalField(max_digits=18, decimal_places=8, verbose_name="median",help_text="median of the test dataset")
+
+    STATUS_CHOICE = (
+        (-1, 'none'),
+        (1, 'improved'),
+        (2, 'quo'),
+        (3, 'regressive'),
+    )
+    status = models.IntegerField(choices=STATUS_CHOICE, verbose_name="status", help_text="status of this dataset")
+    percentage = models.DecimalField(max_digits=8, decimal_places=4, verbose_name="percentage",help_text="percentage compared to previous dataset")
+    add_time = models.DateTimeField(default=timezone.now, verbose_name="test dataset time")
+
+    class Meta:
+        verbose_name = "test dataset"
+        verbose_name_plural = "test dataset"
 
 class TestResult(models.Model):
     """
@@ -124,7 +144,7 @@ class TestResult(models.Model):
 
     """
 
-    test_record_id = models.ForeignKey(TestRecord, verbose_name="test item", help_text="test item")
+    test_dataset_id = models.ForeignKey(TestDataSet, verbose_name="test dataset id", help_text="test dataset id")
     test_cate = models.ForeignKey(TestCategory, verbose_name="test category", help_text="test category")
     latency = models.IntegerField(verbose_name="latency", help_text="latency of the test result")
     scale = models.IntegerField(verbose_name="scale", help_text="scale of the test result")
@@ -140,7 +160,7 @@ class TestResult(models.Model):
         ('1', 'simple'),
     )
     mode = models.IntegerField(choices=MODE_CHOICE, verbose_name="mode", help_text="test mode")
-    add_time = models.DateTimeField(default=datetime.now, verbose_name="test result added time")
+    add_time = models.DateTimeField(default=timezone.now, verbose_name="test result added time")
 
     class Meta:
         verbose_name = "test result"

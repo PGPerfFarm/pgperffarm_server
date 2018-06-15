@@ -3,7 +3,7 @@ import os
 import sys
 
 # Load local settings overrides
-from .settings_local import *
+from settings_local import *
 
 """
 Django settings for pgperfarm project.
@@ -49,7 +49,7 @@ INSTALLED_APPS = (
     'rest_framework.authtoken',
     'users',
     'test_records',
-    'user_operation'
+    'user_operation',
 )
 
 MIDDLEWARE_CLASSES = (

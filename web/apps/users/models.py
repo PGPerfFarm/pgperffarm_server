@@ -1,5 +1,5 @@
 from datetime import datetime
-
+from django.utils import timezone
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
@@ -24,6 +24,9 @@ class UserProfile(AbstractUser):
     def __str__(self):
         return self.user_name
 
+class Alias(models.Model):
+    name = models.CharField(max_length=32, verbose_name="alias name")
+    is_used = models.BooleanField(default=False,verbose_name="is_used")
 
 class UserMachine(models.Model):
     """
@@ -32,12 +35,12 @@ class UserMachine(models.Model):
     machine_sn = models.CharField(max_length=16, verbose_name="machine sn")
     machine_secret = models.CharField(max_length=32, verbose_name="machine secret")
     machine_owner = models.ForeignKey(UserProfile)
-    alias = models.CharField(max_length=16, verbose_name="alias")
+    alias = models.ForeignKey(Alias, verbose_name="alias", help_text="alias")
     os_name = models.CharField(max_length=32, verbose_name="operation system name")
     os_version = models.CharField(max_length=32, verbose_name="operation system version")
     comp_name = models.CharField(max_length=32, verbose_name="compiler name")
     comp_version = models.CharField(max_length=32, verbose_name="compiler version")
-    add_time = models.DateTimeField(default=datetime.now, verbose_name="machine added time")
+    add_time = models.DateTimeField(default=timezone.now, verbose_name="machine added time")
 
     class Meta:
         verbose_name = "user machines"

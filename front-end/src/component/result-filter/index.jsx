@@ -76,14 +76,9 @@ class ResultFilter extends React.Component {
             // selected: newArr,
             isClear: false
         });
-        this.handleIsLoading();
-
-        console.log(this.props.isLoading)
-    }
-
-    handleIsLoading(e) {
-        // console.log(e.target.value)
         this.props.onIsLoadingChange(true);
+        this.props.onApplyBtnClick(true);
+        console.log('isLoading:' + this.props.isLoading)
     }
 
     resetButtonClick() {

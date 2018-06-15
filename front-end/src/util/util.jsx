@@ -9,16 +9,18 @@ class PGUtil {
                 data: param.data || null,
                 success: res => {
                     // request success
-                    if (0 === res.status) {
-                        typeof resolve === 'function' && resolve(res.data, res.msg);
-                    }
-                    // nologin force to login
-                    else if (10 === res.status) {
-                        this.doLogin();
-                    }
-                    else {
-                        typeof reject === 'function' && reject(res.msg || res.data);
-                    }
+
+                    typeof resolve === 'function' && resolve(res, res.msg);
+                    // if (0 === res.status) {
+                    //     typeof resolve === 'function' && resolve(res.data, res.msg);
+                    // }
+                    // // nologin force to login
+                    // else if (10 === res.status) {
+                    //     this.doLogin();
+                    // }
+                    // else {
+                    //     typeof reject === 'function' && reject(res.msg || res.data);
+                    // }
                 },
                 error: err => {
                     typeof reject === 'function' && reject(err.statusText);

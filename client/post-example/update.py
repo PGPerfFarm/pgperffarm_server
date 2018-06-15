@@ -32,7 +32,7 @@ def http_post(url, data, token):
     print result  
 
 with open("./results.json",'r') as load_f:
-    load_dict = (json.load(load_f))
+    load_dict = (json.load(load_f, encoding="UTF-8"))
     http_post(url,load_dict,token)
 
 # for line in s:
