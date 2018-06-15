@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 from django.shortcuts import render
 from rest_framework.pagination import PageNumberPagination
 
-from models import UserMachine
+from models import UserMachine, TestCategory
 from .serializer import TestRecordSerializer, TestRecordDetailSerializer, LinuxInfoSerializer, MetaInfoSerializer, \
     PGInfoSerializer, CreateTestRecordSerializer, CreateTestDateSetSerializer
 from rest_framework.views import APIView
@@ -95,7 +95,8 @@ def TestRecordCreate(request, format=None):
         'linux_info': linuxInfoRet.id,
         'meta_info': metaInfoRet.id,
         'test_machine_id': 1,
-        'test_desc': 'here is desc'
+        'test_desc': 'here is desc',
+        'meta_time': metaInfoRet.date
     }
     testRecord = CreateTestRecordSerializer(data=test_record_data)
     testRecordRet = None
@@ -105,34 +106,41 @@ def TestRecordCreate(request, format=None):
         msg = 'testRecord save error'
         return Response(msg, status=status.HTTP_202_ACCEPTED)
 
-    ro = json_data['pgbench']['ro']
+    pgbench = json_data['pgbench']
     # print(type(ro))
-    for scale, dataset_list in ro.iteritems():
-        print "ro[%s]=" % scale, dataset_list
-        for client_num, dataset in dataset_list.iteritems():
-            print 'std is:'+ str(dataset['std'])
+    ro = pgbench['ro']
+    for tag, tag_list in pgbench.iteritems():
+        test_cate = TestCategory.objects.get(cate_sn=tag)
+        if not test_cate:
+            continue
+        else:
+            print test_cate.cate_name
+        for scale, dataset_list in tag_list.iteritems():
+            print "ro[%s]=" % scale, dataset_list
+            for client_num, dataset in dataset_list.iteritems():
+                print 'std is:'+ str(dataset['std'])
 
-            test_dataset_data = {
-                'test_record': testRecordRet.id,
-                'clients': client_num,
-                'scale': scale,
-                'std': dataset['std'],
-                'metric': dataset['metric'],
-                'median': dataset['median'],
-                'test_cate': 1,
-                # todo status,percentage
-                'status': 1,
-                'percentage': 0.062,
-            }
-            testDateSet = CreateTestDateSetSerializer(data=test_dataset_data)
-            testDateSetRet = None
-            if testDateSet.is_valid():
-                print 'dataset valid'
-                testDateSetRet = testDateSet.save()
-            else:
-                print(testDateSet.errors)
-                msg = 'testDateSet save error'
-                return Response(msg, status=status.HTTP_202_ACCEPTED)
+                test_dataset_data = {
+                    'test_record': testRecordRet.id,
+                    'clients': client_num,
+                    'scale': scale,
+                    'std': dataset['std'],
+                    'metric': dataset['metric'],
+                    'median': dataset['median'],
+                    'test_cate': test_cate.id,
+                    # status,percentage cal by tarr
+                    'status': -1,
+                    'percentage': 0.0,
+                }
+                testDateSet = CreateTestDateSetSerializer(data=test_dataset_data)
+                testDateSetRet = None
+                if testDateSet.is_valid():
+                    print 'dataset valid'
+                    testDateSetRet = testDateSet.save()
+                else:
+                    print(testDateSet.errors)
+                    msg = 'testDateSet save error'
+                    return Response(msg, status=status.HTTP_202_ACCEPTED)
 
 
 

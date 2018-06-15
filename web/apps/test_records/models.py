@@ -1,5 +1,5 @@
 from datetime import datetime
-
+from django.utils import timezone
 from django.db import models
 
 # Create your models here.
@@ -11,7 +11,7 @@ class TestBranch(models.Model):
     test brand
     """
     branch_name = models.CharField(max_length=128, verbose_name="branch name", help_text="branch name")
-    add_time = models.DateTimeField(default=datetime.now, verbose_name="branch added time",
+    add_time = models.DateTimeField(default=timezone.now, verbose_name="branch added time",
                                     help_text="branch added time")
 
     class Meta:
@@ -27,9 +27,10 @@ class TestCategory(models.Model):
     tests category
     """
     cate_name = models.CharField(max_length=64, verbose_name="cate name", help_text="cate name")
+    cate_sn = models.CharField(max_length=32, unique=True, verbose_name="cate sn", help_text="cate sn")
     # cate_parent = models.ForeignKey("self", verbose_name="parent category", related_name="sub_cat", help_text="parent category")
     cate_order = models.IntegerField(verbose_name="cate order", help_text="order in the current level")
-    add_time = models.DateTimeField(default=datetime.now, verbose_name="add time", help_text="category added time")
+    add_time = models.DateTimeField(default=timezone.now, verbose_name="add time", help_text="category added time")
 
     class Meta:
         verbose_name = "tests category"
@@ -93,8 +94,8 @@ class TestRecord(models.Model):
 
     test_desc = models.TextField(verbose_name="test desc", help_text="test desc")
     # test_branch_id = models.ForeignKey(TestBranch, verbose_name="test category", help_text="test category")
-
-    add_time = models.DateTimeField(default=datetime.now, verbose_name="test added time")
+    meta_time = models.DateTimeField(default=timezone.now, verbose_name="meta time")
+    add_time = models.DateTimeField(default=timezone.now, verbose_name="test added time")
 
     class Meta:
         verbose_name = "tests"
@@ -119,7 +120,7 @@ class TestDataSet(models.Model):
     )
     status = models.IntegerField(choices=STATUS_CHOICE, verbose_name="status", help_text="status of this dataset")
     percentage = models.DecimalField(max_digits=8, decimal_places=4, verbose_name="percentage",help_text="percentage compared to previous dataset")
-    add_time = models.DateTimeField(default=datetime.now, verbose_name="test dataset time")
+    add_time = models.DateTimeField(default=timezone.now, verbose_name="test dataset time")
 
     class Meta:
         verbose_name = "test dataset"
@@ -159,7 +160,7 @@ class TestResult(models.Model):
         ('1', 'simple'),
     )
     mode = models.IntegerField(choices=MODE_CHOICE, verbose_name="mode", help_text="test mode")
-    add_time = models.DateTimeField(default=datetime.now, verbose_name="test result added time")
+    add_time = models.DateTimeField(default=timezone.now, verbose_name="test result added time")
 
     class Meta:
         verbose_name = "test result"

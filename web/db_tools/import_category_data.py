@@ -20,5 +20,5 @@ for test_cate in row_data:
     cate = TestCategory()
     cate.cate_name = test_cate["cate_name"]
     cate.cate_order = test_cate["cate_order"]
-
+    cate.cate_sn = test_cate["cate_sn"]
     cate.save()
