@@ -113,16 +113,16 @@ def TestRecordCreate(request, format=None):
             print 'std is:'+ str(dataset['std'])
 
             test_dataset_data = {
-                'test_record_id': testRecordRet.id,
+                'test_record': testRecordRet.id,
                 'clients': client_num,
                 'scale': scale,
                 'std': dataset['std'],
                 'metric': dataset['metric'],
                 'median': dataset['median'],
+                'test_cate': 1,
                 # todo status,percentage
                 'status': 1,
                 'percentage': 0.062,
-                'test_cate_id': 1,
             }
             testDateSet = CreateTestDateSetSerializer(data=test_dataset_data)
             testDateSetRet = None

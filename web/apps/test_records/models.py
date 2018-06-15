@@ -107,9 +107,9 @@ class TestDataSet(models.Model):
     test_cate = models.ForeignKey(TestCategory, verbose_name="test cate id", help_text="test cate id")
     clients = models.IntegerField(verbose_name="clients", help_text="clients of the test dataset")
     scale = models.IntegerField(verbose_name="scale", help_text="scale of the test dataset")
-    std = models.DecimalField(max_digits=16, decimal_places=6, verbose_name="std",help_text="std of the test dataset")
-    metric = models.DecimalField(max_digits=16, decimal_places=6, verbose_name="metric",help_text="metric of the test dataset")
-    median = models.DecimalField(max_digits=16, decimal_places=6, verbose_name="median",help_text="median of the test dataset")
+    std = models.DecimalField(max_digits=18, decimal_places=8, verbose_name="std",help_text="std of the test dataset")
+    metric = models.DecimalField(max_digits=18, decimal_places=8, verbose_name="metric",help_text="metric of the test dataset")
+    median = models.DecimalField(max_digits=18, decimal_places=8, verbose_name="median",help_text="median of the test dataset")
 
     STATUS_CHOICE = (
         (-1, 'none'),
