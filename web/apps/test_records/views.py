@@ -65,12 +65,18 @@ def TestRecordCreate(request, format=None):
     linuxInfoRet = None
     if linuxInfo.is_valid():
         linuxInfoRet = linuxInfo.save()
+    else:
+        msg = 'linuxInfo save error'
+        return Response(msg, status=status.HTTP_202_ACCEPTED)
 
     meta_data = json_data['meta']
     metaInfo = MetaInfoSerializer(data=meta_data)
     metaInfoRet = None
     if metaInfo.is_valid():
         metaInfoRet = metaInfo.save()
+    else:
+        msg = 'metaInfo save error'
+        return Response(msg, status=status.HTTP_202_ACCEPTED)
 
     # pg_data = json_data['postgres']
     pg_data = {
@@ -80,6 +86,9 @@ def TestRecordCreate(request, format=None):
     pgInfoRet = None
     if pgInfo.is_valid():
         pgInfoRet = pgInfo.save()
+    else:
+        msg = 'pgInfo save error'
+        return Response(msg, status=status.HTTP_202_ACCEPTED)
 
     test_record_data = {
         'pg_info': pgInfoRet.id,
@@ -92,21 +101,28 @@ def TestRecordCreate(request, format=None):
     testRecordRet = None
     if testRecord.is_valid():
         testRecordRet = testRecord.save()
+    else:
+        msg = 'testRecord save error'
+        return Response(msg, status=status.HTTP_202_ACCEPTED)
 
     ro = json_data['pgbench']['ro']
     # print(type(ro))
     for scale, dataset_list in ro.iteritems():
         print "ro[%s]=" % scale, dataset_list
         for client_num, dataset in dataset_list.iteritems():
-            print dataset['std']
+            print 'std is:'+ str(dataset['std'])
+
             test_dataset_data = {
                 'test_record_id': testRecordRet.id,
                 'clients': client_num,
                 'scale': scale,
                 'std': dataset['std'],
                 'metric': dataset['metric'],
-                'median': dataset['median']
+                'median': dataset['median'],
                 # todo status,percentage
+                'status': 1,
+                'percentage': 0.062,
+                'test_cate_id': 1,
             }
             testDateSet = CreateTestDateSetSerializer(data=test_dataset_data)
             testDateSetRet = None
@@ -114,8 +130,12 @@ def TestRecordCreate(request, format=None):
                 print 'dataset valid'
                 testDateSetRet = testDateSet.save()
             else:
-                print testDateSet
+                print(testDateSet.errors)
+                msg = 'testDateSet save error'
+                return Response(msg, status=status.HTTP_202_ACCEPTED)
 
 
-    msg = 'upload ok'
-    return Response(msg, status=status.HTTP_200_OK)
+
+
+    msg = 'upload success'
+    return Response(msg, status=status.HTTP_201_CREATED)

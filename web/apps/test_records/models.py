@@ -102,7 +102,9 @@ class TestRecord(models.Model):
 
 class TestDataSet(models.Model):
 
-    test_record_id = models.ForeignKey(TestRecord, verbose_name="test record id", help_text="test record id")
+
+    test_record = models.ForeignKey(TestRecord, verbose_name="test record id", help_text="test record id")
+    test_cate = models.ForeignKey(TestCategory, verbose_name="test cate id", help_text="test cate id")
     clients = models.IntegerField(verbose_name="clients", help_text="clients of the test dataset")
     scale = models.IntegerField(verbose_name="scale", help_text="scale of the test dataset")
     std = models.DecimalField(max_digits=16, decimal_places=6, verbose_name="std",help_text="std of the test dataset")
@@ -110,10 +112,10 @@ class TestDataSet(models.Model):
     median = models.DecimalField(max_digits=16, decimal_places=6, verbose_name="median",help_text="median of the test dataset")
 
     STATUS_CHOICE = (
-        ('-1', 'none'),
-        ('1', 'improved'),
-        ('2', 'quo'),
-        ('3', 'regressive'),
+        (-1, 'none'),
+        (1, 'improved'),
+        (2, 'quo'),
+        (3, 'regressive'),
     )
     status = models.IntegerField(choices=STATUS_CHOICE, verbose_name="status", help_text="status of this dataset")
     percentage = models.DecimalField(max_digits=8, decimal_places=4, verbose_name="percentage",help_text="percentage compared to previous dataset")
