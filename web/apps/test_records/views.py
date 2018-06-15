@@ -6,7 +6,7 @@ from rest_framework.pagination import PageNumberPagination
 
 from models import UserMachine, TestCategory
 from .serializer import TestRecordSerializer, TestRecordDetailSerializer, LinuxInfoSerializer, MetaInfoSerializer, \
-    PGInfoSerializer, CreateTestRecordSerializer, CreateTestDateSetSerializer
+    PGInfoSerializer, CreateTestRecordSerializer, CreateTestDateSetSerializer, TestResultSerializer
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -142,7 +142,20 @@ def TestRecordCreate(request, format=None):
                     msg = 'testDateSet save error'
                     return Response(msg, status=status.HTTP_202_ACCEPTED)
 
+                test_result_list = dataset['results']
+                for test_result in test_result_list:
+                    test_result_data = test_result
+                    test_result_data['test_dataset_id'] = testDateSetRet.id
+                    testResult = TestResultSerializer(data=test_result_data)
 
+                    testResultRet = None
+                    if testResult.is_valid():
+                        print 'testResult valid'
+                        testResultRet = testDateSet.save()
+                    else:
+                        print(testResult.errors)
+                        msg = 'testResult save error'
+                        return Response(msg, status=status.HTTP_202_ACCEPTED)
 
 
     msg = 'upload success'
