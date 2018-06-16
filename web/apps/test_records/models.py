@@ -86,7 +86,7 @@ class TestRecord(models.Model):
     """
     tests
     """
-    test_machine_id = models.ForeignKey(UserMachine, verbose_name="test owner",
+    test_machine = models.ForeignKey(UserMachine, verbose_name="test owner",
                                         help_text="person who add this test item")
     pg_info = models.ForeignKey(PGInfo, verbose_name="pg info", help_text="pg info")
     meta_info = models.ForeignKey(MetaInfo, verbose_name="meta info", help_text="meta info")
@@ -144,8 +144,8 @@ class TestResult(models.Model):
 
     """
 
-    test_dataset_id = models.ForeignKey(TestDataSet, verbose_name="test dataset id", help_text="test dataset id")
-    test_cate = models.ForeignKey(TestCategory, verbose_name="test category", help_text="test category")
+    test_dataset = models.ForeignKey(TestDataSet, verbose_name="test dataset id", help_text="test dataset id")
+    # test_cate = models.ForeignKey(TestCategory, verbose_name="test category", help_text="test category")
     latency = models.IntegerField(verbose_name="latency", help_text="latency of the test result")
     scale = models.IntegerField(verbose_name="scale", help_text="scale of the test result")
     end = models.DecimalField(max_digits=16, decimal_places=6, verbose_name="end",
@@ -157,7 +157,7 @@ class TestResult(models.Model):
     threads = models.IntegerField(verbose_name="threads", help_text="threads of the test result")
 
     MODE_CHOICE = (
-        ('1', 'simple'),
+        (1, 'simple'),
     )
     mode = models.IntegerField(choices=MODE_CHOICE, verbose_name="mode", help_text="test mode")
     add_time = models.DateTimeField(default=timezone.now, verbose_name="test result added time")

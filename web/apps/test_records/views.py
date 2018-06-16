@@ -4,7 +4,9 @@ from __future__ import unicode_literals
 from django.shortcuts import render
 from rest_framework.pagination import PageNumberPagination
 
+from exception import TestDataUploadError
 from models import UserMachine, TestCategory
+from pgperffarm.settings import DB_ENUM
 from .serializer import TestRecordSerializer, TestRecordDetailSerializer, LinuxInfoSerializer, MetaInfoSerializer, \
     PGInfoSerializer, CreateTestRecordSerializer, CreateTestDateSetSerializer, TestResultSerializer
 from rest_framework.views import APIView
@@ -60,103 +62,115 @@ def TestRecordCreate(request, format=None):
     # obj = data[0].pgbench
     # jsLoads = json.loads(data[0])
 
-    linux_data = json_data['linux']
-    linuxInfo = LinuxInfoSerializer(data=linux_data)
-    linuxInfoRet = None
-    if linuxInfo.is_valid():
-        linuxInfoRet = linuxInfo.save()
-    else:
-        msg = 'linuxInfo save error'
-        return Response(msg, status=status.HTTP_202_ACCEPTED)
+    from django.db import transaction
 
-    meta_data = json_data['meta']
-    metaInfo = MetaInfoSerializer(data=meta_data)
-    metaInfoRet = None
-    if metaInfo.is_valid():
-        metaInfoRet = metaInfo.save()
-    else:
-        msg = 'metaInfo save error'
-        return Response(msg, status=status.HTTP_202_ACCEPTED)
+    try:
+        with transaction.atomic():
 
-    # pg_data = json_data['postgres']
-    pg_data = {
-        'pg_branch':1
-    }
-    pgInfo = PGInfoSerializer(data=pg_data)
-    pgInfoRet = None
-    if pgInfo.is_valid():
-        pgInfoRet = pgInfo.save()
-    else:
-        msg = 'pgInfo save error'
-        return Response(msg, status=status.HTTP_202_ACCEPTED)
+            linux_data = json_data['linux']
+            linuxInfo = LinuxInfoSerializer(data=linux_data)
+            linuxInfoRet = None
+            if linuxInfo.is_valid():
+                linuxInfoRet = linuxInfo.save()
+            else:
+                msg = 'linuxInfo invalid'
+                raise TestDataUploadError(msg)
 
-    test_record_data = {
-        'pg_info': pgInfoRet.id,
-        'linux_info': linuxInfoRet.id,
-        'meta_info': metaInfoRet.id,
-        'test_machine_id': 1,
-        'test_desc': 'here is desc',
-        'meta_time': metaInfoRet.date
-    }
-    testRecord = CreateTestRecordSerializer(data=test_record_data)
-    testRecordRet = None
-    if testRecord.is_valid():
-        testRecordRet = testRecord.save()
-    else:
-        msg = 'testRecord save error'
-        return Response(msg, status=status.HTTP_202_ACCEPTED)
+            meta_data = json_data['meta']
+            metaInfo = MetaInfoSerializer(data=meta_data)
+            metaInfoRet = None
+            if metaInfo.is_valid():
+                metaInfoRet = metaInfo.save()
+            else:
+                msg = 'metaInfo invalid'
+                raise TestDataUploadError(msg)
 
-    pgbench = json_data['pgbench']
-    # print(type(ro))
-    ro = pgbench['ro']
-    for tag, tag_list in pgbench.iteritems():
-        test_cate = TestCategory.objects.get(cate_sn=tag)
-        if not test_cate:
-            continue
-        else:
-            print test_cate.cate_name
-        for scale, dataset_list in tag_list.iteritems():
-            print "ro[%s]=" % scale, dataset_list
-            for client_num, dataset in dataset_list.iteritems():
-                print 'std is:'+ str(dataset['std'])
+            # pg_data = json_data['postgres']
+            pg_data = {
+                'pg_branch':1
+            }
+            pgInfo = PGInfoSerializer(data=pg_data)
+            pgInfoRet = None
+            if pgInfo.is_valid():
+                pgInfoRet = pgInfo.save()
+            else:
+                msg = 'pgInfo invalid'
+                raise TestDataUploadError(msg)
 
-                test_dataset_data = {
-                    'test_record': testRecordRet.id,
-                    'clients': client_num,
-                    'scale': scale,
-                    'std': dataset['std'],
-                    'metric': dataset['metric'],
-                    'median': dataset['median'],
-                    'test_cate': test_cate.id,
-                    # status,percentage cal by tarr
-                    'status': -1,
-                    'percentage': 0.0,
-                }
-                testDateSet = CreateTestDateSetSerializer(data=test_dataset_data)
-                testDateSetRet = None
-                if testDateSet.is_valid():
-                    print 'dataset valid'
-                    testDateSetRet = testDateSet.save()
+            test_record_data = {
+                'pg_info': pgInfoRet.id,
+                'linux_info': linuxInfoRet.id,
+                'meta_info': metaInfoRet.id,
+                'test_machine': 1,
+                'test_desc': 'here is desc',
+                'meta_time': metaInfoRet.date
+            }
+            testRecord = CreateTestRecordSerializer(data=test_record_data)
+            testRecordRet = None
+            if testRecord.is_valid():
+                testRecordRet = testRecord.save()
+            else:
+                msg = 'testRecord invalid'
+                print(testRecord.errors)
+                raise TestDataUploadError(msg)
+
+            pgbench = json_data['pgbench']
+            # print(type(ro))
+            ro = pgbench['ro']
+            for tag, tag_list in pgbench.iteritems():
+                test_cate = TestCategory.objects.get(cate_sn=tag)
+                if not test_cate:
+                    continue
                 else:
-                    print(testDateSet.errors)
-                    msg = 'testDateSet save error'
-                    return Response(msg, status=status.HTTP_202_ACCEPTED)
+                    print test_cate.cate_name
+                for scale, dataset_list in tag_list.iteritems():
+                    print "ro[%s]=" % scale, dataset_list
+                    for client_num, dataset in dataset_list.iteritems():
+                        print 'std is:'+ str(dataset['std'])
 
-                test_result_list = dataset['results']
-                for test_result in test_result_list:
-                    test_result_data = test_result
-                    test_result_data['test_dataset_id'] = testDateSetRet.id
-                    testResult = TestResultSerializer(data=test_result_data)
+                        test_dataset_data = {
+                            'test_record': testRecordRet.id,
+                            'clients': client_num,
+                            'scale': scale,
+                            'std': dataset['std'],
+                            'metric': dataset['metric'],
+                            'median': dataset['median'],
+                            'test_cate': test_cate.id,
+                            # status,percentage calc by tarr
+                            'status': -1,
+                            'percentage': 0.0,
+                        }
+                        testDateSet = CreateTestDateSetSerializer(data=test_dataset_data)
+                        testDateSetRet = None
+                        if testDateSet.is_valid():
+                            print 'dataset valid'
+                            testDateSetRet = testDateSet.save()
+                        else:
+                            print(testDateSet.errors)
+                            msg = 'testDateSet invalid'
+                            raise TestDataUploadError(msg)
 
-                    testResultRet = None
-                    if testResult.is_valid():
-                        print 'testResult valid'
-                        testResultRet = testDateSet.save()
-                    else:
-                        print(testResult.errors)
-                        msg = 'testResult save error'
-                        return Response(msg, status=status.HTTP_202_ACCEPTED)
+                        test_result_list = dataset['results']
+                        for test_result in test_result_list:
+                            test_result_data = test_result
+                            test_result_data['test_dataset'] = testDateSetRet.id
+                            test_result_data['mode'] = DB_ENUM['mode'][test_result_data['mode']]
+                            testResult = TestResultSerializer(data=test_result_data)
 
+                            testResultRet = None
+                            if testResult.is_valid():
+                                print 'testResult valid'
+                                testResultRet = testResult.save()
+                            else:
+                                print(testResult.errors)
+                                msg = 'testResult invalid'
+                                raise TestDataUploadError(msg)
 
-    msg = 'upload success'
+    except Exception as e:
+        msg = 'upload error:' + str(e).encode('utf-8')
+        return Response(msg, status=status.HTTP_202_ACCEPTED)
+
+    msg = 'upload success!'
     return Response(msg, status=status.HTTP_201_CREATED)
+
+
