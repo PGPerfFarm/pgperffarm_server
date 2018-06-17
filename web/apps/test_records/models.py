@@ -141,15 +141,15 @@ class TestDataSet(models.Model):
         verbose_name_plural = "test dataset"
 
 
-from django.db.models.signals import post_save, pre_save
+from django.db.models.signals import pre_save
 from django.dispatch import receiver
 
 
-@receiver(post_save, sender=TestDataSet)
+@receiver(pre_save, sender=TestDataSet)
 def calc_status(sender, instance, **kwargs):
     print('dataset:' + str(instance.id) + "  prev:" + str(instance.prev) + " will be save ")
 
-    record_id = instance.test_record.id
+    # record_id = instance.test_record.id
     machine_id = instance.test_record.test_machine_id
     add_time = instance.test_record.add_time
     prevRecord = TestRecord.objects.order_by('-add_time').filter(test_machine_id=machine_id,
@@ -165,6 +165,8 @@ def calc_status(sender, instance, **kwargs):
         print("prev dataset not found")
         return
 
+    print("prev dataset is: " + str(prevTestDataSet.id))
+
     percentage = (instance.metric - prevTestDataSet.metric)/prevTestDataSet.metric
 
     status = 0
@@ -177,7 +179,9 @@ def calc_status(sender, instance, **kwargs):
 
     instance.percentage = percentage
     instance.status = status
-    instance.save()
+    instance.prev_id = prevTestDataSet.id
+    # print instance
+    # instance.save()
     return
 
 
