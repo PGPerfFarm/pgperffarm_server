@@ -56,7 +56,33 @@ class CreateTestDateSetSerializer(serializers.ModelSerializer):
 
     '''
     create TestDateSetSerializer
+        'test_record': testRecordRet.id,
+        'clients': client_num,
+        'scale': scale,
+        'std': dataset['std'],
+        'metric': dataset['metric'],
+        'median': dataset['median'],
+        'test_cate': test_cate.id,
+        # status,percentage calc by tarr
+        'status': -1,
+        'percentage': 0.0,
     '''
+    # def create(self, validated_data):
+    #     testDataSet = TestDataSet(
+    #         test_record=validated_data['test_record'],
+    #         clients=validated_data['clients'],
+    #         scale=validated_data['scale'],
+    #         std=validated_data['std'],
+    #         metric=validated_data['metric'],
+    #         test_cate=validated_data['test_cate'],
+    #         prev=validated_data['prev'],
+    #         status=validated_data['status'],
+    #         percentage=validated_data['percentage'],
+    #     )
+    #
+    #     # testDataSet.set_password(validated_data['password'])
+    #     testDataSet.save()
+    #     return testDataSet
 
     class Meta:
         model = TestDataSet

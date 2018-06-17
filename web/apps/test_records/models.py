@@ -53,6 +53,7 @@ class PGInfo(models.Model):
     def __str__(self):
         return self.pg_branch
 
+
 class MetaInfo(models.Model):
     """
     pg info
@@ -65,6 +66,7 @@ class MetaInfo(models.Model):
     class Meta:
         verbose_name = "meta info"
         verbose_name_plural = "meta info"
+
 
 class LinuxInfo(models.Model):
     """
@@ -82,12 +84,13 @@ class LinuxInfo(models.Model):
     def __str__(self):
         return self.mounts
 
+
 class TestRecord(models.Model):
     """
     tests
     """
     test_machine = models.ForeignKey(UserMachine, verbose_name="test owner",
-                                        help_text="person who add this test item")
+                                     help_text="person who add this test item")
     pg_info = models.ForeignKey(PGInfo, verbose_name="pg info", help_text="pg info")
     meta_info = models.ForeignKey(MetaInfo, verbose_name="meta info", help_text="meta info")
     linux_info = models.ForeignKey(LinuxInfo, verbose_name="linux info", help_text="linux info")
@@ -101,16 +104,22 @@ class TestRecord(models.Model):
         verbose_name = "tests"
         verbose_name_plural = "tests"
 
+
+# class AbstractTestDataSet(models.Model):
+#     prev = models.ForeignKey('self',blank=True, null=True, related_name='none')
+#     class Meta:
+#         abstract = True
+
 class TestDataSet(models.Model):
-
-
     test_record = models.ForeignKey(TestRecord, verbose_name="test record id", help_text="test record id")
     test_cate = models.ForeignKey(TestCategory, verbose_name="test cate id", help_text="test cate id")
     clients = models.IntegerField(verbose_name="clients", help_text="clients of the test dataset")
     scale = models.IntegerField(verbose_name="scale", help_text="scale of the test dataset")
-    std = models.DecimalField(max_digits=18, decimal_places=8, verbose_name="std",help_text="std of the test dataset")
-    metric = models.DecimalField(max_digits=18, decimal_places=8, verbose_name="metric",help_text="metric of the test dataset")
-    median = models.DecimalField(max_digits=18, decimal_places=8, verbose_name="median",help_text="median of the test dataset")
+    std = models.DecimalField(max_digits=18, decimal_places=8, verbose_name="std", help_text="std of the test dataset")
+    metric = models.DecimalField(max_digits=18, decimal_places=8, verbose_name="metric",
+                                 help_text="metric of the test dataset")
+    median = models.DecimalField(max_digits=18, decimal_places=8, verbose_name="median",
+                                 help_text="median of the test dataset")
 
     STATUS_CHOICE = (
         (-1, 'none'),
@@ -119,12 +128,59 @@ class TestDataSet(models.Model):
         (3, 'regressive'),
     )
     status = models.IntegerField(choices=STATUS_CHOICE, verbose_name="status", help_text="status of this dataset")
-    percentage = models.DecimalField(max_digits=8, decimal_places=4, verbose_name="percentage",help_text="percentage compared to previous dataset")
+    percentage = models.DecimalField(max_digits=8, decimal_places=4, verbose_name="percentage",
+                                     help_text="percentage compared to previous dataset")
+
+    prev = models.ForeignKey('self', blank=True, null=True, related_name='prev1',
+                             verbose_name="previous test dataset id", help_text="previous test dataset id")
+    # prev = models.ForeignKey('self',verbose_name="previous test dataset id", help_text="previous test dataset id")
     add_time = models.DateTimeField(default=timezone.now, verbose_name="test dataset time")
 
     class Meta:
         verbose_name = "test dataset"
         verbose_name_plural = "test dataset"
+
+
+from django.db.models.signals import post_save, pre_save
+from django.dispatch import receiver
+
+
+@receiver(post_save, sender=TestDataSet)
+def calc_status(sender, instance, **kwargs):
+    print('dataset:' + str(instance.id) + "  prev:" + str(instance.prev) + " will be save ")
+
+    record_id = instance.test_record.id
+    machine_id = instance.test_record.test_machine_id
+    add_time = instance.test_record.add_time
+    prevRecord = TestRecord.objects.order_by('-add_time').filter(test_machine_id=machine_id,
+                                                                 add_time__lt=add_time).first()
+    if (prevRecord == None):
+        print("prev record not found")
+        return
+    print("previd is: " + str(prevRecord.id))
+    prevTestDataSet = TestDataSet.objects.filter(test_record_id=prevRecord.id, scale=instance.scale,
+                                                 clients=instance.clients, test_cate_id=instance.test_cate_id).first()
+
+    if (prevTestDataSet == None):
+        print("prev dataset not found")
+        return
+
+    percentage = (instance.metric - prevTestDataSet.metric)/prevTestDataSet.metric
+
+    status = 0
+    if(percentage >= 0.05):
+        status = 1
+    elif (percentage <= -0.05):
+        status = 3
+    else:
+        status = 2
+
+    instance.percentage = percentage
+    instance.status = status
+    instance.save()
+    return
+
+
 
 class TestResult(models.Model):
     """

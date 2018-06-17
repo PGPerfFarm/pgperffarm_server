@@ -50,10 +50,6 @@ def TestRecordCreate(request, format=None):
     Receive data from client
     """
 
-    # serializers = BizcircleSerializer(data=request.data)
-    # if serializers.is_valid():
-    #     serializers.save()
-    #     return Response(serializers.data, status=status.HTTP_201_CREATED)
     data = request.data
 
     print type(data[0])
@@ -168,6 +164,7 @@ def TestRecordCreate(request, format=None):
 
     except Exception as e:
         msg = 'upload error:' + str(e).encode('utf-8')
+        # todo add log
         return Response(msg, status=status.HTTP_202_ACCEPTED)
 
     msg = 'upload success!'
