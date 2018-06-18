@@ -1,5 +1,5 @@
 import React from 'react';
-import { Icon, Table, Menu, Message } from 'semantic-ui-react'
+import {Icon, Table, Menu, Message} from 'semantic-ui-react'
 import './index.css';
 
 // general basic table
@@ -13,7 +13,42 @@ class BasicTable extends React.Component {
 
 
     render() {
-        let list = this.props.list
+        let _list = this.props.list
+        let listBody = _list.map((record, index) => {
+            let machine = record.machine_info[0];
+            let system = machine.os_name + ' ' + machine.os_version + ' ' + machine.comp_name + ' ' + machine.comp_version;
+            let alias = machine.alias;
+            let branch = record.pg_info.pg_branch;
+
+            let trend = record.trend
+            return (
+
+                <Table.Row key={index}>
+                    {/*alias*/}
+                    <Table.Cell><a href="#">{alias}</a></Table.Cell>
+
+                    {/*system*/}
+                    <Table.Cell><a href="#">{system}</a></Table.Cell>
+
+                    {/*branch*/}
+                    <Table.Cell>{branch}</Table.Cell>
+
+                    {/*trending-data*/}
+                    <Table.Cell textAlign='center'>
+                        <Icon color='green' name='checkmark' size='large'/>{trend.improved}
+                    </Table.Cell>
+                    <Table.Cell textAlign='center'>
+                        <Icon color='green' name='meh' size='large'/>{trend.quo}
+                    </Table.Cell>
+                    <Table.Cell textAlign='center'>
+                        <i class="fa fa-meh-o"></i>{trend.regressive}
+                    </Table.Cell>
+
+                    {/*date*/}
+                    <Table.Cell>{new Date().toDateString()}</Table.Cell>
+                </Table.Row>
+            );
+        });
 
         return (
             <Table celled structured compact>
@@ -22,68 +57,33 @@ class BasicTable extends React.Component {
                         <Table.HeaderCell rowSpan='2'>Alias</Table.HeaderCell>
                         <Table.HeaderCell rowSpan='2'>System</Table.HeaderCell>
                         <Table.HeaderCell rowSpan='2'>Branch</Table.HeaderCell>
-                        <Table.HeaderCell textAlign='center' colSpan='3'>read only</Table.HeaderCell>
-                        <Table.HeaderCell textAlign='center' colSpan='3'>read & write</Table.HeaderCell>
+                        <Table.HeaderCell textAlign='center' colSpan='3'>Trending</Table.HeaderCell>
                         <Table.HeaderCell rowSpan='2'>Date</Table.HeaderCell>
                     </Table.Row>
                     <Table.Row>
-                        <Table.HeaderCell>1 client</Table.HeaderCell>
-                        <Table.HeaderCell>2 clients</Table.HeaderCell>
-                        <Table.HeaderCell>4 clients</Table.HeaderCell>
-
-                        <Table.HeaderCell>1 client</Table.HeaderCell>
-                        <Table.HeaderCell>2 clients</Table.HeaderCell>
-                        <Table.HeaderCell>4 clients</Table.HeaderCell>
+                        <Table.HeaderCell>improved</Table.HeaderCell>
+                        <Table.HeaderCell>quo</Table.HeaderCell>
+                        <Table.HeaderCell>regressive</Table.HeaderCell>
                     </Table.Row>
-                    {/*<Table.Row>*/}
-                        {/*<Table.HeaderCell>1 clients</Table.HeaderCell>*/}
-                        {/*<Table.HeaderCell>2 clients</Table.HeaderCell>*/}
-                        {/*<Table.HeaderCell>4 clients</Table.HeaderCell>*/}
-                    {/*</Table.Row>*/}
+
                 </Table.Header>
 
                 <Table.Body>
-                    <Table.Row>
-                        {/*alias*/}
-                        <Table.Cell><a href="#">Cabbage</a></Table.Cell>
-
-                        {/*system*/}
-                        <Table.Cell><a href="#">Ubuntu 16 x86_64</a></Table.Cell>
-
-                        {/*branch*/}
-                        <Table.Cell>REL9_6_STABLE</Table.Cell>
-
-                        {/*rw-data*/}
-                        <Table.Cell textAlign='center'>
-                            <Icon color='green' name='checkmark' size='large' />
-                        </Table.Cell>
-                        <Table.Cell />
-                        <Table.Cell />
-
-                        {/*rw-data*/}
-                        <Table.Cell />
-                        <Table.Cell textAlign='center'>
-                            <Icon color='green' name='checkmark' size='large' />
-                        </Table.Cell>
-                        <Table.Cell />
-
-                        {/*date*/}
-                        <Table.Cell>{new Date().toDateString()}</Table.Cell>
-                    </Table.Row>
+                    {listBody}
                 </Table.Body>
                 <Table.Footer>
                     <Table.Row>
                         <Table.HeaderCell colSpan='10'>
                             <Menu size='small' floated='right' pagination>
                                 <Menu.Item as='a' icon>
-                                    <Icon name='chevron left' />
+                                    <Icon name='chevron left'/>
                                 </Menu.Item>
                                 <Menu.Item as='a'>1</Menu.Item>
                                 <Menu.Item as='a'>2</Menu.Item>
                                 <Menu.Item as='a'>3</Menu.Item>
                                 <Menu.Item as='a'>4</Menu.Item>
                                 <Menu.Item as='a' icon>
-                                    <Icon name='chevron right' />
+                                    <Icon name='chevron right'/>
                                 </Menu.Item>
                             </Menu>
 
