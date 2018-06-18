@@ -141,6 +141,12 @@ DB_ENUM = {
     "mode":{
         "simple":1,
         "other":2
+    },
+    "status": {
+        "none": -1,
+        "improved": 1,
+        "quo": 2,
+        "regressive": 3
     }
 }
 
