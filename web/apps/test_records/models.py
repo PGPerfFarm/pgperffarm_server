@@ -168,7 +168,9 @@ def calc_status(sender, instance, **kwargs):
     print("prev dataset is: " + str(prevTestDataSet.id))
 
     percentage = (instance.metric - prevTestDataSet.metric)/prevTestDataSet.metric
-
+    print('instance.metric is:' + str(instance.metric))
+    print('prevTestDataSet.metric is:' + str(prevTestDataSet.metric))
+    print('percentage is:' + str(percentage))
     status = 0
     if(percentage >= 0.05):
         status = 1
@@ -180,8 +182,7 @@ def calc_status(sender, instance, **kwargs):
     instance.percentage = percentage
     instance.status = status
     instance.prev_id = prevTestDataSet.id
-    # print instance
-    # instance.save()
+
     return
 
 

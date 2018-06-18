@@ -7,7 +7,7 @@ from rest_framework.pagination import PageNumberPagination
 from exception import TestDataUploadError
 from models import UserMachine, TestCategory
 from pgperffarm.settings import DB_ENUM
-from .serializer import TestRecordSerializer, TestRecordDetailSerializer, LinuxInfoSerializer, MetaInfoSerializer, \
+from .serializer import TestRecordListSerializer, TestRecordDetailSerializer, LinuxInfoSerializer, MetaInfoSerializer, \
     PGInfoSerializer, CreateTestRecordSerializer, CreateTestDateSetSerializer, TestResultSerializer
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
@@ -21,7 +21,7 @@ import json
 
 
 class StandardResultsSetPagination(PageNumberPagination):
-    page_size = 10
+    page_size = 5
     page_size_query_param = 'page_size'
     max_page_size = 100
 
@@ -30,8 +30,8 @@ class TestRecordListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     """
     List test records
     """
-    queryset = TestRecord.objects.all()
-    serializer_class = TestRecordSerializer
+    queryset = TestRecord.objects.all().order_by('add_time')
+    serializer_class = TestRecordListSerializer
     pagination_class = StandardResultsSetPagination
 
 
@@ -58,6 +58,8 @@ def TestRecordCreate(request, format=None):
     # obj = data[0].pgbench
     # jsLoads = json.loads(data[0])
 
+    # todo get machine by token
+    # todo hash the json_data to ensure unique
     from django.db import transaction
 
     try:

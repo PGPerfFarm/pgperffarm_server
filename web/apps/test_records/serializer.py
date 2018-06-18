@@ -1,8 +1,12 @@
 from rest_framework import serializers
+
+from pgperffarm.settings import DB_ENUM
 from test_records.models import TestRecord, TestResult, PGInfo, LinuxInfo ,MetaInfo, TestDataSet
 from users.serializer import UserMachineSerializer
 from users.models import UserMachine
-from django.db.models import Q
+from django.db.models import Q, QuerySet, Count
+
+
 class PGInfoSerializer(serializers.ModelSerializer):
 
     '''
@@ -67,28 +71,12 @@ class CreateTestDateSetSerializer(serializers.ModelSerializer):
         'status': -1,
         'percentage': 0.0,
     '''
-    # def create(self, validated_data):
-    #     testDataSet = TestDataSet(
-    #         test_record=validated_data['test_record'],
-    #         clients=validated_data['clients'],
-    #         scale=validated_data['scale'],
-    #         std=validated_data['std'],
-    #         metric=validated_data['metric'],
-    #         test_cate=validated_data['test_cate'],
-    #         prev=validated_data['prev'],
-    #         status=validated_data['status'],
-    #         percentage=validated_data['percentage'],
-    #     )
-    #
-    #     # testDataSet.set_password(validated_data['password'])
-    #     testDataSet.save()
-    #     return testDataSet
 
     class Meta:
         model = TestDataSet
         fields = "__all__"
 
-class TestRecordSerializer(serializers.ModelSerializer):
+class TestRecordListSerializer(serializers.ModelSerializer):
 
     '''
     use ModelSerializer
@@ -96,36 +84,51 @@ class TestRecordSerializer(serializers.ModelSerializer):
     pg_info =PGInfoSerializer()
     linux_info = LinuxInfoSerializer()
     meta_info = MetaInfoSerializer()
-    ro_info = serializers.SerializerMethodField()
-    rw_info = serializers.SerializerMethodField()
+
+    trend = serializers.SerializerMethodField()
     machine_info = serializers.SerializerMethodField()
-    client_max_num = serializers.SerializerMethodField()
+    # client_max_num = serializers.SerializerMethodField()
     class Meta:
         model = TestRecord
-        fields = ('add_time', 'machine_info', 'pg_info', 'linux_info', 'meta_info', 'ro_info', 'rw_info', 'client_max_num')
+        fields = ('add_time', 'machine_info', 'pg_info', 'trend', 'linux_info', 'meta_info')
 
-    def get_ro_info(self, obj):
-        all_data = TestResult.objects.filter(Q(test_record_id=obj.id ) ,test_cate_id=1)
+    def get_trend(self, obj):
+        dataset_list = TestDataSet.objects.filter(test_record_id=obj.id).values_list('status').annotate(Count('id'))
+        data_list_count = TestDataSet.objects.filter(test_record_id=obj.id).count()
 
-        ro_info_serializer = TestResultSerializer(all_data, many=True, context={'request': self.context['request']})
-        return ro_info_serializer.data
+        trend = {}
+        trend['improved'] = 0
+        trend['quo'] = 0
+        trend['regressive'] = 0
+        trend['none'] = 0
+        trend['is_first'] = False
+        for i in dataset_list:
+            if i[0] == DB_ENUM['status']['improved']:
+                trend['improved'] += i[1]
+            elif i[0] == DB_ENUM['status']['quo']:
+                trend['quo'] += i[1]
+            elif i[0] == DB_ENUM['status']['regressive']:
+                trend['regressive'] += i[1]
+            elif i[0] == DB_ENUM['status']['none']:
+                trend['none'] += i[1]
 
-    def get_rw_info(self, obj):
-        all_data = TestResult.objects.filter(Q(test_record_id=obj.id) ,test_cate_id=2)
+        if(data_list_count == trend['none']):
+            trend['is_first'] = True
 
-        rw_info_serializer = TestResultSerializer(all_data, many=True, context={'request': self.context['request']})
-        return rw_info_serializer.data
+        print str(data_list_count)
+        return trend
+
 
     def get_machine_info(self, obj):
-        machine_data = UserMachine.objects.filter(Q(id=obj.test_machine_id.id))
+        machine_data = UserMachine.objects.filter(Q(id=obj.test_machine_id))
 
         machine_info_serializer = UserMachineSerializer(machine_data,many=True, context={'request': self.context['request']})
         return machine_info_serializer.data
 
-    def get_client_max_num(self, obj):
-        ro_client_num = TestResult.objects.filter(Q(test_record_id=obj.id ) ,test_cate_id=1).order_by('clients').distinct('clients').count()
-        rw_client_num = TestResult.objects.filter(Q(test_record_id=obj.id ) ,test_cate_id=2).order_by('clients').distinct('clients').count()
-        return max(ro_client_num,rw_client_num)
+    # def get_client_max_num(self, obj):
+    #     ro_client_num = TestResult.objects.filter(Q(test_record_id=obj.id ) ,test_cate_id=1).order_by('clients').distinct('clients').count()
+    #     rw_client_num = TestResult.objects.filter(Q(test_record_id=obj.id ) ,test_cate_id=2).order_by('clients').distinct('clients').count()
+    #     return max(ro_client_num,rw_client_num)
 
 class TestRecordDetailSerializer(serializers.ModelSerializer):
 
