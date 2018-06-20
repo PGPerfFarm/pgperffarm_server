@@ -33,13 +33,12 @@ class TestRecordListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = TestRecord.objects.all().order_by('add_time')
     serializer_class = TestRecordListSerializer
     pagination_class = StandardResultsSetPagination
-
-
-class TestRecordDetailViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+class TestRecordDetailViewSet( mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     """
-    List test records
+    detail test records
     """
-    queryset = TestRecord.objects.all()
+    lookup_field = 'hash'
+    queryset = TestRecord.objects.all().order_by('add_time')
     serializer_class = TestRecordDetailSerializer
     pagination_class = StandardResultsSetPagination
 

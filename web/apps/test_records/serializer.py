@@ -90,7 +90,7 @@ class TestRecordListSerializer(serializers.ModelSerializer):
     # client_max_num = serializers.SerializerMethodField()
     class Meta:
         model = TestRecord
-        fields = ('add_time', 'machine_info', 'pg_info', 'trend', 'linux_info', 'meta_info')
+        fields = ('hash', 'add_time', 'machine_info', 'pg_info', 'trend', 'linux_info', 'meta_info')
 
     def get_trend(self, obj):
         dataset_list = TestDataSet.objects.filter(test_record_id=obj.id).values_list('status').annotate(Count('id'))
@@ -120,7 +120,7 @@ class TestRecordListSerializer(serializers.ModelSerializer):
 
 
     def get_machine_info(self, obj):
-        machine_data = UserMachine.objects.filter(Q(id=obj.test_machine_id))
+        machine_data = UserMachine.objects.filter(id=obj.test_machine_id)
 
         machine_info_serializer = UserMachineSerializer(machine_data,many=True, context={'request': self.context['request']})
         return machine_info_serializer.data
@@ -130,6 +130,13 @@ class TestRecordListSerializer(serializers.ModelSerializer):
     #     rw_client_num = TestResult.objects.filter(Q(test_record_id=obj.id ) ,test_cate_id=2).order_by('clients').distinct('clients').count()
     #     return max(ro_client_num,rw_client_num)
 
+
+class TestDataSetSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = TestDataSet
+        fields = "__all__"
+
 class TestRecordDetailSerializer(serializers.ModelSerializer):
 
     '''
@@ -138,20 +145,33 @@ class TestRecordDetailSerializer(serializers.ModelSerializer):
     pg_info =PGInfoSerializer()
     linux_info = LinuxInfoSerializer()
     meta_info = MetaInfoSerializer()
-    ro_info = serializers.SerializerMethodField()
-    rw_info = serializers.SerializerMethodField()
+    dataset_info = serializers.SerializerMethodField()
+    # rw_info = serializers.SerializerMethodField()
     class Meta:
         model = TestRecord
         fields = "__all__"
 
-    def get_ro_info(self, obj):
-        all_data = TestResult.objects.filter(Q(test_record_id=obj.id ) ,test_cate_id=1)
+    def get_dataset_info(self, obj):
+        dataset_list = TestDataSet.objects.filter(test_record_id=obj.id).values_list('scale').annotate(Count('id'))
+        # print(target_dataset)
 
-        ro_info_serializer = TestResultSerializer(all_data, many=True, context={'request': self.context['request']})
-        return ro_info_serializer.data
+        dataset = {}
+        # < QuerySet[(20, 2), (10, 4)] >
+        for item in dataset_list:
+            dataset[item[0]] = []
+            target_dataset = TestDataSet.objects.filter(test_record_id=obj.id, scale=item[0])
+            dataset_serializer = TestDataSetSerializer(target_dataset, many=True)
+            dataset[item[0]] = dataset_serializer.data
+        return dataset
 
-    def get_rw_info(self, obj):
-        all_data = TestResult.objects.filter(Q(test_record_id=obj.id) ,test_cate_id=2)
-
-        rw_info_serializer = TestResultSerializer(all_data, many=True, context={'request': self.context['request']})
-        return rw_info_serializer.data
+    # def get_ro_info(self, obj):
+    #     all_data = TestResult.objects.filter(Q(test_record_id=obj.id ) ,test_cate_id=1)
+    #
+    #     ro_info_serializer = TestResultSerializer(all_data, many=True, context={'request': self.context['request']})
+    #     return ro_info_serializer.data
+    #
+    # def get_rw_info(self, obj):
+    #     all_data = TestResult.objects.filter(Q(test_record_id=obj.id) ,test_cate_id=2)
+    #
+    #     rw_info_serializer = TestResultSerializer(all_data, many=True, context={'request': self.context['request']})
+    #     return rw_info_serializer.data
