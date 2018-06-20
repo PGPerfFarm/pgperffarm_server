@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import shortuuid
+
+from django.contrib.auth.hashers import make_password
 from django.shortcuts import render
 from rest_framework.pagination import PageNumberPagination
 
@@ -58,10 +61,18 @@ def TestRecordCreate(request, format=None):
     # jsLoads = json.loads(data[0])
 
     # todo get machine by token
-    # todo hash the json_data to ensure unique
+    test_machine = 1
+
     from django.db import transaction
 
     try:
+
+        record_hash = make_password(str(json_data), 'pg_perf_farm')
+        print(record_hash.__len__())
+        r = TestRecord.objects.filter(hash=record_hash).count()
+        if r != 0:
+            raise TestDataUploadError("The same record already exists, please do not submit it twice.")
+
         with transaction.atomic():
 
             linux_data = json_data['linux']
@@ -98,9 +109,11 @@ def TestRecordCreate(request, format=None):
                 'pg_info': pgInfoRet.id,
                 'linux_info': linuxInfoRet.id,
                 'meta_info': metaInfoRet.id,
-                'test_machine': 1,
+                'test_machine': test_machine,
                 'test_desc': 'here is desc',
-                'meta_time': metaInfoRet.date
+                'meta_time': metaInfoRet.date,
+                'hash': record_hash,
+                'uuid': shortuuid.uuid()
             }
             testRecord = CreateTestRecordSerializer(data=test_record_data)
             testRecordRet = None

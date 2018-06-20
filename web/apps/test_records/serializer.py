@@ -90,7 +90,7 @@ class TestRecordListSerializer(serializers.ModelSerializer):
     # client_max_num = serializers.SerializerMethodField()
     class Meta:
         model = TestRecord
-        fields = ('hash', 'add_time', 'machine_info', 'pg_info', 'trend', 'linux_info', 'meta_info')
+        fields = ('uuid', 'add_time', 'machine_info', 'pg_info', 'trend', 'linux_info', 'meta_info')
 
     def get_trend(self, obj):
         dataset_list = TestDataSet.objects.filter(test_record_id=obj.id).values_list('status').annotate(Count('id'))

@@ -98,7 +98,8 @@ class TestRecord(models.Model):
     test_desc = models.TextField(verbose_name="test desc", help_text="test desc")
     # test_branch_id = models.ForeignKey(TestBranch, verbose_name="test category", help_text="test category")
     meta_time = models.DateTimeField(default=timezone.now, verbose_name="meta time")
-    hash = models.CharField(unique=True, default='', max_length=32, verbose_name="record hash", help_text="record hash")
+    hash = models.CharField(unique=True, default='', max_length=128, verbose_name="record hash", help_text="record hash")
+    uuid = models.CharField(unique=True, default='', max_length=64, verbose_name="record uuid", help_text="record uuid")
     add_time = models.DateTimeField(default=timezone.now, verbose_name="test added time")
 
     class Meta:
