@@ -98,7 +98,8 @@ class TestRecord(models.Model):
     test_desc = models.TextField(verbose_name="test desc", help_text="test desc")
     # test_branch_id = models.ForeignKey(TestBranch, verbose_name="test category", help_text="test category")
     meta_time = models.DateTimeField(default=timezone.now, verbose_name="meta time")
-    hash = models.CharField(unique=True, default='', max_length=128, verbose_name="record hash", help_text="record hash")
+    hash = models.CharField(unique=True, default='', max_length=128, verbose_name="record hash",
+                            help_text="record hash")
     uuid = models.CharField(unique=True, default='', max_length=64, verbose_name="record uuid", help_text="record uuid")
     add_time = models.DateTimeField(default=timezone.now, verbose_name="test added time")
 
@@ -169,12 +170,12 @@ def calc_status(sender, instance, **kwargs):
 
     print("prev dataset is: " + str(prevTestDataSet.id))
 
-    percentage = (instance.metric - prevTestDataSet.metric)/prevTestDataSet.metric
+    percentage = (instance.metric - prevTestDataSet.metric) / prevTestDataSet.metric
     print('instance.metric is:' + str(instance.metric))
     print('prevTestDataSet.metric is:' + str(prevTestDataSet.metric))
     print('percentage is:' + str(percentage))
     status = 0
-    if(percentage >= 0.05):
+    if (percentage >= 0.05):
         status = 1
     elif (percentage <= -0.05):
         status = 3
@@ -186,7 +187,6 @@ def calc_status(sender, instance, **kwargs):
     instance.prev_id = prevTestDataSet.id
 
     return
-
 
 
 class TestResult(models.Model):

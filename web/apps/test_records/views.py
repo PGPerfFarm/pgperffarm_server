@@ -36,11 +36,13 @@ class TestRecordListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = TestRecord.objects.all().order_by('add_time')
     serializer_class = TestRecordListSerializer
     pagination_class = StandardResultsSetPagination
-class TestRecordDetailViewSet( mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+
+
+class TestRecordDetailViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     """
     detail test records
     """
-    lookup_field = 'hash'
+    lookup_field = 'uuid'
     queryset = TestRecord.objects.all().order_by('add_time')
     serializer_class = TestRecordDetailSerializer
     pagination_class = StandardResultsSetPagination
@@ -68,7 +70,7 @@ def TestRecordCreate(request, format=None):
     try:
 
         record_hash = make_password(str(json_data), 'pg_perf_farm')
-        print(record_hash.__len__())
+        # print(record_hash.__len__()) 77
         r = TestRecord.objects.filter(hash=record_hash).count()
         if r != 0:
             raise TestDataUploadError("The same record already exists, please do not submit it twice.")
@@ -95,7 +97,7 @@ def TestRecordCreate(request, format=None):
 
             # pg_data = json_data['postgres']
             pg_data = {
-                'pg_branch':1
+                'pg_branch': 1
             }
             pgInfo = PGInfoSerializer(data=pg_data)
             pgInfoRet = None
@@ -136,7 +138,7 @@ def TestRecordCreate(request, format=None):
                 for scale, dataset_list in tag_list.iteritems():
                     print "ro[%s]=" % scale, dataset_list
                     for client_num, dataset in dataset_list.iteritems():
-                        print 'std is:'+ str(dataset['std'])
+                        print 'std is:' + str(dataset['std'])
 
                         test_dataset_data = {
                             'test_record': testRecordRet.id,
@@ -183,5 +185,3 @@ def TestRecordCreate(request, format=None):
 
     msg = 'upload success!'
     return Response(msg, status=status.HTTP_201_CREATED)
-
-
