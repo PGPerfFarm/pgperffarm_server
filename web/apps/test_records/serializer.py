@@ -147,9 +147,16 @@ class TestRecordListSerializer(serializers.ModelSerializer):
 
 
 class TestDataSetDetailSerializer(serializers.ModelSerializer):
+    results = serializers.SerializerMethodField()
     class Meta:
         model = TestDataSet
         fields = "__all__"
+
+    def get_results(self, obj):
+        all_data = TestResult.objects.filter(test_dataset=obj.id)
+
+        serializer = TestResultSerializer(all_data, many=True)
+        return serializer.data
 
 
 class TestRecordDetailSerializer(serializers.ModelSerializer):
@@ -171,7 +178,7 @@ class TestRecordDetailSerializer(serializers.ModelSerializer):
     def get_dataset_info(self, obj):
         dataset_list = TestDataSet.objects.filter(test_record_id=obj.id).values_list('test_cate_id').annotate(
             Count('id'))
-        # print(target_dataset)
+        # print(dataset_list)
 
         dataset = {}
         # < QuerySet[(1, 3), (2, 3)] >
@@ -189,15 +196,19 @@ class TestRecordDetailSerializer(serializers.ModelSerializer):
             for scale_item in dataset_scale_list:
                 dataset[cate_sn][scale_item[0]] = {}
 
-                dataset_client_list = TestDataSet.objects.filter(test_record_id=obj.id,test_cate=cate_item[0]).values_list('clients').annotate( Count('id'))
-                # print(dataset_client_list) <QuerySet [(1, 1), (2, 1), (4, 1)]>
+                dataset_client_list = TestDataSet.objects.filter(test_record_id=obj.id,
+                                                                 test_cate=cate_item[0],
+                                                                 scale=scale_item[0]).values_list(
+                    'clients').annotate(Count('id'))
+                print(dataset_client_list)
+                # <QuerySet [(1, 1), (2, 1), (4, 1)]>
                 for client_item in dataset_client_list:
                     dataset[cate_sn][scale_item[0]][client_item[0]] = []
+                    target_dataset = TestDataSet.objects.filter(test_record_id=obj.id, test_cate=cate_item[0],
+                                                                scale=scale_item[0], clients=client_item[0])
 
-                # target_dataset = TestDataSet.objects.filter(test_record_id=obj.id, test_cate=cate_item[0],
-                #                                             scale=scale_item[0])
-                # dataset_serializer = TestDataSetDetailSerializer(target_dataset, many=True)
-                # dataset[cate_sn][scale_item[0]] = dataset_serializer.data
+                    dataset_serializer = TestDataSetDetailSerializer(target_dataset, many=True)
+                    dataset[cate_sn][scale_item[0]][client_item[0]] = dataset_serializer.data
 
         return dataset
 
