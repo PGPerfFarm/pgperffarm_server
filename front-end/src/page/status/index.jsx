@@ -12,7 +12,8 @@ class Status extends React.Component {
         super(props);
         this.state = {
             isLoading: false,
-            currentPage: 3,
+            currentPage: 1,
+            total:3,
             filter: {},
             list: [
                 // {
@@ -32,6 +33,7 @@ class Status extends React.Component {
             this.onPageChange = this.onPageChange.bind(this);
         this.onIsLoadingChange = this.onIsLoadingChange.bind(this);
         this.handleApplyBtnClick = this.handleApplyBtnClick.bind(this);
+        this.loadRecordList = this.loadRecordList.bind(this);
     }
 
     componentDidMount() {
@@ -44,16 +46,18 @@ class Status extends React.Component {
     }
 
     // load record list
-    loadRecordList() {
+    loadRecordList(page=1) {
         let _this = this;
         let listParam = {};
         listParam.filter = this.state.filter;
-        // listParam.pageNum = this.state.pageNum;
+
+        listParam.page = page;
 
         _record.getRecordList(listParam).then(res => {
             console.log('res is:' + res)
             this.setState({
                 list: res.results,
+                total: res.count,
                 isLoading: false
             });
             _this.changeIsLoading(false);
@@ -117,7 +121,7 @@ class Status extends React.Component {
                 {/*</TableList>*/}
                 {/*<Pagination style={style} onChange={this.onPageChange} current={this.state.currentPage} total={25}/>*/}
 
-                <BasicTable list={this.state.list}></BasicTable>
+                <BasicTable list={this.state.list} total={this.state.total} current={this.state.currentPage} loadfunc={this.loadRecordList}/>
                 {/*<RateBar std={this.state.std} curMark={this.state.curMark1}/>*/}
 
             </div>

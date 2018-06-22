@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import shortuuid
+
+from django.contrib.auth.hashers import make_password
 from django.shortcuts import render
 from rest_framework.pagination import PageNumberPagination
 
@@ -21,7 +24,7 @@ import json
 
 
 class StandardResultsSetPagination(PageNumberPagination):
-    page_size = 5
+    page_size = 2
     page_size_query_param = 'page_size'
     max_page_size = 100
 
@@ -35,11 +38,12 @@ class TestRecordListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     pagination_class = StandardResultsSetPagination
 
 
-class TestRecordDetailViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+class TestRecordDetailViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     """
-    List test records
+    detail test records
     """
-    queryset = TestRecord.objects.all()
+    lookup_field = 'uuid'
+    queryset = TestRecord.objects.all().order_by('add_time')
     serializer_class = TestRecordDetailSerializer
     pagination_class = StandardResultsSetPagination
 
@@ -59,10 +63,18 @@ def TestRecordCreate(request, format=None):
     # jsLoads = json.loads(data[0])
 
     # todo get machine by token
-    # todo hash the json_data to ensure unique
+    test_machine = 1
+
     from django.db import transaction
 
     try:
+
+        record_hash = make_password(str(json_data), 'pg_perf_farm')
+        # print(record_hash.__len__()) 77
+        r = TestRecord.objects.filter(hash=record_hash).count()
+        if r != 0:
+            raise TestDataUploadError("The same record already exists, please do not submit it twice.")
+
         with transaction.atomic():
 
             linux_data = json_data['linux']
@@ -85,7 +97,7 @@ def TestRecordCreate(request, format=None):
 
             # pg_data = json_data['postgres']
             pg_data = {
-                'pg_branch':1
+                'pg_branch': 1
             }
             pgInfo = PGInfoSerializer(data=pg_data)
             pgInfoRet = None
@@ -99,9 +111,11 @@ def TestRecordCreate(request, format=None):
                 'pg_info': pgInfoRet.id,
                 'linux_info': linuxInfoRet.id,
                 'meta_info': metaInfoRet.id,
-                'test_machine': 1,
+                'test_machine': test_machine,
                 'test_desc': 'here is desc',
-                'meta_time': metaInfoRet.date
+                'meta_time': metaInfoRet.date,
+                'hash': record_hash,
+                'uuid': shortuuid.uuid()
             }
             testRecord = CreateTestRecordSerializer(data=test_record_data)
             testRecordRet = None
@@ -124,7 +138,7 @@ def TestRecordCreate(request, format=None):
                 for scale, dataset_list in tag_list.iteritems():
                     print "ro[%s]=" % scale, dataset_list
                     for client_num, dataset in dataset_list.iteritems():
-                        print 'std is:'+ str(dataset['std'])
+                        print 'std is:' + str(dataset['std'])
 
                         test_dataset_data = {
                             'test_record': testRecordRet.id,
@@ -171,5 +185,3 @@ def TestRecordCreate(request, format=None):
 
     msg = 'upload success!'
     return Response(msg, status=status.HTTP_201_CREATED)
-
-

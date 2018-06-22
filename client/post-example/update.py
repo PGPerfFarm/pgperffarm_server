@@ -29,7 +29,7 @@ def http_post(url, data, token):
     req.add_header('Content-Type', 'application/json')
     response = urllib2.urlopen(req)  
     result = json.loads(response.read())  
-    print result  
+    print result.encode('utf-8')  
 
 with open("./results.json",'r') as load_f:
     load_dict = (json.load(load_f, encoding="UTF-8"))
