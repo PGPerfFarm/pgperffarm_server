@@ -27,6 +27,7 @@ class UserProfile(AbstractUser):
 class Alias(models.Model):
     name = models.CharField(max_length=32, verbose_name="alias name")
     is_used = models.BooleanField(default=False,verbose_name="is_used")
+    add_time = models.DateTimeField(default=timezone.now, verbose_name="add time", help_text="category added time")
 
 class UserMachine(models.Model):
     """

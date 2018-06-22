@@ -192,7 +192,7 @@ class TestRecordDetailSerializer(serializers.ModelSerializer):
 
             dataset_scale_list = TestDataSet.objects.filter(test_record_id=obj.id, test_cate=cate_item[0]).values_list(
                 'scale').annotate(Count('id'))
-            # print(dataset_scale_list) <QuerySet [(10, 2), (20, 1)]>
+            # print(dataset_scale_list) # <QuerySet [(10, 2), (20, 1)]>
             for scale_item in dataset_scale_list:
                 dataset[cate_sn][scale_item[0]] = {}
 
@@ -200,8 +200,7 @@ class TestRecordDetailSerializer(serializers.ModelSerializer):
                                                                  test_cate=cate_item[0],
                                                                  scale=scale_item[0]).values_list(
                     'clients').annotate(Count('id'))
-                print(dataset_client_list)
-                # <QuerySet [(1, 1), (2, 1), (4, 1)]>
+                # print(dataset_client_list) # <QuerySet [(1, 1), (2, 1), (4, 1)]>
                 for client_item in dataset_client_list:
                     dataset[cate_sn][scale_item[0]][client_item[0]] = []
                     target_dataset = TestDataSet.objects.filter(test_record_id=obj.id, test_cate=cate_item[0],
