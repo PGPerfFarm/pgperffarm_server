@@ -1,5 +1,5 @@
 import React from 'react';
-import {Card, Icon} from 'semantic-ui-react'
+import {Card, Icon,Table} from 'semantic-ui-react'
 import './index.css';
 
 class TestResultCard extends React.Component {
@@ -34,6 +34,7 @@ class TestResultCard extends React.Component {
                     <Card.Content extra>
                         <Icon name='user'/>
                         4 Friends
+
                     </Card.Content>
                 </Card>
             </div>

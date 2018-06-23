@@ -9,3 +9,24 @@
     margin-left: 0%;
     margin-top: 15px;
 }
+.row {
+    /*margin-left:120px;*/
+}
+
+.detail-container{
+    padding-top: 80px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+@media (min-width: 1200px) {
+    .detail-container {
+        width: 1170px;
+    }
+}
+
+/*@media (min-width: 1400px) {*/
+    /*.detail-container {*/
+        /*width: 1370px;*/
+    /*}*/
+/*}*/

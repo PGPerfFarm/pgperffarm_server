@@ -10,7 +10,7 @@ class TestRecordListFilter(django_filters.rest_framework.FilterSet):
     """
     TestRecordListFilter
     """
-    date = django_filters.DateTimeFilter(name='add_time',lookup_expr='gte')
+    date = django_filters.DateTimeFilter(name='add_time',lookup_expr='gt')
 
     class Meta:
         model = TestRecord
