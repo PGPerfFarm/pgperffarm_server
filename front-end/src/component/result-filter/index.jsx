@@ -16,26 +16,35 @@ class ResultFilter extends React.Component {
                 'index': 2,
                 'data': [
                     'All',
-                    'Improving',
-                    'Regressive'
-                ],
-            }, {
-                'cate': 'Category 2',
-                'index': 1,
-                'data': [
-                    'All',
                     '7 days',
                     '30 days'
                 ],
-            }, {
-                'cate': 'Category 3',
-                'index': 1,
-                'data': [
-                    'All',
-                    'item3-1',
-                    'item3-2'
-                ],
             }],
+            // selected: [{
+            //     'cate': 'Category 1',
+            //     'index': 2,
+            //     'data': [
+            //         'All',
+            //         'Improving',
+            //         'Regressive'
+            //     ],
+            // }, {
+            //     'cate': 'Category 2',
+            //     'index': 1,
+            //     'data': [
+            //         'All',
+            //         '7 days',
+            //         '30 days'
+            //     ],
+            // }, {
+            //     'cate': 'Category 3',
+            //     'index': 1,
+            //     'data': [
+            //         'All',
+            //         'item3-1',
+            //         'item3-2'
+            //     ],
+            // }],
             isClear: true
         };
 
