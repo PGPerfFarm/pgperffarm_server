@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDom from 'react-dom';
 import {BrowserRouter as Router, Route, Link, Redirect, Switch} from 'react-router-dom';
+import createHistory from 'history/createHashHistory'
+const history = createHistory()
 import {spring, AnimatedRoute, AnimatedSwitch} from 'react-router-transition';
 // layout
 import Layout from 'component/layout/index.jsx'
@@ -56,20 +58,21 @@ class App extends React.Component {
     render() {
         let LayoutRouter = (
             <Layout>
-                    <Route exact path="/login" component={Login}/>
+                    <Route exact path="/login/" component={Login}/>
                     <Route exact path="/" component={Home}/>
 
-                    <Route exact path="/home" component={Home}/>
-                    <Route exact path="/status" component={Status}/>
-                    <Route exact path="/ppolicy" component={PPolicy}/>
-                    <Route exact path="/detail" component={DetailInfo}/>
+                    <Route exact path="/home/" component={Home}/>
+                    <Route exact path="/status/" component={Status}/>
+                    <Route exact path="/ppolicy/" component={PPolicy}/>
+                    <Route path="/detailInfo/:uuid" component={DetailInfo}/>
+                    {/*<Route path="/detail/:uuid" component={DetailInfo}/>*/}
                     {/*<Redirect exact from="/order" to="/order/index"/>*/}
                     {/*<Redirect exact from="/user" to="/user/index"/>*/}
                     {/*<Route component={ErrorPage}/>*/}
             </Layout>
         );
         return (
-            <Router>
+            <Router history={history}>
                 <AnimatedSwitch
                     atEnter={bounceTransition.atEnter}
                     atLeave={bounceTransition.atLeave}

@@ -1,7 +1,6 @@
 import React from 'react';
 import './index.css';
-import {Table, Divider, Segment, Image, Label, Card, Button} from 'semantic-ui-react'
-import TestResultCard from 'component/test-result-card/index.jsx';
+import {Table, Divider, Segment, Image, Label, Card, Button, List, Icon} from 'semantic-ui-react'
 import PGUtil        from 'util/util.jsx'
 import Record      from 'service/record-service.jsx'
 const _util = new PGUtil();
@@ -10,9 +9,8 @@ class DetailInfo extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            recordNo: 1,
-            detailInfo: {},
-
+            recordNo: this.props.match.params.uuid,
+            recordInfo: {},
         }
 
         // this.onPageChange = this.onPageChange.bind(this);
@@ -42,23 +40,35 @@ class DetailInfo extends React.Component {
         return (
             <div className="container-fluid detail-container">
                 <div className="col-md-3">
+                    <h2>{this.state.recordNo}</h2>
                     <Segment vertical>Farmer Info</Segment>
                     <Card>
                         <Card.Content>
-                            <Image floated='right' size='mini' src='http://www.semantic-ui.cn/images/avatar2/small/lena.png' />
-                            <Card.Header>Steve Sanders</Card.Header>
-                            <Card.Meta>Friends of Elliot</Card.Meta>
+                            <Image floated='right' size='mini'
+                                   src='http://www.semantic-ui.cn/images/avatar2/small/lena.png'/>
+                            <Card.Header>Farmer: Cabbage</Card.Header>
+                            <Card.Meta>report num: 4</Card.Meta>
                             <Card.Description>
-                                Steve wants to add you to the group <strong>best friends</strong>
+                                <List>
+                                    <List.Item icon='computer' content='ubuntu 16' />
+                                    <List.Item icon='microchip' content='x86 64' />
+                                    <List.Item
+                                        icon='mail'
+                                        content={<a href='mailto:jack@semantic-ui.com'>mahongyuan1997@semantic-ui.com</a>}
+                                    />
+                                </List>
+                                {/*<div>*/}
+                                    {/*<ul className="list-group" >*/}
+                                        {/*<li className="list-group-item">system os:ubuntu 16</li>*/}
+                                        {/*<li className="list-group-item">camp: x86 64</li>*/}
+                                    {/*</ul>*/}
+                                {/*</div>*/}
                             </Card.Description>
                         </Card.Content>
                         <Card.Content extra>
                             <div className='ui two buttons'>
                                 <Button basic color='green'>
-                                    Approve
-                                </Button>
-                                <Button basic color='red'>
-                                    Decline
+                                    Other records
                                 </Button>
                             </div>
                         </Card.Content>

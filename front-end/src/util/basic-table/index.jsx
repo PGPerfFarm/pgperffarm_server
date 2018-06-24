@@ -1,4 +1,5 @@
 import React from 'react';
+import {Link}     from 'react-router-dom';
 import {Icon, Table, Label, Message, Button} from 'semantic-ui-react'
 import Pagination from 'util/pagination/index.jsx'
 import './index.css';
@@ -26,7 +27,6 @@ class BasicTable extends React.Component {
             currentPage: 1,
         }
     }
-
 
 
     onPageNumChange(current) {
@@ -81,11 +81,9 @@ class BasicTable extends React.Component {
                         <Bubble num={trend.regressive} name="regressive"/>
                     </Table.Cell>
                     <Table.Cell textAlign='center'>
-                        <a color='linkedin' href={'detailInfo/' + record.uuid}>
-                            {/*<Button size='mini' color='linkedin'>*/}
+                        <Link color='linkedin' to={'detailInfo/' + record.uuid}>
                             <Icon name='linkify'/> Link
-                            {/*</Button>*/}
-                        </a>
+                        </Link>
                     </Table.Cell>
                     {/*date*/}
                     <Table.Cell>{record.add_time}</Table.Cell>
