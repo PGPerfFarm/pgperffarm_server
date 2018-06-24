@@ -33,6 +33,7 @@ class FarmerCard extends React.Component {
                     </Card.Content>
                     <Card.Content extra>
                         <div className='ui buttons'>
+                            {/*todo link to machine page*/}
                             <Button basic color='blue'>
                                 Other records
                             </Button>

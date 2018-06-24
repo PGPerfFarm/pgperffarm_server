@@ -216,6 +216,8 @@ class TestResult(models.Model):
     clients = models.IntegerField(verbose_name="clients", help_text="clients of the test result")
     start = models.DecimalField(max_digits=16, decimal_places=6, verbose_name="start",
                                 help_text="starttime of the test result")
+    tps = models.DecimalField(default=0,max_digits=18, decimal_places=6, verbose_name="tps",
+                                help_text="tps of the test result")
     run = models.IntegerField(verbose_name="run", help_text="run number")
     threads = models.IntegerField(verbose_name="threads", help_text="threads of the test result")
 
