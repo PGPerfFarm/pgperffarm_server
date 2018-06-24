@@ -2,6 +2,7 @@ import React from 'react';
 import './index.css';
 import {Table, Divider, Segment, Image, Label, Card, Button, List, Icon} from 'semantic-ui-react'
 import PGUtil        from 'util/util.jsx'
+import FarmerCard      from 'component/farmer-card/index.jsx'
 import Record      from 'service/record-service.jsx'
 const _util = new PGUtil();
 const _record = new Record();
@@ -27,52 +28,32 @@ class DetailInfo extends React.Component {
         listParam.recordNo = this.state.recordNo;
 
         _record.getRecordInfo(listParam).then(res => {
-            this.setState(res);
-        }, errMsg => {
             this.setState({
-                list: []
+                recordInfo:res
             });
+            console.log(this.state.recordInfo)
+        }, errMsg => {
+            // this.setState({
+            //     recordInfo: {}
+            // });
             _util.errorTips(errMsg);
         });
     }
 
     render() {
+        let machine = this.state.recordInfo.test_machine || {};
+        console.log(machine)
+        // let system = machine.os_name + ' ' + machine.os_version + ' ' + machine.comp_name + ' ' + machine.comp_version;
         return (
             <div className="container-fluid detail-container">
+                <div className="record-title">
+                    <h2 >NO: {this.state.recordNo}</h2>
+                </div>
+
                 <div className="col-md-3">
-                    <h2>{this.state.recordNo}</h2>
+
                     <Segment vertical>Farmer Info</Segment>
-                    <Card>
-                        <Card.Content>
-                            <Image floated='right' size='mini'
-                                   src='http://www.semantic-ui.cn/images/avatar2/small/lena.png'/>
-                            <Card.Header>Farmer: Cabbage</Card.Header>
-                            <Card.Meta>report num: 4</Card.Meta>
-                            <Card.Description>
-                                <List>
-                                    <List.Item icon='computer' content='ubuntu 16' />
-                                    <List.Item icon='microchip' content='x86 64' />
-                                    <List.Item
-                                        icon='mail'
-                                        content={<a href='mailto:jack@semantic-ui.com'>mahongyuan1997@semantic-ui.com</a>}
-                                    />
-                                </List>
-                                {/*<div>*/}
-                                    {/*<ul className="list-group" >*/}
-                                        {/*<li className="list-group-item">system os:ubuntu 16</li>*/}
-                                        {/*<li className="list-group-item">camp: x86 64</li>*/}
-                                    {/*</ul>*/}
-                                {/*</div>*/}
-                            </Card.Description>
-                        </Card.Content>
-                        <Card.Content extra>
-                            <div className='ui two buttons'>
-                                <Button basic color='green'>
-                                    Other records
-                                </Button>
-                            </div>
-                        </Card.Content>
-                    </Card>
+                    <FarmerCard machine={machine}></FarmerCard>
                 </div>
 
                 <div className="col-md-9">
