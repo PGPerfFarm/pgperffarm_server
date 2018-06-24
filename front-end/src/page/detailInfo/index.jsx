@@ -3,6 +3,7 @@ import './index.css';
 import {Table, Divider, Segment, Image, Label, Card, Button, List, Icon} from 'semantic-ui-react'
 import PGUtil        from 'util/util.jsx'
 import FarmerCard      from 'component/farmer-card/index.jsx'
+import InfoList      from 'component/info-list/index.jsx'
 import Record      from 'service/record-service.jsx'
 const _util = new PGUtil();
 const _record = new Record();
@@ -43,7 +44,8 @@ class DetailInfo extends React.Component {
     render() {
         let machine = this.state.recordInfo.test_machine || {};
         let dataset = this.state.recordInfo.dataset_info || {};
-
+        let meta_info = this.state.recordInfo.meta_info || {};
+        let linux_info = this.state.recordInfo.linux_info || {};
         let ro = dataset.ro || {};
         let rw = dataset.rw || {};
         console.log(machine)
@@ -194,19 +196,23 @@ class DetailInfo extends React.Component {
                         {/*</Segment>*/}
 
                         <div>
-                            <h2><a href="#linuxInfo">Linux Info</a></h2>
-                            <div className="" data-example-id="">
-                                <dl>
-                                    <dt><a href="#">Description lists</a></dt>
-                                    <dd>A description list is perfect for defining terms.</dd>
-                                    <dt>Euismod</dt>
-                                    <dd>
-                                    </dd>
-                                    <dd></dd>
-                                    <dt>Malesuada porta</dt>
-                                    <dd>Etiam porta sem malesuada magna mollis euismod.</dd>
-                                </dl>
-                            </div>
+                            {/*<h2><a href="#linuxInfo">Linux Info</a></h2>*/}
+                            {/*<div className="" data-example-id="">*/}
+                                {/*<dl>*/}
+                                    {/*<dt><a href="#">Description lists</a></dt>*/}
+                                    {/*<dd>A description list is perfect for defining terms.</dd>*/}
+                                    {/*<dt>Euismod</dt>*/}
+                                    {/*<dd>*/}
+                                    {/*</dd>*/}
+                                    {/*<dd></dd>*/}
+                                    {/*<dt>Malesuada porta</dt>*/}
+                                    {/*<dd>Etiam porta sem malesuada magna mollis euismod.</dd>*/}
+                                {/*</dl>*/}
+                            {/*</div>*/}
+
+
+                            <InfoList name="Meta" info={meta_info}> </InfoList>
+                            <InfoList name="Linux" info={linux_info}> </InfoList>
                         </div>
 
                     </div>
