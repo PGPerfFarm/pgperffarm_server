@@ -31,3 +31,21 @@
         /*width: 1370px;*/
     /*}*/
 /*}*/
+
+.client-title-div {
+    display: flex;
+    justify-content:space-between;
+    flex-grow:1;
+}
+
+.trend-span .improved{
+     color: #5b8c00!important;
+ }
+
+.trend-span .quo{
+    color: #0050b3!important;
+}
+
+.trend-span .regressive{
+    color: #cf1322!important;
+}

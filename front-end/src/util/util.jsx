@@ -71,6 +71,15 @@ class PGUtil {
     removeStorage(name) {
         window.localStorage.removeItem(name);
     }
+
+    getDateStr(AddDayCount) {
+        let dd = new Date();
+        dd.setDate(dd.getDate()+AddDayCount);
+        let y = dd.getFullYear();
+        let m = (dd.getMonth()+1)<10?"0"+(dd.getMonth()+1):(dd.getMonth()+1);
+        let d = dd.getDate()<10?"0"+dd.getDate():dd.getDate();
+        return y+"-"+m+"-"+d;
+    }
 }
 
 export default PGUtil;

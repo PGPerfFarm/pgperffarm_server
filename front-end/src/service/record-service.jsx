@@ -8,8 +8,10 @@ class Record{
         let url = PGConstant.base_url + '/records';
 
         let data = {};
-        data.page    = listParam.page;
+        data = listParam;
 
+        console.log('final data')
+        console.dir(listParam);
         return _util.request({
             type    : 'get',
             url     : url,
