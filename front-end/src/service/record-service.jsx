@@ -8,8 +8,10 @@ class Record{
         let url = PGConstant.base_url + '/records';
 
         let data = {};
-        data.page    = listParam.page;
+        data = listParam;
 
+        console.log('final data')
+        console.dir(listParam);
         return _util.request({
             type    : 'get',
             url     : url,
@@ -18,15 +20,13 @@ class Record{
     }
 
     // get record detail info
-    getRecordInfo(recordId){
-        let url = PGConstant.base_url + '/detail';
-
+    getRecordInfo(listParam){
+        let url = PGConstant.base_url + '/detail/';
+        url = url + listParam.recordNo
         return _util.request({
             type    : 'get',
-            url     : '/detail',
-            data    : {
-                productId : recordId || 0
-            }
+            url     : url,
+            // data    : {'Ldw7RrdP7jj4q89kgXCfeY'}
         });
     }
 }

@@ -1,5 +1,7 @@
 import React from 'react';
 import Pagination from 'util/pagination/index.jsx';
+import PGUtil        from 'util/util.jsx'
+const _util = new PGUtil();
 import './index.css';
 
 class ResultFilter extends React.Component {
@@ -13,29 +15,39 @@ class ResultFilter extends React.Component {
             restoreNum: 0,
             selected: [{
                 'cate': 'Category 1',
-                'index': 2,
+                'index': 0,
+                'key': 'date',
                 'data': [
-                    'All',
-                    'Improving',
-                    'Regressive'
-                ],
-            }, {
-                'cate': 'Category 2',
-                'index': 1,
-                'data': [
-                    'All',
-                    '7 days',
-                    '30 days'
-                ],
-            }, {
-                'cate': 'Category 3',
-                'index': 1,
-                'data': [
-                    'All',
-                    'item3-1',
-                    'item3-2'
+                    {'name':'All', 'value':''},
+                    {'name':'7 days', 'value':'7'},
+                    {'name':'30 days', 'value':'30'}
                 ],
             }],
+            // selected: [{
+            //     'cate': 'Category 1',
+            //     'index': 2,
+            //     'data': [
+            //         'All',
+            //         'Improving',
+            //         'Regressive'
+            //     ],
+            // }, {
+            //     'cate': 'Category 2',
+            //     'index': 1,
+            //     'data': [
+            //         'All',
+            //         '7 days',
+            //         '30 days'
+            //     ],
+            // }, {
+            //     'cate': 'Category 3',
+            //     'index': 1,
+            //     'data': [
+            //         'All',
+            //         'item3-1',
+            //         'item3-2'
+            //     ],
+            // }],
             isClear: true
         };
 
@@ -52,7 +64,8 @@ class ResultFilter extends React.Component {
         let cate_index = e.currentTarget.getAttribute("data-cate-index")
 
         let newSelected = this.state.selected;
-
+        console.log('prev index is:' + newSelected[cate_index]["index"])
+        console.log('cur index is:' + item_index)
         if (newSelected[cate_index]["index"] != item_index) {
             newSelected[cate_index]["index"] = item_index;
             this.setState({
@@ -62,22 +75,41 @@ class ResultFilter extends React.Component {
         }
     }
 
-    deleteSelectItemClick(e) {
-
-    }
 
     handleClick() {
         console.log('handleClick!!', this);
-        var self = this;
+        let self = this;
     }
+    getFilterParams() {
+        let params_list = this.state.selected;
+        let result = {};
+        for (let i = 0; i < params_list.length; i++) {
+            let params_item = params_list[i];
+            console.log('cur filter index is:' + params_item.index)
+            let value = params_item.data[params_item.index]['value']
+            let key = params_item.key;
+            if (value){
+                console.log('key is:' + key)
+                if(key == 'date'){
+                    result[key] = _util.getDateStr(value * -1)
+                }else{
+                    result[key] =value
+                }
 
+            }
+
+        }
+        return result
+    }
     applyButtonClick() {
         this.setState({
             // selected: newArr,
             isClear: false
         });
         this.props.onIsLoadingChange(true);
-        this.props.onApplyBtnClick(true);
+        let params = this.getFilterParams()
+        console.dir(params)
+        this.props.onApplyBtnClick(params);
         console.log('isLoading:' + this.props.isLoading)
     }
 
@@ -105,7 +137,7 @@ class ResultFilter extends React.Component {
                     <dd onClick={(e) => this.selectItemClick(e)} key={index} data-cate-name={item["cate"]}
                         data-cate-index={i} data-item-index={index} data-item-name={s}
                         className={is_high_light}><a
-                        href="javascript:void(0);">{s}</a></dd>
+                        href="javascript:void(0);">{s['name']}</a></dd>
                 )
             });
 

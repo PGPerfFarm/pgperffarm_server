@@ -46,9 +46,11 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django_gravatar',
     'rest_framework',
+    'django_filters',
     'rest_framework.authtoken',
     'users',
     'test_records',
+    'crispy_forms',
     'user_operation',
 )
 
@@ -133,6 +135,7 @@ REST_FRAMEWORK = {
     #     'rest_framework.authentication.BasicAuthentication',
     #     'rest_framework.authentication.SessionAuthentication',
     # ),
+    # 'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 20
 }

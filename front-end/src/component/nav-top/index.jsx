@@ -65,10 +65,12 @@ class NavTop extends React.Component {
                         Farm</b></a>
                 </div>
                 <ul className="nav navbar-top-links navbar-left">
-                    <li><a href="/home"> <span className="glyphicon glyphicon-home" aria-hidden="true"></span> Home</a>
+                    <li><Link to="/home"> <span className="glyphicon glyphicon-home" aria-hidden="true"></span> Home</Link>
                     </li>
-                    <li><a href="/status"> <span className="glyphicon glyphicon-tasks" aria-hidden="true"></span> Status</a>
+                    <li><Link to="/status"><span className="glyphicon glyphicon-tasks" aria-hidden="true"></span>Status</Link>
                     </li>
+                    {/*<li><Link to="/classifiedDisplay">分类展示</Link><a href="/status"> <span className="glyphicon glyphicon-tasks" aria-hidden="true"></span> Status</a>*/}
+                    {/*</li>*/}
                     <li><a href="#"> <span className="glyphicon glyphicon-blackboard" aria-hidden="true"></span>Machine</a>
                     </li>
 

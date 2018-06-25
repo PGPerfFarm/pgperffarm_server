@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import django_filters
 import shortuuid
 
 from django.contrib.auth.hashers import make_password
@@ -8,6 +9,7 @@ from django.shortcuts import render
 from rest_framework.pagination import PageNumberPagination
 
 from exception import TestDataUploadError
+from filters import TestRecordListFilter
 from models import UserMachine, TestCategory
 from pgperffarm.settings import DB_ENUM
 from .serializer import TestRecordListSerializer, TestRecordDetailSerializer, LinuxInfoSerializer, MetaInfoSerializer, \
@@ -36,7 +38,8 @@ class TestRecordListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = TestRecord.objects.all().order_by('add_time')
     serializer_class = TestRecordListSerializer
     pagination_class = StandardResultsSetPagination
-
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    filter_class = TestRecordListFilter
 
 class TestRecordDetailViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     """

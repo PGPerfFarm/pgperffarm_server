@@ -51,11 +51,13 @@ class TestResultSerializer(serializers.ModelSerializer):
     '''
     use TestResultSerializer
     '''
-
+    mode = serializers.SerializerMethodField()
     class Meta:
         model = TestResult
         fields = "__all__"
-
+    def get_mode(self, obj):
+        new_dict = {v: k for k, v in DB_ENUM["mode"].items()}
+        return new_dict[obj.mode]
 
 class CreateTestRecordSerializer(serializers.ModelSerializer):
     '''

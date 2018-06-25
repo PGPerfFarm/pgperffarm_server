@@ -30,7 +30,8 @@ class Status extends React.Component {
             ]
 
         },
-            this.onPageChange = this.onPageChange.bind(this);
+
+        this.onPageChange = this.onPageChange.bind(this);
         this.onIsLoadingChange = this.onIsLoadingChange.bind(this);
         this.handleApplyBtnClick = this.handleApplyBtnClick.bind(this);
         this.loadRecordList = this.loadRecordList.bind(this);
@@ -40,17 +41,20 @@ class Status extends React.Component {
         this.loadRecordList();
     }
 
-    handleApplyBtnClick() {
-        console.log('apply btn clicked!')
-        this.loadRecordList()
+    handleApplyBtnClick(params) {
+        console.log('handle apply!')
+
+        let self = this
+        this.setState({filter: params}, ()=> {
+            self.loadRecordList()
+        });
     }
 
     // load record list
     loadRecordList(page=1) {
         let _this = this;
         let listParam = {};
-        listParam.filter = this.state.filter;
-
+        listParam= this.state.filter;
         listParam.page = page;
 
         _record.getRecordList(listParam).then(res => {
@@ -70,7 +74,6 @@ class Status extends React.Component {
             console.log(errMsg)
             _this.changeIsLoading(false);
         });
-
 
         console.log(this.state.list)
     }
@@ -92,7 +95,7 @@ class Status extends React.Component {
     onIsLoadingChange(flag) {
         console.log('flag:' + flag)
         this.setState({
-            isLoading: flag
+            isLoading: flag,
         });
         console.log('status isLoading:' + this.state.isLoading)
     }

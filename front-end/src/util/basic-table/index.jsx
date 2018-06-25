@@ -1,7 +1,56 @@
 import React from 'react';
-import {Icon, Table, Menu, Message, Button} from 'semantic-ui-react'
+import {Link}     from 'react-router-dom';
+import {Icon, Table, Label, Message, Button} from 'semantic-ui-react'
 import Pagination from 'util/pagination/index.jsx'
 import './index.css';
+
+function Bubble(props) {
+
+    if (props.num <= 0) {
+        return null;
+    }
+    let className = props.name + 'IconClassName';
+    return (
+        <Label circular size="mini" className={"mini-label " + className}>
+            {props.num}
+        </Label>
+    );
+}
+
+//todo
+// function TrendCell(trend) {
+//     const isNull = !list;
+//     const isEmpty = !isNull && !list.length;
+//     let improvedIconClassName = trend.improved > 0 ? 'improved' : 'anonymous'
+//     let quoIconClassName = trend.quo > 0 ? 'quo' : 'anonymous'
+//     let regressiveIconClassName = trend.regressive > 0 ? 'regressive' : 'anonymous'
+//     if (!trend.is_first) {
+//         return (
+//             <Table.Cell  textAlign='center'>
+//                 first report
+//             </Table.Cell>
+//         );
+//     } else {
+//         return (
+//             <div>
+//                 <Table.Cell textAlign='center'>
+//                     <Icon className={"bgc-clear " + improvedIconClassName} name='smile outline' size='large'/>
+//                     <Bubble num={trend.improved} name="improved"/>
+//                 </Table.Cell>
+//                 <Table.Cell textAlign='center'>
+//                     <Icon className={"bgc-clear " + quoIconClassName} name='meh outline' size='large'/>
+//                     <Bubble num={trend.quo} name="quo"/>
+//                 </Table.Cell>
+//                 <Table.Cell textAlign='center'>
+//                     <Icon className={"bgc-clear " + regressiveIconClassName} name='frown outline'
+//                           size='large'/>
+//                     <Bubble num={trend.regressive} name="regressive"/>
+//                 </Table.Cell>
+//             </div>
+//         );
+//     }
+//
+// }
 
 // general basic table
 class BasicTable extends React.Component {
@@ -14,9 +63,10 @@ class BasicTable extends React.Component {
         }
     }
 
-    onPageNumChange(current){
+
+    onPageNumChange(current) {
         this.setState({
-            currentPage : current
+            currentPage: current
         }, () => {
             this.props.loadfunc(current);
         });
@@ -36,6 +86,9 @@ class BasicTable extends React.Component {
             let branch = record.pg_info.pg_branch;
 
             let trend = record.trend
+            let improvedIconClassName = trend.improved > 0 ? 'improved' : 'anonymous'
+            let quoIconClassName = trend.quo > 0 ? 'quo' : 'anonymous'
+            let regressiveIconClassName = trend.regressive > 0 ? 'regressive' : 'anonymous'
             return (
 
                 <Table.Row key={index}>
@@ -49,24 +102,31 @@ class BasicTable extends React.Component {
                     <Table.Cell>{branch}</Table.Cell>
 
                     {/*trending-data*/}
+
                     <Table.Cell textAlign='center'>
-                        <Icon color='green' name='checkmark' size='large'/>{trend.improved}
+                        <Icon className={"bgc-clear " + improvedIconClassName} name='smile outline' size='large'/>
+                        <Bubble num={trend.improved} name="improved"/>
                     </Table.Cell>
                     <Table.Cell textAlign='center'>
-                        <Icon color='green' name='meh' size='large'/>{trend.quo}
+                        <Icon className={"bgc-clear " + quoIconClassName} name='meh outline' size='large'/>
+                        <Bubble num={trend.quo} name="quo"/>
                     </Table.Cell>
                     <Table.Cell textAlign='center'>
-                        <i className="fa fa-meh-o"></i>{trend.regressive}
+                        <Icon className={"bgc-clear " + regressiveIconClassName} name='frown outline'
+                              size='large'/>
+                        <Bubble num={trend.regressive} name="regressive"/>
                     </Table.Cell>
+
+
                     <Table.Cell textAlign='center'>
-                        <a href={'detail/' + record.uuid}>
-                            <Button size='mini' color='linkedin'>
-                                <Icon name='linkify' /> Link
-                            </Button>
-                        </a>
+                        <Link color='linkedin' to={'detailInfo/' + record.uuid}>
+                            <Icon name='linkify'/> Link
+                        </Link>
                     </Table.Cell>
+
+
                     {/*date*/}
-                    <Table.Cell>{new Date().toDateString()}</Table.Cell>
+                    <Table.Cell>{record.add_time}</Table.Cell>
                 </Table.Row>
             );
         });
@@ -97,18 +157,19 @@ class BasicTable extends React.Component {
                     <Table.Row>
                         <Table.HeaderCell colSpan='10'>
                             {/*<Menu size='small' floated='right' pagination>*/}
-                                {/*<Menu.Item as='a' icon>*/}
-                                    {/*<Icon name='chevron left'/>*/}
-                                {/*</Menu.Item>*/}
-                                {/*<Menu.Item as='a'>1</Menu.Item>*/}
-                                {/*<Menu.Item as='a'>2</Menu.Item>*/}
-                                {/*<Menu.Item as='a'>3</Menu.Item>*/}
-                                {/*<Menu.Item as='a'>4</Menu.Item>*/}
-                                {/*<Menu.Item as='a' icon>*/}
-                                    {/*<Icon name='chevron right'/>*/}
-                                {/*</Menu.Item>*/}
+                            {/*<Menu.Item as='a' icon>*/}
+                            {/*<Icon name='chevron left'/>*/}
+                            {/*</Menu.Item>*/}
+                            {/*<Menu.Item as='a'>1</Menu.Item>*/}
+                            {/*<Menu.Item as='a'>2</Menu.Item>*/}
+                            {/*<Menu.Item as='a'>3</Menu.Item>*/}
+                            {/*<Menu.Item as='a'>4</Menu.Item>*/}
+                            {/*<Menu.Item as='a' icon>*/}
+                            {/*<Icon name='chevron right'/>*/}
+                            {/*</Menu.Item>*/}
                             {/*</Menu>*/}
-                            <Pagination style={style} onChange={(current) => this.onPageNumChange(current)} pageSize={2} current={this.state.currentPage} total={this.props.total}/>
+                            <Pagination style={style} onChange={(current) => this.onPageNumChange(current)} pageSize={2}
+                                        current={this.state.currentPage} total={this.props.total}/>
 
                         </Table.HeaderCell>
 
@@ -118,6 +179,8 @@ class BasicTable extends React.Component {
         );
 
     }
+
+
 }
 
 export default BasicTable;

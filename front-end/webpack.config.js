@@ -14,26 +14,26 @@ module.exports = {
     },
     resolve: {
         // extensions: ['', '.js', '.jsx'],
-        alias : {
-            page : path.resolve(__dirname, 'src/page'),
-            image : path.resolve(__dirname, 'src/image'),
-            component : path.resolve(__dirname, 'src/component'),
-            service : path.resolve(__dirname, 'src/service'),
-            util : path.resolve(__dirname, 'src/util'),
+        alias: {
+            page: path.resolve(__dirname, 'src/page'),
+            image: path.resolve(__dirname, 'src/image'),
+            component: path.resolve(__dirname, 'src/component'),
+            service: path.resolve(__dirname, 'src/service'),
+            util: path.resolve(__dirname, 'src/util'),
         }
     },
 
     module: {
         rules: [{
-                test: /\.jsx$/,
-                exclude: /(node_modules)/,
-                use: {
-                    loader: 'babel-loader',
-                    options: {
-                        presets: ['env', 'react']
-                    }
-                },
+            test: /\.jsx$/,
+            exclude: /(node_modules)/,
+            use: {
+                loader: 'babel-loader',
+                options: {
+                    presets: ['env', 'react']
+                }
             },
+        },
             {
                 test: /\.css$/,
                 use: ExtractTextPlugin.extract({
@@ -83,7 +83,7 @@ module.exports = {
         })
     ],
     devServer: {
-        contentBase: path.join(__dirname, "dist"),
+        contentBase: path.join(__dirname, "/dist/"),
         //compress: true,
         port: 8086,
         historyApiFallback: true,
