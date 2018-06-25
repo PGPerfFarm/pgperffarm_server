@@ -17,7 +17,7 @@ class FarmerCard extends React.Component {
                 <Card>
                     <Card.Content>
                         <Image floated='right' size='mini'
-                               src='http://www.semantic-ui.cn/images/avatar2/small/lena.png'/>
+                               src={machine.avatar}/>
                         <Card.Header>Farmer: {machine.alias}</Card.Header>
                         <Card.Meta>report num: {machine.reports}</Card.Meta>
                         <Card.Description>

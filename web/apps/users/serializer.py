@@ -3,6 +3,7 @@ from rest_framework import serializers
 from test_records.models import TestRecord
 from users.models import UserMachine, Alias, UserProfile
 from django.db.models import Q
+import hashlib
 
 class AliasSerializer(serializers.ModelSerializer):
     '''
@@ -21,10 +22,11 @@ class UserMachineSerializer(serializers.ModelSerializer):
     alias = serializers.SerializerMethodField()
     reports = serializers.SerializerMethodField()
     owner = serializers.SerializerMethodField()
+    avatar = serializers.SerializerMethodField()
     class Meta:
         model = UserMachine
         # fields = "__all__"
-        fields = ('alias', 'os_name', 'os_version', 'comp_name', 'comp_version', 'reports', 'owner')
+        fields = ('alias', 'os_name', 'os_version', 'comp_name', 'comp_version', 'reports', 'owner' , 'avatar')
 
     def get_alias(self, obj):
         target_alias = Alias.objects.filter(id=obj.alias_id).first()
@@ -40,3 +42,10 @@ class UserMachineSerializer(serializers.ModelSerializer):
         target_owner = UserProfile.objects.filter(id=obj.machine_owner_id).values('email').first()
 
         return target_owner['email']
+
+    def get_avatar(self, obj):
+        target_owner = UserProfile.objects.filter(id=obj.machine_owner_id).values('email').first()
+
+        avatar = 'http://s.gravatar.com/avatar/' + hashlib.md5(target_owner['email']).hexdigest()
+        print avatar
+        return  avatar

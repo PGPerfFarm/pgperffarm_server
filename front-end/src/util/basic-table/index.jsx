@@ -17,6 +17,41 @@ function Bubble(props) {
     );
 }
 
+//todo
+// function TrendCell(trend) {
+//     const isNull = !list;
+//     const isEmpty = !isNull && !list.length;
+//     let improvedIconClassName = trend.improved > 0 ? 'improved' : 'anonymous'
+//     let quoIconClassName = trend.quo > 0 ? 'quo' : 'anonymous'
+//     let regressiveIconClassName = trend.regressive > 0 ? 'regressive' : 'anonymous'
+//     if (!trend.is_first) {
+//         return (
+//             <Table.Cell  textAlign='center'>
+//                 first report
+//             </Table.Cell>
+//         );
+//     } else {
+//         return (
+//             <div>
+//                 <Table.Cell textAlign='center'>
+//                     <Icon className={"bgc-clear " + improvedIconClassName} name='smile outline' size='large'/>
+//                     <Bubble num={trend.improved} name="improved"/>
+//                 </Table.Cell>
+//                 <Table.Cell textAlign='center'>
+//                     <Icon className={"bgc-clear " + quoIconClassName} name='meh outline' size='large'/>
+//                     <Bubble num={trend.quo} name="quo"/>
+//                 </Table.Cell>
+//                 <Table.Cell textAlign='center'>
+//                     <Icon className={"bgc-clear " + regressiveIconClassName} name='frown outline'
+//                           size='large'/>
+//                     <Bubble num={trend.regressive} name="regressive"/>
+//                 </Table.Cell>
+//             </div>
+//         );
+//     }
+//
+// }
+
 // general basic table
 class BasicTable extends React.Component {
     constructor(props) {
@@ -67,6 +102,7 @@ class BasicTable extends React.Component {
                     <Table.Cell>{branch}</Table.Cell>
 
                     {/*trending-data*/}
+
                     <Table.Cell textAlign='center'>
                         <Icon className={"bgc-clear " + improvedIconClassName} name='smile outline' size='large'/>
                         <Bubble num={trend.improved} name="improved"/>
@@ -80,11 +116,15 @@ class BasicTable extends React.Component {
                               size='large'/>
                         <Bubble num={trend.regressive} name="regressive"/>
                     </Table.Cell>
+
+
                     <Table.Cell textAlign='center'>
                         <Link color='linkedin' to={'detailInfo/' + record.uuid}>
                             <Icon name='linkify'/> Link
                         </Link>
                     </Table.Cell>
+
+
                     {/*date*/}
                     <Table.Cell>{record.add_time}</Table.Cell>
                 </Table.Row>

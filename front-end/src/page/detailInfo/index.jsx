@@ -73,7 +73,7 @@ class DetailInfo extends React.Component {
             });
 
             return (
-                <Table celled striped key={key}>
+                <Table celled striped>
                     <Table.Header>
                         <Table.Row>
                             <Table.HeaderCell colSpan="4">Clients:{key} scale:10 <a href=""> >>prev</a>

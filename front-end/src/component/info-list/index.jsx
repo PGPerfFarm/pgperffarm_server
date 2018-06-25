@@ -7,6 +7,13 @@ class InfoList extends React.Component {
         super(props);
     }
 
+    scrollToAnchor(anchorName)  {
+        if (anchorName) {
+            let anchorElement = document.getElementById(anchorName);
+            if(anchorElement) { anchorElement.scrollIntoView(); }
+        }
+    }
+
     render() {
         let info = this.props.info
         let name = this.props.name
@@ -14,7 +21,8 @@ class InfoList extends React.Component {
             let _list2 = 0
             return (
                 <List.Item as='li'>
-                    <h3>{key}</h3>
+                    <a href='javascript:void(0)' id={'name'+key} onClick={()=>this.scrollToAnchor('name' + key)}><h3>{'name' + key}</h3></a>
+                    {/*<h3>{key}</h3>*/}
                     <List.List as='ul'>
                         <List.Item className="clear-list-style" >{info[key]}</List.Item>
                     </List.List>
@@ -25,7 +33,8 @@ class InfoList extends React.Component {
             <List className='info-list' as='ul'>
 
                 <List.Item as='li'>
-                    <h2>{name} Info</h2>
+
+                    <a href='javascript:void(0)' id={name + 'Info'} onClick={()=>this.scrollToAnchor(name + 'Info')}><h2>{name} Info</h2></a>
                     <List.List as='ul'>
 
                         {_list}
