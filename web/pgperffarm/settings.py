@@ -142,8 +142,8 @@ REST_FRAMEWORK = {
 
 DB_ENUM = {
     "mode":{
-        "simple":1,
-        "other":2
+        "simple":'simple',
+        "other":'other'
     },
     "status": {
         "none": -1,
@@ -185,3 +185,4 @@ CORS_ALLOW_HEADERS = (
     'x-requested-with',
     'Pragma',
 )
+ALLOWED_HOSTS = ['*']
