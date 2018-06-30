@@ -33,7 +33,7 @@ class InfoList extends React.Component {
 
                  Item = (
                     <List.Item className='clear-list-style' key={i} value='-'>
-                        <Accordion className='pre' defaultActiveIndex={[0, 0]} panels={panel} exclusive={false} fluid />
+                        <Accordion className='pre' defaultActiveIndex={[]} panels={panel} exclusive={false} fluid />
 
                         {/*<a href='javascript:void(0)' id={'' + child} onClick={() => this.scrollToAnchor('' + child)}>*/}
                             {/*<h3>{'' + child}301</h3></a>*/}

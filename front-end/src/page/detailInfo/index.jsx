@@ -43,8 +43,8 @@ class DetailInfo extends React.Component {
     }
 
     render() {
-        let branch =  '';
-        let date =   '';
+        let branch =  this.state.recordInfo.branch || '';
+        let date = this.state.recordInfo.date || '';
         let machine = this.state.recordInfo.test_machine || {};
         let dataset = this.state.recordInfo.dataset_info || {};
         let meta_info = this.state.recordInfo.meta_info || {};

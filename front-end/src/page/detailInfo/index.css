@@ -7,7 +7,10 @@
     justify-content:flex-start;
 
     font-weight: 600;
+}
 
+.record-title-top :first-child{
+    padding-right: 89px;
 }
 
 .card-container{
