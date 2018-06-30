@@ -142,8 +142,8 @@ REST_FRAMEWORK = {
 
 DB_ENUM = {
     "mode":{
-        "simple":'simple',
-        "other":'other'
+        "simple":1,
+        "other":2
     },
     "status": {
         "none": -1,
