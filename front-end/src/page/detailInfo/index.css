@@ -1,6 +1,14 @@
 .record-title{
     padding-left: 14px;
 }
+.record-title-top {
+    display: flex;
+    flex-direction: row;
+    justify-content:flex-start;
+
+    font-weight: 600;
+
+}
 
 .card-container{
     margin-left: 5px;

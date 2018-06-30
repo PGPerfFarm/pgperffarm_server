@@ -27,6 +27,24 @@ class PGInfoSerializer(serializers.ModelSerializer):
         fields = ('pg_branch',)
 
 
+class HardwareInfoDetailSerializer(serializers.ModelSerializer):
+    '''
+    use HardwareInfoDetailSerializer
+    '''
+
+    class Meta:
+        model = LinuxInfo
+        fields = ('cpuinfo', 'meminfo')
+
+class LinuxInfoDetailSerializer(serializers.ModelSerializer):
+    '''
+    use LinuxInfoDetailSerializer
+    '''
+
+    class Meta:
+        model = LinuxInfo
+        fields = ('mounts', 'sysctl')
+
 class LinuxInfoSerializer(serializers.ModelSerializer):
     '''
     use LinuxInfoSerializer
@@ -36,6 +54,15 @@ class LinuxInfoSerializer(serializers.ModelSerializer):
         model = LinuxInfo
         fields = ('mounts', 'cpuinfo', 'sysctl', 'meminfo')
 
+
+class MetaInfoDetailSerializer(serializers.ModelSerializer):
+    '''
+    use MetaInfoSerializer
+    '''
+
+    class Meta:
+        model = MetaInfo
+        fields = ('uname', )
 
 class MetaInfoSerializer(serializers.ModelSerializer):
     '''
@@ -166,16 +193,18 @@ class TestRecordDetailSerializer(serializers.ModelSerializer):
     use ModelSerializer
     '''
     pg_info = PGInfoSerializer()
-    linux_info = LinuxInfoSerializer()
+    linux_info = LinuxInfoDetailSerializer()
     test_machine = UserMachineSerializer()
-    meta_info = MetaInfoSerializer()
+    hardware_info = HardwareInfoDetailSerializer()
+    meta_info = MetaInfoDetailSerializer()
+
     dataset_info = serializers.SerializerMethodField()
 
     # rw_info = serializers.SerializerMethodField()
     class Meta:
         model = TestRecord
         fields = (
-            'uuid', 'pg_info', 'linux_info', 'meta_info', 'dataset_info', 'test_desc', 'meta_time', 'test_machine')
+            'uuid', 'pg_info', 'linux_info', 'hardware_info', 'meta_info', 'dataset_info', 'test_desc', 'meta_time', 'test_machine')
 
     def get_dataset_info(self, obj):
         dataset_list = TestDataSet.objects.filter(test_record_id=obj.id).values_list('test_cate_id').annotate(
