@@ -143,9 +143,9 @@ class BasicTable extends React.Component {
                         <Table.HeaderCell rowSpan='2'>Date</Table.HeaderCell>
                     </Table.Row>
                     <Table.Row>
-                        <Table.HeaderCell>improved</Table.HeaderCell>
-                        <Table.HeaderCell>quo</Table.HeaderCell>
-                        <Table.HeaderCell>regressive</Table.HeaderCell>
+                        <Table.HeaderCell>improvement</Table.HeaderCell>
+                        <Table.HeaderCell>status quo</Table.HeaderCell>
+                        <Table.HeaderCell>regression</Table.HeaderCell>
                     </Table.Row>
 
                 </Table.Header>

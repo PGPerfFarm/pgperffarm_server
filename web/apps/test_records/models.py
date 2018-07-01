@@ -222,7 +222,8 @@ class TestResult(models.Model):
     threads = models.IntegerField(verbose_name="threads", help_text="threads of the test result")
 
     MODE_CHOICE = (
-        (1, 'simple'),
+        ('simple', 1),
+        ('other', 2),
     )
     mode = models.IntegerField(choices=MODE_CHOICE, verbose_name="mode", help_text="test mode")
     add_time = models.DateTimeField(default=timezone.now, verbose_name="test result added time")

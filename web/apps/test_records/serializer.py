@@ -27,6 +27,24 @@ class PGInfoSerializer(serializers.ModelSerializer):
         fields = ('pg_branch',)
 
 
+class HardwareInfoDetailSerializer(serializers.ModelSerializer):
+    '''
+    use HardwareInfoDetailSerializer
+    '''
+
+    class Meta:
+        model = LinuxInfo
+        fields = ('cpuinfo', 'meminfo')
+
+class LinuxInfoDetailSerializer(serializers.ModelSerializer):
+    '''
+    use LinuxInfoDetailSerializer
+    '''
+
+    class Meta:
+        model = LinuxInfo
+        fields = ('mounts', 'sysctl')
+
 class LinuxInfoSerializer(serializers.ModelSerializer):
     '''
     use LinuxInfoSerializer
@@ -36,6 +54,15 @@ class LinuxInfoSerializer(serializers.ModelSerializer):
         model = LinuxInfo
         fields = ('mounts', 'cpuinfo', 'sysctl', 'meminfo')
 
+
+class MetaInfoDetailSerializer(serializers.ModelSerializer):
+    '''
+    use MetaInfoSerializer
+    '''
+
+    class Meta:
+        model = MetaInfo
+        fields = ('uname', )
 
 class MetaInfoSerializer(serializers.ModelSerializer):
     '''
@@ -165,17 +192,38 @@ class TestRecordDetailSerializer(serializers.ModelSerializer):
     '''
     use ModelSerializer
     '''
+    branch = serializers.SerializerMethodField()
+    date = serializers.SerializerMethodField()
     pg_info = PGInfoSerializer()
-    linux_info = LinuxInfoSerializer()
+    linux_info = LinuxInfoDetailSerializer()
     test_machine = UserMachineSerializer()
-    meta_info = MetaInfoSerializer()
+    hardware_info = serializers.SerializerMethodField()
+    meta_info = MetaInfoDetailSerializer()
+
     dataset_info = serializers.SerializerMethodField()
 
     # rw_info = serializers.SerializerMethodField()
     class Meta:
         model = TestRecord
         fields = (
-            'uuid', 'pg_info', 'linux_info', 'meta_info', 'dataset_info', 'test_desc', 'meta_time', 'test_machine')
+            'branch', 'date', 'uuid', 'pg_info', 'linux_info', 'hardware_info', 'meta_info', 'dataset_info', 'test_desc', 'meta_time', 'test_machine')
+
+    def get_branch(self, obj):
+        target_pg_info = PGInfo.objects.filter(id=obj.pg_info.id).first()
+        branch_id = target_pg_info.pg_branch_id
+
+        return branch_id
+
+    def get_date(self, obj):
+        target_meta_info = MetaInfo.objects.filter(id=obj.meta_info.id).first()
+
+        return target_meta_info.date
+
+    def get_hardware_info(self, obj):
+        target_data = LinuxInfo.objects.filter(id=obj.linux_info.id).first()
+
+        hardware_info_serializer = HardwareInfoDetailSerializer(target_data)
+        return hardware_info_serializer.data
 
     def get_dataset_info(self, obj):
         dataset_list = TestDataSet.objects.filter(test_record_id=obj.id).values_list('test_cate_id').annotate(

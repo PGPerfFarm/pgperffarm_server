@@ -185,3 +185,4 @@ CORS_ALLOW_HEADERS = (
     'x-requested-with',
     'Pragma',
 )
+ALLOWED_HOSTS = ['*']

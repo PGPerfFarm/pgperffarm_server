@@ -1,3 +1,18 @@
+.record-title{
+    padding-left: 14px;
+}
+.record-title-top {
+    display: flex;
+    flex-direction: row;
+    justify-content:flex-start;
+
+    font-weight: 600;
+}
+
+.record-title-top :first-child{
+    padding-right: 89px;
+}
+
 .card-container{
     margin-left: 5px;
     margin-right: 5px;

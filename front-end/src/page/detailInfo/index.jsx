@@ -1,6 +1,6 @@
 import React from 'react';
 import './index.css';
-import {Table, Divider, Segment, Image, Label, Card, Button, List, Icon} from 'semantic-ui-react'
+import {Table, Divider, Segment, Icon} from 'semantic-ui-react'
 import PGUtil        from 'util/util.jsx'
 import FarmerCard      from 'component/farmer-card/index.jsx'
 import InfoList      from 'component/info-list/index.jsx'
@@ -43,10 +43,13 @@ class DetailInfo extends React.Component {
     }
 
     render() {
+        let branch =  this.state.recordInfo.branch || '';
+        let date = this.state.recordInfo.date || '';
         let machine = this.state.recordInfo.test_machine || {};
         let dataset = this.state.recordInfo.dataset_info || {};
         let meta_info = this.state.recordInfo.meta_info || {};
         let linux_info = this.state.recordInfo.linux_info || {};
+        let hardware_info = this.state.recordInfo.hardware_info || {};
         let ro = dataset.ro || {};
         let rw = dataset.rw || {};
         console.log(machine)
@@ -202,6 +205,11 @@ class DetailInfo extends React.Component {
         return (
             <div className="container-fluid detail-container">
                 <div className="record-title">
+
+                    <div className="record-title-top">
+                        <span>Branch: {branch}</span>
+                        <span>Date: {date}</span>
+                    </div>
                     <h2 >NO: {this.state.recordNo}</h2>
                 </div>
 
@@ -209,7 +217,7 @@ class DetailInfo extends React.Component {
 
                     <Segment vertical>Farmer Info</Segment>
                     <FarmerCard machine={machine}></FarmerCard>
-                    //todo add a catalog
+                    {/*//todo add a catalog*/}
                 </div>
 
                 <div className="col-md-9">
@@ -285,7 +293,8 @@ class DetailInfo extends React.Component {
 
 
                             <InfoList name="Meta" info={meta_info}> </InfoList>
-                            <InfoList name="Linux" info={linux_info}> </InfoList>
+                            <InfoList name="Operating System" info={linux_info}> </InfoList>
+                            <InfoList name="Hardward" info={hardware_info}> </InfoList>
                         </div>
 
                     </div>

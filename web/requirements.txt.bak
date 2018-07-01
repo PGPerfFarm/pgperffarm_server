@@ -1,0 +1,8 @@
+Django==1.11.10
+django-gravatar2==1.4.0
+pycrypto==2.6.1
+psycopg2==2.7.4
+django-filter==1.1.0
+djangorestframework==3.8.1
+Markdown==2.6.11
+pytz==2018.3
