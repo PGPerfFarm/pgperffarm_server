@@ -165,8 +165,7 @@ class TestRecordListSerializer(serializers.ModelSerializer):
     def get_machine_info(self, obj):
         machine_data = UserMachine.objects.filter(id=obj.test_machine_id)
 
-        machine_info_serializer = UserMachineSerializer(machine_data, many=True,
-                                                        context={'request': self.context['request']})
+        machine_info_serializer = UserMachineSerializer(machine_data, many=True)
         return machine_info_serializer.data
 
     # def get_client_max_num(self, obj):
@@ -272,3 +271,26 @@ class TestRecordDetailSerializer(serializers.ModelSerializer):
     #
     #     rw_info_serializer = TestResultSerializer(all_data, many=True, context={'request': self.context['request']})
     #     return rw_info_serializer.data
+
+class MachineHistoryRecordSerializer(serializers.ModelSerializer):
+    '''
+    use MachineHistoryRecordSerializer
+    '''
+    machine_info = serializers.SerializerMethodField()
+    reports = serializers.SerializerMethodField()
+
+    class Meta:
+        model = UserMachine
+        fields = ('machine_info', 'reports')
+
+    def get_reports(self, obj):
+        target_records = TestRecord.objects.filter(test_machine_id=obj.id)
+        serializer = TestRecordListSerializer(target_records,many=True)
+
+        return serializer.data
+
+    def get_machine_info(self, obj):
+        target_machine = UserMachine.objects.filter(id=obj.id).first()
+        serializer = UserMachineSerializer(target_machine)
+
+        return serializer.data

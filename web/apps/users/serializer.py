@@ -25,7 +25,6 @@ class UserMachineSerializer(serializers.ModelSerializer):
     avatar = serializers.SerializerMethodField()
     class Meta:
         model = UserMachine
-        # fields = "__all__"
         fields = ('alias', 'os_name', 'os_version', 'comp_name', 'comp_version', 'reports', 'owner' , 'avatar')
 
     def get_alias(self, obj):
@@ -49,3 +48,4 @@ class UserMachineSerializer(serializers.ModelSerializer):
         avatar = 'http://s.gravatar.com/avatar/' + hashlib.md5(target_owner['email']).hexdigest()
         print avatar
         return  avatar
+

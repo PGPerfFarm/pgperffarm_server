@@ -19,7 +19,8 @@ from django.views.generic.base import RedirectView
 
 from rest_framework.documentation import include_docs_urls
 from rest_framework.routers import DefaultRouter
-from test_records.views import TestRecordListViewSet, TestRecordCreate, TestRecordDetailViewSet
+from test_records.views import TestRecordListViewSet, TestRecordCreate, TestRecordDetailViewSet, \
+    MachineHistoryRecordViewSet
 from test_records.auth import MachineAuthToken
 # from test_records.view_base import TestListView
 
@@ -31,7 +32,7 @@ from test_records.auth import MachineAuthToken
 router = DefaultRouter()
 router.register(r'records', TestRecordListViewSet, base_name="records")
 router.register(r'detail', TestRecordDetailViewSet, base_name="detail")
-
+router.register(r'machine', MachineHistoryRecordViewSet, base_name="machine")
 # router.register(r'detail', TestRecordListViewSet)
 
 urlpatterns = [
