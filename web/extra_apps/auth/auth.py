@@ -19,7 +19,8 @@
 #
 
 from django.http import HttpResponse, HttpResponseRedirect
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
+from users.models import UserProfile as User
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth import login as django_login
 from django.contrib.auth import logout as django_logout
