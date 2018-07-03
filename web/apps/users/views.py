@@ -3,10 +3,11 @@ from __future__ import unicode_literals
 
 from django.contrib.auth.backends import ModelBackend
 from django.db.models import Q
-from django.shortcuts import render
 
 # Create your views here.
-from models import UserProfile
+from rest_framework import permissions
+
+from .models import UserProfile, UserMachine
 
 
 class CustomBackend(ModelBackend):
@@ -22,3 +23,14 @@ class CustomBackend(ModelBackend):
 
         except Exception as e:
             return None
+
+
+class UserMachinePermission(permissions.BasePermission):
+    """
+    Global permission check for blacklisted IPs.
+    """
+
+    def has_permission(self, request, view):
+        secret = request.data.secret
+        ret = UserMachine.objects.filter(machine_secret=secret,is_active=1).exists()
+        return ret
