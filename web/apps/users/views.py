@@ -27,7 +27,7 @@ class CustomBackend(ModelBackend):
 
 class UserMachinePermission(permissions.BasePermission):
     """
-    Global permission check for blacklisted IPs.
+    Machine permission check
     """
 
     def has_permission(self, request, view):
