@@ -3,17 +3,27 @@ import {Link}     from 'react-router-dom';
 
 import './index.css';
 import slonik from 'image/slonik.png'
-
+import PGUtil    from 'util/util.jsx'
+const _util = new PGUtil();
+import User         from 'service/user-service.jsx'
+const _user = new User();
 
 class NavTop extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {isLoggedIn: true}
+        this.state = {
+            username: _util.getStorage('userInfo').username || ''
+        }
     }
 
-    // log out
-    onLogout() {
-        //todo
+    // logout
+    onLogout(){
+        _user.logout().then(res => {
+            _util.removeStorage('userInfo');
+            window.location.href = '/login';
+        }, errMsg => {
+            _util.errorTips(errMsg);
+        });
     }
 
     render() {

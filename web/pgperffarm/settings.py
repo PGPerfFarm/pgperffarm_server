@@ -46,8 +46,8 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django_gravatar',
     'rest_framework',
-    'django_filters',
     'rest_framework.authtoken',
+    'django_filters',
     'users',
     'test_records',
     'crispy_forms',
@@ -120,7 +120,7 @@ STATICFILES_DIRS = [
 ]
 
 AUTHENTICATION_BACKENDS = (
-    'pgperffarm.auth.AuthBackend',
+    'users.views.CustomBackend',
 )
 AUTH_USER_MODEL = 'users.UserProfile'
 
@@ -130,12 +130,14 @@ REST_FRAMEWORK = {
     #     'rest_framework.permissions.IsAuthenticated',
     # ),
 
-    # 'DEFAULT_AUTHENTICATION_CLASSES': (
-    #     'rest_framework.authentication.TokenAuthentication',
-    #     'rest_framework.authentication.BasicAuthentication',
-    #     'rest_framework.authentication.SessionAuthentication',
-    # ),
     # 'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
+
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        # 'rest_framework.authentication.TokenAuthentication',
+    ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 20
 }

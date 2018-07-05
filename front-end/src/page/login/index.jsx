@@ -1,10 +1,63 @@
 import React from 'react';
 // import './index.css';
+import PGUtil    from 'util/util.jsx'
+const _util = new PGUtil();
+import User         from 'service/user-service.jsx'
+const _user = new User();
 
-class Login extends React.Component{
-    render(){
+class Login extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            username: '',
+            password: '',
+            redirect: 'portal'
+        }
+    }
+
+    componentWillMount() {
+        document.title = 'LOGIN';
+    }
+
+    onInputChange(e) {
+        let inputValue = e.target.value,
+            inputName = e.target.name;
+        this.setState({
+            [inputName]: inputValue
+        });
+    }
+
+    onInputKeyUp(e) {
+        if (e.keyCode === 13) {
+            this.onSubmit();
+        }
+    }
+
+    onSubmit() {
+        let loginInfo = {
+                username: this.state.username,
+                password: this.state.password
+            },
+            checkResult = _user.checkLoginInfo(loginInfo);
+        // check success
+        if (checkResult.status) {
+            _user.login(loginInfo).then((res) => {
+                _util.setStorage('userInfo', res);
+                this.props.history.push(this.state.redirect);
+            }, (errMsg) => {
+                _util.errorTips(errMsg);
+            });
+        }
+        // check failure
+        else {
+            _util.errorTips(checkResult.msg);
+        }
+
+    }
+
+    render() {
         return (
-            <div id="page-wrapper" >
+            <div id="page-wrapper">
                 <div className="row">
                     <div className="col-lg-16">
                         <div className="panel panel-default">
@@ -19,12 +72,17 @@ class Login extends React.Component{
                                         <form role="form">
                                             <div className="form-group">
                                                 {/*<label className="control-label" for="inputLogin"> login input</label>*/}
-                                                <input type="text" className="form-control" id="inputLogin" placeholder="Username or email"/>
+                                                <input type="text" className="form-control" id="inputLogin"
+                                                       placeholder="Username or email"
+                                                       onKeyUp={e => this.onInputKeyUp(e)}
+                                                       onChange={e => this.onInputChange(e)}/>
                                             </div>
                                             <div className="form-group">
-                                                <input type="text" className="form-control" id="inputPwd" placeholder="password"/>
+                                                <input type="text" className="form-control" id="inputPwd"
+                                                       placeholder="password" onKeyUp={e => this.onInputKeyUp(e)}
+                                                       onChange={e => this.onInputChange(e)}/>
                                             </div>
-                                            <button type="submit" className="btn btn-primary">Button</button>
+                                            <button type="submit" className="btn btn-primary"  onClick={e => {this.onSubmit(e)}}>Button</button>
                                         </form>
                                     </div>
                                     {/*<!-- /.col-lg-6 (nested) -->*/}

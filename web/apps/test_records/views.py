@@ -5,23 +5,24 @@ import django_filters
 import shortuuid
 
 from django.contrib.auth.hashers import make_password
-from django.shortcuts import render
 from rest_framework.pagination import PageNumberPagination
 
 from exception import TestDataUploadError
 from filters import TestRecordListFilter
 from models import UserMachine, TestCategory
 from pgperffarm.settings import DB_ENUM
+from users.views import UserMachinePermission
+from .serializer import MachineHistoryRecordSerializer
 from .serializer import TestRecordListSerializer, TestRecordDetailSerializer, LinuxInfoSerializer, MetaInfoSerializer, \
     PGInfoSerializer, CreateTestRecordSerializer, CreateTestDateSetSerializer, TestResultSerializer
-from rest_framework.views import APIView
-from rest_framework.decorators import api_view
+
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import mixins
 from rest_framework import status
-from rest_framework import generics
+
 from rest_framework import viewsets
-from .models import TestRecord, LinuxInfo, MetaInfo, PGInfo, TestBranch
+from .models import TestRecord
 import json
 
 
@@ -48,10 +49,20 @@ class TestRecordDetailViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet
     lookup_field = 'uuid'
     queryset = TestRecord.objects.all().order_by('add_time')
     serializer_class = TestRecordDetailSerializer
-    pagination_class = StandardResultsSetPagination
+    # pagination_class = StandardResultsSetPagination
+
+class MachineHistoryRecordViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    """
+    detail test records
+    """
+    lookup_field = 'machine_sn'
+    queryset = UserMachine.objects.all().order_by('add_time')
+    serializer_class = MachineHistoryRecordSerializer
+    # pagination_class = StandardResultsSetPagination
 
 
 @api_view(['POST'])
+@permission_classes((UserMachinePermission, ))
 def TestRecordCreate(request, format=None):
     """
     Receive data from client
@@ -66,7 +77,7 @@ def TestRecordCreate(request, format=None):
     # jsLoads = json.loads(data[0])
 
     # todo get machine by token
-    test_machine = 1
+    test_machine = UserMachine.objects.filter(secret)
 
     from django.db import transaction
 
@@ -151,7 +162,7 @@ def TestRecordCreate(request, format=None):
                             'metric': dataset['metric'],
                             'median': dataset['median'],
                             'test_cate': test_cate.id,
-                            # status,percentage calc by tarr
+                            # status,percentage calc by receiver
                             'status': -1,
                             'percentage': 0.0,
                         }

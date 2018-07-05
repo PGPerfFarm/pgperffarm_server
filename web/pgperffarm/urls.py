@@ -13,13 +13,16 @@ Including another URLconf
     1. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import include, url
+from rest_framework_jwt.views import obtain_jwt_token
+
 from rest_framework.authtoken import views
 from django.contrib import admin
 from django.views.generic.base import RedirectView
 
 from rest_framework.documentation import include_docs_urls
 from rest_framework.routers import DefaultRouter
-from test_records.views import TestRecordListViewSet, TestRecordCreate, TestRecordDetailViewSet
+from test_records.views import TestRecordListViewSet, TestRecordCreate, TestRecordDetailViewSet, \
+    MachineHistoryRecordViewSet
 from test_records.auth import MachineAuthToken
 # from test_records.view_base import TestListView
 
@@ -31,13 +34,19 @@ from test_records.auth import MachineAuthToken
 router = DefaultRouter()
 router.register(r'records', TestRecordListViewSet, base_name="records")
 router.register(r'detail', TestRecordDetailViewSet, base_name="detail")
-
+router.register(r'machine', MachineHistoryRecordViewSet, base_name="machine")
 # router.register(r'detail', TestRecordListViewSet)
 
 urlpatterns = [
     # url(r'^admin/', admin.site.urls),
     url(r'^api-auth/', include('rest_framework.urls')),
+
+
     url(r'^api-token-auth/', views.obtain_auth_token),
+
+    # login(jwt auth)
+    url(r'^login/', obtain_jwt_token),
+
     url(r'^machine-token-auth/', MachineAuthToken.as_view()),
     url(r'^', include(router.urls)),
     # url(r'status/$', test_record_list, name='test-list'),
