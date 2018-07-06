@@ -25,12 +25,4 @@ class CustomBackend(ModelBackend):
             return None
 
 
-class UserMachinePermission(permissions.BasePermission):
-    """
-    Machine permission check
-    """
 
-    def has_permission(self, request, view):
-        secret = request.data.secret
-        ret = UserMachine.objects.filter(machine_secret=secret,is_active=1).exists()
-        return ret

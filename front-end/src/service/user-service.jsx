@@ -1,5 +1,6 @@
 import PGUtil    from 'util/util.jsx'
 import PGConstant from 'util/constant.jsx'
+
 const _util       = new PGUtil();
 
 class User{
@@ -42,6 +43,7 @@ class User{
             url     : url
         });
     }
+
     // getUserList(pageNum){
     //     # todo
     // }

@@ -11,7 +11,7 @@ class Login extends React.Component {
         this.state = {
             username: '',
             password: '',
-            redirect: 'portal'
+            redirect: _util.getUrlParam('redirect') || 'portal',
         }
     }
 
@@ -42,11 +42,12 @@ class Login extends React.Component {
         // check success
         if (checkResult.status) {
             _user.login(loginInfo).then((res) => {
+                console.dir(res)
                 _util.setStorage('userInfo', res);
                 this.props.history.push(this.state.redirect);
             }, (errMsg) => {
-                console.log(errMsg)
-                // _util.errorTips(errMsg);
+                // console.log(errMsg)
+                _util.errorTips(errMsg);
             });
         }
         // check failure

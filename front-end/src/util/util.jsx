@@ -1,4 +1,6 @@
-const BASE_URL = '127.0.0.1:8000'
+
+import PGConstant from 'util/constant.jsx'
+// const _const = new PGConstant();
 class PGUtil {
     request(param) {
         return new Promise((resolve, reject) => {
@@ -11,22 +13,35 @@ class PGUtil {
                     // request success
 
                     typeof resolve === 'function' && resolve(res, res.msg);
-                    // if (0 === res.status) {
-                    //     typeof resolve === 'function' && resolve(res.data, res.msg);
-                    // }
-                    // // nologin force to login
-                    // else if (10 === res.status) {
-                    //     this.doLogin();
-                    // }
-                    // else {
-                    //     typeof reject === 'function' && reject(res.msg || res.data);
-                    // }
+                    if (0 === res.status) {
+                        typeof resolve === 'function' && resolve(res.data, res.msg);
+                    }
+                    // nologin force to login
+                    else if (PGConstant.USER_UNLOGIN_CODE === res.status) {
+                        this.doLogin();
+                    }
+                    else {
+                        typeof reject === 'function' && reject(res.msg || res.data);
+                    }
                 },
                 error: err => {
                     typeof reject === 'function' && reject(err.statusText);
                 }
             });
         });
+    }
+
+    // redirect to login
+    doLogin(){
+        window.location.href = '/login?redirect=' + encodeURIComponent(window.location.pathname);
+    }
+
+    getUrlParam(name){
+        // param=123&param1=456
+        let queryString = window.location.search.split('?')[1] || '',
+            reg         = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"),
+            result      = queryString.match(reg);
+        return result ? decodeURIComponent(result[2]) : null;
     }
 
     // success tips

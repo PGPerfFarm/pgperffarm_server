@@ -11,7 +11,7 @@ from exception import TestDataUploadError
 from filters import TestRecordListFilter
 from models import UserMachine, TestCategory
 from pgperffarm.settings import DB_ENUM
-from users.views import UserMachinePermission
+from user_operation.views import UserMachinePermission
 from .serializer import MachineHistoryRecordSerializer
 from .serializer import TestRecordListSerializer, TestRecordDetailSerializer, LinuxInfoSerializer, MetaInfoSerializer, \
     PGInfoSerializer, CreateTestRecordSerializer, CreateTestDateSetSerializer, TestResultSerializer
@@ -77,7 +77,7 @@ def TestRecordCreate(request, format=None):
     # jsLoads = json.loads(data[0])
 
     # todo get machine by token
-    test_machine = UserMachine.objects.filter(secret)
+    # test_machine = UserMachine.objects.filter(secret)
 
     from django.db import transaction
 
@@ -162,7 +162,7 @@ def TestRecordCreate(request, format=None):
                             'metric': dataset['metric'],
                             'median': dataset['median'],
                             'test_cate': test_cate.id,
-                            # status,percentage calc by receiver
+                            # status,percentage will calc by receiver
                             'status': -1,
                             'percentage': 0.0,
                         }

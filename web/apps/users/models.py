@@ -43,6 +43,14 @@ class UserMachine(models.Model):
     comp_version = models.CharField(max_length=32, verbose_name="compiler version")
     add_time = models.DateTimeField(default=timezone.now, verbose_name="machine added time")
 
+    STATE_CHOICE = (
+        ('prohibited', -1),
+        ('pending', 0),
+        ('active', 1),
+
+    )
+    state = models.IntegerField(choices=STATE_CHOICE, default=0,verbose_name="state", help_text="machine state")
+
     class Meta:
         verbose_name = "user machines"
         verbose_name_plural = "user machines"

@@ -31,11 +31,16 @@ from test_records.auth import MachineAuthToken
 #     'get': 'list',
 #     'post': 'create'
 # })
+from user_operation.views import UserMachineListViewSet
+
 router = DefaultRouter()
 router.register(r'records', TestRecordListViewSet, base_name="records")
 router.register(r'detail', TestRecordDetailViewSet, base_name="detail")
 router.register(r'machine', MachineHistoryRecordViewSet, base_name="machine")
-# router.register(r'detail', TestRecordListViewSet)
+
+# user's machine manage list
+router.register(r'my-machine', UserMachineListViewSet, base_name="my-machine")
+
 
 urlpatterns = [
     # url(r'^admin/', admin.site.urls),

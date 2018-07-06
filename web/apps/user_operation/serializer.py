@@ -1,19 +1,11 @@
 from rest_framework import serializers
 
+from users.serializer import AliasSerializer
 from test_records.models import TestRecord
 from users.models import UserMachine, Alias, UserProfile
 import hashlib
 
-class AliasSerializer(serializers.ModelSerializer):
-    '''
-    use TestResultSerializer
-    '''
-
-    class Meta:
-        model = Alias
-        fields = ('name', )
-
-class UserMachineSerializer(serializers.ModelSerializer):
+class UserMachineManageSerializer(serializers.ModelSerializer):
     '''
     use UserMachineSerializer
     '''
@@ -24,7 +16,7 @@ class UserMachineSerializer(serializers.ModelSerializer):
     avatar = serializers.SerializerMethodField()
     class Meta:
         model = UserMachine
-        fields = ('alias', 'os_name', 'os_version', 'comp_name', 'comp_version', 'reports', 'owner' , 'avatar')
+        fields = ('alias', 'os_name', 'os_version', 'comp_name', 'comp_version', 'reports', 'owner' , 'avatar', 'state')
 
     def get_alias(self, obj):
         target_alias = Alias.objects.filter(id=obj.alias_id).first()
@@ -47,8 +39,3 @@ class UserMachineSerializer(serializers.ModelSerializer):
         avatar = 'http://s.gravatar.com/avatar/' + hashlib.md5(target_owner['email']).hexdigest()
         print avatar
         return  avatar
-
-class JWTUserProfileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UserProfile
-        fields = ('username', )

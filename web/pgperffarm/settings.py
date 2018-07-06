@@ -188,3 +188,8 @@ CORS_ALLOW_HEADERS = (
     'Pragma',
 )
 ALLOWED_HOSTS = ['*']
+
+JWT_AUTH = {
+    'JWT_RESPONSE_PAYLOAD_HANDLER':
+    'users.jwt_handler.jwt_response_payload_handler',
+}
