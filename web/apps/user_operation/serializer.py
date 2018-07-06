@@ -1,9 +1,12 @@
+from django.db.models import Count
 from rest_framework import serializers
 
+from test_records.serializer import TestRecordListSerializer
 from users.serializer import AliasSerializer
 from test_records.models import TestRecord
-from users.models import UserMachine, Alias, UserProfile
+from users.models import UserMachine, Alias
 import hashlib
+
 
 class UserMachineManageSerializer(serializers.ModelSerializer):
     '''
@@ -12,11 +15,11 @@ class UserMachineManageSerializer(serializers.ModelSerializer):
 
     alias = serializers.SerializerMethodField()
     reports = serializers.SerializerMethodField()
-    owner = serializers.SerializerMethodField()
-    avatar = serializers.SerializerMethodField()
+    lastest = serializers.SerializerMethodField()
+
     class Meta:
         model = UserMachine
-        fields = ('alias', 'os_name', 'os_version', 'comp_name', 'comp_version', 'reports', 'owner' , 'avatar', 'state')
+        fields = ('alias', 'os_name', 'os_version', 'comp_name', 'comp_version', 'reports', 'state', 'lastest')
 
     def get_alias(self, obj):
         target_alias = Alias.objects.filter(id=obj.alias_id).first()
@@ -28,14 +31,19 @@ class UserMachineManageSerializer(serializers.ModelSerializer):
         reports_num = TestRecord.objects.filter(test_machine_id=obj.id).count()
         return reports_num
 
-    def get_owner(self, obj):
-        target_owner = UserProfile.objects.filter(id=obj.machine_owner_id).values('email').first()
+    def get_lastest(self, obj):
+        record_branch_list = TestRecord.objects.filter(test_machine_id=obj.id).values_list(
+            'branch').annotate(Count('id'))
+        # < QuerySet[(1, 4), (2, 5)] >
+        ret = []
+        for branch_item in record_branch_list:
+            branch_name = branch_item[0]
 
-        return target_owner['email']
+            target_record = TestRecord.objects.filter(test_machine_id=obj.id, branch=branch_item[0]).first()
+            serializer = TestRecordListSerializer(target_record)
 
-    def get_avatar(self, obj):
-        target_owner = UserProfile.objects.filter(id=obj.machine_owner_id).values('email').first()
+            dict = {'branch':branch_name,'record':serializer.data}
 
-        avatar = 'http://s.gravatar.com/avatar/' + hashlib.md5(target_owner['email']).hexdigest()
-        print avatar
-        return  avatar
+            ret.append(dict)
+
+        return ret

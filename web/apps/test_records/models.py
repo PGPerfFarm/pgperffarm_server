@@ -11,6 +11,7 @@ class TestBranch(models.Model):
     test brand
     """
     branch_name = models.CharField(max_length=128, verbose_name="branch name", help_text="branch name")
+    branch_order = models.IntegerField(verbose_name=" branch order", help_text="order in all the  branch")
     add_time = models.DateTimeField(default=timezone.now, verbose_name="branch added time",
                                     help_text="branch added time")
 
@@ -87,14 +88,14 @@ class LinuxInfo(models.Model):
 
 class TestRecord(models.Model):
     """
-    tests
+    test record
     """
+    branch = models.ForeignKey(TestBranch, verbose_name="pg branch", help_text="pg branch")
     test_machine = models.ForeignKey(UserMachine, verbose_name="test owner",
                                      help_text="person who add this test item")
     pg_info = models.ForeignKey(PGInfo, verbose_name="pg info", help_text="pg info")
     meta_info = models.ForeignKey(MetaInfo, verbose_name="meta info", help_text="meta info")
     linux_info = models.ForeignKey(LinuxInfo, verbose_name="linux info", help_text="linux info")
-
     test_desc = models.TextField(verbose_name="test desc", help_text="test desc")
     # test_branch_id = models.ForeignKey(TestBranch, verbose_name="test category", help_text="test category")
     meta_time = models.DateTimeField(default=timezone.now, verbose_name="meta time")
@@ -216,8 +217,8 @@ class TestResult(models.Model):
     clients = models.IntegerField(verbose_name="clients", help_text="clients of the test result")
     start = models.DecimalField(max_digits=16, decimal_places=6, verbose_name="start",
                                 help_text="starttime of the test result")
-    tps = models.DecimalField(default=0,max_digits=18, decimal_places=6, verbose_name="tps",
-                                help_text="tps of the test result")
+    tps = models.DecimalField(default=0, max_digits=18, decimal_places=6, verbose_name="tps",
+                              help_text="tps of the test result")
     run = models.IntegerField(verbose_name="run", help_text="run number")
     threads = models.IntegerField(verbose_name="threads", help_text="threads of the test result")
 
