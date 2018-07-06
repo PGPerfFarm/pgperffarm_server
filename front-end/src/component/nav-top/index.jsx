@@ -12,7 +12,8 @@ class NavTop extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            username: _util.getStorage('userInfo').username || ''
+            username: _util.getStorage('userInfo').username || '',
+            isLoggedIn: true
         }
     }
 
@@ -65,12 +66,7 @@ class NavTop extends React.Component {
         return (
             <div className="navbar navbar-default top-navbar" role="navigation">
                 <div className="navbar-header">
-                    {/*<button type="button" className="navbar-toggle" data-toggle="collapse" data-target=".sidebar-collapse">*/}
-                    {/*<span className="sr-only">Toggle navigation</span>*/}
-                    {/*<span className="icon-bar"></span>*/}
-                    {/*<span className="icon-bar"></span>*/}
-                    {/*<span className="icon-bar"></span>*/}
-                    {/*</button>*/}
+
                     <a className="navbar-brand" href="index.html"><img src={require('image/slonik.png')}/><b>PG Perf
                         Farm</b></a>
                 </div>

@@ -4,7 +4,7 @@ const _util       = new PGUtil();
 
 class User{
     login(loginInfo){
-        let url = PGConstant.base_url + '/login';
+        let url = PGConstant.base_url + '/login/';
         return _util.request({
             type: 'post',
             url: url,

@@ -74,7 +74,7 @@ class BasicTable extends React.Component {
     }
 
     render() {
-
+        let branch = record.pg_info.pg_branch;
         let _list = this.props.list
         let style = {
             display: 'show'
@@ -83,7 +83,7 @@ class BasicTable extends React.Component {
             let machine = record.machine_info[0];
             let system = machine.os_name + ' ' + machine.os_version + ' ' + machine.comp_name + ' ' + machine.comp_version;
             let alias = machine.alias;
-            let branch = record.pg_info.pg_branch;
+
 
             let trend = record.trend
             let improvedIconClassName = trend.improved > 0 ? 'improved' : 'anonymous'
@@ -99,7 +99,7 @@ class BasicTable extends React.Component {
                     <Table.Cell><a href="#">{system}</a></Table.Cell>
 
                     {/*branch*/}
-                    <Table.Cell>{branch}</Table.Cell>
+                    {/*<Table.Cell>{branch}</Table.Cell>*/}
 
                     {/*trending-data*/}
 
@@ -135,9 +135,12 @@ class BasicTable extends React.Component {
             <Table celled structured compact textAlign='center'>
                 <Table.Header>
                     <Table.Row>
+                        <Table.HeaderCell rowSpan='9'>Branch: 10_STABLE</Table.HeaderCell>
+                    </Table.Row>
+                    <Table.Row>
                         <Table.HeaderCell rowSpan='2'>Alias</Table.HeaderCell>
                         <Table.HeaderCell rowSpan='2'>System</Table.HeaderCell>
-                        <Table.HeaderCell rowSpan='2'>Branch</Table.HeaderCell>
+                        {/*<Table.HeaderCell rowSpan='2'>Branch</Table.HeaderCell>*/}
                         <Table.HeaderCell colSpan='3'>Trending</Table.HeaderCell>
                         <Table.HeaderCell rowSpan='2'>Detail</Table.HeaderCell>
                         <Table.HeaderCell rowSpan='2'>Date</Table.HeaderCell>

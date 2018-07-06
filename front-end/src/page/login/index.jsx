@@ -45,7 +45,8 @@ class Login extends React.Component {
                 _util.setStorage('userInfo', res);
                 this.props.history.push(this.state.redirect);
             }, (errMsg) => {
-                _util.errorTips(errMsg);
+                console.log(errMsg)
+                // _util.errorTips(errMsg);
             });
         }
         // check failure
@@ -74,15 +75,17 @@ class Login extends React.Component {
                                                 {/*<label className="control-label" for="inputLogin"> login input</label>*/}
                                                 <input type="text" className="form-control" id="inputLogin"
                                                        placeholder="Username or email"
+                                                       name="username"
                                                        onKeyUp={e => this.onInputKeyUp(e)}
                                                        onChange={e => this.onInputChange(e)}/>
                                             </div>
                                             <div className="form-group">
                                                 <input type="text" className="form-control" id="inputPwd"
+                                                       name="password"
                                                        placeholder="password" onKeyUp={e => this.onInputKeyUp(e)}
                                                        onChange={e => this.onInputChange(e)}/>
                                             </div>
-                                            <button type="submit" className="btn btn-primary"  onClick={e => {this.onSubmit(e)}}>Button</button>
+                                            <button type="button" className="btn btn-primary"  onClick={e => {this.onSubmit(e)}}>Button</button>
                                         </form>
                                     </div>
                                     {/*<!-- /.col-lg-6 (nested) -->*/}
