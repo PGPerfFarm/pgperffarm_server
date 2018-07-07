@@ -4,11 +4,15 @@ import PGConstant from 'util/constant.jsx'
 class PGUtil {
     request(param) {
         return new Promise((resolve, reject) => {
+            let user = this.getStorage('userInfo')
             $.ajax({
                 type: param.type || 'get',
                 url: param.url || '',
                 dataType: param.dataType || 'json',
                 data: param.data || null,
+                headers:{
+                    'Authorization': 'Token ' + user.token
+                },
                 success: res => {
                     // request success
 

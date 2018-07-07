@@ -54,6 +54,16 @@ class User{
             }
         });
     }
+
+    getUserInfo(){
+        let url = PGConstant.base_url + '/userinfo';
+        return _util.request({
+            type    : 'get',
+            url     : url,
+            data    : {}
+        });
+    }
+
 }
 
 export default User;

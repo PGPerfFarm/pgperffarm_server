@@ -16,6 +16,7 @@ class UserMachineListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     List test records
     """
     authentication_classes = (JSONWebTokenAuthentication, authentication.SessionAuthentication )
+    permission_classes = (permissions.IsAuthenticated, )
     queryset = UserMachine.objects.all().order_by('add_time')
     serializer_class = UserMachineManageSerializer
     # pagination_class = StandardResultsSetPagination

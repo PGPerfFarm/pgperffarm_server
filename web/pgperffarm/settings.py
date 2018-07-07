@@ -1,4 +1,5 @@
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+import datetime
 import os
 import sys
 
@@ -192,4 +193,6 @@ ALLOWED_HOSTS = ['*']
 JWT_AUTH = {
     'JWT_RESPONSE_PAYLOAD_HANDLER':
     'users.jwt_handler.jwt_response_payload_handler',
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=7200),
+    'JWT_AUTH_HEADER_PREFIX': 'Token',
 }
