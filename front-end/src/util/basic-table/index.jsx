@@ -74,8 +74,8 @@ class BasicTable extends React.Component {
     }
 
     render() {
-        let branch = record.pg_info.pg_branch;
-        let _list = this.props.list
+        // let branch = record.pg_info.pg_branch;
+        let _list = this.props.list || []
         let style = {
             display: 'show'
         };
@@ -134,9 +134,9 @@ class BasicTable extends React.Component {
         return (
             <Table celled structured compact textAlign='center'>
                 <Table.Header>
-                    <Table.Row>
-                        <Table.HeaderCell rowSpan='9'>Branch: 10_STABLE</Table.HeaderCell>
-                    </Table.Row>
+                    {/*<Table.Row>*/}
+                        {/*<Table.HeaderCell rowSpan='9'>Branch: 10_STABLE</Table.HeaderCell>*/}
+                    {/*</Table.Row>*/}
                     <Table.Row>
                         <Table.HeaderCell rowSpan='2'>Alias</Table.HeaderCell>
                         <Table.HeaderCell rowSpan='2'>System</Table.HeaderCell>

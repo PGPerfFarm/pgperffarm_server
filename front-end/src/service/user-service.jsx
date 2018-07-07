@@ -44,9 +44,16 @@ class User{
         });
     }
 
-    // getUserList(pageNum){
-    //     # todo
-    // }
+    getUserMachineManageList(pageNum){
+        let url = PGConstant.base_url + '/my-machine';
+        return _util.request({
+            type    : 'get',
+            url     : url,
+            data    : {
+                pageNum : pageNum
+            }
+        });
+    }
 }
 
 export default User;

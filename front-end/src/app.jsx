@@ -13,6 +13,8 @@ import Home from './page/home/index.jsx'
 import Status from './page/status/index.jsx'
 import PPolicy from './page/ppolicy/index.jsx'
 import DetailInfo from './page/detailInfo/index.jsx'
+
+import Portal from './page/portal/index.jsx'
 // we need to map the `scale` prop we define below
 // to the transform style property
 function mapStyles(styles) {
@@ -64,6 +66,8 @@ class App extends React.Component {
                     <Route exact path="/home/" component={Home}/>
                     <Route exact path="/status/" component={Status}/>
                     <Route exact path="/ppolicy/" component={PPolicy}/>
+
+                    <Route exact path="/portal/" component={Portal}/>
                     <Route path="/detailInfo/:uuid" component={DetailInfo}/>
                     {/*<Route path="/detail/:uuid" component={DetailInfo}/>*/}
                     {/*<Redirect exact from="/order" to="/order/index"/>*/}

@@ -1,0 +1,12 @@
+.panel-blue{
+    border-top: 3px solid #2497ba;
+}
+
+.panel-default > .panel-heading {
+    background-color: #dadada;
+}
+
+.panel-body-ul{
+    list-style: none!important;
+    padding: 0!important;
+}
