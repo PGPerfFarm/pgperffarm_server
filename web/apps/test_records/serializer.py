@@ -1,11 +1,20 @@
 from rest_framework import serializers
 
 from pgperffarm.settings import DB_ENUM
-from test_records.models import TestRecord, TestResult, PGInfo, LinuxInfo, MetaInfo, TestDataSet, TestCategory
+from test_records.models import TestRecord, TestResult, PGInfo, LinuxInfo, MetaInfo, TestDataSet, TestCategory, \
+    TestBranch
 from users.serializer import UserMachineSerializer
 from users.models import UserMachine
 from django.db.models import Count
 
+class TestBranchSerializer(serializers.ModelSerializer):
+    '''
+    use TestBranchSerializer
+    '''
+
+    class Meta:
+        model = TestBranch
+        fields = ('branch_name',)
 
 class TestCategorySerializer(serializers.ModelSerializer):
     '''
@@ -127,14 +136,20 @@ class TestRecordListSerializer(serializers.ModelSerializer):
     pg_info = PGInfoSerializer()
     linux_info = LinuxInfoSerializer()
     meta_info = MetaInfoSerializer()
-
+    branch = serializers.SerializerMethodField()
     trend = serializers.SerializerMethodField()
     machine_info = serializers.SerializerMethodField()
 
     # client_max_num = serializers.SerializerMethodField()
     class Meta:
         model = TestRecord
-        fields = ('uuid', 'add_time', 'machine_info', 'pg_info', 'trend', 'linux_info', 'meta_info')
+        fields = ('uuid', 'add_time', 'machine_info', 'pg_info', 'branch','trend', 'linux_info', 'meta_info')
+
+    def get_branch(self, obj):
+        branch = TestBranch.objects.filter(id=obj.branch.id).first()
+
+        serializer = TestBranchSerializer(branch)
+        return serializer.data["branch_name"]
 
     def get_trend(self, obj):
         dataset_list = TestDataSet.objects.filter(test_record_id=obj.id).values_list('status').annotate(Count('id'))
@@ -208,10 +223,10 @@ class TestRecordDetailSerializer(serializers.ModelSerializer):
             'branch', 'date', 'uuid', 'pg_info', 'linux_info', 'hardware_info', 'meta_info', 'dataset_info', 'test_desc', 'meta_time', 'test_machine')
 
     def get_branch(self, obj):
-        target_pg_info = PGInfo.objects.filter(id=obj.pg_info.id).first()
-        branch_id = target_pg_info.pg_branch_id
+        branch = TestBranch.objects.filter(id=obj.branch_id).first()
 
-        return branch_id
+        serializer = TestBranchSerializer(branch)
+        return serializer.data["branch_name"]
 
     def get_date(self, obj):
         target_meta_info = MetaInfo.objects.filter(id=obj.meta_info.id).first()

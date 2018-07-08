@@ -9,8 +9,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from util.response import PGJsonResponse
-from models import UserMachine
-from serializer import UserMachineManageSerializer
+from users.models import UserMachine, UserProfile
+from serializer import UserMachineManageSerializer, UserPortalInfoSerializer
 
 
 class UserMachineListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -23,18 +23,14 @@ class UserMachineListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = UserMachineManageSerializer
     # pagination_class = StandardResultsSetPagination
 
-
-
-# class UserMachineList(APIView):
-#     authentication_classes = (JSONWebTokenAuthentication,)
-#     permission_classes = (permissions.IsAuthenticated,)
-#
-#     def get(self, request, format=None):
-#         machines = UserMachine.objects.all().order_by('add_time')
-#         serializer = UserMachineManageSerializer(machines, many=True)
-#
-#         return PGJsonResponse(data=serializer.data, code=status.HTTP_200_OK, desc='get user machine list success')
-
+class UserPortalInfoViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    """
+     user info
+    """
+    # authentication_classes = (JSONWebTokenAuthentication, authentication.SessionAuthentication )
+    # permission_classes = (permissions.IsAuthenticated, )
+    queryset = UserProfile.objects.all().order_by('date_joined')
+    serializer_class = UserPortalInfoSerializer
 
 class UserMachinePermission(permissions.BasePermission):
     """

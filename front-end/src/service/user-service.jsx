@@ -56,8 +56,8 @@ class User{
         });
     }
 
-    getUserInfo(){
-        let url = PGConstant.base_url + '/userinfo';
+    getUserPortalInfo(){
+        let url = PGConstant.base_url + '/portal/';
         return _util.request({
             type    : 'get',
             url     : url,

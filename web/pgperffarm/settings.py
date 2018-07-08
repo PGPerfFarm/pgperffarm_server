@@ -150,6 +150,11 @@ DB_ENUM = {
         "simple": 1,
         "other": 2
     },
+    "machine_state": {
+        "prohibited": -1,
+        "pending": 0,
+        "active": 1,
+    },
     "status": {
         "none": -1,
         "improved": 1,

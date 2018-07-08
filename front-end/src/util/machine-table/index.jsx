@@ -12,7 +12,7 @@ function LastestLink(props) {
 
     let ret = _list.map((item, index) => {
         return (
-            <Link color='linkedin' to={'detailInfo/' + item.record.uuid}>
+            <Link color='linkedin' to={'detailInfo/' + item.uuid}>
                  {item.branch}
             </Link>
         );
@@ -50,11 +50,6 @@ class MachineTable extends React.Component {
         let listBody = _list.map((machineItem, index) => {
             let machine = machineItem
             let system = machine.os_name + ' ' + machine.os_version + ' ' + machine.comp_name + ' ' + machine.comp_version;
-            let alias = machine.alias;
-            let lastest = machine.lastest;
-            let state = machine.state;
-
-            let reports = machine.reports
 
             // let improvedIconClassName = trend.improved > 0 ? 'improved' : 'anonymous'
             // let quoIconClassName = trend.quo > 0 ? 'quo' : 'anonymous'
@@ -63,30 +58,30 @@ class MachineTable extends React.Component {
 
                 <Table.Row key={index}>
                     {/*alias*/}
-                    <Table.Cell><a href="#">{alias}</a></Table.Cell>
+                    <Table.Cell><a href="#">{machine.alias}</a></Table.Cell>
 
                     {/*system*/}
                     <Table.Cell><a href="#">{system}</a></Table.Cell>
 
                     {/*State*/}
-                    <Table.Cell>{state}</Table.Cell>
+                    <Table.Cell>{machine.state}</Table.Cell>
 
                     {/*lastest-records*/}
                     <Table.Cell textAlign='center'>
                         {/*<Icon className={"bgc-clear " + improvedIconClassName} name='smile outline' size='large'/>*/}
                         {/*<Bubble num={trend.improved} name="improved"/>*/}
-                        <LastestLink list={lastest}/>
+                        <LastestLink list={machine.lastest}/>
                     </Table.Cell>
 
                     {/*machine history*/}
                     <Table.Cell textAlign='center'>
-                        <Link color='linkedin' to={'machineInfo/' + '123'}>
+                        <Link color='linkedin' to={'machineInfo/' + '###'}>
                             <Icon name='linkify'/> Link
                         </Link>
                     </Table.Cell>
 
                     {/*date*/}
-                    <Table.Cell>{}</Table.Cell>
+                    <Table.Cell>{machine.add_time}</Table.Cell>
                 </Table.Row>
             );
         });
@@ -104,7 +99,7 @@ class MachineTable extends React.Component {
                         <Table.HeaderCell rowSpan='2'>State</Table.HeaderCell>
                         <Table.HeaderCell rowSpan='3'>Lastest</Table.HeaderCell>
                         <Table.HeaderCell rowSpan='2'>History</Table.HeaderCell>
-                        <Table.HeaderCell rowSpan='2'>Date</Table.HeaderCell>
+                        <Table.HeaderCell rowSpan='2'>Add Date</Table.HeaderCell>
                     </Table.Row>
                     {/*<Table.Row>*/}
                         {/*<Table.HeaderCell>improvement</Table.HeaderCell>*/}

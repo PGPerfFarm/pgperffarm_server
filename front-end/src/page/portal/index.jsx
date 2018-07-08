@@ -27,13 +27,14 @@ class Portal extends React.Component {
             username: user.username,
         });
         console.log(user.token)
+        this.loadUserPortalInfo()
         this.loadUserMachineManageList();
     }
 
-    loadUserInfo(){
-        _user.getUserInfo().then(res => {
+    loadUserPortalInfo(){
+        _user.getUserPortalInfo().then(res => {
             this.setState({
-                userinfo: res.userinfo,
+                userinfo: res.results,
             });
         }, errMsg => {
             _util.errorTips(errMsg);

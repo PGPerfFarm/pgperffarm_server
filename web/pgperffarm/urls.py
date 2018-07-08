@@ -31,16 +31,18 @@ from test_records.auth import MachineAuthToken
 #     'get': 'list',
 #     'post': 'create'
 # })
-from user_operation.views import UserMachineListViewSet
+from user_operation.views import UserMachineListViewSet, UserPortalInfoViewSet
 
 router = DefaultRouter()
 router.register(r'records', TestRecordListViewSet, base_name="records")
 router.register(r'detail', TestRecordDetailViewSet, base_name="detail")
 router.register(r'machine', MachineHistoryRecordViewSet, base_name="machine")
 
+
 # user's machine manage list
 router.register(r'my-machine', UserMachineListViewSet, base_name="my-machine")
-
+# get userinfo on portal page
+router.register(r'portal', UserPortalInfoViewSet, base_name="portal")
 
 urlpatterns = [
     # url(r'^admin/', admin.site.urls),
@@ -49,7 +51,7 @@ urlpatterns = [
 
     url(r'^api-token-auth/', views.obtain_auth_token),
 
-    # login(jwt auth)
+    # user login(jwt auth)
     url(r'^login/', obtain_jwt_token),
 
     url(r'^machine-token-auth/', MachineAuthToken.as_view()),
@@ -58,6 +60,7 @@ urlpatterns = [
     # url(r'status/$', TestListView.as_view(), name='test-list'),
     # url(r'detail', TestRecordDetailViewSet ,name="detail"),
     url(r'upload/$', TestRecordCreate, name='test-upload'),
+    # url(r'portal/$', UserPortalInfoViewSet, name='portal'),
     # url(r'my-machine/$', UserMachineList.as_view(), name='my-machine'),
 
     url(r'docs/', include_docs_urls(title='pgperffarm')),
