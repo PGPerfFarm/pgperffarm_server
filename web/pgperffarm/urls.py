@@ -58,6 +58,8 @@ urlpatterns = [
     # url(r'status/$', TestListView.as_view(), name='test-list'),
     # url(r'detail', TestRecordDetailViewSet ,name="detail"),
     url(r'upload/$', TestRecordCreate, name='test-upload'),
+    # url(r'my-machine/$', UserMachineList.as_view(), name='my-machine'),
+
     url(r'docs/', include_docs_urls(title='pgperffarm')),
     # Static pages
     # url(r'^$', 'pgperffarm.views.index', name='index'),

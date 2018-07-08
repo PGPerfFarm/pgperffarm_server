@@ -3,7 +3,7 @@ const object = {
 
 
     name:'好123',
-    USER_UNLOGIN_CODE:10,
+    UnauthorizedCode:401,// unlogin
 
 };
 export default object;

@@ -36,6 +36,7 @@ class TestRecordListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     """
     List test records
     """
+
     queryset = TestRecord.objects.all().order_by('add_time')
     serializer_class = TestRecordListSerializer
     pagination_class = StandardResultsSetPagination

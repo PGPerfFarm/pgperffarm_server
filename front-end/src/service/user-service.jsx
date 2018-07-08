@@ -37,11 +37,12 @@ class User{
     }
     // logout
     logout(){
-        let url = PGConstant.base_url + '/logout';
-        return _util.request({
-            type    : 'post',
-            url     : url
-        });
+        // let url = PGConstant.base_url + '/logout';
+        // return _util.request({
+        //     type    : 'post',
+        //     url     : url
+        // });
+        return true;
     }
 
     getUserMachineManageList(pageNum){

@@ -132,7 +132,9 @@ REST_FRAMEWORK = {
     # ),
 
     # 'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
-
+    # 'EXCEPTION_HANDLER': (
+    #     'dataAPI.common.api_exception.custom_exception_handler'
+    # ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
         'rest_framework.authentication.BasicAuthentication',
@@ -144,9 +146,9 @@ REST_FRAMEWORK = {
 }
 
 DB_ENUM = {
-    "mode":{
-        "simple":1,
-        "other":2
+    "mode": {
+        "simple": 1,
+        "other": 2
     },
     "status": {
         "none": -1,
@@ -157,7 +159,6 @@ DB_ENUM = {
 }
 
 APPEND_SLAS = False
-
 
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_ALLOW_ALL = True
@@ -192,7 +193,7 @@ ALLOWED_HOSTS = ['*']
 
 JWT_AUTH = {
     'JWT_RESPONSE_PAYLOAD_HANDLER':
-    'users.jwt_handler.jwt_response_payload_handler',
+        'users.jwt_handler.jwt_response_payload_handler',
     'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=7200),
     'JWT_AUTH_HEADER_PREFIX': 'Token',
 }

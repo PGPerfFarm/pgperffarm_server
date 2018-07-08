@@ -32,7 +32,7 @@ class Portal extends React.Component {
                 userinfo: res.userinfo,
             });
         }, errMsg => {
-            _mm.errorTips(errMsg);
+            _util.errorTips(errMsg);
         });
     }
 
@@ -44,8 +44,18 @@ class Portal extends React.Component {
                 isLoading: false
             });
         }, errMsg => {
-            _mm.errorTips(errMsg);
+            _util.errorTips(errMsg);
         });
+    }
+    onLogout(){
+        _util.removeStorage('userInfo');
+        window.location.href = '/login';
+        // _user.logout().then(res => {
+        //     _util.removeStorage('userInfo');
+        //     window.location.href = '/login';
+        // }, errMsg => {
+        //     _util.errorTips(errMsg);
+        // });
     }
 
     render() {
@@ -72,7 +82,7 @@ class Portal extends React.Component {
                             <a href="\add-machine" className="list-group-item">
                                 <i className="fa fa-globe fa-fw"></i>&nbsp; Add a New Mchine
                             </a>
-                            <a href="\logout" className="list-group-item">
+                            <a onClick={() => {this.onLogout()}} className="list-group-item">
                                 <i className="fa fa-arrow-left fa-fw"></i>&nbsp; Logout
                             </a>
                         </div>

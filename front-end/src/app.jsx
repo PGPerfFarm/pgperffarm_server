@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDom from 'react-dom';
-import {HashRouter as Router, Route, Link, Redirect, Switch} from 'react-router-dom';
+import {BrowserRouter as Router, Route, Link, Redirect, Switch} from 'react-router-dom';
 import createHistory from 'history/createHashHistory'
 const history = createHistory()
 import {spring, AnimatedRoute, AnimatedSwitch} from 'react-router-transition';
