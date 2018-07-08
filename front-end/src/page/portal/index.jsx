@@ -14,6 +14,7 @@ class Portal extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            username: '',
             isLoading: false,
             machines:[],
             userinfo: {}
@@ -22,6 +23,9 @@ class Portal extends React.Component {
     }
     componentDidMount(){
         let user = _util.getStorage('userInfo')
+        this.setState({
+            username: user.username,
+        });
         console.log(user.token)
         this.loadUserMachineManageList();
     }
@@ -39,7 +43,7 @@ class Portal extends React.Component {
     loadUserMachineManageList(page=1){
         _user.getUserMachineManageList().then(res => {
             this.setState({
-                machines: res.machines,
+                machines: res.results,
                 total: res.count,
                 isLoading: false
             });

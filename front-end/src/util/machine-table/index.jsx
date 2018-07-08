@@ -4,17 +4,20 @@ import {Icon, Table, Label, Message, Button} from 'semantic-ui-react'
 import Pagination from 'util/pagination/index.jsx'
 import './index.css';
 
-function Bubble(props) {
-
-    if (props.num <= 0) {
+function LastestLink(props) {
+    let _list = props.list
+    if (_list <= 0) {
         return null;
     }
-    let className = props.name + 'IconClassName';
-    return (
-        <Label circular size="mini" className={"mini-label " + className}>
-            {props.num}
-        </Label>
-    );
+
+    let ret = _list.map((item, index) => {
+        return (
+            <Link color='linkedin' to={'detailInfo/' + item.record.uuid}>
+                 {item.branch}
+            </Link>
+        );
+    });
+    return ret;
 }
 
 // general basic table
@@ -44,16 +47,18 @@ class MachineTable extends React.Component {
         let style = {
             display: 'show'
         };
-        let listBody = _list.map((record, index) => {
-            let machine = record.machine_info[0];
+        let listBody = _list.map((machineItem, index) => {
+            let machine = machineItem
             let system = machine.os_name + ' ' + machine.os_version + ' ' + machine.comp_name + ' ' + machine.comp_version;
             let alias = machine.alias;
+            let lastest = machine.lastest;
+            let state = machine.state;
 
+            let reports = machine.reports
 
-            let trend = record.trend
-            let improvedIconClassName = trend.improved > 0 ? 'improved' : 'anonymous'
-            let quoIconClassName = trend.quo > 0 ? 'quo' : 'anonymous'
-            let regressiveIconClassName = trend.regressive > 0 ? 'regressive' : 'anonymous'
+            // let improvedIconClassName = trend.improved > 0 ? 'improved' : 'anonymous'
+            // let quoIconClassName = trend.quo > 0 ? 'quo' : 'anonymous'
+            // let regressiveIconClassName = trend.regressive > 0 ? 'regressive' : 'anonymous'
             return (
 
                 <Table.Row key={index}>
@@ -64,24 +69,24 @@ class MachineTable extends React.Component {
                     <Table.Cell><a href="#">{system}</a></Table.Cell>
 
                     {/*State*/}
-                    <Table.Cell>acitve</Table.Cell>
+                    <Table.Cell>{state}</Table.Cell>
 
                     {/*lastest-records*/}
-
                     <Table.Cell textAlign='center'>
-                        <Icon className={"bgc-clear " + improvedIconClassName} name='smile outline' size='large'/>
-                        <Bubble num={trend.improved} name="improved"/>
+                        {/*<Icon className={"bgc-clear " + improvedIconClassName} name='smile outline' size='large'/>*/}
+                        {/*<Bubble num={trend.improved} name="improved"/>*/}
+                        <LastestLink list={lastest}/>
                     </Table.Cell>
 
                     {/*machine history*/}
                     <Table.Cell textAlign='center'>
-                        <Link color='linkedin' to={'machineInfo/' + record.uuid}>
+                        <Link color='linkedin' to={'machineInfo/' + '123'}>
                             <Icon name='linkify'/> Link
                         </Link>
                     </Table.Cell>
 
                     {/*date*/}
-                    <Table.Cell>{record.add_time}</Table.Cell>
+                    <Table.Cell>{}</Table.Cell>
                 </Table.Row>
             );
         });
