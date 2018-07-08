@@ -12,18 +12,15 @@ class NavTop extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            username: _util.getStorage('userInfo').username || ''
+            username: _util.getStorage('userInfo').username || '',
+            isLoggedIn: true
         }
     }
 
     // logout
-    onLogout(){
-        _user.logout().then(res => {
-            _util.removeStorage('userInfo');
-            window.location.href = '/login';
-        }, errMsg => {
-            _util.errorTips(errMsg);
-        });
+    onLogout() {
+        _util.removeStorage('userInfo');
+        window.location.href = '/login';
     }
 
     render() {
@@ -33,19 +30,20 @@ class NavTop extends React.Component {
         if (isLoggedIn) {
             button = <li className="dropdown loggedin">
                 <a className="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
-                    <img className="img-circle img-thumbnail user-head-pic" src={require('image/slonik.png')} alt="headPic"/>
+                    <img className="img-circle img-thumbnail user-head-pic" src={require('image/slonik.png')}
+                         alt="headPic"/>
                 </a>
                 <ul className="dropdown-menu dropdown-alerts loggedin-ul">
                     <li>
-                        <a href="#">
+                        <Link to="/portal">
                             <div>
                                 <i className="fa fa-tasks fa-fw"></i> My machines
                             </div>
-                        </a>
+                        </Link>
                     </li>
                     <li className="divider"></li>
                     <li>
-                        <a href="#">
+                        <a onClick={() => {this.onLogout()}}>
                             <div>
                                 <i className="fa fa-upload fa-fw"></i> Log out
                             </div>
@@ -65,17 +63,13 @@ class NavTop extends React.Component {
         return (
             <div className="navbar navbar-default top-navbar" role="navigation">
                 <div className="navbar-header">
-                    {/*<button type="button" className="navbar-toggle" data-toggle="collapse" data-target=".sidebar-collapse">*/}
-                    {/*<span className="sr-only">Toggle navigation</span>*/}
-                    {/*<span className="icon-bar"></span>*/}
-                    {/*<span className="icon-bar"></span>*/}
-                    {/*<span className="icon-bar"></span>*/}
-                    {/*</button>*/}
+
                     <a className="navbar-brand" href="index.html"><img src={require('image/slonik.png')}/><b>PG Perf
                         Farm</b></a>
                 </div>
                 <ul className="nav navbar-top-links navbar-left">
-                    <li><Link to="/home"> <span className="glyphicon glyphicon-home" aria-hidden="true"></span> Home</Link>
+                    <li><Link to="/home"> <span className="glyphicon glyphicon-home" aria-hidden="true"></span>
+                        Home</Link>
                     </li>
                     <li><Link to="/status"><span className="glyphicon glyphicon-tasks" aria-hidden="true"></span>Status</Link>
                     </li>

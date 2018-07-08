@@ -1,10 +1,11 @@
 import PGUtil    from 'util/util.jsx'
 import PGConstant from 'util/constant.jsx'
+
 const _util       = new PGUtil();
 
 class User{
     login(loginInfo){
-        let url = PGConstant.base_url + '/login';
+        let url = PGConstant.base_url + '/login/';
         return _util.request({
             type: 'post',
             url: url,
@@ -36,15 +37,34 @@ class User{
     }
     // logout
     logout(){
-        let url = PGConstant.base_url + '/logout';
+        // let url = PGConstant.base_url + '/logout';
+        // return _util.request({
+        //     type    : 'post',
+        //     url     : url
+        // });
+        return true;
+    }
+
+    getUserMachineManageList(pageNum){
+        let url = PGConstant.base_url + '/my-machine';
         return _util.request({
-            type    : 'post',
-            url     : url
+            type    : 'get',
+            url     : url,
+            data    : {
+                pageNum : pageNum
+            }
         });
     }
-    // getUserList(pageNum){
-    //     # todo
-    // }
+
+    getUserPortalInfo(){
+        let url = PGConstant.base_url + '/portal/';
+        return _util.request({
+            type    : 'get',
+            url     : url,
+            data    : {}
+        });
+    }
+
 }
 
 export default User;

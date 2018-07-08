@@ -1,0 +1,32 @@
+.panel-blue{
+    border-top: 3px solid #2497ba;
+}
+
+.panel-default > .userinfo-panel-heading{
+    padding-bottom: 5px;
+    /*border-bottom: 0.5px solid #333333;*/
+    display: flex;
+    justify-content: space-between;
+}
+
+.panel-report-num{
+    font-size: 14px;
+    color: rgba(0,0,0,.4);
+}
+.panel-body-ul{
+    list-style: none!important;
+    padding: 0!important;
+}
+
+.userinfo-panel-body{
+    font-size: 15.5px;
+    line-height: initial;
+    padding-top: 0;
+    padding-bottom: 0;
+    border-top: 1px solid #ddd;
+}
+
+.user-avatar{
+    height: 35px;
+    width: 35px;
+}

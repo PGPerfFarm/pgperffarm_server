@@ -105,7 +105,7 @@
 
 .navbar-right {
     margin-right: 0px!important;
-    line-height:61px;
+    /*line-height:61px;*/
 }
 
 .panel-title {
@@ -122,6 +122,7 @@
 .navbar-right .loggedin{
     margin-right: 0px!important;
     padding-right: 10px!important;
+    line-height: 60px;
 }
 
 .loggedin > a {

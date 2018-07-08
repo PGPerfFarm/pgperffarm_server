@@ -133,6 +133,8 @@ p {
 
 .panel-default {
     border-color: #ECECEC;
+    border: 1px solid transparent;
+    border-radius: 4px;
 }
 
 .panel-default > .panel-heading {

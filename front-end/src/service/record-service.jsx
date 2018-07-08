@@ -1,5 +1,6 @@
 import PGUtil    from 'util/util.jsx'
 import PGConstant from 'util/constant.jsx'
+// const _const = new PGConstant();
 const _util       = new PGUtil();
 
 class Record{

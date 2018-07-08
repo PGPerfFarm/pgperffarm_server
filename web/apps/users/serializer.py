@@ -2,7 +2,6 @@ from rest_framework import serializers
 
 from test_records.models import TestRecord
 from users.models import UserMachine, Alias, UserProfile
-from django.db.models import Q
 import hashlib
 
 class AliasSerializer(serializers.ModelSerializer):
@@ -49,3 +48,7 @@ class UserMachineSerializer(serializers.ModelSerializer):
         print avatar
         return  avatar
 
+class JWTUserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = ('username', )
