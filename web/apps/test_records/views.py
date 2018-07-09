@@ -52,7 +52,7 @@ class TestRecordDetailViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet
     serializer_class = TestRecordDetailSerializer
     # pagination_class = StandardResultsSetPagination
 
-class MachineHistoryRecordViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+class MachineHistoryRecordViewSet( mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     """
     detail test records
     """

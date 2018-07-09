@@ -41,8 +41,3 @@
     padding: .2em!important;
     line-height: 0.5em!important;
 }
-
-.link-div{
-    display: flex;
-    flex-direction: column;
-}

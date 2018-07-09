@@ -1,6 +1,7 @@
 import React from 'react';
 // import './index.css';
 import PGUtil    from 'util/util.jsx'
+import PGConstant from 'util/constant.jsx'
 const _util = new PGUtil();
 import User         from 'service/user-service.jsx'
 const _user = new User();
@@ -17,6 +18,12 @@ class Login extends React.Component {
 
     componentWillMount() {
         document.title = 'LOGIN';
+        let userinfo = _util.getStorage('userInfo')|| {};
+        if(userinfo.token){
+            this.props.history.push('/portal')
+            // window.location.href = '/portal';
+        }
+
     }
 
     onInputChange(e) {
@@ -42,16 +49,22 @@ class Login extends React.Component {
         // check success
         if (checkResult.status) {
             _user.login(loginInfo).then((res) => {
-                console.dir(res)
+                // console.dir(res)
                 _util.setStorage('userInfo', res);
-                this.props.history.push(this.state.redirect);
-            }, (errMsg) => {
-                // console.log(errMsg)
-                _util.errorTips(errMsg);
+                // this.props.history.push(this.state.redirect);
+                window.location.href = this.state.redirect;
+            }, (err) => {
+                // console.log(err)
+                if (PGConstant.AuthorizedErrorCode === err) {
+                    _util.errorTips('username or password is mistake!');
+                }else{
+                    _util.errorTips('login fail');
+                }
             });
         }
         // check failure
         else {
+
             _util.errorTips(checkResult.msg);
         }
 

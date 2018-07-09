@@ -41,7 +41,7 @@ class UserMachineManageSerializer(serializers.ModelSerializer):
     state = serializers.SerializerMethodField()
     class Meta:
         model = UserMachine
-        fields = ('alias', 'os_name', 'os_version', 'comp_name', 'comp_version', 'reports', 'state', 'lastest', 'state', 'add_time')
+        fields = ('alias', 'machine_sn','os_name', 'os_version', 'comp_name', 'comp_version', 'reports', 'state', 'lastest', 'state', 'add_time')
 
     def get_state(self, obj):
         state_code = obj.state

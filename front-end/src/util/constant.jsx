@@ -4,6 +4,7 @@ const object = {
 
     name:'好123',
     UnauthorizedCode:401,// unlogin
+    AuthorizedErrorCode:400,// username or pwd mistake
 
 };
 export default object;

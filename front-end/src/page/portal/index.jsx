@@ -1,5 +1,6 @@
 import React from 'react';
 import './index.css';
+import { hashHistory } from 'react-router'
 import ResultFilter from 'component/result-filter/index.jsx';
 import MachineTable    from 'util/machine-table/index.jsx';
 import UserInfoCard from 'component/userinfo-card/index.jsx'
@@ -22,6 +23,7 @@ class Portal extends React.Component {
 
     }
     componentDidMount(){
+
         let user = _util.getStorage('userInfo')
         this.setState({
             username: user.username,
@@ -54,7 +56,9 @@ class Portal extends React.Component {
     }
     onLogout(){
         _util.removeStorage('userInfo');
-        window.location.href = '/login';
+        // this.props.history.push('/login')
+        // hashHistory.push('/login')
+        window.location.href = '/';
         // _user.logout().then(res => {
         //     _util.removeStorage('userInfo');
         //     window.location.href = '/login';

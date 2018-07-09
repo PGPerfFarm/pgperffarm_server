@@ -36,7 +36,7 @@ from user_operation.views import UserMachineListViewSet, UserPortalInfoViewSet
 router = DefaultRouter()
 router.register(r'records', TestRecordListViewSet, base_name="records")
 router.register(r'detail', TestRecordDetailViewSet, base_name="detail")
-router.register(r'machine', MachineHistoryRecordViewSet, base_name="machine")
+router.register(r'machine-records', MachineHistoryRecordViewSet, base_name="machine-records")
 
 
 # user's machine manage list
