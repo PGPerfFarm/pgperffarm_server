@@ -11,6 +11,7 @@ class FarmerDetailCard extends React.Component {
         let machine = this.props.machine || {}
         let system = machine.os_name + ' ' + machine.os_version;
         let camp = machine.comp_name + ' ' + machine.comp_version;
+        let owner = machine.owner || {};
         return (
 
             <div className="farmer-card">
@@ -18,7 +19,7 @@ class FarmerDetailCard extends React.Component {
                     <Card.Content>
                         <Image floated='right' size='mini'
                                src={machine.avatar}/>
-                        <Card.Header>Farmer: {machine.alias}</Card.Header>
+                        <Card.Header>Owner: {owner.username}</Card.Header>
                         <Card.Meta>report num: {machine.reports}</Card.Meta>
                         <Card.Description>
                             <List>
@@ -26,19 +27,20 @@ class FarmerDetailCard extends React.Component {
                                 <List.Item icon='microchip' content={camp} />
                                 <List.Item
                                     icon='mail'
-                                    content={<a href={machine.owner}>{machine.owner}</a>}
+                                    content={<a href={owner.email}>{owner.email}</a>}
                                 />
                             </List>
                         </Card.Description>
                     </Card.Content>
-                    {/*<Card.Content extra>*/}
-                        {/*<div className='ui buttons'>*/}
-                            {/*/!*todo link to machine page*!/*/}
-                            {/*<Button basic color='blue'>*/}
-                                {/*Other records*/}
-                            {/*</Button>*/}
-                        {/*</div>*/}
-                    {/*</Card.Content>*/}
+                    <Card.Content extra>
+
+                        <div className='ui buttons'>
+                            {/*todo link to machine page*/}
+                            <Button basic mini color='grey'>
+                                4 branches involved
+                            </Button>
+                        </div>
+                    </Card.Content>
                 </Card>
             </div>
         );

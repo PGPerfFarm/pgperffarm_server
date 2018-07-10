@@ -96,7 +96,7 @@ class MachineRecordTable extends React.Component {
                     <Table.Cell><a href="#">{alias}</a></Table.Cell>
 
                     {/*system*/}
-                    <Table.Cell><a href="#">{system}</a></Table.Cell>
+                    {/*<Table.Cell><a href="#">{system}</a></Table.Cell>*/}
 
                     {/*branch*/}
                     {/*<Table.Cell>{branch}</Table.Cell>*/}
@@ -139,7 +139,7 @@ class MachineRecordTable extends React.Component {
                     {/*</Table.Row>*/}
                     <Table.Row>
                         <Table.HeaderCell rowSpan='2'>Alias</Table.HeaderCell>
-                        <Table.HeaderCell rowSpan='2'>System</Table.HeaderCell>
+                        {/*<Table.HeaderCell rowSpan='2'>System</Table.HeaderCell>*/}
                         {/*<Table.HeaderCell rowSpan='2'>Branch</Table.HeaderCell>*/}
                         <Table.HeaderCell colSpan='3'>Trending</Table.HeaderCell>
                         <Table.HeaderCell rowSpan='2'>Detail</Table.HeaderCell>

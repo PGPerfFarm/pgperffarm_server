@@ -1,10 +1,11 @@
 import React from 'react';
 // import './index.css';
-import {Table, Divider, Segment, Icon} from 'semantic-ui-react'
+import {Tab, Divider, Segment, Icon} from 'semantic-ui-react'
 import FarmerDetailCard      from 'component/farmer-detail-card/index.jsx'
 import Record      from 'service/record-service.jsx'
 import PGUtil        from 'util/util.jsx'
-import MachineRecordTable from 'util/machine-record-table/index.jsx'
+import HistoryRecordsPane1 from 'component/history-records-pane1/index.jsx'
+
 const _util = new PGUtil();
 const _record = new Record();
 class MachineInfo extends React.Component {
@@ -12,6 +13,7 @@ class MachineInfo extends React.Component {
         super(props);
         this.state = {
             machineNo: this.props.match.params.machine_sn,
+            branches:[],
             machineInfo: {},
             isLoading: false,
             currentPage: 1,
@@ -47,12 +49,17 @@ class MachineInfo extends React.Component {
         // listParam.page = page;
         listParam.machine_sn = this.state.machineNo;
         _record.getHistoryRecordList(listParam).then(res => {
-            console.log('res is:' + res)
+            console.log('res is:')
+            console.dir(res)
             this.setState({
+                branches: res.branches || [],
                 machineInfo: res.machine_info || {},
                 list: res.reports || [],
                 // total: res.count,
                 isLoading: false
+            }, ()=> {
+                console.log(this.state.branches);
+                // 123
             });
             // _this.changeIsLoading(false);
         }, errMsg => {
@@ -77,10 +84,10 @@ class MachineInfo extends React.Component {
     }
 
     render() {
-        let show = this.state.isLoading ? "none" : "block";
-        let style = {
-            display: show
-        };
+        // let branches = this.state.branches;
+        let panes = [
+            { menuItem: 'Tab 1', render: () => <Tab.Pane attached={true}><HistoryRecordsPane1 branches={this.state.branches}/></Tab.Pane> },
+        ]
 
         return (
             <div className="container-fluid detail-container">
@@ -98,16 +105,19 @@ class MachineInfo extends React.Component {
                     <Divider className="machine-info-divier"></Divider>
                 </div>
                 <div className="col-md-3">
-                    <Segment vertical>Farmer Info</Segment>
+                    {/*<Segment vertical>Farmer Info</Segment>*/}
                     <FarmerDetailCard machine={this.state.machineInfo}></FarmerDetailCard>
                 </div>
 
                 <div className="col-md-9">
                     {/*<div className="card-container row">*/}
 
-                    <div className="info-container col-md-12 col-md-offset-1">
-                        <MachineRecordTable list={this.state.list} total={this.state.total} current={this.state.currentPage} loadfunc={this.loadRecordList}/>
-                    </div>
+                    {/*<div className="info-container col-md-12 col-md-offset-1">*/}
+                        {/*<MachineRecordTable list={this.state.list} total={this.state.total} current={this.state.currentPage} loadfunc={this.loadRecordList}/>*/}
+
+
+                        <Tab menu={{ attached: false }} panes={panes} />
+                    {/*</div>*/}
 
                 </div>
             </div>

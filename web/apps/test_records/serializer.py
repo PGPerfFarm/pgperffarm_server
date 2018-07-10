@@ -304,10 +304,10 @@ class MachineHistoryRecordSerializer(serializers.ModelSerializer):
     '''
     machine_info = serializers.SerializerMethodField()
     reports = serializers.SerializerMethodField()
-
+    branches = serializers.SerializerMethodField()
     class Meta:
         model = UserMachine
-        fields = ('machine_info', 'reports')
+        fields = ('machine_info', 'reports', 'branches')
 
     def get_reports(self, obj):
         target_records = TestRecord.objects.filter(test_machine_id=obj.id).values_list(
@@ -330,3 +330,19 @@ class MachineHistoryRecordSerializer(serializers.ModelSerializer):
         serializer = UserMachineSerializer(target_machine)
 
         return serializer.data
+
+    def get_branches(self, obj):
+        target_records = TestRecord.objects.filter(test_machine_id=obj.id).values_list(
+            'branch').annotate(Count('id'))
+
+        ret = []
+        for branch_item in target_records:
+            item = {}
+            item['value'] = branch_item[0]
+
+            branch = TestBranch.objects.filter(id=branch_item[0]).first()
+            serializer = TestBranchSerializer(branch)
+            item['branch'] = serializer.data["branch_name"]
+            ret.append(item)
+
+        return ret

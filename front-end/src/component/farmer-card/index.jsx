@@ -11,6 +11,7 @@ class FarmerCard extends React.Component {
         let machine = this.props.machine
         let system = machine.os_name + ' ' + machine.os_version;
         let camp = machine.comp_name + ' ' + machine.comp_version;
+        let owner = machine.owner || {}
         return (
 
             <div className="farmer-card">
@@ -26,7 +27,7 @@ class FarmerCard extends React.Component {
                                 <List.Item icon='microchip' content={camp} />
                                 <List.Item
                                     icon='mail'
-                                    content={<a href={machine.owner}>{machine.owner}</a>}
+                                    content={<a href={owner.email}>{owner.email}</a>}
                                 />
                             </List>
                         </Card.Description>

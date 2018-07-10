@@ -78,7 +78,7 @@ def TestRecordCreate(request, format=None):
     # jsLoads = json.loads(data[0])
 
     # todo get machine by token
-    # test_machine = UserMachine.objects.filter(secret)
+    test_machine = 1
 
     from django.db import transaction
 
