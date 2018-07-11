@@ -31,13 +31,13 @@ from test_records.auth import MachineAuthToken
 #     'get': 'list',
 #     'post': 'create'
 # })
-from user_operation.views import UserMachineListViewSet, UserPortalInfoViewSet
+from user_operation.views import UserMachineListViewSet, UserPortalInfoViewSet, UserMachineRecordByBranchListViewSet
 
 router = DefaultRouter()
 router.register(r'records', TestRecordListViewSet, base_name="records")
 router.register(r'detail', TestRecordDetailViewSet, base_name="detail")
 router.register(r'machine-records', MachineHistoryRecordViewSet, base_name="machine-records")
-
+router.register(r'machine-records-by-branch', UserMachineRecordByBranchListViewSet, base_name="machine-records-by-branch")
 
 # user's machine manage list
 router.register(r'my-machine', UserMachineListViewSet, base_name="my-machine")

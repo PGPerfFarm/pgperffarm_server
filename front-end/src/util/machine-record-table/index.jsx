@@ -17,41 +17,6 @@ function Bubble(props) {
     );
 }
 
-//todo
-// function TrendCell(trend) {
-//     const isNull = !list;
-//     const isEmpty = !isNull && !list.length;
-//     let improvedIconClassName = trend.improved > 0 ? 'improved' : 'anonymous'
-//     let quoIconClassName = trend.quo > 0 ? 'quo' : 'anonymous'
-//     let regressiveIconClassName = trend.regressive > 0 ? 'regressive' : 'anonymous'
-//     if (!trend.is_first) {
-//         return (
-//             <Table.Cell  textAlign='center'>
-//                 first report
-//             </Table.Cell>
-//         );
-//     } else {
-//         return (
-//             <div>
-//                 <Table.Cell textAlign='center'>
-//                     <Icon className={"bgc-clear " + improvedIconClassName} name='smile outline' size='large'/>
-//                     <Bubble num={trend.improved} name="improved"/>
-//                 </Table.Cell>
-//                 <Table.Cell textAlign='center'>
-//                     <Icon className={"bgc-clear " + quoIconClassName} name='meh outline' size='large'/>
-//                     <Bubble num={trend.quo} name="quo"/>
-//                 </Table.Cell>
-//                 <Table.Cell textAlign='center'>
-//                     <Icon className={"bgc-clear " + regressiveIconClassName} name='frown outline'
-//                           size='large'/>
-//                     <Bubble num={trend.regressive} name="regressive"/>
-//                 </Table.Cell>
-//             </div>
-//         );
-//     }
-//
-// }
-
 // general basic table
 class MachineRecordTable extends React.Component {
     constructor(props) {
@@ -64,18 +29,18 @@ class MachineRecordTable extends React.Component {
     }
 
 
-    // onPageNumChange(current) {
-    //     this.setState({
-    //         currentPage: current
-    //     }, () => {
-    //         this.props.loadfunc(current);
-    //     });
-    //     console.log('current:' + this.state.currentPage)
-    // }
+    onPageNumChange(current) {
+        this.setState({
+            currentPage: current
+        }, () => {
+            this.props.loadfunc(current);
+        });
+        console.log('current:' + this.state.currentPage)
+    }
 
     render() {
         // let branch = record.pg_info.pg_branch;
-        let _list = this.props.list.records || []
+        let _list = this.props.list || []
         let style = {
             display: 'show'
         };
@@ -132,8 +97,8 @@ class MachineRecordTable extends React.Component {
         });
 
         return (
-            <Table celled structured compact textAlign='center'>
-                <Table.Header>
+            <Table  basic='very' selectable structured compact textAlign='center'>
+                <Table.Header celled>
                     {/*<Table.Row>*/}
                     {/*<Table.HeaderCell rowSpan='9'>Branch: 10_STABLE</Table.HeaderCell>*/}
                     {/*</Table.Row>*/}
@@ -171,8 +136,8 @@ class MachineRecordTable extends React.Component {
                             {/*<Icon name='chevron right'/>*/}
                             {/*</Menu.Item>*/}
                             {/*</Menu>*/}
-                            {/*<Pagination style={style} onChange={(current) => this.onPageNumChange(current)} pageSize={2}*/}
-                                        {/*current={this.state.currentPage} total={this.props.total}/>*/}
+                            <Pagination style={style} onChange={(current) => this.onPageNumChange(current)} pageSize={2}
+                                        current={this.state.currentPage} total={this.props.total}/>
 
                         </Table.HeaderCell>
 

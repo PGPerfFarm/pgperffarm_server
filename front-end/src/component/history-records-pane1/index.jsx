@@ -3,8 +3,11 @@ import Pagination from 'util/pagination/index.jsx';
 import {Tab, Divider, Icon, Label} from 'semantic-ui-react'
 
 import MachineRecordTable from 'util/machine-record-table/index.jsx'
+import Record      from 'service/record-service.jsx'
 import PGUtil        from 'util/util.jsx'
+
 const _util = new PGUtil();
+const _record = new Record();
 import './index.css';
 
 class HistoryRecordPane1 extends React.Component {
@@ -12,43 +15,73 @@ class HistoryRecordPane1 extends React.Component {
         super(props);
 
         this.state = {
-            list: [],
+            currentList: [],
+            currentTotal: 0,
+            currentPage:1,
+            machine_sn: props.machine_sn || '',
             branches: props.branches || [],
-            selected_branch: '',
-            restoreNum: 0,
-            selected: [{
-                'cate': 'Category 1',
-                'index': 0,
-                'key': 'date',
-                'data': [
-                    {'name': 'All', 'value': ''},
-                    {'name': '7 days', 'value': '7'},
-                    {'name': '30 days', 'value': '30'}
-                ],
-            }],
+            selected_branch: 1,
         }
-        console.log('br')
-        console.dir(this.state.branches)
+        // console.dir(this.state.branches)
+        this.loadMachineRecordListByBranch = this.loadMachineRecordListByBranch.bind(this);
+        // this.loadMachineRecordListByBranch
     }
 
     componentDidMount() {
         // this.loadHistoryRecordList();
     }
     componentWillReceiveProps(nextProps) {
-        this.setState({branches: nextProps.branches});
+        this.setState({
+            branches: nextProps.branches,
+            machine_sn: nextProps.machine_sn,
+        });
     }
-    reloadRecordTable(branch_id){
+    handleBranchTagClick(branch_id){
         console.log('new reload branch is: ' + branch_id)
+
+        this.setState({
+            selected_branch: branch_id,
+        },() => {
+            this.loadMachineRecordListByBranch()
+        });
+
     }
 
+    // load record list
+    loadMachineRecordListByBranch(page=1) {
+        let _this = this;
+        let listParam = {};
+
+        listParam.page = page;
+        listParam.test_machine__machine_sn = this.state.machine_sn;
+        listParam.branch__id = this.state.selected_branch;
+
+        _record.getMachineRecordListByBranch(listParam).then(res => {
+            _this.setState({
+                currentList: res.results,
+                currentTotal: res.count,
+                isLoading: false
+            });
+        }, errMsg => {
+            _this.setState({
+                curentList: []
+            });
+            _util.errorTips(errMsg);
+
+            console.log(errMsg)
+        });
+
+        console.log(this.state.list)
+    }
 
     render(){
         let _list = this.state.branches || [];
         console.log('list is')
         console.dir(_list)
         let branch_tags = _list.map((branchItem, index) => {
+            let className = branchItem.value == this.state.selected_branch ? 'active_branch' : '';
             return (
-                <Label onClick={() => this.reloadRecordTable(branchItem.value)}>
+                <Label className={className} onClick={() => this.handleBranchTagClick(branchItem.value)}>
                     <Icon name='usb' />{branchItem.branch}
                 </Label>
             );
@@ -62,7 +95,7 @@ class HistoryRecordPane1 extends React.Component {
                     {branch_tags}
                 </div>
 
-                    <MachineRecordTable list={this.state.list} total={this.state.total} current={this.state.currentPage} loadfunc={this.loadRecordList}/>
+                    <MachineRecordTable list={this.state.currentList} total={this.state.currentTotal} current={this.state.currentPage} loadfunc={this.loadMachineRecordListByBranch}/>
 
             </div>
         );

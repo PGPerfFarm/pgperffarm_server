@@ -8,7 +8,7 @@ from django.contrib.auth.hashers import make_password
 from rest_framework.pagination import PageNumberPagination
 
 from exception import TestDataUploadError
-from filters import TestRecordListFilter
+from test_records.filters import TestRecordListFilter
 from models import UserMachine, TestCategory
 from pgperffarm.settings import DB_ENUM
 from user_operation.views import UserMachinePermission
@@ -60,7 +60,6 @@ class MachineHistoryRecordViewSet( mixins.RetrieveModelMixin, viewsets.GenericVi
     queryset = UserMachine.objects.all().order_by('add_time')
     serializer_class = MachineHistoryRecordSerializer
     # pagination_class = StandardResultsSetPagination
-
 
 @api_view(['POST'])
 @permission_classes((UserMachinePermission, ))

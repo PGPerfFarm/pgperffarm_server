@@ -31,12 +31,28 @@ class Record{
         });
     }
 
-    // get history record list
+    // get machine info
     getHistoryRecordList(listParam){
         let url = PGConstant.base_url + '/machine-records/' + listParam.machine_sn;
 
         let data = {};
         // data = listParam;
+
+        console.log('final data')
+        console.dir(listParam);
+        return _util.request({
+            type    : 'get',
+            url     : url,
+            data    : data
+        });
+    }
+
+
+    getMachineRecordListByBranch(listParam){
+        let url = PGConstant.base_url + '/machine-records-by-branch/';
+
+        let data = {};
+        data = listParam;
 
         console.log('final data')
         console.dir(listParam);

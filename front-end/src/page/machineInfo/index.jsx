@@ -22,8 +22,8 @@ class MachineInfo extends React.Component {
             list: [
             ]
         },
-        console.dir(this.props.match.params)
-        this.onPageChange = this.onPageChange.bind(this);
+        // console.dir(this.props.match.params)
+        // this.onPageChange = this.onPageChange.bind(this);
         this.handleApplyBtnClick = this.handleApplyBtnClick.bind(this);
         this.loadHistoryRecordList = this.loadHistoryRecordList.bind(this);
     }
@@ -75,18 +75,10 @@ class MachineInfo extends React.Component {
         console.log(this.state.list)
     }
 
-    onPageChange(page) {
-        console.log(page);
-        console.log(this);
-        this.setState({
-            current: page,
-        });
-    }
-
     render() {
         // let branches = this.state.branches;
         let panes = [
-            { menuItem: 'Tab 1', render: () => <Tab.Pane attached={true}><HistoryRecordsPane1 branches={this.state.branches}/></Tab.Pane> },
+            { menuItem: 'Review By Branches', render: () => <Tab.Pane attached={true}><HistoryRecordsPane1 machine_sn={this.state.machineInfo.machine_sn} branches={this.state.branches}/></Tab.Pane> },
         ]
 
         return (
@@ -116,7 +108,7 @@ class MachineInfo extends React.Component {
                         {/*<MachineRecordTable list={this.state.list} total={this.state.total} current={this.state.currentPage} loadfunc={this.loadRecordList}/>*/}
 
 
-                        <Tab menu={{ attached: false }} panes={panes} />
+                        <Tab menu={{pointing: true }} panes={panes} />
                     {/*</div>*/}
 
                 </div>

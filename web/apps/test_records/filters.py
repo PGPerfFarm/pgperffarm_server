@@ -3,7 +3,7 @@
 import django_filters
 from django.db.models import Q
 
-from .models import TestRecord
+from test_records.models import TestRecord
 
 
 class TestRecordListFilter(django_filters.rest_framework.FilterSet):
