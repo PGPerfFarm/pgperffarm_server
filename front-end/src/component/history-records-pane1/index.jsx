@@ -19,8 +19,8 @@ class HistoryRecordPane1 extends React.Component {
             currentTotal: 0,
             currentPage:1,
             machine_sn: props.machine_sn || '',
-            branches: props.branches || [],
-            selected_branch: 1,
+            branches: props.branches,
+            selected_branch: props.branches[0].value,
         }
         // console.dir(this.state.branches)
         this.loadMachineRecordListByBranch = this.loadMachineRecordListByBranch.bind(this);
@@ -28,7 +28,8 @@ class HistoryRecordPane1 extends React.Component {
     }
 
     componentDidMount() {
-        // this.loadHistoryRecordList();
+        // console.log(this.state.branches[0].value)
+        this.loadMachineRecordListByBranch()
     }
     componentWillReceiveProps(nextProps) {
         this.setState({
@@ -55,7 +56,9 @@ class HistoryRecordPane1 extends React.Component {
         listParam.page = page;
         listParam.test_machine__machine_sn = this.state.machine_sn;
         listParam.branch__id = this.state.selected_branch;
-
+        if(listParam.branch__id <= 0) {
+            return;
+        }
         _record.getMachineRecordListByBranch(listParam).then(res => {
             _this.setState({
                 currentList: res.results,

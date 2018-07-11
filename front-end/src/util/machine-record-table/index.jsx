@@ -84,7 +84,7 @@ class MachineRecordTable extends React.Component {
 
 
                     <Table.Cell textAlign='center'>
-                        <Link color='linkedin' to={'detailInfo/' + record.uuid}>
+                        <Link color='linkedin' to={'/detailInfo/' + record.uuid}>
                             <Icon name='linkify'/> Link
                         </Link>
                     </Table.Cell>

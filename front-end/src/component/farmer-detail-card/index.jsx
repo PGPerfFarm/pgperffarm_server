@@ -9,6 +9,7 @@ class FarmerDetailCard extends React.Component {
     }
     render(){
         let machine = this.props.machine || {}
+        let branch_num = this.props.branch_num || 0
         let system = machine.os_name + ' ' + machine.os_version;
         let camp = machine.comp_name + ' ' + machine.comp_version;
         let owner = machine.owner || {};
@@ -37,7 +38,7 @@ class FarmerDetailCard extends React.Component {
                         <div className='ui buttons'>
                             {/*todo link to machine page*/}
                             <Button basic mini color='grey'>
-                                4 branches involved
+                                {branch_num} branches involved
                             </Button>
                         </div>
                     </Card.Content>

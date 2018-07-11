@@ -13,7 +13,9 @@ class MachineInfo extends React.Component {
         super(props);
         this.state = {
             machineNo: this.props.match.params.machine_sn,
-            branches:[],
+            branches: [
+                {'branch':0,'value':0}
+            ],
             machineInfo: {},
             isLoading: false,
             currentPage: 1,
@@ -98,7 +100,7 @@ class MachineInfo extends React.Component {
                 </div>
                 <div className="col-md-3">
                     {/*<Segment vertical>Farmer Info</Segment>*/}
-                    <FarmerDetailCard machine={this.state.machineInfo}></FarmerDetailCard>
+                    <FarmerDetailCard machine={this.state.machineInfo} branch_num={this.state.branches.length}></FarmerDetailCard>
                 </div>
 
                 <div className="col-md-9">
