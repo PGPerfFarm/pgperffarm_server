@@ -54,9 +54,14 @@ class MachineTable extends React.Component {
             // let improvedIconClassName = trend.improved > 0 ? 'improved' : 'anonymous'
             // let quoIconClassName = trend.quo > 0 ? 'quo' : 'anonymous'
             // let regressiveIconClassName = trend.regressive > 0 ? 'regressive' : 'anonymous'
+            let color = 'positive';
+            if(machine.state == 'pending'){
+                color = 'warning';
+            }else if(machine.state == 'prohibited'){
+                color = 'negative';
+            }
             return (
-
-                <Table.Row key={index}>
+                <Table.Row key={index} className={color}>
                     {/*alias*/}
                     <Table.Cell><a href="#">{machine.alias}</a></Table.Cell>
 
@@ -64,18 +69,22 @@ class MachineTable extends React.Component {
                     <Table.Cell><a href="#">{system}</a></Table.Cell>
 
                     {/*State*/}
-                    <Table.Cell>{machine.state}</Table.Cell>
+                    <Table.Cell>
+                        {machine.state}
+                    </Table.Cell>
 
                     {/*lastest-records*/}
                     <Table.Cell textAlign='center'>
                         {/*<Icon className={"bgc-clear " + improvedIconClassName} name='smile outline' size='large'/>*/}
                         {/*<Bubble num={trend.improved} name="improved"/>*/}
-                        <LastestLink list={machine.lastest}/>
+                        <div className="link-div">
+                            <LastestLink list={machine.lastest}/>
+                        </div>
                     </Table.Cell>
 
                     {/*machine history*/}
                     <Table.Cell textAlign='center'>
-                        <Link color='linkedin' to={'machineInfo/' + '###'}>
+                        <Link color='linkedin' to={'machineInfo/' + machine.machine_sn}>
                             <Icon name='linkify'/> Link
                         </Link>
                     </Table.Cell>
@@ -116,7 +125,7 @@ class MachineTable extends React.Component {
                     <Table.Row>
                         <Table.HeaderCell colSpan='10'>
 
-                            <Pagination style={style} onChange={(current) => this.onPageNumChange(current)} pageSize={2}
+                            <Pagination style={style} onChange={(current) => this.onPageNumChange(current)} pageSize={15}
                                         current={this.state.currentPage} total={this.props.total}/>
                         </Table.HeaderCell>
 

@@ -32,9 +32,10 @@ class PGUtil {
                     console.dir(err.status)
                     // nologin force to login
                     if (PGConstant.UnauthorizedCode === err.status) {
+                        this.removeStorage('userInfo');
                         this.doLogin();
                     } else {
-                        typeof reject === 'function' && reject(err.statusText);
+                        typeof reject === 'function' && reject(err.status);
                     }
 
                 }
@@ -44,7 +45,8 @@ class PGUtil {
 
     // redirect to login
     doLogin() {
-        window.location.href = '/login?redirect=' + encodeURIComponent(window.location.pathname);
+        this.props.history.push('/login')
+        // window.location.href = '/login?redirect=' + encodeURIComponent(window.location.pathname);
         // window.location.href = '/login';
     }
 

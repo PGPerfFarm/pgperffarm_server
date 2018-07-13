@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDom from 'react-dom';
-import {BrowserRouter as Router, Route, Link, Redirect, Switch} from 'react-router-dom';
+import {HashRouter as Router, Route, Link, Redirect, Switch} from 'react-router-dom';
 import createHistory from 'history/createHashHistory'
 const history = createHistory()
 import {spring, AnimatedRoute, AnimatedSwitch} from 'react-router-transition';
@@ -13,6 +13,7 @@ import Home from './page/home/index.jsx'
 import Status from './page/status/index.jsx'
 import PPolicy from './page/ppolicy/index.jsx'
 import DetailInfo from './page/detailInfo/index.jsx'
+import MachinelInfo from './page/machineInfo/index.jsx'
 
 import Portal from './page/portal/index.jsx'
 // we need to map the `scale` prop we define below
@@ -69,7 +70,7 @@ class App extends React.Component {
 
                     <Route exact path="/portal/" component={Portal}/>
                     <Route path="/detailInfo/:uuid" component={DetailInfo}/>
-                    {/*<Route path="/detail/:uuid" component={DetailInfo}/>*/}
+                    <Route path="/machineInfo/:machine_sn" component={MachinelInfo}/>
                     {/*<Redirect exact from="/order" to="/order/index"/>*/}
                     {/*<Redirect exact from="/user" to="/user/index"/>*/}
                     {/*<Route component={ErrorPage}/>*/}

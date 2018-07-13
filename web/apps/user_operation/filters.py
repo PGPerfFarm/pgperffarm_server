@@ -1,0 +1,18 @@
+
+# -*- coding: utf-8 -*-
+import django_filters
+from django.db.models import Q
+
+from test_records.models import TestRecord
+
+
+class MachineRecordListFilter(django_filters.rest_framework.FilterSet):
+    """
+    TestRecordListFilter
+    """
+    branch__id = django_filters.NumberFilter(lookup_expr='icontains')
+    test_machine__machine_sn = django_filters.NumberFilter(lookup_expr='icontains')
+
+    class Meta:
+        model = TestRecord
+        fields = ['branch__id', 'test_machine__machine_sn']

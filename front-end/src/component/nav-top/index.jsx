@@ -12,7 +12,8 @@ class NavTop extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            username: _util.getStorage('userInfo').username || '',
+            // username: _util.getStorage('userInfo').username || '',
+            userinfo: _util.getStorage('userInfo')|| {},
             isLoggedIn: true
         }
     }
@@ -23,8 +24,21 @@ class NavTop extends React.Component {
         window.location.href = '/login';
     }
 
+    componentWillMount(){
+        this.setState({
+            isLoggedIn: this.isLoggedIn(),
+        });
+    }
+
+    isLoggedIn() {
+        if(this.state.userinfo.token){
+            return true;
+        }
+        return false;
+    }
+
     render() {
-        const isLoggedIn = this.state.isLoggedIn;
+        let isLoggedIn = this.state.isLoggedIn;
 
         let button = null;
         if (isLoggedIn) {
@@ -54,9 +68,9 @@ class NavTop extends React.Component {
             </li>;
         } else {
             button = <li className="dropdown sign-in">
-                <a className="" href="/login" aria-expanded="false">
+                <Link to="/login" aria-expanded="false">
                     Sign in
-                </a>
+                </Link>
             </li>;
         }
 

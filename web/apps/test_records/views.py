@@ -8,7 +8,7 @@ from django.contrib.auth.hashers import make_password
 from rest_framework.pagination import PageNumberPagination
 
 from exception import TestDataUploadError
-from filters import TestRecordListFilter
+from test_records.filters import TestRecordListFilter
 from models import UserMachine, TestCategory
 from pgperffarm.settings import DB_ENUM
 from user_operation.views import UserMachinePermission
@@ -52,7 +52,7 @@ class TestRecordDetailViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet
     serializer_class = TestRecordDetailSerializer
     # pagination_class = StandardResultsSetPagination
 
-class MachineHistoryRecordViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+class MachineHistoryRecordViewSet( mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     """
     detail test records
     """
@@ -60,7 +60,6 @@ class MachineHistoryRecordViewSet(mixins.RetrieveModelMixin, viewsets.GenericVie
     queryset = UserMachine.objects.all().order_by('add_time')
     serializer_class = MachineHistoryRecordSerializer
     # pagination_class = StandardResultsSetPagination
-
 
 @api_view(['POST'])
 @permission_classes((UserMachinePermission, ))
@@ -78,7 +77,7 @@ def TestRecordCreate(request, format=None):
     # jsLoads = json.loads(data[0])
 
     # todo get machine by token
-    # test_machine = UserMachine.objects.filter(secret)
+    test_machine = 1
 
     from django.db import transaction
 

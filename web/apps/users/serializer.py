@@ -37,9 +37,9 @@ class UserMachineSerializer(serializers.ModelSerializer):
         return reports_num
 
     def get_owner(self, obj):
-        target_owner = UserProfile.objects.filter(id=obj.machine_owner_id).values('email').first()
-
-        return target_owner['email']
+        target_owner = UserProfile.objects.filter(id=obj.machine_owner_id).first()
+        serializer = JWTUserProfileSerializer(target_owner)
+        return serializer.data
 
     def get_avatar(self, obj):
         target_owner = UserProfile.objects.filter(id=obj.machine_owner_id).values('email').first()
@@ -51,4 +51,4 @@ class UserMachineSerializer(serializers.ModelSerializer):
 class JWTUserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
-        fields = ('username', )
+        fields = ('username', 'email')

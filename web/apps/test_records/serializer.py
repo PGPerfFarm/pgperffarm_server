@@ -7,6 +7,7 @@ from users.serializer import UserMachineSerializer
 from users.models import UserMachine
 from django.db.models import Count
 
+
 class TestBranchSerializer(serializers.ModelSerializer):
     '''
     use TestBranchSerializer
@@ -15,6 +16,7 @@ class TestBranchSerializer(serializers.ModelSerializer):
     class Meta:
         model = TestBranch
         fields = ('branch_name',)
+
 
 class TestCategorySerializer(serializers.ModelSerializer):
     '''
@@ -45,6 +47,7 @@ class HardwareInfoDetailSerializer(serializers.ModelSerializer):
         model = LinuxInfo
         fields = ('cpuinfo', 'meminfo')
 
+
 class LinuxInfoDetailSerializer(serializers.ModelSerializer):
     '''
     use LinuxInfoDetailSerializer
@@ -53,6 +56,7 @@ class LinuxInfoDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = LinuxInfo
         fields = ('mounts', 'sysctl')
+
 
 class LinuxInfoSerializer(serializers.ModelSerializer):
     '''
@@ -71,7 +75,8 @@ class MetaInfoDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = MetaInfo
-        fields = ('uname', )
+        fields = ('uname',)
+
 
 class MetaInfoSerializer(serializers.ModelSerializer):
     '''
@@ -88,12 +93,15 @@ class TestResultSerializer(serializers.ModelSerializer):
     use TestResultSerializer
     '''
     mode = serializers.SerializerMethodField()
+
     class Meta:
         model = TestResult
         fields = "__all__"
+
     def get_mode(self, obj):
         new_dict = {v: k for k, v in DB_ENUM["mode"].items()}
         return new_dict[obj.mode]
+
 
 class CreateTestRecordSerializer(serializers.ModelSerializer):
     '''
@@ -143,7 +151,7 @@ class TestRecordListSerializer(serializers.ModelSerializer):
     # client_max_num = serializers.SerializerMethodField()
     class Meta:
         model = TestRecord
-        fields = ('uuid', 'add_time', 'machine_info', 'pg_info', 'branch','trend', 'linux_info', 'meta_info')
+        fields = ('uuid', 'add_time', 'machine_info', 'pg_info', 'branch', 'trend', 'linux_info', 'meta_info')
 
     def get_branch(self, obj):
         branch = TestBranch.objects.filter(id=obj.branch.id).first()
@@ -191,6 +199,7 @@ class TestRecordListSerializer(serializers.ModelSerializer):
 
 class TestDataSetDetailSerializer(serializers.ModelSerializer):
     results = serializers.SerializerMethodField()
+
     class Meta:
         model = TestDataSet
         fields = "__all__"
@@ -220,7 +229,8 @@ class TestRecordDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = TestRecord
         fields = (
-            'branch', 'date', 'uuid', 'pg_info', 'linux_info', 'hardware_info', 'meta_info', 'dataset_info', 'test_desc', 'meta_time', 'test_machine')
+            'branch', 'date', 'uuid', 'pg_info', 'linux_info', 'hardware_info', 'meta_info', 'dataset_info',
+            'test_desc', 'meta_time', 'test_machine')
 
     def get_branch(self, obj):
         branch = TestBranch.objects.filter(id=obj.branch_id).first()
@@ -287,25 +297,52 @@ class TestRecordDetailSerializer(serializers.ModelSerializer):
     #     rw_info_serializer = TestResultSerializer(all_data, many=True, context={'request': self.context['request']})
     #     return rw_info_serializer.data
 
+
 class MachineHistoryRecordSerializer(serializers.ModelSerializer):
     '''
     use MachineHistoryRecordSerializer
     '''
     machine_info = serializers.SerializerMethodField()
     reports = serializers.SerializerMethodField()
-
+    branches = serializers.SerializerMethodField()
     class Meta:
         model = UserMachine
-        fields = ('machine_info', 'reports')
+        fields = ('machine_info', 'reports', 'branches')
 
     def get_reports(self, obj):
-        target_records = TestRecord.objects.filter(test_machine_id=obj.id)
-        serializer = TestRecordListSerializer(target_records,many=True)
+        target_records = TestRecord.objects.filter(test_machine_id=obj.id).values_list(
+            'branch').annotate(Count('id'))
+        # print(target_records) # <QuerySet [(2, 2), (1, 3)]>
+        ret = []
+        for branch_item in target_records:
+            item = {}
+            item['branch'] = branch_item[0]
 
-        return serializer.data
+            records = TestRecord.objects.filter(test_machine_id=obj.id,branch_id=branch_item[0])
+
+            serializer = TestRecordListSerializer(records, many=True)
+            item['records'] = serializer.data
+            ret.append(item)
+        return ret
 
     def get_machine_info(self, obj):
         target_machine = UserMachine.objects.filter(id=obj.id).first()
         serializer = UserMachineSerializer(target_machine)
 
         return serializer.data
+
+    def get_branches(self, obj):
+        target_records = TestRecord.objects.filter(test_machine_id=obj.id).values_list(
+            'branch').annotate(Count('id'))
+
+        ret = []
+        for branch_item in target_records:
+            item = {}
+            item['value'] = branch_item[0]
+
+            branch = TestBranch.objects.filter(id=branch_item[0]).first()
+            serializer = TestBranchSerializer(branch)
+            item['branch'] = serializer.data["branch_name"]
+            ret.append(item)
+
+        return ret
