@@ -1,11 +1,10 @@
 import sys
 import os
-
+from pgperffarm.settings import PORJECT_PATH
 # Use django's model independently
 pwd = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(pwd)
-path = '/var/www/web/pgperffarm'
-# path = 'D:\GitSpace\pgperffarm\web\pgperffarm'
+path = PORJECT_PATH # path = 'D:\GitSpace\pgperffarm\web\pgperffarm'
 sys.path.append(path)
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
 

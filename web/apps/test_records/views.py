@@ -43,6 +43,31 @@ class TestRecordListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     filter_class = TestRecordListFilter
 
+class TestRecordListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    """
+    List test records
+    """
+
+    queryset = TestRecord.objects.all().order_by('add_time')
+    serializer_class = TestRecordListSerializer
+    pagination_class = StandardResultsSetPagination
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    filter_class = TestRecordListFilter
+
+class TestStatusRecordListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    """
+    List test records
+    """
+
+    queryset = TestRecord.objects.all().order_by('add_time')
+    serializer_class = TestRecordListSerializer
+    pagination_class = StandardResultsSetPagination
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    filter_class = TestRecordListFilter
+
+
+
+
 class TestRecordDetailViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     """
     detail test records
