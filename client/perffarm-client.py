@@ -66,6 +66,8 @@ if __name__ == '__main__':
         PGBENCH_CONFIG['results_dir'] = OUTPUT_DIR
         runner.register_config('pgbench-basic',
                                'pgbench',
+                               repository.current_branch(),
+                               repository.current_commit(),
                                dbname=DATABASE_NAME,
                                bin_path=('%s/bin' % (BUILD_PATH,)),
                                postgres_config=POSTGRES_CONFIG,

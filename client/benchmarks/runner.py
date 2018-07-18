@@ -26,15 +26,17 @@ class BenchmarkRunner(object):
         # FIXME check if a mapping for the same name already exists
         self._benchmarks.update({benchmark_name: benchmark_class})
 
-    def register_config(self, config_name, benchmark_name, postgres_config,
-                        **kwargs):
+    def register_config(self, config_name, benchmark_name, branch, commit,
+                        postgres_config, **kwargs):
         ''
 
         # FIXME check if a mapping for the same name already exists
         # FIXME check that the benchmark mapping already exists
         self._configs.update({config_name: {'benchmark': benchmark_name,
                                             'config': kwargs,
-                                            'postgres': postgres_config}})
+                                            'postgres': postgres_config,
+                                            'branch': branch,
+                                            'commit': commit}})
 
     def _check_config(self, config_name):
         ''
@@ -112,6 +114,12 @@ class BenchmarkRunner(object):
                 'date': strftime("%Y-%m-%d %H:%M:%S.000000+00", gmtime()),
                 'name': config_name,
                 'uname': uname,
+        }
+
+        r['postgres'] = {
+                'branch': config['branch'],
+                'commit': config['commit'],
+                'settings': config['postgres'],
         }
 
         with open('%s/results.json' % self._output, 'w') as f:

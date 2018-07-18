@@ -40,6 +40,15 @@ class GitRepository(object):
         with TemporaryFile() as strout:
             call(['git', 'pull'], cwd=self._path, stdout=strout, stderr=STDOUT)
 
+    def current_branch(self):
+        'returns current branch'
+
+        with TemporaryFile() as strout:
+            call(['git', 'rev-parse', '--abbrev-ref', 'HEAD'], cwd=self._path,
+                 stdout=strout, stderr=STDOUT)
+            strout.seek(0)
+            return strout.read().strip()
+
     def current_commit(self):
         'returns current commit hash'
 
@@ -57,6 +66,7 @@ class GitRepository(object):
         else:
             self._clone()
 
+        log("current branch '%s'" % (self.current_branch(),))
         log("current commit '%s'" % (self.current_commit(),))
 
     def build_and_install(self, path, remove=True):
