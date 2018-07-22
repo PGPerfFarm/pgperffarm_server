@@ -74,41 +74,71 @@ class Login extends React.Component {
         return (
             <div id="page-wrapper">
                 <div className="row">
-                    <div className="col-lg-16">
-                        <div className="panel panel-default">
-                            <div className="panel-heading">
-                                login to manage your machines!
-                            </div>
-                            <div className="panel-body">
-                                <div className="row">
-                                    {/*<!-- /.col-lg-6 (nested) -->*/}
-                                    <div className="col-lg-12">
-                                        <h4>Login Form</h4>
-                                        <form role="form">
-                                            <div className="form-group">
-                                                {/*<label className="control-label" for="inputLogin"> login input</label>*/}
-                                                <input type="text" className="form-control" id="inputLogin"
-                                                       placeholder="Username or email"
-                                                       name="username"
-                                                       onKeyUp={e => this.onInputKeyUp(e)}
-                                                       onChange={e => this.onInputChange(e)}/>
-                                            </div>
-                                            <div className="form-group">
-                                                <input type="text" className="form-control" id="inputPwd"
-                                                       name="password"
-                                                       placeholder="password" onKeyUp={e => this.onInputKeyUp(e)}
-                                                       onChange={e => this.onInputChange(e)}/>
-                                            </div>
-                                            <button type="button" className="btn btn-primary"  onClick={e => {this.onSubmit(e)}}>Button</button>
-                                        </form>
-                                    </div>
-                                    {/*<!-- /.col-lg-6 (nested) -->*/}
+                    <div class="col-lg-6">
+                        <h4>Disabled Form States</h4>
+                        <form role="form">
+                            <fieldset disabled="">
+                                <div class="form-group">
+                                    <label for="disabledSelect">Disabled input</label>
+                                    <input class="form-control" id="disabledInput" type="text" placeholder="Disabled input" disabled="">
                                 </div>
-                                {/*<!-- /.row (nested) -->*/}
+                                <div class="form-group">
+                                    <label for="disabledSelect">Disabled select menu</label>
+                                    <select id="disabledSelect" class="form-control">
+                                        <option>Disabled select</option>
+                                    </select>
+                                </div>
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox">Disabled Checkbox
+                                    </label>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Disabled Button</button>
+                            </fieldset>
+                        </form>
+                        <h4>Form Validation States</h4>
+                        <form role="form">
+                            <div class="form-group has-success">
+                                <label class="control-label" for="inputSuccess">Input with success</label>
+                                <input type="text" class="form-control" id="inputSuccess">
                             </div>
-                            {/*<!-- /.panel-body -->*/}
-                        </div>
-                        {/*<!-- /.panel -->*/}
+                            <div class="form-group has-warning">
+                                <label class="control-label" for="inputWarning">Input with warning</label>
+                                <input type="text" class="form-control" id="inputWarning">
+                            </div>
+                            <div class="form-group has-error">
+                                <label class="control-label" for="inputError">Input with error</label>
+                                <input type="text" class="form-control" id="inputError">
+                            </div>
+                        </form>
+                        <h4>Input Groups</h4>
+                        <form role="form">
+                            <div class="form-group input-group">
+                                <span class="input-group-addon">@</span>
+                                <input type="text" class="form-control" placeholder="Username">
+                            </div>
+                            <div class="form-group input-group">
+                                <input type="text" class="form-control">
+                                    <span class="input-group-addon">.00</span>
+                            </div>
+                            <div class="form-group input-group">
+                                            <span class="input-group-addon"><i class="fa fa-eur"></i>
+                                            </span>
+                                <input type="text" class="form-control" placeholder="Font Awesome Icon">
+                            </div>
+                            <div class="form-group input-group">
+                                <span class="input-group-addon">$</span>
+                                <input type="text" class="form-control">
+                                    <span class="input-group-addon">.00</span>
+                            </div>
+                            <div class="form-group input-group">
+                                <input type="text" class="form-control">
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-default" type="button"><i class="fa fa-search"></i>
+                                                </button>
+                                            </span>
+                            </div>
+                        </form>
                     </div>
                     {/*<!-- /.col-lg-12 -->*/}
                 </div>
