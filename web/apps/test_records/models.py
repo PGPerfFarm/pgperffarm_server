@@ -44,7 +44,40 @@ class TestCategory(models.Model):
 class PGInfo(models.Model):
     """
     pg info
+
+    "settings": {
+        "checkpoint_timeout": "15min",
+        "log_temp_files": "32",
+        "work_mem": "64MB",
+        "log_line_prefix": "%n %t ",
+        "shared_buffers": "1GB",
+        "log_autovacuum_min_duration": "0",
+        "checkpoint_completion_target": "0.9",
+        "maintenance_work_mem": "128MB",
+        "log_checkpoints": "on",
+        "max_wal_size": "4GB",
+        "min_wal_size": "2GB"
+    }
     """
+    checkpoint_timeout =models.IntegerField(verbose_name="checkpoint_timeout", help_text="checkpoint_timeout")
+    log_temp_files = models.IntegerField(verbose_name="log_temp_files", help_text="log_temp_files")
+    work_mem = models.IntegerField(verbose_name="work_mem", help_text="work_mem")
+    log_line_prefix = models.CharField(max_length=64,verbose_name="checkpoint_timeout", help_text="checkpoint_timeout")
+    shared_buffers = models.IntegerField(verbose_name="shared_buffers", help_text="shared_buffers")
+    log_autovacuum_min_duration =models.IntegerField(verbose_name="log_autovacuum_min_duration", help_text="log_autovacuum_min_duration")
+
+
+    checkpoint_completion_target =models.DecimalField(max_digits=8, decimal_places=4,verbose_name="checkpoint_completion_target", help_text="checkpoint_completion_target")
+    maintenance_work_mem = models.IntegerField(verbose_name="maintenance_work_mem", help_text="maintenance_work_mem")
+
+    CHECKPOINTS_CHOICE = (
+        ('on', 'on'),
+        ('off', 'off'),
+    )
+    log_checkpoints = models.CharField(max_length=8,choices=CHECKPOINTS_CHOICE,verbose_name="log_checkpoints", help_text="log_checkpoints")
+    max_wal_size =models.IntegerField(verbose_name="max_wal_size", help_text="max_wal_size")
+    min_wal_size =models.IntegerField(verbose_name="min_wal_size", help_text="min_wal_size")
+
     pg_branch = models.ForeignKey(TestBranch, verbose_name="pg branch", help_text="pg branch")
 
     class Meta:
@@ -57,7 +90,7 @@ class PGInfo(models.Model):
 
 class MetaInfo(models.Model):
     """
-    pg info
+    meta info
     """
     date = models.DateTimeField(verbose_name="date", help_text="date")
     uname = models.TextField(verbose_name="uname", help_text="uname")
@@ -102,6 +135,8 @@ class TestRecord(models.Model):
     hash = models.CharField(unique=True, default='', max_length=128, verbose_name="record hash",
                             help_text="record hash")
     uuid = models.CharField(unique=True, default='', max_length=64, verbose_name="record uuid", help_text="record uuid")
+    commit = models.CharField(max_length=64, verbose_name="record commit", help_text="record commit")
+
     add_time = models.DateTimeField(default=timezone.now, verbose_name="test added time")
 
     class Meta:
