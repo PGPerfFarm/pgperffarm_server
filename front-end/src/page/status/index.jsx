@@ -16,6 +16,7 @@ class Status extends React.Component {
             total: 3,
             filter: {},
             branch_list: [],
+            selected_branches:[],
             list: [
                 // {
                 //     'alias': 'a_name',
@@ -32,7 +33,7 @@ class Status extends React.Component {
 
         },
 
-            this.onPageChange = this.onPageChange.bind(this);
+        this.onPageChange = this.onPageChange.bind(this);
         this.onIsLoadingChange = this.onIsLoadingChange.bind(this);
         this.handleApplyBtnClick = this.handleApplyBtnClick.bind(this);
         this.loadRecordList = this.loadRecordList.bind(this);
@@ -45,9 +46,10 @@ class Status extends React.Component {
     handleApplyBtnClick(params) {
         console.log('handle apply!')
 
-        let self = this
-        this.setState({filter: params}, () => {
-            self.loadRecordList()
+        let _this = this
+        let selected_branches = []
+        this.setState({
+            selected_branches: selected_branches,
         });
     }
 
@@ -55,6 +57,7 @@ class Status extends React.Component {
         _record.getBranchList().then(res => {
             this.setState({
                 branch_list: res.results,
+                selected_branches: res.results,
             });
             console.dir(res.results)
         }, errMsg => {
@@ -119,9 +122,9 @@ class Status extends React.Component {
             display: show
         };
         console.log('hi')
-        console.dir(this.state.branch_list)
+        console.dir(this.state.selected_branches)
         console.log('done')
-        let table_list = this.state.branch_list.map((value, index) => (
+        let table_list = this.state.selected_branches.map((value, index) => (
             <RecordTable branch={value.branch_name}/>
         ))
 
@@ -135,7 +138,7 @@ class Status extends React.Component {
                 </p>
 
 
-                <ResultFilter isLoading={this.state.isLoading} onIsLoadingChange={this.onIsLoadingChange}
+                <ResultFilter branch_list={this.state.branch_list} isLoading={this.state.isLoading} onIsLoadingChange={this.onIsLoadingChange}
                               onApplyBtnClick={this.handleApplyBtnClick}/>
                 {table_list}
                 {/*<RecordTable list={this.state.list} total={this.state.total} current={this.state.currentPage} loadfunc={this.loadRecordList}/>*/}

@@ -13,6 +13,7 @@ class ResultFilter extends React.Component {
                 {'cate': 'Category 2', 'name': '30 days'}
             ],
             restoreNum: 0,
+            branch_list:this.props.branch_list,
             selected: [{
                 'cate': 'Category 1',
                 'index': 0,

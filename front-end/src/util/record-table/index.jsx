@@ -93,10 +93,11 @@ class RecordTable extends React.Component {
         console.log(this.state.list)
     }
     onPageNumChange(current) {
+        let _this = this
         this.setState({
             currentPage: current
         }, () => {
-            this.props.loadfunc(current);
+            this.loadRecordListByBranch(_this.state.branch,current);
         });
         console.log('current:' + this.state.currentPage)
     }
@@ -188,7 +189,7 @@ class RecordTable extends React.Component {
                     <Table.Row>
                         <Table.HeaderCell colSpan='10'>
                             <Pagination style={style} onChange={(current) => this.onPageNumChange(current)} pageSize={2}
-                                        current={this.state.currentPage} total={this.props.total}/>
+                                        current={this.state.currentPage} total={this.state.total}/>
 
                         </Table.HeaderCell>
 
