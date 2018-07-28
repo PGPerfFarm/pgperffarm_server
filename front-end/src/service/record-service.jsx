@@ -4,6 +4,27 @@ import PGConstant from 'util/constant.jsx'
 const _util       = new PGUtil();
 
 class Record{
+    // get branch list
+    getBranchList(){
+        let url = PGConstant.base_url + '/branches';
+
+        return _util.request({
+            type    : 'get',
+            url     : url,
+        });
+    }
+
+    getRecordListByBranch(listParam){
+        let url = PGConstant.base_url + '/records-by-branch';
+
+        let data = {};
+        data = listParam;
+        return _util.request({
+            type    : 'get',
+            url     : url,
+            data    : data
+        });
+    }
     // get record list
     getRecordList(listParam){
         let url = PGConstant.base_url + '/records';

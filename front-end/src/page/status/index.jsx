@@ -1,7 +1,7 @@
 import React from 'react';
 // import './index.css';
 import ResultFilter from 'component/result-filter/index.jsx';
-import BasicTable    from 'util/basic-table/index.jsx';
+import RecordTable    from 'util/record-table/index.jsx';
 import Record      from 'service/record-service.jsx'
 import PGUtil        from 'util/util.jsx'
 
@@ -13,8 +13,9 @@ class Status extends React.Component {
         this.state = {
             isLoading: false,
             currentPage: 1,
-            total:3,
+            total: 3,
             filter: {},
+            branch_list: [],
             list: [
                 // {
                 //     'alias': 'a_name',
@@ -31,30 +32,42 @@ class Status extends React.Component {
 
         },
 
-        this.onPageChange = this.onPageChange.bind(this);
+            this.onPageChange = this.onPageChange.bind(this);
         this.onIsLoadingChange = this.onIsLoadingChange.bind(this);
         this.handleApplyBtnClick = this.handleApplyBtnClick.bind(this);
         this.loadRecordList = this.loadRecordList.bind(this);
     }
 
-    componentDidMount() {
-        this.loadRecordList();
+    componentWillMount() {
+        this.loadBranchList();
     }
 
     handleApplyBtnClick(params) {
         console.log('handle apply!')
 
         let self = this
-        this.setState({filter: params}, ()=> {
+        this.setState({filter: params}, () => {
             self.loadRecordList()
         });
     }
 
+    loadBranchList() {
+        _record.getBranchList().then(res => {
+            this.setState({
+                branch_list: res.results,
+            });
+            console.dir(res.results)
+        }, errMsg => {
+            _util.errorTips('get branch list error');
+        });
+    }
+
+
     // load record list
-    loadRecordList(page=1) {
+    loadRecordList(page = 1) {
         let _this = this;
         let listParam = {};
-        listParam= this.state.filter;
+        listParam = this.state.filter;
         listParam.page = page;
 
         _record.getRecordList(listParam).then(res => {
@@ -105,6 +118,12 @@ class Status extends React.Component {
         let style = {
             display: show
         };
+        console.log('hi')
+        console.dir(this.state.branch_list)
+        console.log('done')
+        let table_list = this.state.branch_list.map((value, index) => (
+            <RecordTable branch={value.branch_name}/>
+        ))
 
         return (
             <div id="page-wrapper">
@@ -118,14 +137,8 @@ class Status extends React.Component {
 
                 <ResultFilter isLoading={this.state.isLoading} onIsLoadingChange={this.onIsLoadingChange}
                               onApplyBtnClick={this.handleApplyBtnClick}/>
-
-                {/*<TableList tableHeads={['alias', 'System', 'ro', 'rw', 'date']}>*/}
-                    {/*{listBody}*/}
-                {/*</TableList>*/}
-                {/*<Pagination style={style} onChange={this.onPageChange} current={this.state.currentPage} total={25}/>*/}
-
-                <BasicTable list={this.state.list} total={this.state.total} current={this.state.currentPage} loadfunc={this.loadRecordList}/>
-                {/*<RateBar std={this.state.std} curMark={this.state.curMark1}/>*/}
+                {table_list}
+                {/*<RecordTable list={this.state.list} total={this.state.total} current={this.state.currentPage} loadfunc={this.loadRecordList}/>*/}
 
             </div>
         )
