@@ -59,6 +59,7 @@ class Status extends React.Component {
                 branch_list: res.results,
                 selected_branches: res.results,
             });
+            console.log('now console the branch_list')
             console.dir(res.results)
         }, errMsg => {
             _util.errorTips('get branch list error');
@@ -117,13 +118,9 @@ class Status extends React.Component {
     }
 
     render() {
-        let show = this.state.isLoading ? "none" : "block";
-        let style = {
-            display: show
-        };
-        console.log('hi')
-        console.dir(this.state.selected_branches)
-        console.log('done')
+        // console.log('hi')
+        // console.dir(this.state.selected_branches)
+        // console.log('done')
         let table_list = this.state.selected_branches.map((value, index) => (
             <RecordTable branch={value.branch_name}/>
         ))
@@ -138,7 +135,7 @@ class Status extends React.Component {
                 </p>
 
 
-                <ResultFilter branch_list={this.state.branch_list} isLoading={this.state.isLoading} onIsLoadingChange={this.onIsLoadingChange}
+                <ResultFilter branches={this.state.branch_list} isLoading={this.state.isLoading} onIsLoadingChange={this.onIsLoadingChange}
                               onApplyBtnClick={this.handleApplyBtnClick}/>
                 {table_list}
                 {/*<RecordTable list={this.state.list} total={this.state.total} current={this.state.currentPage} loadfunc={this.loadRecordList}/>*/}

@@ -9,51 +9,108 @@ class ResultFilter extends React.Component {
         super(props);
 
         this.state = {
-            selected_items: [
-                {'cate': 'Category 2', 'name': '30 days'}
-            ],
+            // selected_items: [
+            //     {'cate': 'Category 2', 'name': '30 days'}
+            // ],
             restoreNum: 0,
-            branch_list:this.props.branch_list,
-            selected: [{
-                'cate': 'Category 1',
-                'index': 0,
-                'key': 'date',
-                'data': [
-                    {'name':'All', 'value':''},
-                    {'name':'7 days', 'value':'7'},
-                    {'name':'30 days', 'value':'30'}
-                ],
-            }],
-            // selected: [{
-            //     'cate': 'Category 1',
-            //     'index': 2,
-            //     'data': [
-            //         'All',
-            //         'Improving',
-            //         'Regressive'
-            //     ],
-            // }, {
-            //     'cate': 'Category 2',
-            //     'index': 1,
-            //     'data': [
-            //         'All',
-            //         '7 days',
-            //         '30 days'
-            //     ],
-            // }, {
-            //     'cate': 'Category 3',
-            //     'index': 1,
-            //     'data': [
-            //         'All',
-            //         'item3-1',
-            //         'item3-2'
-            //     ],
-            // }],
+            branches: this.props.branches,
+            selected: [
+                //     {
+                //     'cate': 'Category 1',
+                //     'index': 0,
+                //     'isMultiple':false,
+                //     'key': 'date',
+                //     'metaData':{
+                //         'name': 'All',
+                //         'value': ''
+                //     },
+                //     'data': [
+                //         {'name':'7 days', 'value':'7'},
+                //         {'name':'30 days', 'value':'30'}
+                //     ],
+                // }
+            ],
+
             isClear: true
         };
 
-
         this.selectItemClick = this.selectItemClick.bind(this);
+        this.metaItemClick = this.metaItemClick.bind(this);
+
+    }
+
+    addBranchTags() {
+
+        let obj = {
+            'cate': 'Branches',
+            // 'index': 0,
+            'isMultiple': true,
+            'key': 'branch',
+            'metaData': {
+                'name': 'All',
+                'value': '',
+                'isSelected': true
+            },
+            'totalSelected': 0,
+            'data': [],
+        }
+
+        let branches = this.state.branches
+
+        for (let i = 0; i < branches.length; i++) {
+            let newItem = {}
+            newItem['name'] = branches[i].branch_name
+            newItem['value'] = branches[i].branch_name
+            newItem['isSelected'] = false
+            obj['data'].push(newItem)
+        }
+
+        let _list = []
+        _list.push(obj)
+        console.log('lets see the new selected')
+        console.log(branches.length)
+        console.dir(_list)
+        this.setState({
+            selected: _list
+        });
+
+
+    }
+
+    componentWillReceiveProps(nextProps) {
+        let _this = this
+        this.setState({
+            branches: nextProps.branches,
+        }, () => {
+            _this.addBranchTags();
+        });
+    }
+
+    componentDidMount() {
+        this.addBranchTags();
+    }
+
+
+    metaItemClick(e) {
+        console.log('metaItemClick!!', this);
+        let item_name = e.currentTarget.getAttribute("data-item-name")
+        let item_index = e.currentTarget.getAttribute("data-item-index")
+
+        let cate_name = e.currentTarget.getAttribute("data-cate-name")
+        let cate_index = e.currentTarget.getAttribute("data-cate-index")
+
+        let newSelected = this.state.selected;
+        newSelected[cate_index].metaData.isSelected = true;
+        for (let i = 0; i < newSelected[cate_index].data.length; i++) {
+            newSelected[cate_index].data[i].isSelected = false;
+        }
+
+
+        this.setState({
+            selected: newSelected,
+            isClear: true
+        });
+
     }
 
     selectItemClick(e) {
@@ -65,15 +122,20 @@ class ResultFilter extends React.Component {
         let cate_index = e.currentTarget.getAttribute("data-cate-index")
 
         let newSelected = this.state.selected;
-        console.log('prev index is:' + newSelected[cate_index]["index"])
+        newSelected[cate_index].data[item_index]['isSelected'] = !newSelected[cate_index].data[item_index]['isSelected']
+
+
+        console.log('cate name is:' + cate_name)
+        console.log('cate index is:' + cate_index)
+        // console.log('prev index is:' + newSelected[cate_index]["index"])
         console.log('cur index is:' + item_index)
-        if (newSelected[cate_index]["index"] != item_index) {
-            newSelected[cate_index]["index"] = item_index;
-            this.setState({
-                selected: newSelected,
-                isClear: true
-            });
-        }
+
+
+        this.setState({
+            selected: newSelected,
+            isClear: true
+        });
+
     }
 
 
@@ -81,6 +143,7 @@ class ResultFilter extends React.Component {
         console.log('handleClick!!', this);
         let self = this;
     }
+
     getFilterParams() {
         let params_list = this.state.selected;
         let result = {};
@@ -89,12 +152,12 @@ class ResultFilter extends React.Component {
             console.log('cur filter index is:' + params_item.index)
             let value = params_item.data[params_item.index]['value']
             let key = params_item.key;
-            if (value){
+            if (value) {
                 console.log('key is:' + key)
-                if(key == 'date'){
+                if (key == 'date') {
                     result[key] = _util.getDateStr(value * -1)
-                }else{
-                    result[key] =value
+                } else {
+                    result[key] = value
                 }
 
             }
@@ -102,6 +165,7 @@ class ResultFilter extends React.Component {
         }
         return result
     }
+
     applyButtonClick() {
         this.setState({
             // selected: newArr,
@@ -129,24 +193,44 @@ class ResultFilter extends React.Component {
 
     render() {
         let _this = this;
-
+        console.log('look')
+        console.dir(this.state.selected)
+        console.log('look done')
         let filter = this.state.selected.map((item, i) => {
+            let meta_item
+            let filter_items
+            let is_high_light = item["metaData"].isSelected == true ? "select-all selected" : "select-all"
+            meta_item = (
+                <dd onClick={(e) => this.metaItemClick(e)} data-cate-name={item["cate"]}
+                    data-cate-index={i} data-item-name='meta' className={is_high_light}><a
+                    href="javascript:void(0);">{item["metaData"]['name']}</a></dd>
+            )
 
-            let filter_item = item["data"].map((s, index) => {
-                let is_high_light = index == item["index"] ? "select-all selected" : "select-all"
-                return (
-                    <dd onClick={(e) => this.selectItemClick(e)} key={index} data-cate-name={item["cate"]}
-                        data-cate-index={i} data-item-index={index} data-item-name={s}
-                        className={is_high_light}><a
-                        href="javascript:void(0);">{s['name']}</a></dd>
-                )
-            });
+
+            if (item.isMultiple) {
+                filter_items = item["data"].map((s, index) => {
+                    let is_high_light = s['isSelected'] == true ? "select-all selected" : "select-all"
+                    let filter_tag = (
+                        <dd onClick={(e) => this.selectItemClick(e)} key={index} data-cate-name={item["cate"]}
+                            data-cate-index={i} data-item-index={index} data-item-name={s}
+                            className={is_high_light}><a
+                            href="javascript:void(0);">{s['name']}</a></dd>
+                    )
+
+
+                    return filter_tag
+                });
+            } else {
+                //todo
+            }
+
 
             return (
                 <li className="select-list" item={item} key={i} data-cate-name={item["cate"]} data-cate-index={i}>
-                    <dl data-cate-name={item["cate"]} data-cate-index={i}>
+                    <dl data-is-multiple={item.isMultiple} data-cate-name={item["cate"]} data-cate-index={i}>
                         <dt data-cate-name={item["cate"]}>{item["cate"]}:</dt>
-                        {filter_item}
+                        {meta_item}
+                        {filter_items}
                         {/*<dd className="select-all selected"><a href="#">All</a></dd>*/}
                         {/*<dd><a href="#">today</a></dd>*/}
                         {/*<dd><a href="#">7 days</a></dd>*/}
@@ -173,7 +257,6 @@ class ResultFilter extends React.Component {
         return (
 
             <div id="wrapper">
-
                 <div className="panel-group" id="accordion">
                     <div className="panel panel-default">
                         <div className="panel-heading" onClick={() => this.handleClick()}>
