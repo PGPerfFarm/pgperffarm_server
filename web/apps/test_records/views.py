@@ -14,7 +14,8 @@ from test_records.filters import TestRecordListFilter
 from models import UserMachine, TestCategory, TestBranch
 from pgperffarm.settings import DB_ENUM
 from user_operation.views import UserMachinePermission
-from .serializer import MachineHistoryRecordSerializer, TestStatusRecordListSerializer, TestBranchSerializer
+from .serializer import MachineHistoryRecordSerializer, TestStatusRecordListSerializer, TestBranchSerializer, \
+    CreateTestResultSerializer, CreatePGInfoSerializer
 from .serializer import TestRecordListSerializer, TestRecordDetailSerializer, LinuxInfoSerializer, MetaInfoSerializer, \
     PGInfoSerializer, CreateTestRecordSerializer, CreateTestDateSetSerializer, TestResultSerializer
 
@@ -113,7 +114,7 @@ def TestRecordCreate(request, format=None):
     """
     Receive data from client
     """
-
+    print(request.__str__())
     data = request.data
 
     print type(data[0])
@@ -122,12 +123,15 @@ def TestRecordCreate(request, format=None):
     # obj = data[0].pgbench
     # jsLoads = json.loads(data[0])
 
-    # todo get machine by token
-    test_machine = 1
-
     from django.db import transaction
 
     try:
+        # todo get machine by token
+        secret = request.META.get("HTTP_AUTHORIZATION")
+        ret = UserMachine.objects.filter(machine_secret=secret, state=1).get()
+        test_machine = ret.id
+        if test_machine <= 0:
+            raise TestDataUploadError("The machine is unavailable.")
 
         record_hash = make_password(str(json_data), 'pg_perf_farm')
         # print(record_hash.__len__()) 77
@@ -156,17 +160,28 @@ def TestRecordCreate(request, format=None):
                 raise TestDataUploadError(msg)
 
             pg_data = json_data['postgres']
+            branch_str = pg_data['branch']
+            if(branch_str == 'master'):
+                branch_str = 'HEAD'
+
+            branch = TestBranch.objects.filter(branch_name=branch_str).get()
+            if not branch:
+                raise TestDataUploadError('branch msg error')
+
             commit = pg_data['commit']
             pg_settings = pg_data['settings']
-            pg_data = {
-                'pg_branch': 1
-            }
-            pgInfo = PGInfoSerializer(data=pg_data)
+            filtered=['checkpoint_timeout','work_mem','shared_buffers','maintenance_work_mem','max_wal_size','min_wal_size']
+            for item in filtered:
+                pg_settings[item] = pg_settings[item].encode('utf-8')
+                pg_settings[item] = filter(str.isdigit, pg_settings[item])
+
+            pg_settings['log_checkpoints'] = DB_ENUM['general_switch'][pg_settings['log_checkpoints']]
+            pgInfo = CreatePGInfoSerializer(data=pg_settings)
             pgInfoRet = None
             if pgInfo.is_valid():
                 pgInfoRet = pgInfo.save()
             else:
-                msg = 'pgInfo invalid'
+                msg = pgInfo.errors
                 raise TestDataUploadError(msg)
 
             test_record_data = {
@@ -178,6 +193,7 @@ def TestRecordCreate(request, format=None):
                 'meta_time': metaInfoRet.date,
                 'hash': record_hash,
                 'commit': commit,
+                'branch':branch.id,
                 'uuid': shortuuid.uuid()
             }
             testRecord = CreateTestRecordSerializer(data=test_record_data)
@@ -221,7 +237,7 @@ def TestRecordCreate(request, format=None):
                             print 'dataset valid'
                             testDateSetRet = testDateSet.save()
                         else:
-                            print(testDateSet.errors)
+                            # print(testDateSet.errors)
                             msg = 'testDateSet invalid'
                             raise TestDataUploadError(msg)
 
@@ -230,19 +246,19 @@ def TestRecordCreate(request, format=None):
                             test_result_data = test_result
                             test_result_data['test_dataset'] = testDateSetRet.id
                             test_result_data['mode'] = DB_ENUM['mode'][test_result_data['mode']]
-                            testResult = TestResultSerializer(data=test_result_data)
+                            testResult = CreateTestResultSerializer(data=test_result_data)
 
                             testResultRet = None
                             if testResult.is_valid():
                                 print 'testResult valid'
                                 testResultRet = testResult.save()
                             else:
-                                print(testResult.errors)
-                                msg = 'testResult invalid'
+                                # print(testResult.error_messages)
+                                msg = testResult.error_messages
                                 raise TestDataUploadError(msg)
 
     except Exception as e:
-        msg = 'upload error:' + str(e).encode('utf-8')
+        msg = 'upload error:' + e.__str__()
         # todo add log
         return Response(msg, status=status.HTTP_202_ACCEPTED)
 

@@ -28,15 +28,66 @@ class TestCategorySerializer(serializers.ModelSerializer):
         fields = ('cate_name', 'cate_sn')
 
 
-class PGInfoSerializer(serializers.ModelSerializer):
+class CreatePGInfoSerializer(serializers.ModelSerializer):
     '''
-    use PGInfoSerializer
+    use CreatePGInfoSerializer
     '''
 
     class Meta:
         model = PGInfo
-        fields = ('pg_branch',)
+        fields = "__all__"
 
+
+class PGInfoSerializer(serializers.ModelSerializer):
+    '''
+    use PGInfoSerializer
+            "settings": {
+            "checkpoint_timeout": "15min",
+            "log_temp_files": "32",
+            "work_mem": "64MB",
+            "log_line_prefix": "%n %t ",
+            "shared_buffers": "1GB",
+            "log_autovacuum_min_duration": "0",
+            "checkpoint_completion_target": "0.9",
+            "maintenance_work_mem": "128MB",
+            "log_checkpoints": "on",
+            "max_wal_size": "4GB",
+            "min_wal_size": "2GB"
+        }
+    '''
+    checkpoint_timeout = serializers.SerializerMethodField()
+    work_mem = serializers.SerializerMethodField()
+    shared_buffers = serializers.SerializerMethodField()
+    maintenance_work_mem = serializers.SerializerMethodField()
+    max_wal_size = serializers.SerializerMethodField()
+    min_wal_size = serializers.SerializerMethodField()
+    log_checkpoints = serializers.SerializerMethodField()
+
+    class Meta:
+        model = PGInfo
+        fields = "__all__"
+
+    def get_log_checkpoints(self, obj):
+        new_dict = {v: k for k, v in DB_ENUM["general_switch"].items()}
+        return new_dict[obj.log_checkpoints]
+
+    def get_checkpoint_timeout(self, obj):
+        return obj['checkpoint_timeout'].__str__() + 'min'
+
+    def get_work_mem(self, obj):
+        return obj['work_mem'].__str__() + 'MB'
+
+    def get_shared_buffers(self, obj):
+        return obj['shared_buffers'].__str__() + 'GB'
+
+    def get_maintenance_work_mem(self, obj):
+        return obj['maintenance_work_mem'].__str__() + 'MB'
+
+    def get_max_wal_size(self, obj):
+        return obj['max_wal_size'].__str__() + 'GB'
+
+    def get_min_wal_size(self, obj):
+        return obj['min_wal_size'].__str__() + 'GB'
 
 class HardwareInfoDetailSerializer(serializers.ModelSerializer):
     '''
@@ -87,6 +138,15 @@ class MetaInfoSerializer(serializers.ModelSerializer):
         model = MetaInfo
         fields = ('date', 'uname', 'benchmark', 'name')
 
+
+class CreateTestResultSerializer(serializers.ModelSerializer):
+    '''
+    use CreateTestResultSerializer
+    '''
+
+    class Meta:
+        model = TestResult
+        fields = "__all__"
 
 class TestResultSerializer(serializers.ModelSerializer):
     '''

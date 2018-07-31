@@ -146,6 +146,10 @@ REST_FRAMEWORK = {
 }
 
 DB_ENUM = {
+    "general_switch": {
+        "on": 1,
+        "off": 2
+    },
     "mode": {
         "simple": 1,
         "other": 2
