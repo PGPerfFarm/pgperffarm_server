@@ -1,7 +1,7 @@
 import React from 'react';
 // import './index.css';
 import ResultFilter from 'component/result-filter/index.jsx';
-import BasicTable    from 'util/basic-table/index.jsx';
+import RecordTable    from 'util/record-table/index.jsx';
 import Record      from 'service/record-service.jsx'
 import PGUtil        from 'util/util.jsx'
 
@@ -13,8 +13,10 @@ class Status extends React.Component {
         this.state = {
             isLoading: false,
             currentPage: 1,
-            total:3,
+            total: 3,
             filter: {},
+            branch_list: [],
+            selected_branches:[],
             list: [
                 // {
                 //     'alias': 'a_name',
@@ -37,24 +39,52 @@ class Status extends React.Component {
         this.loadRecordList = this.loadRecordList.bind(this);
     }
 
-    componentDidMount() {
-        this.loadRecordList();
+    componentWillMount() {
+        this.loadBranchList();
     }
 
-    handleApplyBtnClick(params) {
+    handleApplyBtnClick(branches) {
         console.log('handle apply!')
 
-        let self = this
-        this.setState({filter: params}, ()=> {
-            self.loadRecordList()
+        let _this = this
+        let selected_branches = branches
+        if(selected_branches === undefined || selected_branches.length == 0) {
+            selected_branches = this.state.branch_list
+            for (let i = 0; i < selected_branches.length; i++) {
+                selected_branches[i].isSelected = true;
+            }
+        }
+        this.setState({
+            selected_branches: selected_branches,
+            isLoading: false
+        });
+
+    }
+
+    loadBranchList() {
+        _record.getBranchList().then(res => {
+            let selected_branches = res.results
+            for (let i = 0; i < selected_branches.length; i++) {
+                selected_branches[i].isSelected = true;
+            }
+
+            this.setState({
+                branch_list: res.results,
+                selected_branches: selected_branches,
+            });
+            console.log('now console the branch_list')
+            console.dir(res.results)
+        }, errMsg => {
+            _util.errorTips('get branch list error');
         });
     }
 
+
     // load record list
-    loadRecordList(page=1) {
+    loadRecordList(page = 1) {
         let _this = this;
         let listParam = {};
-        listParam= this.state.filter;
+        listParam = this.state.filter;
         listParam.page = page;
 
         _record.getRecordList(listParam).then(res => {
@@ -101,10 +131,16 @@ class Status extends React.Component {
     }
 
     render() {
-        let show = this.state.isLoading ? "none" : "block";
-        let style = {
-            display: show
-        };
+        // console.log('hi')
+        // console.dir(this.state.selected_branches)
+        // console.log('done')
+        let table_list = this.state.selected_branches.map((value, index) => {
+            if (value.isSelected == true) {
+                return (
+                    <RecordTable branch={value.branch_name}/>
+                );
+            }
+        });
 
         return (
             <div id="page-wrapper">
@@ -116,16 +152,10 @@ class Status extends React.Component {
                 </p>
 
 
-                <ResultFilter isLoading={this.state.isLoading} onIsLoadingChange={this.onIsLoadingChange}
+                <ResultFilter branches={this.state.branch_list} isLoading={this.state.isLoading} onIsLoadingChange={this.onIsLoadingChange}
                               onApplyBtnClick={this.handleApplyBtnClick}/>
-
-                {/*<TableList tableHeads={['alias', 'System', 'ro', 'rw', 'date']}>*/}
-                    {/*{listBody}*/}
-                {/*</TableList>*/}
-                {/*<Pagination style={style} onChange={this.onPageChange} current={this.state.currentPage} total={25}/>*/}
-
-                <BasicTable list={this.state.list} total={this.state.total} current={this.state.currentPage} loadfunc={this.loadRecordList}/>
-                {/*<RateBar std={this.state.std} curMark={this.state.curMark1}/>*/}
+                {table_list}
+                {/*<RecordTable list={this.state.list} total={this.state.total} current={this.state.currentPage} loadfunc={this.loadRecordList}/>*/}
 
             </div>
         )

@@ -21,7 +21,7 @@ class UserInfoCard extends React.Component {
                                 <i className="fa fa-user"></i>&nbsp; Your Info
                             </h3>
                             <span className="panel-report-num">
-                                report num: 4
+                                name: Maleic Acid
                             </span>
                         </div>
 
@@ -33,10 +33,10 @@ class UserInfoCard extends React.Component {
                     <div className="panel-body userinfo-panel-body">
                         <p><strong>{userinfo.username}</strong></p>
                         <ul className="panel-body-ul">
-                            <li><i className="fa fa-desktop fa-fw"></i> {userinfo.machine_num} machine(s)</li>
-                            <li><i className="fa fa-file fa-fw"></i> {userinfo.reports} report(s)</li>
-                            <li><i className="fa fa-code-fork fa-fw"></i> {userinfo.branches} branch(es) involved</li>
-                            <li><i className="fa fa-envelope-o fa-fw"></i> <a href={'mailto' + userinfo.email}></a>{userinfo.email}</li>
+                            <li><i className="fa fa-desktop fa-fw"></i> {userinfo.machine_num}4 machine(s)</li>
+                            <li><i className="fa fa-file fa-fw"></i> {userinfo.reports}5 report(s)</li>
+                            <li><i className="fa fa-code-fork fa-fw"></i> {userinfo.branches}2 branch(es) involved</li>
+                            <li><i className="fa fa-envelope-o fa-fw"></i> <a href="mailto:mahongyuan1997@gmail.com">mahongyuan@gmail.com</a></li>
                         </ul>
                     </div>
                     <div className="panel-footer clearfix">

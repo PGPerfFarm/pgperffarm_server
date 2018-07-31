@@ -5,14 +5,16 @@ import django_filters
 import shortuuid
 
 from django.contrib.auth.hashers import make_password
+from django.db.models import Count
+# from requests import request
 from rest_framework.pagination import PageNumberPagination
 
 from exception import TestDataUploadError
 from test_records.filters import TestRecordListFilter
-from models import UserMachine, TestCategory
+from models import UserMachine, TestCategory, TestBranch
 from pgperffarm.settings import DB_ENUM
 from user_operation.views import UserMachinePermission
-from .serializer import MachineHistoryRecordSerializer
+from .serializer import MachineHistoryRecordSerializer, TestStatusRecordListSerializer, TestBranchSerializer
 from .serializer import TestRecordListSerializer, TestRecordDetailSerializer, LinuxInfoSerializer, MetaInfoSerializer, \
     PGInfoSerializer, CreateTestRecordSerializer, CreateTestDateSetSerializer, TestResultSerializer
 
@@ -31,6 +33,18 @@ class StandardResultsSetPagination(PageNumberPagination):
     page_size_query_param = 'page_size'
     max_page_size = 100
 
+class BigResultsSetPagination(PageNumberPagination):
+    page_size = 1000
+    page_size_query_param = 'page_size'
+
+class TestBranchListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    """
+    List test records
+    """
+
+    queryset = TestBranch.objects.all().order_by('branch_order')
+    serializer_class = TestBranchSerializer
+    pagination_class = BigResultsSetPagination
 
 class TestRecordListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     """
@@ -42,6 +56,38 @@ class TestRecordListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     pagination_class = StandardResultsSetPagination
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     filter_class = TestRecordListFilter
+
+class TestRecordListByBranchViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    """
+    List test records
+    """
+
+    queryset = TestRecord.objects.order_by('test_machine_id','-add_time').distinct('test_machine_id').all()
+    serializer_class = TestRecordListSerializer
+    pagination_class = StandardResultsSetPagination
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    filter_class = TestRecordListFilter
+
+# @api_view(['GET'])
+# def GetStatusRecordList(request, format=None):
+#     """
+#     List lastest test records involve all branches
+#     """
+#
+#     queryset = TestBranch.objects.all().order_by('branch_order').values_list('id','branch_name').annotate(num_records=Count('testrecord')).filter(num_records__gt=0)
+#     # print queryset # <QuerySet [(1, u'HEAD', 3), (2, u'10_STABLE', 2)]>
+#
+#     ret = {'branch_num':queryset.__len__(),'result':[]}
+#     for branch_item in queryset:
+#
+#         target_record = TestRecord.objects.filter(branch_id=branch_item[0]).order_by('test_machine_id','-add_time').distinct('test_machine_id').all()
+#         # print target_record  # <QuerySet [(1, u'HEAD', 3), (2, u'10_STABLE', 2)]>
+#         data = TestRecordListSerializer(target_record,many=True)
+#         obj = {'branch':branch_item[1],'data':data.data}
+#         ret["result"].append(obj)
+#     # msg = 'ok!'
+#     return Response(ret, status=status.HTTP_201_CREATED)
+
 
 class TestRecordDetailViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     """
@@ -109,7 +155,9 @@ def TestRecordCreate(request, format=None):
                 msg = 'metaInfo invalid'
                 raise TestDataUploadError(msg)
 
-            # pg_data = json_data['postgres']
+            pg_data = json_data['postgres']
+            commit = pg_data['commit']
+            pg_settings = pg_data['settings']
             pg_data = {
                 'pg_branch': 1
             }
@@ -129,6 +177,7 @@ def TestRecordCreate(request, format=None):
                 'test_desc': 'here is desc',
                 'meta_time': metaInfoRet.date,
                 'hash': record_hash,
+                'commit': commit,
                 'uuid': shortuuid.uuid()
             }
             testRecord = CreateTestRecordSerializer(data=test_record_data)

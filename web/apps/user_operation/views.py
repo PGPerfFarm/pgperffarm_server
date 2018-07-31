@@ -62,5 +62,6 @@ class UserMachinePermission(permissions.BasePermission):
 
     def has_permission(self, request, view):
         secret = request.data.secret
-        ret = UserMachine.objects.filter(machine_secret=secret, is_active=1).exists()
+        alias = request.data.alias
+        ret = UserMachine.objects.filter(machine_secret=secret, alias__name=alias, is_active=1).exists()
         return ret

@@ -22,7 +22,7 @@ from django.views.generic.base import RedirectView
 from rest_framework.documentation import include_docs_urls
 from rest_framework.routers import DefaultRouter
 from test_records.views import TestRecordListViewSet, TestRecordCreate, TestRecordDetailViewSet, \
-    MachineHistoryRecordViewSet
+    MachineHistoryRecordViewSet, TestBranchListViewSet, TestRecordListByBranchViewSet
 from test_records.auth import MachineAuthToken
 # from test_records.view_base import TestListView
 
@@ -35,6 +35,10 @@ from user_operation.views import UserMachineListViewSet, UserPortalInfoViewSet, 
 
 router = DefaultRouter()
 router.register(r'records', TestRecordListViewSet, base_name="records")
+
+router.register(r'branches', TestBranchListViewSet, base_name="branches")
+router.register(r'records-by-branch', TestRecordListByBranchViewSet, base_name="records-by-branch")
+# router.register(r'status-records', TestStatusRecordListViewSet, base_name="status-records")
 router.register(r'detail', TestRecordDetailViewSet, base_name="detail")
 router.register(r'machine-records', MachineHistoryRecordViewSet, base_name="machine-records")
 router.register(r'machine-records-by-branch', UserMachineRecordByBranchListViewSet, base_name="machine-records-by-branch")
@@ -60,6 +64,8 @@ urlpatterns = [
     # url(r'status/$', TestListView.as_view(), name='test-list'),
     # url(r'detail', TestRecordDetailViewSet ,name="detail"),
     url(r'upload/$', TestRecordCreate, name='test-upload'),
+    # url(r'status-records/$', GetStatusRecordList, name='status-records'),
+
     # url(r'portal/$', UserPortalInfoViewSet, name='portal'),
     # url(r'my-machine/$', UserMachineList.as_view(), name='my-machine'),
 

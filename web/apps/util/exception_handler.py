@@ -10,7 +10,7 @@ def custom_exception_handler(exc, context):
     if response is not None:
         response.data['code'] = response.status_code
         response.data['desc'] = response.data['detail']
-        # response.data['data'] = None #可以存在
-        del response.data['detail']  # 删除detail字段
+        # response.data['data'] = None #
+        del response.data['detail']  # delete detail field
 
     return response
