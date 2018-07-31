@@ -14,6 +14,7 @@ class ResultFilter extends React.Component {
             // ],
             restoreNum: 0,
             branches: this.props.branches,
+            isFirstMount:true,
             selected: [
                 //     {
                 //     'cate': 'Category 1',
@@ -36,11 +37,9 @@ class ResultFilter extends React.Component {
 
         this.selectItemClick = this.selectItemClick.bind(this);
         this.metaItemClick = this.metaItemClick.bind(this);
-
     }
 
     addBranchTags() {
-
         let obj = {
             'cate': 'Branches',
             // 'index': 0,
@@ -82,12 +81,17 @@ class ResultFilter extends React.Component {
         this.setState({
             branches: nextProps.branches,
         }, () => {
-            _this.addBranchTags();
+            if(_this.state.isFirstMount){
+                _this.addBranchTags();
+                _this.setState({
+                    isFirstMount: false,
+                })
+            }
         });
     }
 
-    componentDidMount() {
-        this.addBranchTags();
+    componentWillMount() {
+        // this.addBranchTags();
     }
 
 
@@ -100,11 +104,11 @@ class ResultFilter extends React.Component {
         let cate_index = e.currentTarget.getAttribute("data-cate-index")
 
         let newSelected = this.state.selected;
+        newSelected[cate_index].totalSelected = 0;
         newSelected[cate_index].metaData.isSelected = true;
         for (let i = 0; i < newSelected[cate_index].data.length; i++) {
             newSelected[cate_index].data[i].isSelected = false;
         }
-
 
         this.setState({
             selected: newSelected,
@@ -122,12 +126,25 @@ class ResultFilter extends React.Component {
         let cate_index = e.currentTarget.getAttribute("data-cate-index")
 
         let newSelected = this.state.selected;
+        let totalSelected = newSelected[cate_index].totalSelected
+        console.log('totalSelected now is:' + totalSelected)
+        newSelected[cate_index].metaData['isSelected'] = false;
         newSelected[cate_index].data[item_index]['isSelected'] = !newSelected[cate_index].data[item_index]['isSelected']
 
-
+        if(newSelected[cate_index].data[item_index]['isSelected'] == true){
+            //add totalSelected
+            totalSelected += 1
+        }else{
+            if(totalSelected -1 <= 0){
+                newSelected[cate_index].data[item_index]['isSelected'] = true
+            }else{
+                totalSelected -= 1
+            }
+        }
+        newSelected[cate_index].totalSelected = totalSelected
         console.log('cate name is:' + cate_name)
         console.log('cate index is:' + cate_index)
-        // console.log('prev index is:' + newSelected[cate_index]["index"])
+        console.log('totalSelected is:' + totalSelected)
         console.log('cur index is:' + item_index)
 
 
@@ -144,27 +161,34 @@ class ResultFilter extends React.Component {
         let self = this;
     }
 
-    getFilterParams() {
-        let params_list = this.state.selected;
-        let result = {};
-        for (let i = 0; i < params_list.length; i++) {
-            let params_item = params_list[i];
-            console.log('cur filter index is:' + params_item.index)
-            let value = params_item.data[params_item.index]['value']
-            let key = params_item.key;
-            if (value) {
-                console.log('key is:' + key)
-                if (key == 'date') {
-                    result[key] = _util.getDateStr(value * -1)
-                } else {
-                    result[key] = value
-                }
-
-            }
-
+    getSelectedBranches(){
+        let metaData = this.state.selected[0].metaData
+        if(metaData.isSelected == true && this.state.selected[0].totalSelected == 0){
+            return []
         }
-        return result
+        return this.state.selected[0].data
     }
+    // getFilterParams() {
+    //     let params_list = this.state.selected;
+    //     let result = {};
+    //     for (let i = 0; i < params_list.length; i++) {
+    //         let params_item = params_list[i];
+    //         console.log('cur filter index is:' + params_item.index)
+    //         let value = params_item.data[params_item.index]['value']
+    //         let key = params_item.key;
+    //         if (value) {
+    //             console.log('key is:' + key)
+    //             if (key == 'date') {
+    //                 result[key] = _util.getDateStr(value * -1)
+    //             } else {
+    //                 result[key] = value
+    //             }
+    //
+    //         }
+    //
+    //     }
+    //     return result
+    // }
 
     applyButtonClick() {
         this.setState({
@@ -172,10 +196,12 @@ class ResultFilter extends React.Component {
             isClear: false
         });
         this.props.onIsLoadingChange(true);
-        let params = this.getFilterParams()
-        console.dir(params)
-        this.props.onApplyBtnClick(params);
-        console.log('isLoading:' + this.props.isLoading)
+        let branches = this.getSelectedBranches()
+
+        console.dir(branches)
+        this.props.onApplyBtnClick(branches);
+        // console.log('isLoading:' + this.props.isLoading)
+
     }
 
     resetButtonClick() {
@@ -183,6 +209,7 @@ class ResultFilter extends React.Component {
         newArr.forEach((_item, _index) => {
             console.log(_item);
             _item.index = this.state.restoreNum;
+
         })
         this.setState({
             selected: newArr,
@@ -267,14 +294,11 @@ class ResultFilter extends React.Component {
                                 </a>
                                 <div className="title-selected-result">
                                     <span>--</span>
-                                    {/*<button data-toggle="button" className="btn btn-primary-warn title-selected-btn"*/}
-                                    {/*disabled={ this.state.isClear ? "" : "disabled" } onClick={() => this.clearButtonClick()}>*/}
-                                    {/*clear*/}
-                                    {/*</button>*/}
-                                    <a className="btn btn-default btn-sm title-selected-btn" href="javascript:void(0)"
-                                       onClick={() => this.resetButtonClick()}
-                                       disabled={ this.state.isClear ? "" : "disabled" }>
-                                        <i className="fa fa-cog"></i> Reset</a>
+
+                                    {/*<a className="btn btn-default btn-sm title-selected-btn" href="javascript:void(0)"*/}
+                                       {/*onClick={() => this.resetButtonClick()}*/}
+                                       {/*disabled={ this.state.isClear ? "" : "disabled" }>*/}
+                                        {/*<i className="fa fa-cog"></i> Reset</a>*/}
 
                                     {apply_btn}
                                     {/*<button data-toggle="button" className="btn btn-primary title-selected-btn">apply*/}

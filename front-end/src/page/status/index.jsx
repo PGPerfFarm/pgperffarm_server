@@ -43,21 +43,34 @@ class Status extends React.Component {
         this.loadBranchList();
     }
 
-    handleApplyBtnClick(params) {
+    handleApplyBtnClick(branches) {
         console.log('handle apply!')
 
         let _this = this
-        let selected_branches = []
+        let selected_branches = branches
+        if(selected_branches === undefined || selected_branches.length == 0) {
+            selected_branches = this.state.branch_list
+            for (let i = 0; i < selected_branches.length; i++) {
+                selected_branches[i].isSelected = true;
+            }
+        }
         this.setState({
             selected_branches: selected_branches,
+            isLoading: false
         });
+
     }
 
     loadBranchList() {
         _record.getBranchList().then(res => {
+            let selected_branches = res.results
+            for (let i = 0; i < selected_branches.length; i++) {
+                selected_branches[i].isSelected = true;
+            }
+
             this.setState({
                 branch_list: res.results,
-                selected_branches: res.results,
+                selected_branches: selected_branches,
             });
             console.log('now console the branch_list')
             console.dir(res.results)
@@ -121,9 +134,13 @@ class Status extends React.Component {
         // console.log('hi')
         // console.dir(this.state.selected_branches)
         // console.log('done')
-        let table_list = this.state.selected_branches.map((value, index) => (
-            <RecordTable branch={value.branch_name}/>
-        ))
+        let table_list = this.state.selected_branches.map((value, index) => {
+            if (value.isSelected == true) {
+                return (
+                    <RecordTable branch={value.branch_name}/>
+                );
+            }
+        });
 
         return (
             <div id="page-wrapper">
