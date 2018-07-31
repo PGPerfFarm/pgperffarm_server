@@ -15,7 +15,7 @@ class TestBranchSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TestBranch
-        fields = ('branch_name','id')
+        fields = ('branch_name', 'id')
 
 
 class TestCategorySerializer(serializers.ModelSerializer):
@@ -65,29 +65,32 @@ class PGInfoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PGInfo
-        fields = "__all__"
+        fields = ('checkpoint_timeout', 'log_temp_files', 'work_mem', 'log_line_prefix', 'shared_buffers',
+                  'log_autovacuum_min_duration', 'checkpoint_completion_target', 'maintenance_work_mem',
+                  'log_checkpoints', 'max_wal_size', 'min_wal_size')
 
     def get_log_checkpoints(self, obj):
         new_dict = {v: k for k, v in DB_ENUM["general_switch"].items()}
         return new_dict[obj.log_checkpoints]
 
     def get_checkpoint_timeout(self, obj):
-        return obj['checkpoint_timeout'].__str__() + 'min'
+        return obj.checkpoint_timeout.__str__() + 'min'
 
     def get_work_mem(self, obj):
-        return obj['work_mem'].__str__() + 'MB'
+        return obj.work_mem.__str__() + 'MB'
 
     def get_shared_buffers(self, obj):
-        return obj['shared_buffers'].__str__() + 'GB'
+        return obj.shared_buffers.__str__() + 'GB'
 
     def get_maintenance_work_mem(self, obj):
-        return obj['maintenance_work_mem'].__str__() + 'MB'
+        return obj.maintenance_work_mem.__str__() + 'MB'
 
     def get_max_wal_size(self, obj):
-        return obj['max_wal_size'].__str__() + 'GB'
+        return obj.max_wal_size.__str__() + 'GB'
 
     def get_min_wal_size(self, obj):
-        return obj['min_wal_size'].__str__() + 'GB'
+        return obj.min_wal_size.__str__() + 'GB'
+
 
 class HardwareInfoDetailSerializer(serializers.ModelSerializer):
     '''
@@ -148,6 +151,7 @@ class CreateTestResultSerializer(serializers.ModelSerializer):
         model = TestResult
         fields = "__all__"
 
+
 class TestResultSerializer(serializers.ModelSerializer):
     '''
     use TestResultSerializer
@@ -195,6 +199,7 @@ class CreateTestDateSetSerializer(serializers.ModelSerializer):
     class Meta:
         model = TestDataSet
         fields = "__all__"
+
 
 class TestStatusRecordListSerializer(serializers.ModelSerializer):
     '''
@@ -255,11 +260,12 @@ class TestStatusRecordListSerializer(serializers.ModelSerializer):
     #     rw_client_num = TestResult.objects.filter(Q(test_record_id=obj.id ) ,test_cate_id=2).order_by('clients').distinct('clients').count()
     #     return max(ro_client_num,rw_client_num)
 
+
 class TestRecordListSerializer(serializers.ModelSerializer):
     '''
     use ModelSerializer
     '''
-    pg_info = PGInfoSerializer()
+    # pg_info = PGInfoSerializer()
     linux_info = LinuxInfoSerializer()
     meta_info = MetaInfoSerializer()
     branch = serializers.SerializerMethodField()
@@ -269,7 +275,7 @@ class TestRecordListSerializer(serializers.ModelSerializer):
     # client_max_num = serializers.SerializerMethodField()
     class Meta:
         model = TestRecord
-        fields = ('uuid', 'add_time', 'machine_info', 'pg_info', 'branch', 'trend', 'linux_info', 'meta_info')
+        fields = ('uuid', 'add_time', 'machine_info', 'branch', 'trend', 'linux_info', 'meta_info', 'commit')
 
     def get_branch(self, obj):
         branch = TestBranch.objects.filter(id=obj.branch.id).first()
@@ -304,9 +310,9 @@ class TestRecordListSerializer(serializers.ModelSerializer):
         return trend
 
     def get_machine_info(self, obj):
-        machine_data = UserMachine.objects.filter(id=obj.test_machine_id)
+        machine_data = UserMachine.objects.filter(id=obj.test_machine_id).get()
 
-        machine_info_serializer = UserMachineSerializer(machine_data, many=True)
+        machine_info_serializer = UserMachineSerializer(machine_data)
         return machine_info_serializer.data
 
     # def get_client_max_num(self, obj):
@@ -403,18 +409,6 @@ class TestRecordDetailSerializer(serializers.ModelSerializer):
 
         return dataset
 
-    # def get_ro_info(self, obj):
-    #     all_data = TestResult.objects.filter(Q(test_record_id=obj.id ) ,test_cate_id=1)
-    #
-    #     ro_info_serializer = TestResultSerializer(all_data, many=True, context={'request': self.context['request']})
-    #     return ro_info_serializer.data
-    #
-    # def get_rw_info(self, obj):
-    #     all_data = TestResult.objects.filter(Q(test_record_id=obj.id) ,test_cate_id=2)
-    #
-    #     rw_info_serializer = TestResultSerializer(all_data, many=True, context={'request': self.context['request']})
-    #     return rw_info_serializer.data
-
 
 class MachineHistoryRecordSerializer(serializers.ModelSerializer):
     '''
@@ -423,6 +417,7 @@ class MachineHistoryRecordSerializer(serializers.ModelSerializer):
     machine_info = serializers.SerializerMethodField()
     reports = serializers.SerializerMethodField()
     branches = serializers.SerializerMethodField()
+
     class Meta:
         model = UserMachine
         fields = ('machine_info', 'reports', 'branches')
@@ -436,7 +431,7 @@ class MachineHistoryRecordSerializer(serializers.ModelSerializer):
             item = {}
             item['branch'] = branch_item[0]
 
-            records = TestRecord.objects.filter(test_machine_id=obj.id,branch_id=branch_item[0])
+            records = TestRecord.objects.filter(test_machine_id=obj.id, branch_id=branch_item[0])
 
             serializer = TestRecordListSerializer(records, many=True)
             item['records'] = serializer.data

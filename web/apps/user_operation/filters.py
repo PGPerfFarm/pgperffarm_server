@@ -10,8 +10,8 @@ class MachineRecordListFilter(django_filters.rest_framework.FilterSet):
     """
     TestRecordListFilter
     """
-    branch__id = django_filters.NumberFilter(lookup_expr='icontains')
-    test_machine__machine_sn = django_filters.NumberFilter(lookup_expr='icontains')
+    branch__id = django_filters.NumberFilter()
+    test_machine__machine_sn = django_filters.CharFilter()
 
     class Meta:
         model = TestRecord

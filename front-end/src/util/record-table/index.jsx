@@ -5,6 +5,7 @@ import Pagination from 'util/pagination/index.jsx'
 import Record      from 'service/record-service.jsx'
 import './index.css';
 const _record = new Record();
+import PGConstant from 'util/constant.jsx'
 function Bubble(props) {
 
     if (props.num <= 0) {
@@ -109,7 +110,7 @@ class RecordTable extends React.Component {
             display: 'show'
         };
         let listBody = _list.map((record, index) => {
-            let machine = record.machine_info[0];
+            let machine = record.machine_info;
             let system = machine.os_name + ' ' + machine.os_version + ' ' + machine.comp_name + ' ' + machine.comp_version;
             let alias = machine.alias;
 
@@ -122,10 +123,14 @@ class RecordTable extends React.Component {
 
                 <Table.Row key={index}>
                     {/*alias*/}
-                    <Table.Cell><a href="#">{alias}</a></Table.Cell>
+                    <Table.Cell>
+                        <Link color='linkedin' to={'machineInfo/' + machine.machine_sn}>
+                            {alias}
+                        </Link>
+                    </Table.Cell>
 
                     {/*system*/}
-                    <Table.Cell><a href="#">{system}</a></Table.Cell>
+                    <Table.Cell>{system}</Table.Cell>
 
                     {/*branch*/}
                     {/*<Table.Cell>{branch}</Table.Cell>*/}
@@ -153,7 +158,8 @@ class RecordTable extends React.Component {
                         </Link>
                     </Table.Cell>
 
-
+                    {/*commit*/}
+                    <Table.Cell><a target="_blank" href={ PGConstant.PG_GITHUB_MIRROR + record.commit}>{ record.commit.substring(0, 7)}</a></Table.Cell>
                     {/*date*/}
                     <Table.Cell>{record.add_time}</Table.Cell>
                 </Table.Row>
@@ -164,6 +170,15 @@ class RecordTable extends React.Component {
             <Table celled structured compact textAlign='center'>
                 <Table.Header>
                     {/*<Table.Row>*/}
+                    {/*<Table.HeaderCell rowSpan='9'>Branch: {this.state.branch}</Table.HeaderCell>*/}
+                    {/*</Table.Row>*/}
+                    <Table.Row>
+                        <Table.HeaderCell colSpan='11'>{this.state.branch}</Table.HeaderCell>
+                    </Table.Row>
+
+                </Table.Header>
+                <Table.Header>
+                    {/*<Table.Row>*/}
                         {/*<Table.HeaderCell rowSpan='9'>Branch: {this.state.branch}</Table.HeaderCell>*/}
                     {/*</Table.Row>*/}
                     <Table.Row>
@@ -172,6 +187,7 @@ class RecordTable extends React.Component {
                         {/*<Table.HeaderCell rowSpan='2'>Branch</Table.HeaderCell>*/}
                         <Table.HeaderCell colSpan='3'>Trending</Table.HeaderCell>
                         <Table.HeaderCell rowSpan='2'>Detail</Table.HeaderCell>
+                        <Table.HeaderCell rowSpan='2'>Commit</Table.HeaderCell>
                         <Table.HeaderCell rowSpan='2'>Date</Table.HeaderCell>
                     </Table.Row>
                     <Table.Row>

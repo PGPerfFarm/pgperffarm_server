@@ -2,6 +2,7 @@ import React from 'react';
 import {Link}     from 'react-router-dom';
 import {Icon, Table, Label, Message, Button} from 'semantic-ui-react'
 import Pagination from 'util/pagination/index.jsx'
+import PGConstant from 'util/constant.jsx'
 import './index.css';
 
 function Bubble(props) {
@@ -45,7 +46,7 @@ class MachineRecordTable extends React.Component {
             display: 'show'
         };
         let listBody = _list.map((record, index) => {
-            let machine = record.machine_info[0];
+            let machine = record.machine_info;
             let system = machine.os_name + ' ' + machine.os_version + ' ' + machine.comp_name + ' ' + machine.comp_version;
             let alias = machine.alias;
 
@@ -58,7 +59,11 @@ class MachineRecordTable extends React.Component {
 
                 <Table.Row key={index}>
                     {/*alias*/}
-                    <Table.Cell><a href="#">{alias}</a></Table.Cell>
+                    <Table.Cell>
+                        <Link color='linkedin' to={'machineInfo/' + machine.machine_sn}>
+                            {alias}
+                        </Link>
+                    </Table.Cell>
 
                     {/*system*/}
                     {/*<Table.Cell><a href="#">{system}</a></Table.Cell>*/}
@@ -89,6 +94,8 @@ class MachineRecordTable extends React.Component {
                         </Link>
                     </Table.Cell>
 
+                    {/*commit*/}
+                    <Table.Cell><a target="_blank" href={ PGConstant.PG_GITHUB_MIRROR + record.commit}>{ record.commit.substring(0, 7)}</a></Table.Cell>
 
                     {/*date*/}
                     <Table.Cell>{record.add_time}</Table.Cell>
@@ -108,6 +115,7 @@ class MachineRecordTable extends React.Component {
                         {/*<Table.HeaderCell rowSpan='2'>Branch</Table.HeaderCell>*/}
                         <Table.HeaderCell colSpan='3'>Trending</Table.HeaderCell>
                         <Table.HeaderCell rowSpan='2'>Detail</Table.HeaderCell>
+                        <Table.HeaderCell rowSpan='2'>Commit</Table.HeaderCell>
                         <Table.HeaderCell rowSpan='2'>Date</Table.HeaderCell>
                     </Table.Row>
                     <Table.Row>

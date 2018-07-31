@@ -101,7 +101,7 @@ class TestRecordDetailViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet
 
 class MachineHistoryRecordViewSet( mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     """
-    detail test records
+    machine info page
     """
     lookup_field = 'machine_sn'
     queryset = UserMachine.objects.all().order_by('add_time')
