@@ -13,12 +13,10 @@ Including another URLconf
     1. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import include, url
+from django.contrib import admin
 from rest_framework_jwt.views import obtain_jwt_token
 
 from rest_framework.authtoken import views
-from django.contrib import admin
-from django.views.generic.base import RedirectView
-
 from rest_framework.documentation import include_docs_urls
 from rest_framework.routers import DefaultRouter
 from test_records.views import TestRecordListViewSet, TestRecordCreate, TestRecordDetailViewSet, \
@@ -50,7 +48,8 @@ router.register(r'my-machine', UserMachineListViewSet, base_name="my-machine")
 router.register(r'portal', UserPortalInfoViewSet, base_name="portal")
 
 urlpatterns = [
-    # url(r'^admin/', admin.site.urls),
+    url(r'^admin/', admin.site.urls),
+
     url(r'^api-auth/', include('rest_framework.urls')),
 
 

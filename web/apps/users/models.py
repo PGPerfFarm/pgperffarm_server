@@ -29,6 +29,8 @@ class Alias(models.Model):
     is_used = models.BooleanField(default=False,verbose_name="is_used")
     add_time = models.DateTimeField(default=timezone.now, verbose_name="add time", help_text="category added time")
 
+    def __str__(self):
+        return self.name
 class UserMachine(models.Model):
     """
     user machine
@@ -36,7 +38,7 @@ class UserMachine(models.Model):
     machine_sn = models.CharField(max_length=16, verbose_name="machine sn")
     machine_secret = models.CharField(max_length=32, verbose_name="machine secret")
     machine_owner = models.ForeignKey(UserProfile)
-    alias = models.ForeignKey(Alias, verbose_name="alias", help_text="alias")
+    alias = models.ForeignKey(Alias,blank=True ,verbose_name="alias", help_text="alias")
     os_name = models.CharField(max_length=32, verbose_name="operation system name")
     os_version = models.CharField(max_length=32, verbose_name="operation system version")
     comp_name = models.CharField(max_length=32, verbose_name="compiler name")
@@ -44,9 +46,9 @@ class UserMachine(models.Model):
     add_time = models.DateTimeField(default=timezone.now, verbose_name="machine added time")
 
     STATE_CHOICE = (
-        ('prohibited', -1),
-        ('pending', 0),
-        ('active', 1),
+        (-1, 'prohibited'),
+        (0, 'pending'),
+        (1, 'active'),
 
     )
     state = models.IntegerField(choices=STATE_CHOICE, default=0,verbose_name="state", help_text="machine state")
@@ -56,4 +58,4 @@ class UserMachine(models.Model):
         verbose_name_plural = "user machines"
 
     def __str__(self):
-        return self.machine_sn
+        return self.alias.__str__() + ' (' + self.os_name + ' ' + self.os_version + '' + self.comp_name + ' ' + self.comp_version + ')'
