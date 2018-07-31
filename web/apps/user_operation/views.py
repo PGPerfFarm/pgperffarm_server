@@ -46,6 +46,13 @@ class UserMachineListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = UserMachineManageSerializer
     # pagination_class = StandardResultsSetPagination
 
+class PublicMachineListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    """
+    List all machines
+    """
+    queryset = UserMachine.objects.all().order_by('add_time')
+    serializer_class = UserMachineManageSerializer
+
 class UserPortalInfoViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     """
      user info

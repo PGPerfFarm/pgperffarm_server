@@ -31,11 +31,12 @@ from test_records.auth import MachineAuthToken
 #     'get': 'list',
 #     'post': 'create'
 # })
-from user_operation.views import UserMachineListViewSet, UserPortalInfoViewSet, UserMachineRecordByBranchListViewSet
+from user_operation.views import UserMachineListViewSet, UserPortalInfoViewSet, UserMachineRecordByBranchListViewSet, \
+    PublicMachineListViewSet
 
 router = DefaultRouter()
 router.register(r'records', TestRecordListViewSet, base_name="records")
-
+router.register(r'machines', PublicMachineListViewSet, base_name="machines")
 router.register(r'branches', TestBranchListViewSet, base_name="branches")
 router.register(r'records-by-branch', TestRecordListByBranchViewSet, base_name="records-by-branch")
 # router.register(r'status-records', TestStatusRecordListViewSet, base_name="status-records")

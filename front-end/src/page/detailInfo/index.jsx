@@ -219,7 +219,7 @@ class DetailInfo extends React.Component {
                     <Segment vertical>Farmer Info</Segment>
                     <FarmerCard machine={machine}></FarmerCard>
                     {/*//todo add a catalog*/}
-                    <div className="affix">aaaa</div>
+                    {/*<div className="affix">aaaa</div>*/}
                 </div>
 
                 <div className="col-md-9">

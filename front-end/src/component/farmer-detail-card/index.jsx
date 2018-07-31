@@ -1,7 +1,7 @@
 import React from 'react';
 
 import NavTop from 'component/nav-top/index.jsx';
-// import './index.css';
+import './index.css';
 import {Image, Card, Button, List, Icon} from 'semantic-ui-react'
 class FarmerDetailCard extends React.Component {
     constructor(props){
@@ -33,13 +33,13 @@ class FarmerDetailCard extends React.Component {
                             </List>
                         </Card.Description>
                     </Card.Content>
-                    <Card.Content extra>
+                    <Card.Content extra className='flex-box'>
 
                         <div className='ui buttons'>
                             {/*todo link to machine page*/}
-                            <Button basic mini color='grey'>
-                                {branch_num} branches involved
-                            </Button>
+                                <Button basic mini color='grey'>
+                                    {branch_num} branches involved
+                                </Button>
                         </div>
                     </Card.Content>
                 </Card>

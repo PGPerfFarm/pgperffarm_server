@@ -1,5 +1,5 @@
 import React from 'react';
-
+import {Link}     from 'react-router-dom';
 import NavTop from 'component/nav-top/index.jsx';
 // import './index.css';
 import {Image, Card, Button, List, Icon} from 'semantic-ui-react'
@@ -32,12 +32,16 @@ class FarmerCard extends React.Component {
                             </List>
                         </Card.Description>
                     </Card.Content>
-                    <Card.Content extra>
+                    <Card.Content extra className='flex-box'>
                         <div className='ui buttons'>
                             {/*todo link to machine page*/}
-                            <Button basic color='blue'>
-                                Other records
-                            </Button>
+
+                                <Link color='linkedin' to={'/machineInfo/' + machine.machine_sn}>
+                                    <Button basic color='blue'>
+                                    Other records
+                                    </Button>
+                                </Link>
+
                         </div>
                     </Card.Content>
                 </Card>

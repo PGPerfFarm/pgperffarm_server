@@ -63,10 +63,14 @@ class MachineTable extends React.Component {
             return (
                 <Table.Row key={index} className={color}>
                     {/*alias*/}
-                    <Table.Cell><a href="#">{machine.alias}</a></Table.Cell>
+                    <Table.Cell>
+                        <Link color='linkedin' to={'machineInfo/' + machine.machine_sn}>
+                            {machine.alias}
+                        </Link>
+                    </Table.Cell>
 
                     {/*system*/}
-                    <Table.Cell><a href="#">{system}</a></Table.Cell>
+                    <Table.Cell>{system}</Table.Cell>
 
                     {/*State*/}
                     <Table.Cell>
