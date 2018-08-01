@@ -1,4 +1,8 @@
 from datetime import datetime
+import shortuuid
+
+import hashlib
+from django.contrib.auth.hashers import make_password
 from django.utils import timezone
 from django.db import models
 from django.contrib.auth.models import AbstractUser
@@ -59,3 +63,30 @@ class UserMachine(models.Model):
 
     def __str__(self):
         return self.alias.__str__() + ' (' + self.os_name + ' ' + self.os_version + '' + self.comp_name + ' ' + self.comp_version + ')'
+
+    def approve_machine(self):
+        "Approve Machine(Modify the state to active, generate machine_sn, machine_secret, and assign an alias)"
+        alias = Alias.objects.filter(is_used=False).order_by('?').first()
+        if not alias:
+            return {"is_success": False, "alias": '', "secrct": ''}
+        from django.db import transaction
+        with transaction.atomic():
+            alias.is_used=True
+            alias.save()
+
+            self.alias = alias
+            self.state = 1
+            if not self.machine_sn:
+                self.machine_sn = shortuuid.ShortUUID().random(length=16)
+
+            if not self.machine_secret:
+                machine_str = self.alias.name + self.os_name + self.os_version + self.comp_name + self.comp_version + self.machine_sn
+
+                m = hashlib.md5()
+                m.update(make_password(str(machine_str), 'pg_perf_farm'))
+                self.machine_secret = m.hexdigest()
+
+            self.save()
+
+        user_email = 
+        return  {"is_success": True, "alias": self.alias, "secrct": self.machine_secret, "email":}

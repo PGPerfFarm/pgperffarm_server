@@ -5,8 +5,6 @@ import django_filters
 import shortuuid
 
 from django.contrib.auth.hashers import make_password
-from django.db.models import Count
-# from requests import request
 from rest_framework.pagination import PageNumberPagination
 
 from exception import TestDataUploadError
