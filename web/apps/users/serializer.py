@@ -24,7 +24,7 @@ class UserMachineSerializer(serializers.ModelSerializer):
     avatar = serializers.SerializerMethodField()
     class Meta:
         model = UserMachine
-        fields = ('alias', 'os_name', 'os_version', 'comp_name', 'comp_version', 'reports', 'owner' , 'avatar')
+        fields = ('alias', 'os_name', 'os_version', 'comp_name', 'comp_version', 'reports', 'owner' , 'avatar', 'machine_sn')
 
     def get_alias(self, obj):
         target_alias = Alias.objects.filter(id=obj.alias_id).first()

@@ -47,12 +47,11 @@ class Status extends React.Component {
         console.log('handle apply!')
 
         let _this = this
-        let selected_branches = branches
-        if(selected_branches === undefined || selected_branches.length == 0) {
-            selected_branches = this.state.branch_list
-            for (let i = 0; i < selected_branches.length; i++) {
-                selected_branches[i].isSelected = true;
-            }
+        let selected_branches = []
+        if(branches === undefined || branches.length == 0) {
+            selected_branches = this.adjustBranchList([])
+        }else{
+            selected_branches = branches
         }
         this.setState({
             selected_branches: selected_branches,
@@ -60,17 +59,37 @@ class Status extends React.Component {
         });
 
     }
+    adjustBranchList(branches){
+        let selected_branches = []
+        if(branches === undefined || branches.length == 0) {
+            branches = this.state.branch_list
+
+            for (let i = 0; i < branches.length; i++) {
+                let newItem = {}
+                newItem['name'] = branches[i].branch_name
+                newItem['value'] = branches[i].branch_name
+                newItem['isSelected'] = true;
+                selected_branches.push(newItem)
+            }
+
+        }
+
+        return selected_branches
+    }
 
     loadBranchList() {
         _record.getBranchList().then(res => {
-            let selected_branches = res.results
-            for (let i = 0; i < selected_branches.length; i++) {
-                selected_branches[i].isSelected = true;
-            }
-
+            // let selected_branches = res.results
+            // for (let i = 0; i < selected_branches.length; i++) {
+            //     selected_branches[i].isSelected = true;
+            // }
+            let _this = this
             this.setState({
                 branch_list: res.results,
-                selected_branches: selected_branches,
+            },()=>{
+                this.setState({
+                    selected_branches: _this.adjustBranchList([]),
+                });
             });
             console.log('now console the branch_list')
             console.dir(res.results)
@@ -137,7 +156,7 @@ class Status extends React.Component {
         let table_list = this.state.selected_branches.map((value, index) => {
             if (value.isSelected == true) {
                 return (
-                    <RecordTable branch={value.branch_name}/>
+                    <RecordTable branch={value.name}/>
                 );
             }
         });

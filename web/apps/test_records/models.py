@@ -3,7 +3,7 @@ from django.utils import timezone
 from django.db import models
 
 # Create your models here.
-from users.models import UserProfile, UserMachine
+from users.models import UserMachine
 
 
 class TestBranch(models.Model):
@@ -70,22 +70,19 @@ class PGInfo(models.Model):
     checkpoint_completion_target =models.DecimalField(max_digits=8, decimal_places=4,verbose_name="checkpoint_completion_target", help_text="checkpoint_completion_target")
     maintenance_work_mem = models.IntegerField(verbose_name="maintenance_work_mem", help_text="maintenance_work_mem")
 
-    CHECKPOINTS_CHOICE = (
-        ('on', 'on'),
-        ('off', 'off'),
+    SWITCH_CHOICE = (
+        (1, 'on'),
+        (2, 'off')
     )
-    log_checkpoints = models.CharField(max_length=8,choices=CHECKPOINTS_CHOICE,verbose_name="log_checkpoints", help_text="log_checkpoints")
+    log_checkpoints = models.IntegerField(choices=SWITCH_CHOICE,verbose_name="log_checkpoints", help_text="log_checkpoints")
     max_wal_size =models.IntegerField(verbose_name="max_wal_size", help_text="max_wal_size")
     min_wal_size =models.IntegerField(verbose_name="min_wal_size", help_text="min_wal_size")
 
-    pg_branch = models.ForeignKey(TestBranch, verbose_name="pg branch", help_text="pg branch")
+    # pg_branch = models.ForeignKey(TestBranch, verbose_name="pg branch", help_text="pg branch")
 
     class Meta:
         verbose_name = "pg info"
         verbose_name_plural = "pg info"
-
-    def __str__(self):
-        return self.pg_branch
 
 
 class MetaInfo(models.Model):
@@ -258,8 +255,8 @@ class TestResult(models.Model):
     threads = models.IntegerField(verbose_name="threads", help_text="threads of the test result")
 
     MODE_CHOICE = (
-        ('simple', 1),
-        ('other', 2),
+        (1, 'simple'),
+        (2, 'other'),
     )
     mode = models.IntegerField(choices=MODE_CHOICE, verbose_name="mode", help_text="test mode")
     add_time = models.DateTimeField(default=timezone.now, verbose_name="test result added time")

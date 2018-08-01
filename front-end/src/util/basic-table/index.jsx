@@ -80,7 +80,7 @@ class BasicTable extends React.Component {
             display: 'show'
         };
         let listBody = _list.map((record, index) => {
-            let machine = record.machine_info[0];
+            let machine = record.machine_info;
             let system = machine.os_name + ' ' + machine.os_version + ' ' + machine.comp_name + ' ' + machine.comp_version;
             let alias = machine.alias;
 

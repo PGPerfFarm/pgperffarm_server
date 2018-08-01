@@ -6,5 +6,6 @@ const object = {
     UnauthorizedCode:401,// unlogin
     AuthorizedErrorCode:400,// username or pwd mistake
 
+    PG_GITHUB_MIRROR:'https://github.com/postgres/postgres/commit/'
 };
 export default object;

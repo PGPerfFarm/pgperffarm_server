@@ -48,6 +48,7 @@ class DetailInfo extends React.Component {
         let machine = this.state.recordInfo.test_machine || {};
         let dataset = this.state.recordInfo.dataset_info || {};
         let meta_info = this.state.recordInfo.meta_info || {};
+        let pg_info = this.state.recordInfo.pg_info || {};
         let linux_info = this.state.recordInfo.linux_info || {};
         let hardware_info = this.state.recordInfo.hardware_info || {};
         let ro = dataset.ro || {};
@@ -218,7 +219,7 @@ class DetailInfo extends React.Component {
                     <Segment vertical>Farmer Info</Segment>
                     <FarmerCard machine={machine}></FarmerCard>
                     {/*//todo add a catalog*/}
-                    <div className="affix">aaaa</div>
+                    {/*<div className="affix">aaaa</div>*/}
                 </div>
 
                 <div className="col-md-9">
@@ -294,6 +295,7 @@ class DetailInfo extends React.Component {
 
 
                             <InfoList name="Meta" info={meta_info}> </InfoList>
+                            <InfoList name="PG Settings" info={pg_info}> </InfoList>
                             <InfoList name="Operating System" info={linux_info}> </InfoList>
                             <InfoList name="Hardward" info={hardware_info}> </InfoList>
                         </div>

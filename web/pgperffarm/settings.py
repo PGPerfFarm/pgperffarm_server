@@ -53,6 +53,7 @@ INSTALLED_APPS = (
     'test_records',
     'crispy_forms',
     'user_operation',
+    'asynchronous_send_mail'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -84,6 +85,17 @@ TEMPLATES = [
         },
     },
 ]
+
+# PASSWORD_HASHERS = (
+#     'django.contrib.auth.hashers.MD5PasswordHasher',
+#     'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+#     'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
+#     'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
+#     'django.contrib.auth.hashers.BCryptPasswordHasher',
+#     'django.contrib.auth.hashers.SHA1PasswordHasher',
+#
+#     'django.contrib.auth.hashers.CryptPasswordHasher',
+# )
 
 WSGI_APPLICATION = 'pgperffarm.wsgi.application'
 
@@ -146,6 +158,10 @@ REST_FRAMEWORK = {
 }
 
 DB_ENUM = {
+    "general_switch": {
+        "on": 1,
+        "off": 2
+    },
     "mode": {
         "simple": 1,
         "other": 2
@@ -202,3 +218,11 @@ JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=7200),
     'JWT_AUTH_HEADER_PREFIX': 'Token',
 }
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_SSL = True
+EMAIL_HOST = 'smtp.163.com'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''  # individual password
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

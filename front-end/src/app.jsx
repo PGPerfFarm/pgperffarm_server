@@ -9,9 +9,10 @@ import Layout from 'component/layout/index.jsx'
 // page
 import Login from './page/login/index.jsx'
 import Home from './page/home/index.jsx'
-
 import Status from './page/status/index.jsx'
+import Machine from './page/machine/index.jsx'
 import PPolicy from './page/ppolicy/index.jsx'
+
 import DetailInfo from './page/detailInfo/index.jsx'
 import MachinelInfo from './page/machineInfo/index.jsx'
 
@@ -66,6 +67,7 @@ class App extends React.Component {
 
                     <Route exact path="/home/" component={Home}/>
                     <Route exact path="/status/" component={Status}/>
+                    <Route exact path="/machine/" component={Machine}/>
                     <Route exact path="/ppolicy/" component={PPolicy}/>
 
                     <Route exact path="/portal/" component={Portal}/>

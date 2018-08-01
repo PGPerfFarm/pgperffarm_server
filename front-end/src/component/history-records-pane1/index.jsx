@@ -32,9 +32,15 @@ class HistoryRecordPane1 extends React.Component {
         this.loadMachineRecordListByBranch()
     }
     componentWillReceiveProps(nextProps) {
+        let _this = this
         this.setState({
             branches: nextProps.branches,
             machine_sn: nextProps.machine_sn,
+        },() => {
+            if(this.state.branches.length > 0) {
+                _this.handleBranchTagClick(_this.state.branches[0].value)
+            }
+
         });
     }
     handleBranchTagClick(branch_id){
@@ -96,6 +102,9 @@ class HistoryRecordPane1 extends React.Component {
             <div>
                 <div className="branch-tags-container">
                     {branch_tags}
+                    <div>
+                        current num: {this.state.currentTotal}
+                    </div>
                 </div>
 
                     <MachineRecordTable list={this.state.currentList} total={this.state.currentTotal} current={this.state.currentPage} loadfunc={this.loadMachineRecordListByBranch}/>

@@ -87,9 +87,8 @@ class NavTop extends React.Component {
                     </li>
                     <li><Link to="/status"><span className="glyphicon glyphicon-tasks" aria-hidden="true"></span>Status</Link>
                     </li>
-                    {/*<li><Link to="/classifiedDisplay">分类展示</Link><a href="/status"> <span className="glyphicon glyphicon-tasks" aria-hidden="true"></span> Status</a>*/}
-                    {/*</li>*/}
-                    <li><a href="#"> <span className="glyphicon glyphicon-blackboard" aria-hidden="true"></span>Machine</a>
+
+                    <li><Link to="/machine"> <span className="glyphicon glyphicon-blackboard" aria-hidden="true"></span>Machine</Link>
                     </li>
 
                     <li className="dropdown">

@@ -153,6 +153,8 @@ class ResultFilter extends React.Component {
             isClear: true
         });
 
+        console.log('the lastest selected')
+        console.dir(newSelected)
     }
 
 
@@ -198,7 +200,6 @@ class ResultFilter extends React.Component {
         this.props.onIsLoadingChange(true);
         let branches = this.getSelectedBranches()
 
-        console.dir(branches)
         this.props.onApplyBtnClick(branches);
         // console.log('isLoading:' + this.props.isLoading)
 

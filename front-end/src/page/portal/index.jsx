@@ -68,11 +68,6 @@ class Portal extends React.Component {
     }
 
     render() {
-        let show = this.state.isLoading ? "none" : "block";
-        let style = {
-            display: show
-        };
-
         return (
             <div className="container-fluid detail-container">
 

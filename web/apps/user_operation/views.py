@@ -46,6 +46,13 @@ class UserMachineListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = UserMachineManageSerializer
     # pagination_class = StandardResultsSetPagination
 
+class PublicMachineListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    """
+    List all machines
+    """
+    queryset = UserMachine.objects.all().order_by('add_time')
+    serializer_class = UserMachineManageSerializer
+
 class UserPortalInfoViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     """
      user info
@@ -61,7 +68,8 @@ class UserMachinePermission(permissions.BasePermission):
     """
 
     def has_permission(self, request, view):
-        secret = request.data.secret
-        alias = request.data.alias
-        ret = UserMachine.objects.filter(machine_secret=secret, alias__name=alias, is_active=1).exists()
+        secret = request.META.get("HTTP_AUTHORIZATION")
+        print(secret)
+        # alias = request.data.alias
+        ret = UserMachine.objects.filter(machine_secret=secret, state=1).exists()
         return ret
