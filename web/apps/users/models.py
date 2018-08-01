@@ -41,10 +41,10 @@ class UserMachine(models.Model):
     """
     user machine
     """
-    machine_sn = models.CharField(max_length=16, verbose_name="machine sn")
-    machine_secret = models.CharField(max_length=32, verbose_name="machine secret")
+    machine_sn = models.CharField(max_length=16, blank=True, default='',verbose_name="machine sn")
+    machine_secret = models.CharField(max_length=32, blank=True, default='', verbose_name="machine secret")
     machine_owner = models.ForeignKey(UserProfile)
-    alias = models.ForeignKey(Alias,blank=True, default=None, verbose_name="alias", help_text="alias")
+    alias = models.ForeignKey(Alias,blank=True, null=True, verbose_name="alias", help_text="alias")
     os_name = models.CharField(max_length=32, verbose_name="operation system name")
     os_version = models.CharField(max_length=32, verbose_name="operation system version")
     comp_name = models.CharField(max_length=32, verbose_name="compiler name")
@@ -94,4 +94,6 @@ class UserMachine(models.Model):
         # serializer = JWTUserProfileSerializer(user)
         print(self.machine_owner.email)
         user_email = self.machine_owner.email
-        return  {"is_success": True, "alias": self.alias.name, "secret": self.machine_secret, "email":user_email}
+        system = self.os_name + ' ' + self.os_version
+        compiler = self.comp_name + ' ' + self.comp_version
+        return  {"is_success": True, "alias": self.alias.name, "secret": self.machine_secret, "system": system,  "compiler":compiler,"email":user_email}

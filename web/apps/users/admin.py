@@ -10,7 +10,7 @@ from .models import UserMachine
 
 
 class UserMachineAdmin(admin.ModelAdmin):
-    list_display = ('alias', 'machine_sn', 'state')
+    list_display = ('id', 'alias', 'state', 'machine_sn', 'machine_secret', )
     list_filter = ('state',)
     actions = ['approve_machine']
 
@@ -22,22 +22,25 @@ class UserMachineAdmin(admin.ModelAdmin):
         for machine in queryset:
 
             ret = machine.approve_machine()
-            # ret = {"is_success": True, "alias": 'alias', "secrct": 'machine_secret', "email":user_email}
+            # ret = {"is_success": True, "alias": self.alias.name, "secret": self.machine_secret, "system": system,  "compiler":compiler,"email":user_email}
 
             if ret['is_success']:
                 success += 1
                 # send email to notice user
-                content = "The machine you have applied for has been approved.\n\
+                content = "Greetings,\n\
+\
+The machine you have applied for has been approved.\n\
 Here is the information about it: \n \
 \n \
 alias: %s\n \
 secret: %s\n \
+system: %s\n \
+compiler: %s\n \
 \n \
 Regards,\n \
-PG PERF FARM" % (ret['alias'], ret['secret'])
-                #  ret['alias'] + ': ' + ret['secret']
+PG PERF FARM" % (ret['alias'], ret['secret'], ret['system'], ret['compiler'])
 
-                send_mail('[PG PERF FARM]Machine Approval Notice', content, settings.EMAIL_HOST_USER, [ret['email']],
+                send_mail('[PG PERF FARM<test mail>]Machine Approval Notice', content, settings.EMAIL_HOST_USER, [ret['email']],
                           fail_silently=False)
 
             else:
@@ -51,7 +54,7 @@ PG PERF FARM" % (ret['alias'], ret['secret'])
                           "Total: %s ,Success: %s ,Error: %s. Please make sure there are enough unused aliases." % (
                               total, success, error))
 
-    approve_machine.short_description = u'Approve Machine(Modify the state to active, generate machine_sn, machine_secret, and assign an alias)'
+    approve_machine.short_description = u'Approve Machine(Modify the state to active, generate machine_sn, machine_secret and assign an alias)'
 
 
 admin.site.register(UserMachine, UserMachineAdmin)
