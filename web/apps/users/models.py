@@ -9,6 +9,8 @@ from django.contrib.auth.models import AbstractUser
 
 
 # Create your models here.
+# from .serializer import JWTUserProfileSerializer
+
 
 class UserProfile(AbstractUser):
     """
@@ -42,7 +44,7 @@ class UserMachine(models.Model):
     machine_sn = models.CharField(max_length=16, verbose_name="machine sn")
     machine_secret = models.CharField(max_length=32, verbose_name="machine secret")
     machine_owner = models.ForeignKey(UserProfile)
-    alias = models.ForeignKey(Alias,blank=True ,verbose_name="alias", help_text="alias")
+    alias = models.ForeignKey(Alias,blank=True, default=None, verbose_name="alias", help_text="alias")
     os_name = models.CharField(max_length=32, verbose_name="operation system name")
     os_version = models.CharField(max_length=32, verbose_name="operation system version")
     comp_name = models.CharField(max_length=32, verbose_name="compiler name")
@@ -68,7 +70,7 @@ class UserMachine(models.Model):
         "Approve Machine(Modify the state to active, generate machine_sn, machine_secret, and assign an alias)"
         alias = Alias.objects.filter(is_used=False).order_by('?').first()
         if not alias:
-            return {"is_success": False, "alias": '', "secrct": ''}
+            return {"is_success": False, "alias": '', "secret": '', "email":''}
         from django.db import transaction
         with transaction.atomic():
             alias.is_used=True
@@ -88,5 +90,8 @@ class UserMachine(models.Model):
 
             self.save()
 
-        user_email = 
-        return  {"is_success": True, "alias": self.alias, "secrct": self.machine_secret, "email":}
+
+        # serializer = JWTUserProfileSerializer(user)
+        print(self.machine_owner.email)
+        user_email = self.machine_owner.email
+        return  {"is_success": True, "alias": self.alias.name, "secret": self.machine_secret, "email":user_email}

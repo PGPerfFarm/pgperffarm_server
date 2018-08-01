@@ -3,7 +3,7 @@ from django.utils import timezone
 from django.db import models
 
 # Create your models here.
-from users.models import UserProfile, UserMachine
+from users.models import UserMachine
 
 
 class TestBranch(models.Model):

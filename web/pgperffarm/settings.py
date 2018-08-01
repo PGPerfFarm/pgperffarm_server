@@ -53,6 +53,7 @@ INSTALLED_APPS = (
     'test_records',
     'crispy_forms',
     'user_operation',
+    'asynchronous_send_mail'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -217,3 +218,11 @@ JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=7200),
     'JWT_AUTH_HEADER_PREFIX': 'Token',
 }
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_SSL = True
+EMAIL_HOST = 'smtp.163.com'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''  # individual password
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
