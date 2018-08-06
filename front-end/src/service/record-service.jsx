@@ -75,8 +75,8 @@ class Record{
         let data = {};
         data = listParam;
 
-        console.log('final data')
-        console.dir(listParam);
+        // console.log('final data')
+        // console.dir(listParam);
         return _util.request({
             type    : 'get',
             url     : url,

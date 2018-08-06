@@ -33,10 +33,11 @@ class MachineTable extends React.Component {
 
 
     onPageNumChange(current) {
+        let _this = this
         this.setState({
             currentPage: current
         }, () => {
-            this.props.loadfunc(current);
+            _this.props.loadfunc(current);
         });
         console.log('current:' + this.state.currentPage)
     }
@@ -129,7 +130,7 @@ class MachineTable extends React.Component {
                     <Table.Row>
                         <Table.HeaderCell colSpan='10'>
 
-                            <Pagination style={style} onChange={(current) => this.onPageNumChange(current)} pageSize={15}
+                            <Pagination style={style} onChange={(current) => this.onPageNumChange(current)} pageSize={40}
                                         current={this.state.currentPage} total={this.props.total}/>
                         </Table.HeaderCell>
 

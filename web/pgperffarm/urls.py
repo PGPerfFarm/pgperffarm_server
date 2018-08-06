@@ -45,11 +45,11 @@ router.register(r'machine-records-by-branch', UserMachineRecordByBranchListViewS
 # user's machine manage list
 router.register(r'my-machine', UserMachineListViewSet, base_name="my-machine")
 # get userinfo on portal page
-router.register(r'portal', UserPortalInfoViewSet, base_name="portal")
+router.register(r'^portal/', UserPortalInfoViewSet, base_name="portal")
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
-
+    url(r'^perf_farm_admin/', admin.site.urls),
+    # url(r'^admin/', include(admin.site.urls)),
     url(r'^api-auth/', include('rest_framework.urls')),
 
 
@@ -60,14 +60,8 @@ urlpatterns = [
 
     url(r'^machine-token-auth/', MachineAuthToken.as_view()),
     url(r'^', include(router.urls)),
-    # url(r'status/$', test_record_list, name='test-list'),
-    # url(r'status/$', TestListView.as_view(), name='test-list'),
-    # url(r'detail', TestRecordDetailViewSet ,name="detail"),
-    url(r'upload/$', TestRecordCreate, name='test-upload'),
-    # url(r'status-records/$', GetStatusRecordList, name='status-records'),
 
-    # url(r'portal/$', UserPortalInfoViewSet, name='portal'),
-    # url(r'my-machine/$', UserMachineList.as_view(), name='my-machine'),
+    url(r'upload/$', TestRecordCreate, name='test-upload'),
 
     url(r'docs/', include_docs_urls(title='pgperffarm')),
     # Static pages

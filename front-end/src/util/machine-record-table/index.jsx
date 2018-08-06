@@ -29,12 +29,12 @@ class MachineRecordTable extends React.Component {
         }
     }
 
-
     onPageNumChange(current) {
+        let _this = this
         this.setState({
             currentPage: current
         }, () => {
-            this.props.loadfunc(current);
+            _this.props.loadfunc(current);
         });
         console.log('current:' + this.state.currentPage)
     }

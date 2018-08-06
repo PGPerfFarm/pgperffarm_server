@@ -16,25 +16,27 @@ class Portal extends React.Component {
         super(props);
         this.state = {
             username: '',
-            isLoading: false,
             machines:[],
             userinfo: {}
         }
-
+        this.loadUserMachineManageList = this.loadUserMachineManageList.bind(this);
     }
     componentDidMount(){
 
         let user = _util.getStorage('userInfo')
         this.setState({
             username: user.username,
+        },()=>{
+            this.loadUserPortalInfo()
+            this.loadUserMachineManageList();
         });
         console.log(user.token)
-        this.loadUserPortalInfo()
-        this.loadUserMachineManageList();
+
     }
 
     loadUserPortalInfo(){
-        _user.getUserPortalInfo().then(res => {
+        let username = this.state.username
+        _user.getUserPortalInfo(username).then(res => {
             this.setState({
                 userinfo: res.results,
             });
@@ -44,11 +46,14 @@ class Portal extends React.Component {
     }
 
     loadUserMachineManageList(page=1){
-        _user.getUserMachineManageList().then(res => {
+
+        let listParam = {};
+        listParam.page = page;
+        listParam.machine_owner__username = this.state.username;
+        _user.getUserMachineManageList(listParam).then(res => {
             this.setState({
                 machines: res.results,
                 total: res.count,
-                isLoading: false
             });
         }, errMsg => {
             _util.errorTips(errMsg);
@@ -98,7 +103,7 @@ class Portal extends React.Component {
                         <h2 >Welcome Back, {this.state.username}</h2>
                     </div>
 
-                    <MachineTable list={this.state.machines} total={this.state.total} current={this.state.currentPage} loadfunc={this.loadRecordList}/>
+                    <MachineTable list={this.state.machines} total={this.state.total} current={this.state.currentPage} loadfunc={this.loadUserMachineManageList}/>
                 </div>
             </div>
 

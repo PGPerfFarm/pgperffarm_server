@@ -45,23 +45,25 @@ class User{
         return true;
     }
 
-    getUserMachineManageList(pageNum){
+    getUserMachineManageList(listParam){
         let url = PGConstant.base_url + '/my-machine';
         return _util.request({
             type    : 'get',
             url     : url,
-            data    : {
-                pageNum : pageNum
-            }
+            data    : listParam
+        //     listParam.page = page;
+        //     listParam.username = this.state.username;
         });
     }
 
-    getUserPortalInfo(){
+    getUserPortalInfo(username=''){
         let url = PGConstant.base_url + '/portal/';
         return _util.request({
             type    : 'get',
             url     : url,
-            data    : {}
+            data    : {
+                username : username
+            }
         });
     }
 

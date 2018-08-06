@@ -6,8 +6,14 @@ from asynchronous_send_mail import send_mail
 from django.conf import settings
 # Register your models here.
 from serializer import UserMachineSerializer
-from .models import UserMachine
+from .models import UserMachine, UserProfile
 
+class UserProfileAdmin(admin.ModelAdmin):
+    list_display = ('id', 'username', 'email', 'is_active', 'last_login', )
+    list_filter = ('is_active',)
+
+
+admin.site.register(UserProfile, UserProfileAdmin)
 
 class UserMachineAdmin(admin.ModelAdmin):
     list_display = ('id', 'alias', 'state', 'machine_sn', 'machine_secret', )
@@ -58,3 +64,6 @@ PG PERF FARM" % (ret['alias'], ret['secret'], ret['system'], ret['compiler'])
 
 
 admin.site.register(UserMachine, UserMachineAdmin)
+
+
+
