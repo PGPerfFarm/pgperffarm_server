@@ -16,7 +16,7 @@ from serializer import UserMachineManageSerializer, UserPortalInfoSerializer, Te
 
 
 class StandardResultsSetPagination(PageNumberPagination):
-    page_size = 2
+    page_size = 20
     page_size_query_param = 'page_size'
     max_page_size = 100
 
@@ -31,7 +31,7 @@ class UserMachineRecordByBranchListViewSet(mixins.ListModelMixin, viewsets.Gener
     List machine records by branch
     """
 
-    queryset = TestRecord.objects.all().order_by('add_time')
+    queryset = TestRecord.objects.all().order_by('-add_time')
     serializer_class = TestRecordListSerializer
     pagination_class = StandardResultsSetPagination
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
@@ -69,7 +69,7 @@ class PublicMachineListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = UserMachineManageSerializer
     pagination_class = MiddleResultsSetPagination
 
-class UserPortalInfoViewSet( mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+class UserPortalInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     """
      user info
     """
@@ -86,7 +86,7 @@ class UserMachinePermission(permissions.BasePermission):
 
     def has_permission(self, request, view):
         secret = request.META.get("HTTP_AUTHORIZATION")
-        print(secret)
+        # print(secret)
         # alias = request.data.alias
         ret = UserMachine.objects.filter(machine_secret=secret, state=1).exists()
         return ret

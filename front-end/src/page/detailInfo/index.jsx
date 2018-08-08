@@ -1,10 +1,13 @@
 import React from 'react';
+import {Link}     from 'react-router-dom';
 import './index.css';
 import {Table, Divider, Segment, Icon} from 'semantic-ui-react'
 import PGUtil        from 'util/util.jsx'
 import FarmerCard      from 'component/farmer-card/index.jsx'
 import InfoList      from 'component/info-list/index.jsx'
 import Record      from 'service/record-service.jsx'
+import PGConstant from 'util/constant.jsx'
+
 const _util = new PGUtil();
 const _record = new Record();
 
@@ -43,7 +46,9 @@ class DetailInfo extends React.Component {
     }
 
     render() {
+        let prev = this.state.recordInfo.prev || 'none';
         let branch =  this.state.recordInfo.branch || '';
+        let commit =  this.state.recordInfo.commit || '';
         let date = this.state.recordInfo.date || '';
         let machine = this.state.recordInfo.test_machine || {};
         let dataset = this.state.recordInfo.dataset_info || {};
@@ -53,19 +58,19 @@ class DetailInfo extends React.Component {
         let hardware_info = this.state.recordInfo.hardware_info || {};
         let ro = dataset.ro || {};
         let rw = dataset.rw || {};
-        console.log(machine)
+        // console.log(machine)
         // Object.keys(obj).map(key => console.log(obj[key]));
         let ro_10 = ro['10'] || {};
         let rw_10 = rw['10'] || {};
 
         let rw_tables = Object.keys(rw_10).map(key => {
-            console.log(rw_10[key])
+            // console.log(rw_10[key])
             let metric = 0;
             let percentage = 0.0;
             let status = -1;
             let tableRow = rw_10[key].map((item, idx) => {
-                console.log('item is:')
-                console.log(item)
+                // console.log('item is:')
+                // console.log(item)
                 metric = parseFloat(item['metric']).toFixed(4)
                 percentage = (item['percentage'] * 100).toFixed(2).toString() + '%'
                 status = item['status']
@@ -102,7 +107,7 @@ class DetailInfo extends React.Component {
                             <Table.HeaderCell colSpan="4">
                                 <div className="client-title-div">
                                     <div>Client(s) {key}: {metric}  {trend_span}</div>
-                                    <div><a href=""> >>prev</a></div>
+                                    {/*<div><a href=""> >>prev</a></div>*/}
                                 </div>
                                 {/*<div>*/}
                                     {/*<span>Improved ()</span>*/}
@@ -175,7 +180,7 @@ class DetailInfo extends React.Component {
                             <Table.HeaderCell colSpan="4">
                                 <div className="client-title-div">
                                     <div>Client(s) {key}: {metric}  {trend_span}</div>
-                                    <div><a href=""> >>prev</a></div>
+                                    {/*<div><a href=""> >>prev</a></div>*/}
                                 </div>
                                 {/*<div>*/}
                                 {/*<span>Improved ()</span>*/}
@@ -203,15 +208,36 @@ class DetailInfo extends React.Component {
             );
         });
 
+        let prev_link
+        if(prev == 'none') {
+            prev_link = prev
+        }else{
+            prev_link = (
+                <Link target = '_blank' color='linkedin' to={'/detailInfo/' + prev}>
+                    {prev.substring(0, 7)}
+                </Link>
+            )
+        }
         return (
             <div className="container-fluid detail-container">
-                <div className="record-title">
-
-                    <div className="record-title-top">
-                        <span>Branch: {branch}</span>
-                        <span>Date: {date}</span>
+                <div className="record-title ">
+                    <div className="record-title-right title-flex">
+                        <div className="record-title-top">
+                            <span>Branch: {branch}</span>
+                            <span>Commit: <a target="_blank" href={ PGConstant.PG_GITHUB_MIRROR + commit}>{commit.substring(0, 7)}</a></span>
+                        </div>
+                        <div className="record-title-bottom">
+                            <h2 >NO: {this.state.recordNo}</h2>
+                        </div>
                     </div>
-                    <h2 >NO: {this.state.recordNo}</h2>
+
+                    <div className="record-title-left title-flex">
+                        <span>Date: {date}</span>
+                        <span>
+                             prev: {prev_link}
+                        </span>
+                    </div>
+
                 </div>
 
                 <div className="col-md-3">

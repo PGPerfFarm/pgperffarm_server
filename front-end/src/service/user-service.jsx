@@ -57,13 +57,11 @@ class User{
     }
 
     getUserPortalInfo(username=''){
-        let url = PGConstant.base_url + '/portal/';
+        let url = PGConstant.base_url + '/user-portal/' + username;
         return _util.request({
             type    : 'get',
             url     : url,
-            data    : {
-                username : username
-            }
+            data    : {}
         });
     }
 

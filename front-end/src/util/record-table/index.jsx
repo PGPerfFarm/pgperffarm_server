@@ -204,7 +204,7 @@ class RecordTable extends React.Component {
                 <Table.Footer>
                     <Table.Row>
                         <Table.HeaderCell colSpan='10'>
-                            <Pagination style={style} onChange={(current) => this.onPageNumChange(current)} pageSize={2}
+                            <Pagination style={style} onChange={(current) => this.onPageNumChange(current)} pageSize={20}
                                         current={this.state.currentPage} total={this.state.total}/>
 
                         </Table.HeaderCell>

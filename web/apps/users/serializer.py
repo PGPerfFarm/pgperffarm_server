@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+from pgperffarm.settings import AVATAR_URL
 from test_records.models import TestRecord
 from users.models import UserMachine, Alias, UserProfile
 import hashlib
@@ -44,8 +45,8 @@ class UserMachineSerializer(serializers.ModelSerializer):
     def get_avatar(self, obj):
         target_owner = UserProfile.objects.filter(id=obj.machine_owner_id).values('email').first()
 
-        avatar = 'http://s.gravatar.com/avatar/' + hashlib.md5(target_owner['email']).hexdigest()
-        print avatar
+
+        avatar = AVATAR_URL + hashlib.md5(target_owner['email']).hexdigest()
         return  avatar
 
 class JWTUserProfileSerializer(serializers.ModelSerializer):

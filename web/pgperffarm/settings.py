@@ -157,6 +157,7 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 20
 }
 
+AVATAR_URL = 'http://s.gravatar.com/avatar/'
 DB_ENUM = {
     "general_switch": {
         "on": 1,

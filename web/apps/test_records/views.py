@@ -28,7 +28,7 @@ import json
 
 
 class StandardResultsSetPagination(PageNumberPagination):
-    page_size = 2
+    page_size = 20
     page_size_query_param = 'page_size'
     max_page_size = 100
 
@@ -41,7 +41,7 @@ class TestBranchListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     List test records
     """
 
-    queryset = TestBranch.objects.all().order_by('branch_order')
+    queryset = TestBranch.objects.all().order_by('branch_order','add_time')
     serializer_class = TestBranchSerializer
     pagination_class = BigResultsSetPagination
 
@@ -58,10 +58,10 @@ class TestRecordListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
 class TestRecordListByBranchViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     """
-    List test records
+    List test records (/status)
     """
 
-    queryset = TestRecord.objects.order_by('test_machine_id','-add_time').distinct('test_machine_id').all()
+    queryset = TestRecord.objects.order_by('test_machine__alias__name','-add_time').distinct('test_machine__alias__name').all()
     serializer_class = TestRecordListSerializer
     pagination_class = StandardResultsSetPagination
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
@@ -162,9 +162,9 @@ def TestRecordCreate(request, format=None):
             if(branch_str == 'master'):
                 branch_str = 'HEAD'
 
-            branch = TestBranch.objects.filter(branch_name=branch_str).get()
+            branch = TestBranch.objects.filter(branch_name__iexact=branch_str,is_accept=True).get()
             if not branch:
-                raise TestDataUploadError('branch msg error')
+                raise TestDataUploadError('The branch name is unavailable.')
 
             commit = pg_data['commit']
             pg_settings = pg_data['settings']

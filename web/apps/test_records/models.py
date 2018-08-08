@@ -10,8 +10,10 @@ class TestBranch(models.Model):
     """
     test brand
     """
-    branch_name = models.CharField(max_length=128, verbose_name="branch name", help_text="branch name")
-    branch_order = models.IntegerField(verbose_name=" branch order", help_text="order in all the  branch")
+    branch_name = models.CharField(max_length=128, unique=True,verbose_name="branch name", help_text="branch name")
+    branch_order = models.IntegerField(default=5,verbose_name=" branch order", help_text="order in all the  branch")
+    is_show = models.BooleanField(verbose_name="branch isshow", default=True, help_text="branch isshow")
+    is_accept = models.BooleanField(verbose_name="branch weather accept accept new reports", default=True, help_text="branch weather accept new reports")
     add_time = models.DateTimeField(default=timezone.now, verbose_name="branch added time",
                                     help_text="branch added time")
 
@@ -188,25 +190,26 @@ def calc_status(sender, instance, **kwargs):
     # record_id = instance.test_record.id
     machine_id = instance.test_record.test_machine_id
     add_time = instance.test_record.add_time
-    prevRecord = TestRecord.objects.order_by('-add_time').filter(test_machine_id=machine_id,
+    branch = instance.test_record.branch
+    prevRecord = TestRecord.objects.order_by('-add_time').filter(test_machine_id=machine_id,branch=branch,
                                                                  add_time__lt=add_time).first()
     if (prevRecord == None):
         print("prev record not found")
         return
-    print("previd is: " + str(prevRecord.id))
+    # print("previd is: " + str(prevRecord.id))
     prevTestDataSet = TestDataSet.objects.filter(test_record_id=prevRecord.id, scale=instance.scale,
                                                  clients=instance.clients, test_cate_id=instance.test_cate_id).first()
 
     if (prevTestDataSet == None):
-        print("prev dataset not found")
+        # print("prev dataset not found")
         return
 
-    print("prev dataset is: " + str(prevTestDataSet.id))
+    # print("prev dataset is: " + str(prevTestDataSet.id))
 
     percentage = (instance.metric - prevTestDataSet.metric) / prevTestDataSet.metric
-    print('instance.metric is:' + str(instance.metric))
-    print('prevTestDataSet.metric is:' + str(prevTestDataSet.metric))
-    print('percentage is:' + str(percentage))
+    # print('instance.metric is:' + str(instance.metric))
+    # print('prevTestDataSet.metric is:' + str(prevTestDataSet.metric))
+    # print('percentage is:' + str(percentage))
     status = 0
     if (percentage >= 0.05):
         status = 1

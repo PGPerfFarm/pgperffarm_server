@@ -1,4 +1,5 @@
 from datetime import datetime
+from django.utils.timezone import utc
 import shortuuid
 
 import hashlib
@@ -31,7 +32,7 @@ class UserProfile(AbstractUser):
         return self.user_name
 
 class Alias(models.Model):
-    name = models.CharField(max_length=32, verbose_name="alias name")
+    name = models.CharField(max_length=32, unique=True, verbose_name="alias name")
     is_used = models.BooleanField(default=False,verbose_name="is_used")
     add_time = models.DateTimeField(default=timezone.now, verbose_name="add time", help_text="category added time")
 
@@ -44,7 +45,7 @@ class UserMachine(models.Model):
     machine_sn = models.CharField(max_length=16, blank=True, default='',verbose_name="machine sn")
     machine_secret = models.CharField(max_length=32, blank=True, default='', verbose_name="machine secret")
     machine_owner = models.ForeignKey(UserProfile)
-    alias = models.ForeignKey(Alias,blank=True, null=True, verbose_name="alias", help_text="alias")
+    alias = models.OneToOneField(Alias,blank=True, null=True, verbose_name="alias", help_text="alias")
     os_name = models.CharField(max_length=32, verbose_name="operation system name")
     os_version = models.CharField(max_length=32, verbose_name="operation system version")
     comp_name = models.CharField(max_length=32, verbose_name="compiler name")

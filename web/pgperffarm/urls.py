@@ -45,7 +45,7 @@ router.register(r'machine-records-by-branch', UserMachineRecordByBranchListViewS
 # user's machine manage list
 router.register(r'my-machine', UserMachineListViewSet, base_name="my-machine")
 # get userinfo on portal page
-router.register(r'^portal/', UserPortalInfoViewSet, base_name="portal")
+router.register(r'user-portal', UserPortalInfoViewSet, base_name="user-portal")
 
 urlpatterns = [
     url(r'^perf_farm_admin/', admin.site.urls),

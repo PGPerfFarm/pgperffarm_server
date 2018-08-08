@@ -38,7 +38,7 @@ class Portal extends React.Component {
         let username = this.state.username
         _user.getUserPortalInfo(username).then(res => {
             this.setState({
-                userinfo: res.results,
+                userinfo: res,
             });
         }, errMsg => {
             _util.errorTips(errMsg);
@@ -64,12 +64,6 @@ class Portal extends React.Component {
         // this.props.history.push('/login')
         // hashHistory.push('/login')
         window.location.href = '/';
-        // _user.logout().then(res => {
-        //     _util.removeStorage('userInfo');
-        //     window.location.href = '/login';
-        // }, errMsg => {
-        //     _util.errorTips(errMsg);
-        // });
     }
 
     render() {
@@ -79,7 +73,7 @@ class Portal extends React.Component {
                 <div className="col-md-3">
 
                     {/*<Segment vertical>Farmer Info</Segment>*/}
-                    <UserInfoCard info={this.state.userinfo}></UserInfoCard>
+                    <UserInfoCard userinfo={this.state.userinfo}></UserInfoCard>
 
                     <div className="panel panel-default panel-blue">
                         <div className="panel-heading">

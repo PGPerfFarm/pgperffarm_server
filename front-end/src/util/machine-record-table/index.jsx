@@ -144,7 +144,7 @@ class MachineRecordTable extends React.Component {
                             {/*<Icon name='chevron right'/>*/}
                             {/*</Menu.Item>*/}
                             {/*</Menu>*/}
-                            <Pagination style={style} onChange={(current) => this.onPageNumChange(current)} pageSize={2}
+                            <Pagination style={style} onChange={(current) => this.onPageNumChange(current)} pageSize={20}
                                         current={this.state.currentPage} total={this.props.total}/>
 
                         </Table.HeaderCell>
