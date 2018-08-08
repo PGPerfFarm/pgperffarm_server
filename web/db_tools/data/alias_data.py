@@ -1,11 +1,11 @@
 row_data = [
     {
         'name': 'Avocado',
-        'is_used': True
+        'is_used': False
     },
     {
         'name': 'Cabbage',
-        'is_used': True
+        'is_used': False
     },
     {
         'name': 'Cucumber',
