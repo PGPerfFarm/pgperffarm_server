@@ -1,11 +1,14 @@
 .record-title{
     padding-left: 14px;
-}
-.record-title-top {
+    padding-right: 44px;
     display: flex;
     flex-direction: row;
+    justify-content:space-between;
+}
+.title-flex {
+    display: flex;
+    flex-direction: column;
     justify-content:flex-start;
-
     font-weight: 600;
 }
 
@@ -63,4 +66,13 @@
 
 .trend-span .regressive{
     color: #cf1322!important;
+}
+
+
+/*catalog*/
+.catalog.ui.vertical.menu {
+    width: 100%;
+}
+.catalog.ui.menu .item{
+    color: inherit;
 }

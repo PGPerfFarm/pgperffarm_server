@@ -4,6 +4,15 @@ import PGConstant from 'util/constant.jsx'
 const _util       = new PGUtil();
 
 class User{
+    farmerApply(farmerInfo){
+        let url = PGConstant.base_url + '/my-machine/';
+        return _util.request({
+            type: 'post',
+            url: url,
+            data: farmerInfo
+        });
+    }
+
     login(loginInfo){
         let url = PGConstant.base_url + '/login/';
         return _util.request({
@@ -45,19 +54,19 @@ class User{
         return true;
     }
 
-    getUserMachineManageList(pageNum){
+    getUserMachineManageList(listParam){
         let url = PGConstant.base_url + '/my-machine';
         return _util.request({
             type    : 'get',
             url     : url,
-            data    : {
-                pageNum : pageNum
-            }
+            data    : listParam
+        //     listParam.page = page;
+        //     listParam.username = this.state.username;
         });
     }
 
-    getUserPortalInfo(){
-        let url = PGConstant.base_url + '/portal/';
+    getUserPortalInfo(username=''){
+        let url = PGConstant.base_url + '/user-portal/' + username;
         return _util.request({
             type    : 'get',
             url     : url,

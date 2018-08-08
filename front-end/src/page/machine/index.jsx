@@ -17,18 +17,15 @@ class Machine extends React.Component {
             total: 3,
             machines: [],
         },
-
-        // this.onPageChange = this.onPageChange.bind(this);
-
-        this.loadMachineList = this.loadMachineList.bind(this);
+            this.loadMachineList = this.loadMachineList.bind(this);
     }
 
-    componentDidMount(){
+    componentDidMount() {
         this.loadMachineList();
     }
 
-    loadMachineList(page=1){
-        _machine.getMachineList().then(res => {
+    loadMachineList(page = 1) {
+        _machine.getMachineList(page).then(res => {
             this.setState({
                 machines: res.results,
                 total: res.count,
@@ -50,7 +47,8 @@ class Machine extends React.Component {
                     Use the farm member link for history of that member on the relevant branch.
                 </p>
 
-                <MachineTable list={this.state.machines} total={this.state.total} current={this.state.currentPage} loadfunc={this.loadRecordList}/>
+                <MachineTable list={this.state.machines} total={this.state.total} current={this.state.currentPage}
+                              loadfunc={this.loadMachineList}/>
 
             </div>
         )

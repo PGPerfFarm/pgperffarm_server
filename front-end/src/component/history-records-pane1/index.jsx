@@ -102,9 +102,9 @@ class HistoryRecordPane1 extends React.Component {
             <div>
                 <div className="branch-tags-container">
                     {branch_tags}
-                    <div>
-                        current num: {this.state.currentTotal}
-                    </div>
+                    {/*<div>*/}
+                        {/*current num: {this.state.currentTotal}*/}
+                    {/*</div>*/}
                 </div>
 
                     <MachineRecordTable list={this.state.currentList} total={this.state.currentTotal} current={this.state.currentPage} loadfunc={this.loadMachineRecordListByBranch}/>

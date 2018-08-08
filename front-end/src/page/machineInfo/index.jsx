@@ -86,12 +86,18 @@ class MachineInfo extends React.Component {
         return (
             <div className="container-fluid detail-container">
                 <div className="record-title">
-
-                    <div className="record-title-top">
-                        <span>NO: {this.state.machineNo}</span>
-                        {/*<span>Add Date: {this.state.machineInfo.addtime}</span>*/}
+                    <div className="record-title-right title-flex">
+                        <div className="record-title-top">
+                            <span>NO: {this.state.machineNo}</span>
+                            {/*<span>Commit: <a target="_blank" href={ PGConstant.PG_GITHUB_MIRROR + commit}>{commit.substring(0, 7)}</a></span>*/}
+                        </div>
+                        <div className="record-title-bottom">
+                            <h2 >Farmer: {this.state.machineInfo.alias}</h2>
+                        </div>
                     </div>
-                    <h2 >Farmer: {this.state.machineInfo.alias}</h2>
+                    {/*<div className="record-title-left title-flex">*/}
+                        {/*<span>Date joined: {this.state.machineInfo.add_time}</span>*/}
+                    {/*</div>*/}
                 </div>
 
                 <div className="machine-info-divier-div">

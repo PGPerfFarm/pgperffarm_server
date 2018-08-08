@@ -14,6 +14,7 @@ class CustomBackend(ModelBackend):
     """
     custom user auth
     """
+    # todo use auth.py
     def authenticate(self, username=None, password=None, **kwargs):
         try:
             user = UserProfile.objects.get(Q(username=username))

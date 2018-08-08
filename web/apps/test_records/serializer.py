@@ -346,15 +346,26 @@ class TestRecordDetailSerializer(serializers.ModelSerializer):
     test_machine = UserMachineSerializer()
     hardware_info = serializers.SerializerMethodField()
     meta_info = MetaInfoDetailSerializer()
-
     dataset_info = serializers.SerializerMethodField()
 
-    # rw_info = serializers.SerializerMethodField()
+    prev = serializers.SerializerMethodField()
     class Meta:
         model = TestRecord
         fields = (
             'branch', 'date', 'uuid', 'pg_info', 'linux_info', 'hardware_info', 'meta_info', 'dataset_info',
-            'test_desc', 'meta_time', 'test_machine')
+            'test_desc', 'meta_time', 'test_machine', 'commit', 'prev')
+
+    def get_prev(self, obj):
+        target = TestDataSet.objects.filter(test_record_id=obj.id).first()
+        serializer = TestDataSetDetailSerializer(target)
+        prev = serializer.data["prev"]
+        target = TestDataSet.objects.filter(id=prev).first()
+        serializer = TestDataSetDetailSerializer(target)
+        record_id =  serializer.data["test_record"]
+
+        target_record= TestRecord.objects.filter(id=record_id).first()
+        serializer = TestRecordDetailSerializer(target_record)
+        return serializer.data["uuid"]
 
     def get_branch(self, obj):
         branch = TestBranch.objects.filter(id=obj.branch_id).first()

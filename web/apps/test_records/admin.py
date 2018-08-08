@@ -10,7 +10,6 @@ from .models import TestRecord, TestBranch
 class TestRecordAdmin(admin.ModelAdmin):
     list_display = ('id', 'branch', 'uuid', 'test_machine')
     list_filter = ('branch',)
-    actions = ['approve_machine']
 
 admin.site.register(TestRecord, TestRecordAdmin)
 

@@ -38,8 +38,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = (
-    'corsheaders',
     'django.contrib.admin',
+    'corsheaders',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -157,6 +157,7 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 20
 }
 
+AVATAR_URL = 'http://s.gravatar.com/avatar/'
 DB_ENUM = {
     "general_switch": {
         "on": 1,
@@ -223,6 +224,6 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_SSL = True
 EMAIL_HOST = 'smtp.163.com'
 EMAIL_PORT = 465
-EMAIL_HOST_USER = ''
-EMAIL_HOST_PASSWORD = ''  # individual password
+# EMAIL_HOST_USER = ''
+# EMAIL_HOST_PASSWORD = ''  # individual password
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

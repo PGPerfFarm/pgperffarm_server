@@ -17,6 +17,8 @@ import DetailInfo from './page/detailInfo/index.jsx'
 import MachinelInfo from './page/machineInfo/index.jsx'
 
 import Portal from './page/portal/index.jsx'
+import FarmerApply from './page/farmerApply/index.jsx'
+
 // we need to map the `scale` prop we define below
 // to the transform style property
 function mapStyles(styles) {
@@ -71,6 +73,7 @@ class App extends React.Component {
                     <Route exact path="/ppolicy/" component={PPolicy}/>
 
                     <Route exact path="/portal/" component={Portal}/>
+                    <Route exact path="/farmerApply/" component={FarmerApply}/>
                     <Route path="/detailInfo/:uuid" component={DetailInfo}/>
                     <Route path="/machineInfo/:machine_sn" component={MachinelInfo}/>
                     {/*<Redirect exact from="/order" to="/order/index"/>*/}

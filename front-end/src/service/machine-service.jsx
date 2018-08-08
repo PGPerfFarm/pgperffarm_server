@@ -4,13 +4,13 @@ import PGConstant from 'util/constant.jsx'
 const _util       = new PGUtil();
 
 class MachineService{
-    getMachineList(pageNum){
+    getMachineList(page){
         let url = PGConstant.base_url + '/machines';
         return _util.request({
             type    : 'get',
             url     : url,
             data    : {
-                pageNum : pageNum
+                page : page
             }
         });
     }

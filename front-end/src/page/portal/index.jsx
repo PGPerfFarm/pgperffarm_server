@@ -1,7 +1,6 @@
 import React from 'react';
+import {Link}     from 'react-router-dom';
 import './index.css';
-import { hashHistory } from 'react-router'
-import ResultFilter from 'component/result-filter/index.jsx';
 import MachineTable    from 'util/machine-table/index.jsx';
 import UserInfoCard from 'component/userinfo-card/index.jsx'
 import Record      from 'service/record-service.jsx'
@@ -16,27 +15,29 @@ class Portal extends React.Component {
         super(props);
         this.state = {
             username: '',
-            isLoading: false,
             machines:[],
             userinfo: {}
         }
-
+        this.loadUserMachineManageList = this.loadUserMachineManageList.bind(this);
     }
     componentDidMount(){
 
         let user = _util.getStorage('userInfo')
         this.setState({
             username: user.username,
+        },()=>{
+            this.loadUserPortalInfo()
+            this.loadUserMachineManageList();
         });
         console.log(user.token)
-        this.loadUserPortalInfo()
-        this.loadUserMachineManageList();
+
     }
 
     loadUserPortalInfo(){
-        _user.getUserPortalInfo().then(res => {
+        let username = this.state.username
+        _user.getUserPortalInfo(username).then(res => {
             this.setState({
-                userinfo: res.results,
+                userinfo: res,
             });
         }, errMsg => {
             _util.errorTips(errMsg);
@@ -44,11 +45,14 @@ class Portal extends React.Component {
     }
 
     loadUserMachineManageList(page=1){
-        _user.getUserMachineManageList().then(res => {
+
+        let listParam = {};
+        listParam.page = page;
+        listParam.machine_owner__username = this.state.username;
+        _user.getUserMachineManageList(listParam).then(res => {
             this.setState({
                 machines: res.results,
                 total: res.count,
-                isLoading: false
             });
         }, errMsg => {
             _util.errorTips(errMsg);
@@ -59,12 +63,6 @@ class Portal extends React.Component {
         // this.props.history.push('/login')
         // hashHistory.push('/login')
         window.location.href = '/';
-        // _user.logout().then(res => {
-        //     _util.removeStorage('userInfo');
-        //     window.location.href = '/login';
-        // }, errMsg => {
-        //     _util.errorTips(errMsg);
-        // });
     }
 
     render() {
@@ -74,7 +72,7 @@ class Portal extends React.Component {
                 <div className="col-md-3">
 
                     {/*<Segment vertical>Farmer Info</Segment>*/}
-                    <UserInfoCard info={this.state.userinfo}></UserInfoCard>
+                    <UserInfoCard userinfo={this.state.userinfo}></UserInfoCard>
 
                     <div className="panel panel-default panel-blue">
                         <div className="panel-heading">
@@ -83,9 +81,10 @@ class Portal extends React.Component {
                             </h3>
                         </div>
                         <div className="list-group">
-                            <a href="\add-machine" className="list-group-item">
+                            <Link target='_blank'  to="farmerApply/" className="list-group-item">
                                 <i className="fa fa-globe fa-fw"></i>&nbsp; Add a New Mchine
-                            </a>
+                            </Link>
+
                             <a onClick={() => {this.onLogout()}} className="list-group-item">
                                 <i className="fa fa-arrow-left fa-fw"></i>&nbsp; Logout
                             </a>
@@ -98,7 +97,7 @@ class Portal extends React.Component {
                         <h2 >Welcome Back, {this.state.username}</h2>
                     </div>
 
-                    <MachineTable list={this.state.machines} total={this.state.total} current={this.state.currentPage} loadfunc={this.loadRecordList}/>
+                    <MachineTable list={this.state.machines} total={this.state.total} current={this.state.currentPage} loadfunc={this.loadUserMachineManageList}/>
                 </div>
             </div>
 

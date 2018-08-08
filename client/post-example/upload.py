@@ -14,7 +14,7 @@ def byteify(input):
         return input
 
 
-token = 'fake token'
+token = '0ae27ecb064ff5283296b297bac77d9e'
 # BASE_URL = 'http://140.211.168.111:8080/'
 BASE_URL = 'http://127.0.0.1:8000/'
 PATH_URL = 'upload/'
