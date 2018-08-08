@@ -64,6 +64,10 @@ class UserPortalInfoSerializer(serializers.ModelSerializer):
         reports = TestRecord.objects.filter(test_machine__machine_sn__in=machine_dict).values_list('branch__branch_name').annotate(Count('id'))
         return reports.count()
 
+class CreateUserMachineSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserMachine
+        fields = "__all__"
 
 class UserMachineManageSerializer(serializers.ModelSerializer):
     '''

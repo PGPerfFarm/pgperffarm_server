@@ -4,6 +4,15 @@ import PGConstant from 'util/constant.jsx'
 const _util       = new PGUtil();
 
 class User{
+    farmerApply(farmerInfo){
+        let url = PGConstant.base_url + '/my-machine/';
+        return _util.request({
+            type: 'post',
+            url: url,
+            data: farmerInfo
+        });
+    }
+
     login(loginInfo){
         let url = PGConstant.base_url + '/login/';
         return _util.request({

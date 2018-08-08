@@ -67,3 +67,12 @@
 .trend-span .regressive{
     color: #cf1322!important;
 }
+
+
+/*catalog*/
+.catalog.ui.vertical.menu {
+    width: 100%;
+}
+.catalog.ui.menu .item{
+    color: inherit;
+}

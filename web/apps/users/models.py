@@ -20,7 +20,7 @@ class UserProfile(AbstractUser):
 
     # first_name = None
     # last_name = None
-    # user_name = models.CharField(max_length=64, verbose_name="name")
+    username = models.CharField(max_length=64, unique=True, verbose_name="username")
     # user_email = models.EmailField(max_length=256, verbose_name="email")
     # add_time = models.DateTimeField(default=datetime.now, verbose_name="user added time")
 

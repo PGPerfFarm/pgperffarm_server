@@ -1,7 +1,6 @@
 import React from 'react';
+import {Link}     from 'react-router-dom';
 import './index.css';
-import { hashHistory } from 'react-router'
-import ResultFilter from 'component/result-filter/index.jsx';
 import MachineTable    from 'util/machine-table/index.jsx';
 import UserInfoCard from 'component/userinfo-card/index.jsx'
 import Record      from 'service/record-service.jsx'
@@ -82,9 +81,10 @@ class Portal extends React.Component {
                             </h3>
                         </div>
                         <div className="list-group">
-                            <a href="\add-machine" className="list-group-item">
+                            <Link target='_blank'  to="farmerApply/" className="list-group-item">
                                 <i className="fa fa-globe fa-fw"></i>&nbsp; Add a New Mchine
-                            </a>
+                            </Link>
+
                             <a onClick={() => {this.onLogout()}} className="list-group-item">
                                 <i className="fa fa-arrow-left fa-fw"></i>&nbsp; Logout
                             </a>

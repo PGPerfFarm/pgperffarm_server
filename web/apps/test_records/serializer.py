@@ -346,7 +346,6 @@ class TestRecordDetailSerializer(serializers.ModelSerializer):
     test_machine = UserMachineSerializer()
     hardware_info = serializers.SerializerMethodField()
     meta_info = MetaInfoDetailSerializer()
-
     dataset_info = serializers.SerializerMethodField()
 
     prev = serializers.SerializerMethodField()

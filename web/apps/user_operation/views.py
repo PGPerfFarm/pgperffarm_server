@@ -11,9 +11,11 @@ from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from filters import MachineRecordListFilter, UserMachineListFilter
 from test_records.models import TestRecord
 from users.models import UserMachine, UserProfile
+from users.serializer import CreateUserProfileSerializer
 from serializer import UserMachineManageSerializer, UserPortalInfoSerializer, TestRecordListSerializer, \
-    UserMachineSerializer
-
+    UserMachineSerializer, CreateUserMachineSerializer
+from rest_framework.response import Response
+from rest_framework import status
 
 class StandardResultsSetPagination(PageNumberPagination):
     page_size = 20
@@ -37,7 +39,7 @@ class UserMachineRecordByBranchListViewSet(mixins.ListModelMixin, viewsets.Gener
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     filter_class = MachineRecordListFilter
 
-class UserMachineListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+class UserMachineListViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet):
     """
     List test records
     """
@@ -49,17 +51,33 @@ class UserMachineListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     filter_class = UserMachineListFilter
 
-    # def perform_create(self, serializer):
-    #     shop_cart = serializer.save()
-    #     goods = shop_cart.goods
-    #     goods.goods_num -= shop_cart.nums
-    #     goods.save()
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
 
-    # def get_serializer_class(self):
-    #     if self.action == 'create':
-    #         return UserMachineSerializer
-    #     else:
-    #         return UserMachineManageSerializer
+    def create(self, request, *args, **kwargs):
+        data = {}
+        data['os_name'] = request.data['os_name']
+        data['os_version'] = request.data['os_version']
+        data['comp_name'] = request.data['comp_name']
+        data['comp_version'] = request.data['comp_version']
+
+        username = request.data['machine_owner']
+        user = UserProfile.objects.filter(username=username).filter().first()
+        user_serializer = CreateUserProfileSerializer(user)
+
+        data['machine_owner'] = user_serializer.data['id']
+
+        serializer = CreateUserMachineSerializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        machine = self.perform_create(serializer)
+
+        headers = self.get_success_headers(serializer.data)
+
+        return Response('success', status=status.HTTP_201_CREATED, headers=headers)
+
+    def perform_create(self, serializer):
+        return serializer.save()
+
 
 class PublicMachineListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     """

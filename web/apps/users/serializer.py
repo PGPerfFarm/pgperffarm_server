@@ -14,6 +14,14 @@ class AliasSerializer(serializers.ModelSerializer):
         model = Alias
         fields = ('name', )
 
+class CreateUserProfileSerializer(serializers.ModelSerializer):
+    '''
+    use CreateUserProfileSerializer
+    '''
+    class Meta:
+        model = UserProfile
+        fields = "__all__"
+
 class UserMachineSerializer(serializers.ModelSerializer):
     '''
     use UserMachineSerializer
