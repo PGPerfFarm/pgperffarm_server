@@ -1,5 +1,7 @@
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+import datetime
 import os
+import sys
 
 # Load local settings overrides
 from settings_local import *
@@ -16,8 +18,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.8/ref/settings/
 """
 
+# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
+sys.path.insert(0, BASE_DIR)
+sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))
+sys.path.insert(0, os.path.join(BASE_DIR, 'extra_apps'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
@@ -30,20 +35,29 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 
 INSTALLED_APPS = (
     'django.contrib.admin',
+    'corsheaders',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_gravatar',
+    'rest_framework',
+    'rest_framework.authtoken',
+    'django_filters',
+    'users',
+    'test_records',
+    'crispy_forms',
+    'user_operation',
+    'asynchronous_send_mail'
 )
 
 MIDDLEWARE_CLASSES = (
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -72,18 +86,28 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'pgperffarm.wsgi.application'
+# PASSWORD_HASHERS = (
+#     'django.contrib.auth.hashers.MD5PasswordHasher',
+#     'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+#     'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
+#     'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
+#     'django.contrib.auth.hashers.BCryptPasswordHasher',
+#     'django.contrib.auth.hashers.SHA1PasswordHasher',
+#
+#     'django.contrib.auth.hashers.CryptPasswordHasher',
+# )
 
+WSGI_APPLICATION = 'pgperffarm.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#     }
+# }
 
 
 # Internationalization
@@ -99,7 +123,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
@@ -110,5 +133,97 @@ STATICFILES_DIRS = [
 ]
 
 AUTHENTICATION_BACKENDS = (
-     'pgperffarm.auth.AuthBackend',
+    'users.views.CustomBackend',
 )
+AUTH_USER_MODEL = 'users.UserProfile'
+
+REST_FRAMEWORK = {
+
+    # 'DEFAULT_PERMISSION_CLASSES': (
+    #     'rest_framework.permissions.IsAuthenticated',
+    # ),
+
+    # 'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
+    # 'EXCEPTION_HANDLER': (
+    #     'dataAPI.common.api_exception.custom_exception_handler'
+    # ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        # 'rest_framework.authentication.TokenAuthentication',
+    ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 20
+}
+
+AVATAR_URL = 'http://s.gravatar.com/avatar/'
+DB_ENUM = {
+    "general_switch": {
+        "on": 1,
+        "off": 2
+    },
+    "mode": {
+        "simple": 1,
+        "other": 2
+    },
+    "machine_state": {
+        "prohibited": -1,
+        "pending": 0,
+        "active": 1,
+    },
+    "status": {
+        "none": -1,
+        "improved": 1,
+        "quo": 2,
+        "regressive": 3
+    }
+}
+
+APPEND_SLAS = False
+
+CORS_ALLOW_CREDENTIALS = True
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ORIGIN_WHITELIST = (
+    '*'
+)
+
+CORS_ALLOW_METHODS = (
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+    'VIEW',
+)
+
+CORS_ALLOW_HEADERS = (
+    'XMLHttpRequest',
+    'X_FILENAME',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+    'Pragma',
+)
+ALLOWED_HOSTS = ['*']
+
+JWT_AUTH = {
+    'JWT_RESPONSE_PAYLOAD_HANDLER':
+        'users.jwt_handler.jwt_response_payload_handler',
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=7200),
+    'JWT_AUTH_HEADER_PREFIX': 'Token',
+}
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_SSL = True
+EMAIL_HOST = 'smtp.163.com'
+EMAIL_PORT = 465
+# EMAIL_HOST_USER = ''
+# EMAIL_HOST_PASSWORD = ''  # individual password
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
