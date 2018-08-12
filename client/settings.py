@@ -2,6 +2,9 @@ import os
 import sys
 
 # global configuration
+PERFFARM_URL = 'http://140.211.168.111:8000/upload/'
+SECRET='CHANGEME'
+
 GIT_URL = 'https://github.com/postgres/postgres.git'
 REPOSITORY_PATH = '/tmp/git-postgres'
 BUILD_PATH = '/tmp/bin-postgres'

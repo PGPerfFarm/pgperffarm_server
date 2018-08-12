@@ -54,7 +54,8 @@ if __name__ == '__main__':
                                          bin_path=('%s/bin' % (BUILD_PATH)))
         collectors.register('postgres', pg_collector)
 
-        runner = BenchmarkRunner(OUTPUT_DIR, cluster, collectors)
+        runner = BenchmarkRunner(OUTPUT_DIR, PERFFARM_URL, SECRET,
+                                 cluster, collectors)
 
         # register the three tests we currently have
 

@@ -1,5 +1,7 @@
 import json
 import os
+import codecs
+import urllib2
 
 from multiprocessing import Process, Queue
 from time import gmtime, strftime
@@ -11,7 +13,7 @@ from utils.logging import log
 class BenchmarkRunner(object):
     'manages runs of all the benchmarks, including cluster restarts etc.'
 
-    def __init__(self, out_dir, cluster, collector):
+    def __init__(self, out_dir, url, secret, cluster, collector):
         ''
 
         self._output = out_dir  # where to store output files
@@ -19,6 +21,8 @@ class BenchmarkRunner(object):
         self._configs = {}  # config name => (bench name, config)
         self._cluster = cluster
         self._collector = collector
+        self._url = url
+        self._secret = secret
 
     def register_benchmark(self, benchmark_name, benchmark_class):
         ''
@@ -124,6 +128,21 @@ class BenchmarkRunner(object):
 
         with open('%s/results.json' % self._output, 'w') as f:
             f.write(json.dumps(r, indent=4))
+
+        try:
+            self._upload_results(r)
+        except Exception as e:
+            print e
+
+    def _upload_results(self, results):
+        postdata = results
+        post = []
+        post.append(postdata)
+        req = urllib2.Request(self._url, json.dumps(post))
+        req.add_header('Authorization', self._secret) # add token in header
+        req.add_header('Content-Type', 'application/json')
+        response = urllib2.urlopen(req)
+
 
     def run(self):
         'run all the configured benchmarks'
