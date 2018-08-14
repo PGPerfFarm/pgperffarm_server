@@ -4,8 +4,8 @@
             "10": {
                 "1": {
                     "std": 0.0, 
-                    "metric": 30551.681364, 
-                    "median": 30551.681364, 
+                    "metric": 10551.681364, 
+                    "median": 10551.681364, 
                     "results": [
                         {
                             "latency": -1, 
@@ -24,8 +24,8 @@
                 }, 
                 "2": {
                     "std": 0.0, 
-                    "metric": 38238.312979, 
-                    "median": 38238.312979, 
+                    "metric": 28238.312979, 
+                    "median": 28238.312979, 
                     "results": [
                         {
                             "latency": -1, 
@@ -44,8 +44,8 @@
                 }, 
                 "4": {
                     "std": 0.0, 
-                    "metric": 35567.822014, 
-                    "median": 35567.822014, 
+                    "metric": 25567.822014, 
+                    "median": 25567.822014, 
                     "results": [
                         {
                             "latency": -1, 
@@ -68,8 +68,8 @@
             "10": {
                 "1": {
                     "std": 0.0, 
-                    "metric": 116.508045, 
-                    "median": 116.508045, 
+                    "metric": 216.508045, 
+                    "median": 216.508045, 
                     "results": [
                         {
                             "latency": -1, 
@@ -131,13 +131,13 @@
     }, 
     "postgres": {
         "commit": "c6736ff76046521f56c50deb31da218bc1b29533", 
-        "branch": "rel_9_5_stable", 
+        "branch": "master", 
         "settings": {
-            "checkpoint_timeout": "20min", 
+            "checkpoint_timeout": "15min", 
             "log_temp_files": "32", 
             "work_mem": "64MB", 
             "log_line_prefix": "%n %t ", 
-            "shared_buffers": "2GB", 
+            "shared_buffers": "1GB", 
             "log_autovacuum_min_duration": "0", 
             "checkpoint_completion_target": "0.9", 
             "maintenance_work_mem": "128MB", 
@@ -154,7 +154,7 @@
     "collectd": {}, 
     "meta": {
         "date": "2018-07-17 23:02:57.000000+00", 
-        "uname": "Linux postgresql-gsoc1 4.9.0-6-powerpc64le #1 SMP Debian 4.9.88-1+deb9u1 (2018-05-07) ppc64le GNU/Linux\n", 
+        "uname": "Linux postgresql-gsoc 4.9.0-6-powerpc64le #1 SMP Centos 4.9.88-1+deb9u1 (2018-05-07) ppc64le GNU/Linux\n", 
         "benchmark": "pgbench", 
         "name": "pgbench-basic"
     }, 
