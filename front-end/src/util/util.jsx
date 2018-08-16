@@ -11,7 +11,7 @@ class PGUtil {
             $.ajax({
                 type: param.type || 'get',
                 url: param.url || '',
-                dataType: param.dataType || 'json',
+                dataType: param.dataType || 'jsonp',
                 data: param.data || null,
                 // headers: {
                 //     'Authorization': 'Token ' + user.token
