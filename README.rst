@@ -12,8 +12,8 @@ e.g::
 
   $ sudo pip install virtualenvwrapper
   $ source /usr/local/bin/virtualenvwrapper.sh
-  $ mkvirtualenv pgperffarm
-  
+  $ mkvirtualenv -p python2.7 pgperffarm
+
 For ease of future use, configure virtualenvs from your .bash_profile::
 
   $ echo "source /usr/local/bin/virtualenvwrapper.sh" >> ~/.bash_profile
@@ -26,11 +26,11 @@ Then, install the required modules. Note that we use Django 1.8.11 as that's
 what is currently supported on the postgresql.org infrastructure::
 
   $ PATH=$PATH:/usr/local/pgsql/bin pip install -r web/requirements.txt
-  
+
 Next, create a settings_local.py file::
 
   $ cp web/pgperffarm/settings_local.py.in web/pgperffarm/settings_local.py
-  
+
 Edit the file and change the database configuration and other settings to suit
 your environment. Make sure you create the required database and user account
 on your PostgreSQL server.
@@ -41,7 +41,12 @@ Finally, synchronise the database::
   $ python manage.py makemigrations
   $ python manage.py migrate
 
-That should be all. To test, run the following command and point a browser at 
+That should be all. In case of an error (relation does not exist), run the makemigrations and migrate commands for the specific app:: 
+
+    $ python manage.py makemigrations users
+    $ python manage.py migrate users
+
+To test, run the following command and point a browser at
 the URL shown::
 
   $ python manage.py runserver
