@@ -3,6 +3,9 @@ PostgreSQL Performance Farm
 
 This repository contains the code for the PostgreSQL Performance Farm.
 
+IMPORTANT: migrating from Python2 to Python3 is in progress, hence why code might not work - for any issues feel free to contact @ila at ilaria.battiston@gmail.com
+
+
 web/
 ----
 
