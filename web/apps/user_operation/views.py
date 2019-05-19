@@ -8,11 +8,11 @@ from rest_framework import authentication
 from rest_framework.pagination import PageNumberPagination
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
-from filters import MachineRecordListFilter, UserMachineListFilter
+from .filters import MachineRecordListFilter, UserMachineListFilter
 from test_records.models import TestRecord
 from users.models import UserMachine, UserProfile
 from users.serializer import CreateUserProfileSerializer
-from serializer import UserMachineManageSerializer, UserPortalInfoSerializer, TestRecordListSerializer, \
+from .serializer import UserMachineManageSerializer, UserPortalInfoSerializer, TestRecordListSerializer, \
     UserMachineSerializer, CreateUserMachineSerializer
 from rest_framework.response import Response
 from rest_framework import status

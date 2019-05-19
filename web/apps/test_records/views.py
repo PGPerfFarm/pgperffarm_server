@@ -7,9 +7,9 @@ import shortuuid
 from django.contrib.auth.hashers import make_password
 from rest_framework.pagination import PageNumberPagination
 
-from exception import TestDataUploadError
-from test_records.filters import TestRecordListFilter
-from models import UserMachine, TestCategory, TestBranch
+from .exception import TestDataUploadError
+from .filters import TestRecordListFilter
+from .models import UserMachine, TestCategory, TestBranch
 from pgperffarm.settings import DB_ENUM
 from user_operation.views import UserMachinePermission
 from .serializer import MachineHistoryRecordSerializer, TestStatusRecordListSerializer, TestBranchSerializer, \
@@ -115,7 +115,7 @@ def TestRecordCreate(request, format=None):
     print(request.__str__())
     data = request.data
 
-    print type(data[0])
+    print(type(data[0]))
     json_data = json.dumps(data[0], encoding="UTF-8", ensure_ascii=False)
     json_data = json.loads(json_data, encoding="UTF-8")
     # obj = data[0].pgbench
@@ -211,11 +211,11 @@ def TestRecordCreate(request, format=None):
                 if not test_cate:
                     continue
                 else:
-                    print test_cate.cate_name
+                    print(test_cate.cate_name)
                 for scale, dataset_list in tag_list.iteritems():
-                    print "ro[%s]=" % scale, dataset_list
+                    print("ro[%s]=" % scale, dataset_list)
                     for client_num, dataset in dataset_list.iteritems():
-                        print 'std is:' + str(dataset['std'])
+                        print('std is:' + str(dataset['std']))
 
                         test_dataset_data = {
                             'test_record': testRecordRet.id,
@@ -232,7 +232,7 @@ def TestRecordCreate(request, format=None):
                         testDateSet = CreateTestDateSetSerializer(data=test_dataset_data)
                         testDateSetRet = None
                         if testDateSet.is_valid():
-                            print 'dataset valid'
+                            print('dataset valid')
                             testDateSetRet = testDateSet.save()
                         else:
                             # print(testDateSet.errors)
@@ -248,7 +248,7 @@ def TestRecordCreate(request, format=None):
 
                             testResultRet = None
                             if testResult.is_valid():
-                                print 'testResult valid'
+                                print('testResult valid')
                                 testResultRet = testResult.save()
                             else:
                                 # print(testResult.error_messages)
