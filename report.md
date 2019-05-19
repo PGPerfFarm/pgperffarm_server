@@ -4,7 +4,7 @@ The 2019 Google Summer of Code project consists in working on the Develop Perfor
 
 * Authentication/authorization tied into the community infrastructure;
 * Associating test systems with users to upload results to the REST API;
-* 
+* TODO;
 
 In the meanwhile, testing is being made with manually created accounts, 
 
