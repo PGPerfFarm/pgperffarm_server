@@ -1,10 +1,20 @@
 # Google Summer of Code 2019 - report
 
-The 2019 Google Summer of Code project consists in working on the Develop Performance Farm Database and Website, work in progress from 2018. The current application has been built on Python and its module Django, but is missing some features:
+The 2019 Google Summer of Code project consists in working on the Develop Performance Farm Database and Website, work in progress from 2018. 
+
+The system consists in an API root at the localhost address (127.0.0.1) which generates JSON performance files, 
+
+The current application has been built on Python and its module Django, but is missing some features:
 
 * Authentication/authorization tied into the community infrastructure;
 * Associating test systems with users to upload results to the REST API;
-* TODO;
+* Checking if a mapping with the same name already exists (`runner.py`);
+* Testing account exit appropriately (`collectd.py`);
+* Collecting output of configure and making commands (`git.py`);
+* API root, the OPTIONS button cannot be unclicked once clicked;
+* Graphical interface improvements while viewing JSON results (i.e. adding back navigation); 
+* Add test cases of different scale sets (scale=10,20…);
+* Allow custom tests to be added.
 
 In the meanwhile, testing is being made with manually created accounts, 
 
@@ -39,5 +49,15 @@ Using Django1.11 is recommended because the authentication module is on a Django
 
 
 
-## 
+#### Code specifics
+
+client: contains packages with functions used to generate test results and files, with exception handling. Results are collected with Python modules which analyse hardware, system and database performance. 
+
+front-end: contains HTML, CSS and JS code the website is built on.
+
+web: contains testing functions, role definitions in the authentication system and parsing of the JSON file, along with conversion of existent results in a downloadable format.
+
+
+
+
 
