@@ -91,8 +91,19 @@ class GitRepository(object):
             call(['make', '-s', '-j', str(cpu_count()), 'install'],
                  cwd=self._path, stdout=strout, stderr=STDOUT)
 
-            # Install pgbench from contrib in the older versions
-            oldpgbenchdir = ''.join([self._path, '/', 'contrib/pgbench'])
-            if os.path.isdir(oldpgbenchdir):
-                call(['make', '-s', '-j', str(cpu_count()), 'install'],
-                     cwd=oldpgbenchdir, stdout=strout, stderr=STDOUT)
+            # Various things needs to be installed because of various changes
+            # changes between releases.  Take a systematic approach and check
+            # if the directory exist, then try to install it.
+            items = [
+                    'src/bin/initdb',
+                    'src/bin/pg_ctl',
+                    'src/bin/scripts',
+                    'src/bin/psql',
+                    'src/bin/pgbench',
+                    'contrib/pgbench',
+            ]
+            for item in items:
+                srcdir = ''.join([self._path, '/', item])
+                if os.path.isdir(srcdir):
+                    call(['make', '-s', '-j', str(cpu_count()), 'install'],
+                         cwd=srcdir, stdout=strout, stderr=STDOUT)
