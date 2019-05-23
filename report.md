@@ -12,9 +12,17 @@ The current application has been built on Python and its module Django, but is m
 * Testing account exit appropriately (`collectd.py`);
 * Collecting output of configure and making commands (`git.py`);
 * API root, the OPTIONS button cannot be unclicked once clicked;
-* Graphical interface improvements while viewing JSON results (i.e. adding back navigation); 
-* Add test cases of different scale sets (scale=10,20…);
-* Allow custom tests to be added.
+* Graphical interface improvements while viewing JSON results on the local server (i.e. adding back navigation); 
+* Adding test cases of different scale sets (scale=10,20…);
+* Allowing custom tests to be added;
+* Website and interface fixes:
+  * Improving responsivity when rescaling the window;
+  * Bug fixes (popups when clicking Status/Machine without being logged in);
+  * Improving design of the homepage and login form;
+  * PG PERF FARM and Home redirect to the same page;
+  * Contact, License and Privacy Policy pages missing;
+  * There might be an issue with URLs not redirecting properly;
+  * 
 
 In the meanwhile, testing is being made with manually created accounts, 
 
@@ -51,11 +59,11 @@ Using Django1.11 is recommended because the authentication module is on a Django
 
 #### Code specifics
 
-client: contains packages with functions used to generate test results and files, with exception handling. Results are collected with Python modules which analyse hardware, system and database performance. 
+*client*: contains packages with functions used to generate test results and files, with exception handling. Results are collected with Python modules which analyse hardware, system and database performance. 
 
-front-end: contains HTML, CSS and JS code the website is built on.
+*front-end*: contains HTML, CSS and JS code the website is built on.
 
-web: contains testing functions, role definitions in the authentication system and parsing of the JSON file, along with conversion of existent results in a downloadable format.
+*web*: contains testing functions, role definitions in the authentication system and parsing of the JSON file, along with conversion of existent results in a downloadable format.
 
 
 
