@@ -21,10 +21,9 @@ The current application has been built on Python and its module Django, but is m
   * Improving design of the homepage and login form;
   * PG PERF FARM and Home redirect to the same page;
   * Contact, License and Privacy Policy pages missing;
-  * There might be an issue with URLs not redirecting properly;
-  * 
+  * There might be an issue with URLs not redirecting properly.
 
-In the meanwhile, testing is being made with manually created accounts, 
+In the meanwhile, testing is being made with manually created accounts, although there are some server-side issues related to login.
 
 The system is being developed using Debian 9 and OSX Mojave.
 
@@ -67,5 +66,12 @@ Using Django1.11 is recommended because the authentication module is on a Django
 
 
 
+## Coding Phase 1
 
+#### Week 1
+
+During the first week, some minor changes are made to the front-end interface, to get acquainted with the source code without risking bugs:
+
+* "Sign in" changed to "Log in" in the homepage;
+* Changed the homepage text;
 
