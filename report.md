@@ -6,6 +6,7 @@ The system consists in an API root at the localhost address (127.0.0.1) which ge
 
 The current application has been built on Python and its module Django, but is missing some features:
 
+* Client cannot upload results to the website;
 * Authentication/authorization tied into the community infrastructure;
 * Associating test systems with users to upload results to the REST API;
 * Checking if a mapping with the same name already exists (`runner.py`);
@@ -15,6 +16,7 @@ The current application has been built on Python and its module Django, but is m
 * Graphical interface improvements while viewing JSON results on the local server (i.e. adding back navigation); 
 * Adding test cases of different scale sets (scale=10,20…);
 * Allowing custom tests to be added;
+* Allowing building the local application with node > 9;
 * Website and interface fixes:
   * Improving responsivity when rescaling the window;
   * Bug fixes (popups when clicking Status/Machine without being logged in);
@@ -60,7 +62,7 @@ Using Django1.11 is recommended because the authentication module is on a Django
 
 *client*: contains packages with functions used to generate test results and files, with exception handling. Results are collected with Python modules which analyse hardware, system and database performance. 
 
-*front-end*: contains HTML, CSS and JS code the website is built on.
+*front-end*: contains HTML, CSS and JS code the website is built on, using the React framework.
 
 *web*: contains testing functions, role definitions in the authentication system and parsing of the JSON file, along with conversion of existent results in a downloadable format.
 
@@ -73,5 +75,11 @@ Using Django1.11 is recommended because the authentication module is on a Django
 During the first week, some minor changes are made to the front-end interface, to get acquainted with the source code without risking bugs:
 
 * "Sign in" changed to "Log in" in the homepage;
-* Changed the homepage text;
+* Changed the homepage text.
+
+Locally running the website developing a React application through `yarn install` and `yarn run dev` is the best option to test changes, yet those only work with Node between 4 and 9 due to Webpack issues, concerning upath@1.0.4: there is no available official fix aside from ignoring dependencies.
+
+The website is being tested using node8.16.0, and yarn 1.16.0.
+
+
 
