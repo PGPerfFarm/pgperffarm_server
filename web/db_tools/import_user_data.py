@@ -1,6 +1,6 @@
 import sys
 import os
-from pgperffarm.settings import PORJECT_PATH
+from path import PORJECT_PATH
 # Use django's model independently
 pwd = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(pwd+ "../")

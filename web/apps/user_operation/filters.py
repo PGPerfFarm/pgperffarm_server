@@ -3,7 +3,7 @@
 import django_filters
 from django.db.models import Q
 
-from models import UserMachine
+from .models import UserMachine
 from test_records.models import TestRecord
 
 

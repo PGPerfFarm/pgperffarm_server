@@ -246,7 +246,7 @@ class TestStatusRecordListSerializer(serializers.ModelSerializer):
         if (data_list_count == trend['none']):
             trend['is_first'] = True
 
-        print str(data_list_count)
+        print(str(data_list_count))
         return trend
 
     def get_machine_info(self, obj):
@@ -306,7 +306,7 @@ class TestRecordListSerializer(serializers.ModelSerializer):
         if (data_list_count == trend['none']):
             trend['is_first'] = True
 
-        print str(data_list_count)
+        print(str(data_list_count))
         return trend
 
     def get_machine_info(self, obj):

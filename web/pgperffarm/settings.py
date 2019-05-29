@@ -4,7 +4,7 @@ import os
 import sys
 
 # Load local settings overrides
-from settings_local import *
+from pgperffarm.settings_local import *
 
 """
 Django settings for pgperfarm project.

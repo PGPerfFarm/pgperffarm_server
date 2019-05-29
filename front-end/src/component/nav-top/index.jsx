@@ -69,7 +69,7 @@ class NavTop extends React.Component {
         } else {
             button = <li className="dropdown sign-in">
                 <Link to="/login" aria-expanded="false">
-                    Sign in
+                    Log in
                 </Link>
             </li>;
         }
@@ -110,7 +110,7 @@ class NavTop extends React.Component {
                             <li>
                                 <a href="#">
                                     <div>
-                                        <i className="fa fa-tasks fa-fw"></i> Licence
+                                        <i className="fa fa-tasks fa-fw"></i> License
                                         {/*<span className="pull-right text-muted small">4 min</span>*/}
                                     </div>
                                 </a>

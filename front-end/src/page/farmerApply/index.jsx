@@ -1,5 +1,5 @@
 import React from 'react';
-import {hashHistory} from 'React-router'
+import {hashHistory} from 'react-router'
 import './index.css';
 import {Link}     from 'react-router-dom';
 import UserInfoCard from 'component/userinfo-card/index.jsx'
@@ -97,7 +97,7 @@ class FarmerApply extends React.Component {
             _user.farmerApply(machineInfo).then((res) => {
                 // console.dir(res)
                 alert('add machine success!')
-                hashHistory.push('/portal')
+                //hashHistory.push('/portal')
                 // window.location.href = this.state.redirect;
             }, (err) => {
                 // console.log(err)

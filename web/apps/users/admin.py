@@ -5,7 +5,7 @@ from django.contrib import admin
 from asynchronous_send_mail import send_mail
 from django.conf import settings
 # Register your models here.
-from serializer import UserMachineSerializer
+from .serializer import UserMachineSerializer
 from .models import UserMachine, UserProfile
 
 class UserProfileAdmin(admin.ModelAdmin):
