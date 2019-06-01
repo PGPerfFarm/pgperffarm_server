@@ -22,6 +22,7 @@ from rest_framework.routers import DefaultRouter
 from test_records.views import TestRecordListViewSet, TestRecordCreate, TestRecordDetailViewSet, \
     MachineHistoryRecordViewSet, TestBranchListViewSet, TestRecordListByBranchViewSet
 from test_records.auth import MachineAuthToken
+from django.views.generic import TemplateView  # Ila
 # from test_records.view_base import TestListView
 
 # config test record url

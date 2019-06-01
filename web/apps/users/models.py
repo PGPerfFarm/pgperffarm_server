@@ -29,7 +29,8 @@ class UserProfile(AbstractUser):
         verbose_name_plural = "user"
 
     def __str__(self):
-        return self.user_name
+        return self.username
+        #return self.user_name
 
 class Alias(models.Model):
     name = models.CharField(max_length=32, unique=True, verbose_name="alias name")
@@ -38,6 +39,7 @@ class Alias(models.Model):
 
     def __str__(self):
         return self.name
+
 class UserMachine(models.Model):
     """
     user machine

@@ -8,6 +8,7 @@ from django.conf import settings
 from .serializer import UserMachineSerializer
 from .models import UserMachine, UserProfile
 
+
 class UserProfileAdmin(admin.ModelAdmin):
     list_display = ('id', 'username', 'email', 'is_active', 'last_login', )
     list_filter = ('is_active',)
@@ -16,6 +17,7 @@ class UserProfileAdmin(admin.ModelAdmin):
 admin.site.register(UserProfile, UserProfileAdmin)
 
 class UserMachineAdmin(admin.ModelAdmin):
+
     list_display = ('id', 'alias', 'state', 'machine_sn', 'machine_secret', )
     list_filter = ('state',)
     actions = ['approve_machine','only_approve']

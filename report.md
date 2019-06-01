@@ -16,7 +16,7 @@ The current application has been built on Python and its module Django, but is m
 * Graphical interface improvements while viewing JSON results on the local server (i.e. adding back navigation); 
 * Adding test cases of different scale sets (scale=10,20…);
 * Allowing custom tests to be added;
-* Allowing building the local application with node > 9;
+* Allowing building the local application with Node > 9;
 * Website and interface fixes:
   * Improving responsivity when rescaling the window;
   * Bug fixes (popups when clicking Status/Machine without being logged in);
@@ -72,14 +72,33 @@ Using Django1.11 is recommended because the authentication module is on a Django
 
 #### Week 1
 
-During the first week, some minor changes are made to the front-end interface, to get acquainted with the source code without risking bugs:
+Some minor changes are made to the front-end interface, to get acquainted with the source code without risking bugs:
 
 * "Sign in" changed to "Log in" in the homepage;
 * Changed the homepage text.
 
 Locally running the website developing a React application through `yarn install` and `yarn run dev` is the best option to test changes, yet those only work with Node between 4 and 9 due to Webpack issues, concerning upath@1.0.4: there is no available official fix aside from ignoring dependencies.
 
-The website is being tested using node8.16.0, and yarn 1.16.0.
+The website is being tested using Node8.16.0, and Yarn1.16.0.
+
+
+
+Setting up Vue.js applying minor changes which shouldn't compromise functioning:
+
+* Adding Vue and Bootstrap to the local API, in `base.html`;
+* Adding TemplateView to `urls.py`.
+
+
+
+#### Week 2
+
+Creating a PWA using Vue:
+
+cd pgperffarm-front-end
+
+npm install
+
+npm run dev
 
 
 
