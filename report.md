@@ -100,5 +100,9 @@ npm install
 
 npm run dev
 
+Yarn
+
+yarn start
+
 
 
