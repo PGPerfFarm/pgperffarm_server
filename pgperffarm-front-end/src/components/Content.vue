@@ -1,6 +1,5 @@
 <template>
 	<div id='login-name'>
-  	{{ logged }}
   </div>
 </template>
 
