@@ -2,20 +2,28 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 
 import Vue from 'vue'
-import App from './App'
-import axios from 'axios'
+import './plugins/vuetify'
+import './plugins/vuetify'
+import './plugins/vuetify'
+import './plugins/vuetify'
+import VueRouter from 'vue-router'
+// import axios from 'axios'
 // import VueAxios from 'vue-axios'
-// import router from './router'
 
-require('./assets/css/style.css')
+import App from './App'
+import './stylus/main.styl'
+import router from './router'
+
+// require('./assets/css/style.css')
 
 Vue.config.productionTip = false
-Vue.use(axios)
+// Vue.use(axios)
+Vue.use(VueRouter)
 
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
-  // router,
-  template: '<App/>',
+  render: h => h(App),
+  router,
   components: { App }
-})
+}).$mount('#app')
