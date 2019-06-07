@@ -3,7 +3,7 @@
 
 # run with yarn serve
 
-# add axios to packages.json
+# add packages to packages.json
 # fix tabs and spaces
 # change font
 # https
@@ -12,16 +12,17 @@
 # next todo: adding login
 
 <template>
-  <home></home>
+  <login></login>
 </template>
 
 <script>
-  import Home from './views/Home.vue'
+  // import Home from './components/Home.vue'
+  import Login from './components/Login.vue'
 
   export default {
   name: 'app',
   components: {
-    Home
+    Login
   }
 }
 

@@ -2,23 +2,27 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 
 import Vue from 'vue'
-import './plugins/vuetify'
-import './plugins/vuetify'
-import './plugins/vuetify'
-import './plugins/vuetify'
-import VueRouter from 'vue-router'
-// import axios from 'axios'
-// import VueAxios from 'vue-axios'
-
-import App from './App'
-import './stylus/main.styl'
 import router from './router'
 
-// require('./assets/css/style.css')
+import Axios from 'axios'
+// import VueAxios from 'vue-axios'
+
+import './plugins/vuetify'
+import './stylus/main.styl'
+
+import App from './App'
 
 Vue.config.productionTip = false
+
+// calling axios via $http
+// setting token to handle requests
+Vue.prototype.$http = Axios;
+const token = localStorage.getItem('token')
+if (token) {
+  Vue.prototype.$http.defaults.headers.common['Authorization'] = token
+}
+
 // Vue.use(axios)
-Vue.use(VueRouter)
 
 /* eslint-disable no-new */
 new Vue({

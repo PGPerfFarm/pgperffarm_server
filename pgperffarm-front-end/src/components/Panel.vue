@@ -1,10 +1,34 @@
 <template>
-	<div class='pg-panel'>
-
-		<p class='pg-par'> {{text1}} </p>
-		<p class='pg-par'> {{text2}} </p>
-
-	</div>
+  <v-layout justify-center column my-4>
+    <v-flex ma-4>
+    	<v-card
+      	flat 
+      	color="blue-grey lighten-4"
+      	>
+        	<v-card-text class="subheading">
+			Manage your test results!
+			</v-card-text>
+      </v-card>
+  </v-flex>
+  <v-flex sm6 ma-4>
+      <v-card
+      	flat 
+      	color="blue-grey lighten-4">
+	        <v-card-text class="subheading">
+				{{description}}
+			</v-card-text>
+      </v-card>
+  </v-flex>
+  <v-flex sm6 ma-4>
+      <v-card 
+      	flat 
+      	color="blue-grey lighten-4">
+	        <v-card-text class="subheading">
+				{{details}}
+			</v-card-text>
+      </v-card>
+    </v-flex>
+  </v-layout>
 </template>
 
 <script>
@@ -12,8 +36,8 @@
 		name: 'PgPanel',
 		data () {
 			return {
-				text1: 'The PostgreSQL Performance Farm project is a community project to collect performance data from tests, as code changes are made to PostgreSQL. Test results come as JSON or flat files, and the server-side interface is deployed using the Django framework. The web application is a Vue.js PWA.',
-                 text2: 'This website enables registered users to upload, browse and download test results for all machines.'
+				description: 'The PostgreSQL Performance Farm project is a community project to collect performance data from tests, as code changes are made to PostgreSQL. Test results come as JSON or flat files, and the server-side interface is deployed using the Django framework. The web application is a Vue.js PWA.',
+                 details: 'This website enables registered users to upload, browse and download test results for all machines.'
 			}
 		}
 	}

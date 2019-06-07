@@ -19,6 +19,7 @@ module.exports = {
         "vue"
     ],
     "rules": {
-        "no-mixed-spaces-and-tabs": "off"
+        "no-mixed-spaces-and-tabs": "off",
+        "no-console": "off"
     }
 };
