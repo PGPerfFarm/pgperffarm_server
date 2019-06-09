@@ -3,16 +3,14 @@
 
 import Vue from 'vue'
 import router from './router'
-
 import Axios from 'axios'
 // import VueAxios from 'vue-axios'
-
-import './plugins/vuetify'
-import './stylus/main.styl'
-
+import Vuetify from 'vuetify'
 import App from './App'
 
 Vue.config.productionTip = false
+
+Vue.use(Vuetify)
 
 // calling axios via $http
 // setting token to handle requests
@@ -22,7 +20,7 @@ if (token) {
   Vue.prototype.$http.defaults.headers.common['Authorization'] = token
 }
 
-// Vue.use(axios)
+// Vue.use(Axios)
 
 /* eslint-disable no-new */
 new Vue({

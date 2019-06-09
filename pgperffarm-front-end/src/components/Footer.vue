@@ -1,7 +1,7 @@
 <template>
 <v-footer 
 	fixed 
-	color="blue-grey darken-4"
+	color="rgb(51, 103, 145)"
 	height="7.5%"
 	>
 	<v-card-text class="white--text subheading">

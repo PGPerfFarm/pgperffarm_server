@@ -16,7 +16,6 @@
                       <v-btn
                         icon
                         large
-                        :href="source"
                         target="_blank"
                         slot="activator"
                       >
@@ -86,8 +85,8 @@
                     user.login(loginInfo).then((res) => {
 
                         util.setStorage('userInfo', res);
-                        window.location.href = this.state.redirect;
                         window.alert('Login succeeded!');
+                        window.location.href = this.state.redirect;
 
                     }, (err) => {
 

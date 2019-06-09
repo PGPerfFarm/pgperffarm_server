@@ -1,10 +1,11 @@
 <template>
 <v-toolbar
-      color="blue-grey darken-4"
-      height="75%"
+      color="rgb(51, 103, 145)"
+      height="80%"
       >
         <img src="../assets/images/transparent-logo.png" height="55px" width="55px">
-        <v-toolbar-title class="white--text display-2 font-weight-medium">Postgres Performance Farm</v-toolbar-title>
+        <v-toolbar-title 
+        class="white--text display-2 font-weight-medium py-2">Postgres Performance Farm</v-toolbar-title>
     </v-toolbar>
 </template>
 

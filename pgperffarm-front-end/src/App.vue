@@ -5,7 +5,6 @@
 
 # add packages to packages.json
 # fix tabs and spaces
-# change font
 # https
 # github link in new tab
 
@@ -20,10 +19,10 @@
   import Login from './components/Login.vue'
 
   export default {
-  name: 'app',
+  name: 'App',
   components: {
     Login
   }
-}
+ }
 
 </script>
