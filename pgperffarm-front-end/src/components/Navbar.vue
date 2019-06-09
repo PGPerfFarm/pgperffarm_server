@@ -3,10 +3,7 @@
 	flat 
 	color="white">
 		<v-toolbar-items >		      
-			<v-btn 
-				flat
-				rgb(51, 103, 145)--text
-		     >
+			<v-btn flat>
 		     	<router-link to="/home">
 		     		<v-icon color="rgb(51, 103, 145)">home</v-icon>
 		     		Home

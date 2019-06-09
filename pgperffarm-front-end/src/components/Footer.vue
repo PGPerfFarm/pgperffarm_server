@@ -5,7 +5,7 @@
 	height="7.5%"
 	>
 	<v-card-text class="white--text subheading">
-		Copyright 2019 Google Summer Of Code @ Postgres &mdash; Ilaria Battiston
+		Google Summer Of Code 2019 @ Postgres &mdash; Ilaria Battiston
 	</v-card-text>
 </v-footer>
 </template>

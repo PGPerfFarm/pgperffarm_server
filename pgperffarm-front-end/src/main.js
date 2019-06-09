@@ -5,12 +5,10 @@ import Vue from 'vue'
 import router from './router'
 import Axios from 'axios'
 // import VueAxios from 'vue-axios'
-import Vuetify from 'vuetify'
+import './plugins/vuetify'
 import App from './App'
 
 Vue.config.productionTip = false
-
-Vue.use(Vuetify)
 
 // calling axios via $http
 // setting token to handle requests

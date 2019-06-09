@@ -9,20 +9,8 @@
             <v-layout align-center justify-center>
               <v-flex xs12 sm8 md4>
                 <v-card class="elevation-12">
-                  <v-toolbar dark color="primary">
-                    <v-toolbar-title>Login form</v-toolbar-title>
-                    <v-spacer></v-spacer>
-                    <v-tooltip bottom>
-                      <v-btn
-                        icon
-                        large
-                        target="_blank"
-                        slot="activator"
-                      >
-                        <v-icon large>code</v-icon>
-                      </v-btn>
-                      <span>Source</span>
-                    </v-tooltip>
+                  <v-toolbar color="rgb(51, 103, 145)">
+                    <v-toolbar-title class="white--text">Log in to manage your machines!</v-toolbar-title>
                   </v-toolbar>
                   <v-card-text>
                     <v-form>
@@ -32,12 +20,13 @@
                   </v-card-text>
                   <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="primary" v-on:click="login()">Login</v-btn>
+                    <v-btn color="rgb(51, 103, 145)" v-on:click="login()">Login</v-btn>
                   </v-card-actions>
                 </v-card>
               </v-flex>
             </v-layout>
           </v-container>
+
         <pg-footer></pg-footer>
       </v-content>
     </main>
