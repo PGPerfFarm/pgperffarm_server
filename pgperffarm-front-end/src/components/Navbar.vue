@@ -1,48 +1,49 @@
 <template>
 	<v-toolbar 
 	flat 
-	color="white">
+	color="white"
+	>
 		<v-toolbar-items >		      
-			<v-btn flat>
+			<v-btn flat class="v-btn-navbar">
 		     	<router-link to="/home">
 		     		<v-icon color="rgb(51, 103, 145)">home</v-icon>
-		     		Home
+		     		&nbsp; Home
 		     	</router-link>
 		     </v-btn>
-		     <v-btn flat>
+		     <v-btn flat class="v-btn-navbar">
 		     	<v-icon color="rgb(51, 103, 145)">dns</v-icon>
-		     	 Machine
+		     	 &nbsp; Machine
 		     </v-btn>
-		     <v-btn flat>
+		     <v-btn flat class="v-btn-navbar">
 		     	<v-icon color="rgb(51, 103, 145)">list</v-icon>
-		     	 Status</v-btn>
+		     	 &nbsp; Status</v-btn>
 		     <v-menu open-on-hover bottom offset-y>
 		      	<template v-slot:activator="{ on }">
-			    	<v-btn flat v-on="on">
+			    	<v-btn flat v-on="on" class="v-btn-navbar">
 			    		<v-icon color="rgb(51, 103, 145)">feedback</v-icon>
-			           Contact
+			           &nbsp; Contact
 			        </v-btn>
 			      </template>
 
 			      <v-list>
-			        <v-list-tile href="https://github.com/PGPerfFarm/pgperffarm">
+			        <v-list-tile href="https://github.com/PGPerfFarm/pgperffarm" class="v-btn-navbar">
 			        	<v-icon color="rgb(51, 103, 145)">code</v-icon>
-			          <v-list-tile-title> GitHub</v-list-tile-title>
+			          <v-list-tile-title>&nbsp; GitHub</v-list-tile-title>
 			        </v-list-tile>
-			        	<v-list-tile>
+			        	<v-list-tile class="v-btn-navbar">
 			        		<v-icon color="rgb(51, 103, 145)">help</v-icon>
-			          	<v-list-tile-title> Help</v-list-tile-title>
+			          	<v-list-tile-title class="v-btn-navbar">&nbsp; Help</v-list-tile-title>
 			        	</v-list-tile>
-			        <v-list-tile>
+			        <v-list-tile class="v-btn-navbar">
 			        	<v-icon color="rgb(51, 103, 145)">copyright</v-icon>
-			          <v-list-tile-title> License</v-list-tile-title>
+			          <v-list-tile-title class="v-btn-navbar">&nbsp; License</v-list-tile-title>
 			        </v-list-tile>
 			      </v-list>
 
 			    </v-menu>
-			   <v-btn flat><router-link to="/login">
+			   <v-btn flat class="v-btn-navbar"><router-link to="/login">
 			   	<v-icon color="rgb(51, 103, 145)">input</v-icon>
-			   Login</router-link></v-btn>
+			   &nbsp; Login</router-link></v-btn>
     	</v-toolbar-items>
 	</v-toolbar>
 </template>

@@ -1,29 +1,22 @@
 <template>
   <v-layout justify-center column my-4>
-    <v-flex ma-4>
-    	<v-card
-      	flat 
-      	color="blue-grey lighten-4"
-      	>
-        	<v-card-text class="subheading">
+    <v-flex>
+    	<v-card flat class="pg-v-card">
+        	<v-card-text class="pg-v-card-text-main">
 			Manage your test results!
 			</v-card-text>
       </v-card>
   </v-flex>
-  <v-flex sm6 ma-4>
-      <v-card
-      	flat 
-      	color="blue-grey lighten-4">
-	        <v-card-text class="subheading">
+  <v-flex>
+      <v-card flat class="pg-v-card">
+	        <v-card-text class="pg-v-card-text">
 				{{description}}
 			</v-card-text>
       </v-card>
   </v-flex>
-  <v-flex sm6 ma-4>
-      <v-card 
-      	flat 
-      	color="blue-grey lighten-4">
-	        <v-card-text class="subheading">
+  <v-flex>
+      <v-card flat class="pg-v-card">
+	        <v-card-text class="pg-v-card-text">
 				{{details}}
 			</v-card-text>
       </v-card>

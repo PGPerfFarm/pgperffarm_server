@@ -5,13 +5,16 @@
         <pg-toolbar></pg-toolbar>
         <pg-navbar></pg-navbar>
 
-            <v-container fluid fill-height>
-            <v-layout align-center justify-center>
-              <v-flex xs12 sm8 md4>
-                <v-card class="elevation-12">
-                  <v-toolbar color="rgb(51, 103, 145)">
-                    <v-toolbar-title class="white--text">Log in to manage your machines!</v-toolbar-title>
+            <v-container>
+            <v-layout>
+              <v-flex>
+                <v-card flat class="login-v-card-upper">
+                    <img src="../assets/images/full-logo.png" height="10%" width="10%" align-center>
+                  <v-toolbar flat class="login-v-card-upper-toolbar">
+                    <v-toolbar-title class="login-v-card-upper-toolbar-title">Log in to manage your machines!</v-toolbar-title>
                   </v-toolbar>
+              </v-card>
+              <v-card flat class="login-v-card">
                   <v-card-text>
                     <v-form>
                       <v-text-field prepend-icon="person" name="username" v-model="input.username" label="Username" type="text"></v-text-field>
@@ -20,7 +23,7 @@
                   </v-card-text>
                   <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="rgb(51, 103, 145)" v-on:click="login()">Login</v-btn>
+                    <v-btn v-on:click="login()">Login</v-btn>
                   </v-card-actions>
                 </v-card>
               </v-flex>

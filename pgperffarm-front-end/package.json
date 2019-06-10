@@ -19,10 +19,12 @@
     "@vue/cli-plugin-eslint": "^3.8.0",
     "@vue/cli-service": "^3.8.0",
     "babel-eslint": "^10.0.1",
+    "css-loader": "^2.1.1",
     "eslint": "^5.16.0",
     "eslint-plugin-vue": "^5.0.0",
+    "style-loader": "^0.23.1",
     "stylus": "^0.54.5",
-    "stylus-loader": "^3.0.1",
+    "stylus-loader": "^3.0.2",
     "vue-cli-plugin-vuetify": "^0.5.0",
     "vue-template-compiler": "^2.6.10",
     "vuetify-loader": "^1.0.5"
