@@ -21,12 +21,12 @@
 		      	<template v-slot:activator="{ on }">
 			    	<v-btn flat v-on="on" class="v-btn-navbar">
 			    		<v-icon color="rgb(51, 103, 145)">feedback</v-icon>
-			           &nbsp; Contact
+			           &nbsp; About
 			        </v-btn>
 			      </template>
 
 			      <v-list>
-			        <v-list-tile href="https://github.com/PGPerfFarm/pgperffarm" class="v-btn-navbar">
+			        <v-list-tile href="https://github.com/PGPerfFarm/pgperffarm" class="v-btn-navbar" target="_blank">
 			        	<v-icon color="rgb(51, 103, 145)">code</v-icon>
 			          <v-list-tile-title>&nbsp; GitHub</v-list-tile-title>
 			        </v-list-tile>
@@ -34,13 +34,17 @@
 			        		<v-icon color="rgb(51, 103, 145)">help</v-icon>
 			          	<v-list-tile-title class="v-btn-navbar">&nbsp; Help</v-list-tile-title>
 			        	</v-list-tile>
+			        	<v-list-tile class="v-btn-navbar">
+			        	<v-icon color="rgb(51, 103, 145)">security</v-icon>
+			          <v-list-tile-title>&nbsp; Privacy Policy</v-list-tile-title>
+			        </v-list-tile>
 			        <v-list-tile class="v-btn-navbar">
 			        	<v-icon color="rgb(51, 103, 145)">copyright</v-icon>
 			          <v-list-tile-title class="v-btn-navbar">&nbsp; License</v-list-tile-title>
 			        </v-list-tile>
 			      </v-list>
-
 			    </v-menu>
+			    <v-spacer></v-spacer>
 			   <v-btn flat class="v-btn-navbar"><router-link to="/login">
 			   	<v-icon color="rgb(51, 103, 145)">input</v-icon>
 			   &nbsp; Login</router-link></v-btn>

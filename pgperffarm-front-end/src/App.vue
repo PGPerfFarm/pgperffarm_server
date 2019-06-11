@@ -3,12 +3,18 @@
 
 # run with yarn serve
 
+# todo after website is complete
 # add packages to packages.json
 # fix tabs and spaces
-# https
-# github link in new tab
+# https?
 
-# next todo: adding login
+# todo asap
+# fix login card
+# fix pp & license bottom border
+# fix router
+# add help link to homepage
+# fixed homepage and menu bar
+# machine - status - profile
 
 <template>
   <login></login>

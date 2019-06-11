@@ -6,15 +6,17 @@
         <pg-navbar></pg-navbar>
 
             <v-container>
-            <v-layout>
-              <v-flex>
+            <v-layout column>
+              <v-flex xs4>
                 <v-card flat class="login-v-card-upper">
                     <img src="../assets/images/full-logo.png" height="10%" width="10%" align-center>
-                  <v-toolbar flat class="login-v-card-upper-toolbar">
+                  <div class="login-v-card-upper-toolbar">
                     <v-toolbar-title class="login-v-card-upper-toolbar-title">Log in to manage your machines!</v-toolbar-title>
-                  </v-toolbar>
-              </v-card>
-              <v-card flat class="login-v-card">
+                  </div>
+                </v-card>
+              </v-flex>
+              <v-flex>
+                <v-card flat class="login-v-card">
                   <v-card-text>
                     <v-form>
                       <v-text-field prepend-icon="person" name="username" v-model="input.username" label="Username" type="text"></v-text-field>
