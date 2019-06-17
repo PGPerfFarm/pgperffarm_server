@@ -2,8 +2,6 @@
   <v-app>
     <main>
       <v-content>
-      	<pg-toolbar></pg-toolbar>
-        <pg-navbar></pg-navbar>
         <v-layout justify-center column my-4>
           <v-flex>
             <v-card flat class="pg-v-card">
@@ -42,25 +40,15 @@
                 </v-card-text>
           </v-card>
           </v-flex>
-  </v-layout>
-
-        <pg-footer></pg-footer>
+       </v-layout>
       </v-content>
     </main>
   </v-app>
 </template>
 
 <script>
-  import PgNavbar from './Navbar.vue'
-  import PgFooter from './Footer.vue'
-  import PgToolbar from './Toolbar.vue'
 
   export default {
-    name: 'help',
-    components: {
-      PgNavbar,
-      PgFooter,
-      PgToolbar
-    }
+    name: 'help'
   }
 </script>

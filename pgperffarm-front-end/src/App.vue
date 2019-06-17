@@ -8,26 +8,41 @@
 # fix tabs and spaces
 # https?
 
-# todo asap
-# fix login card
+# todo wip
 # fix pp & license bottom border
-# fix router
+# fix stylus
+# fix routing
 # add help link to homepage
 # fixed homepage and menu bar
-# machine - status - profile
+# machine - status
+# disabled login button?
 
 <template>
-  <login></login>
+	<v-app>
+		<pg-toolbar></pg-toolbar>
+	    <pg-navbar></pg-navbar>
+	    <login></login>
+	    <!--
+	    <router-view></router-view>
+		-->
+	    <pg-footer></pg-footer>
+	</v-app>
 </template>
 
 <script>
-  import Login from './components/Login.vue'
+	import PgNavbar from './components/Navbar.vue'
+    import PgFooter from './components/Footer.vue'
+    import PgToolbar from './components/Toolbar.vue'
+    import Login from './components/Login.vue'
 
-  export default {
-  name: 'App',
-  components: {
-    Login
-  }
- }
+	export default {
+	  name: 'App',
+	  components: {
+	  	PgNavbar,
+	  	PgToolbar,
+	  	PgFooter,
+	  	Login
+	  }
+	}
 
 </script>

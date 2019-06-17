@@ -6,10 +6,7 @@
 	-->
     <main>
       <v-content>
-      	<pg-toolbar></pg-toolbar>
-        <pg-navbar></pg-navbar>
         <pg-panel></pg-panel>          
-        <pg-footer></pg-footer>
       </v-content>
     </main>
   </v-app>
@@ -17,17 +14,11 @@
 
 <script>
   import PgPanel from './Panel.vue'
-  import PgNavbar from './Navbar.vue'
-  import PgFooter from './Footer.vue'
-  import PgToolbar from './Toolbar.vue'
 
   export default {
     name: 'home',
     components: {
-      PgPanel,
-      PgNavbar,
-      PgFooter,
-      PgToolbar
+      PgPanel
     },
     data() {
       return {

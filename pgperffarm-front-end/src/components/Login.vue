@@ -1,111 +1,108 @@
 <template>
-    <v-app>
+  <v-app>
     <main>
       <v-content>
-        <pg-toolbar></pg-toolbar>
-        <pg-navbar></pg-navbar>
-
-            <v-container>
-            <v-layout column>
-              <v-flex xs4>
-                <v-card flat class="login-v-card-upper">
-                    <img src="../assets/images/full-logo.png" height="10%" width="10%" align-center>
-                  <div class="login-v-card-upper-toolbar">
-                    <v-toolbar-title class="login-v-card-upper-toolbar-title">Log in to manage your machines!</v-toolbar-title>
-                  </div>
-                </v-card>
-              </v-flex>
-              <v-flex>
-                <v-card flat class="login-v-card">
-                  <v-card-text>
-                    <v-form>
-                      <v-text-field prepend-icon="person" name="username" v-model="input.username" label="Username" type="text"></v-text-field>
-                      <v-text-field prepend-icon="lock" name="password" v-model="input.password" label="Password" id="password" type="password"></v-text-field>
-                    </v-form>
-                  </v-card-text>
-                  <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn v-on:click="login()">Login</v-btn>
-                  </v-card-actions>
-                </v-card>
-              </v-flex>
-            </v-layout>
-          </v-container>
-
-        <pg-footer></pg-footer>
+        <v-container>
+          <v-layout column>
+            <v-flex>
+              <v-card flat class="login-v-card-upper">
+                <img src="../assets/images/full-logo.png" height="10%" width="10%" align-center>
+                <div class="login-v-card-upper-toolbar">
+                  <v-toolbar-title class="login-v-card-upper-toolbar-title">Log in to manage your machines!</v-toolbar-title>
+                </div>
+              </v-card>
+            </v-flex>
+            <v-flex>
+              <v-card flat class="login-v-card">
+                <v-card-text>
+                  <v-form>
+                    <v-text-field 
+                    prepend-icon="person" 
+                    name="username" 
+                    label="Username" 
+                    type="text"
+                    v-model="credentials.username"
+                    :counter="20"
+                    :rules="rules.username"
+                    maxlength="20"
+                    required
+                    >
+                    </v-text-field>
+                    <v-text-field 
+                    prepend-icon="lock" 
+                    name="password" 
+                    label="Password" 
+                    id="password" 
+                    type="password"
+                    v-model="credentials.password"
+                    :counter="20"
+                    :rules="rules.password"
+                    maxlength="20"
+                    required
+                    >
+                      
+                    </v-text-field>
+                  </v-form>
+                </v-card-text>
+                <v-card-actions>
+                  <v-btn block class="login-button" :disabled="!valid" v-on:click="login()">Login</v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-flex>
+          </v-layout>
+        </v-container>
       </v-content>
     </main>
   </v-app>
 </template>
 
 <script>
-    import PgNavbar from './Navbar.vue'
-    import PgFooter from './Footer.vue'
-    import PgToolbar from './Toolbar.vue'
+  import axios from 'axios';
+  import swal from 'sweetalert2';
+  import router from '../router';
 
-    import PGUtil from '../util/util.jsx'
-    import PGConstant from '../util/constant.jsx'
-    import User from '../service/user-service.js'
+  export default {
+    name: 'Login',
 
-    const util = new PGUtil();
-    const user = new User();
-
-    export default {
-        name: 'Login',
-        components: {
-            PgNavbar,
-            PgFooter,
-            PgToolbar
-        },
-        data() {
-            return {
-                input: {
-                    username: "",
-                    password: ""
-                }
-            }
-        },
-
-        methods: {
-            login() {
-
-                let username = this.input.username
-                let password = this.input.password
-
-                if(username != "" && password != "") {
-
-                    let loginInfo = {username, password}
-                    
-                    user.login(loginInfo).then((res) => {
-
-                        util.setStorage('userInfo', res);
-                        window.alert('Login succeeded!');
-                        window.location.href = this.state.redirect;
-
-                    }, (err) => {
-
-                        if (PGConstant.AuthorizedErrorCode === err) {
-                            util.errorTips('Wrong username or password!');
-                        }
-                        else {
-                            // ReferenceError: $ is not defined
-                            window.alert(err);
-                        }
-
-                    });
-
-                // this.$emit("authenticated", true);
-                // this.$router.replace({ name: "secure" });
-                // this.$store.dispatch('login', { email, password })
-                // .then(() => this.$router.push('/'))
-                // .catch(err => console.log(err))
-
-            }
-
-                else {
-                    window.alert('Empty username or password!');
-                }
+    data: () => ({
+        credentials: {},
+        valid: true,
+        loading: false,
+        rules: {
+          username: [
+            v => !!v || "Username is required",
+            v => (v && v.length > 3) || "A username must be more than 3 characters long",
+            v => /^[a-z0-9_]+$/.test(v) || "A username can only contain letters and digits"
+          ],
+          password: [
+            v => !!v || "Password is required",
+            v => (v && v.length > 5) || "The password must be longer than 5 characters"
+          ]
+        }
+    }),
+    methods: {
+        login() {
+          // checking if the input is valid
+            if (this.$refs.form.validate()) {
+              this.loading = true;
+              axios.post('http://localhost:8000/profile/', this.credentials).then(res => {
+                this.$session.start();
+                this.$session.set('token', res.data.token);
+                router.push('/');
+              }).catch(e => {
+                this.loading = false;
+                swal({
+                  type: 'warning',
+                  title: 'Error',
+                  text: 'Wrong username or password',
+                  showConfirmButton:false,
+                  showCloseButton:false,
+                  timer:3000
+                })
+              })
             }
         }
     }
-</script>
+}
+    
+  </script>

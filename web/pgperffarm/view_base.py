@@ -1,5 +1,7 @@
 """Views for the core PGPerfFarm app"""
 
+'''
+
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 
@@ -20,3 +22,4 @@ def licence(request):
 def ppolicy(request):
     return render_to_response('ppolicy.html',
                               context_instance=RequestContext(request))
+'''

@@ -53,7 +53,8 @@ INSTALLED_APPS = (
     'test_records',
     'crispy_forms',
     'user_operation',
-    'asynchronous_send_mail'
+    'asynchronous_send_mail',
+    'pgperffarm'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -139,6 +140,10 @@ AUTH_USER_MODEL = 'users.UserProfile'
 
 REST_FRAMEWORK = {
 
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ],
+
     # 'DEFAULT_PERMISSION_CLASSES': (
     #     'rest_framework.permissions.IsAuthenticated',
     # ),
@@ -213,12 +218,38 @@ CORS_ALLOW_HEADERS = (
 )
 ALLOWED_HOSTS = ['*']
 
+CORS_ORIGIN_WHITELIST = (
+    'localhost:8080',
+    'localhost',
+)
+
 JWT_AUTH = {
     'JWT_RESPONSE_PAYLOAD_HANDLER':
         'users.jwt_handler.jwt_response_payload_handler',
     'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=7200),
     'JWT_AUTH_HEADER_PREFIX': 'Token',
+    'JWT_VERIFY': True,
+    'JWT_VERIFY_EXPIRATION': True,
+    'JWT_LEEWAY': 0,
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=86400),
+    'JWT_ALLOW_REFRESH': True,
+    'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=7),
 }
+
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
+]
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_SSL = True
