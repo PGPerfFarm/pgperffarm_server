@@ -15,7 +15,7 @@
             <v-flex>
               <v-card flat class="login-v-card">
                 <v-card-text>
-                  <v-form>
+                  <v-form ref="form" v-model="valid" lazy-validation>
                     <v-text-field 
                     prepend-icon="person" 
                     name="username" 
@@ -95,9 +95,9 @@
                   type: 'warning',
                   title: 'Error',
                   text: 'Wrong username or password',
-                  showConfirmButton:false,
-                  showCloseButton:false,
-                  timer:3000
+                  showConfirmButton: false,
+                  showCloseButton: false,
+                  timer: 3000
                 })
               })
             }

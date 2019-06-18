@@ -14,33 +14,29 @@
 
 <script>
   import PgPanel from './Panel.vue'
+  import router from '../router'
 
   export default {
     name: 'home',
     components: {
       PgPanel
     },
+
     data() {
-      return {
-        authenticated: false,
-        mockAccount: {
-          username: "nraboy",
-          password: "password"
+    },
+
+    mounted() {
+    this.checkLoggedIn();
+    },
+
+    methods: {
+      checkLoggedIn() {
+        this.$session.start();
+        if (!this.$session.has("token")) {
+          router.push("/auth");
         }
       }
-    },
-    mounted() {
-      if(!this.authenticated) {
-        this.$router.replace({ name: "login" });
-      }
-    },
-    methods: {
-      setAuthenticated(status) {
-        this.authenticated = status;
-      },
-      logout() {
-        this.authenticated = false;
-      }
     }
-  }
+  };
+
 </script>
