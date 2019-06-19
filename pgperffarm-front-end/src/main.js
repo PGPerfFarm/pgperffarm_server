@@ -5,12 +5,13 @@
 
 import Vue from 'vue'
 import router from './router'
-import Axios from 'axios'
-// import VueAxios from 'vue-axios'
+import axios from 'axios'
+
 import Vuetify from 'vuetify'
 import App from './App'
 import VueSession from 'vue-session'
 
+// Vue.prototype.$axios = axios;
 Vue.config.productionTip = false
 
 // setting up Vuetify
@@ -19,16 +20,7 @@ Vue.use(Vuetify)
 import './stylus/main.styl' 
 
 Vue.use(VueSession)
-
-// calling axios via $http
-// setting token to handle requests
-Vue.prototype.$http = Axios;
-const token = localStorage.getItem('token')
-if (token) {
-  Vue.prototype.$http.defaults.headers.common['Authorization'] = token
-}
-
-// Vue.use(Axios)
+Vue.use(axios)
 
 /* eslint-disable no-new */
 new Vue({

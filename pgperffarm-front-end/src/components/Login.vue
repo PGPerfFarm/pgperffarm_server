@@ -45,7 +45,7 @@
                   </v-form>
                 </v-card-text>
                 <v-card-actions>
-                  <v-btn block class="login-button" :disabled="!valid" v-on:click="login()">Login</v-btn>
+                  <v-btn block class="login-button" :disabled="!valid" v-on:click="login">Login</v-btn>
                 </v-card-actions>
               </v-card>
             </v-flex>
@@ -65,7 +65,10 @@
     name: 'Login',
 
     data: () => ({
-        credentials: {},
+        credentials: {
+          username: '',
+          password: '',
+        },
         valid: true,
         loading: false,
         rules: {
@@ -85,12 +88,16 @@
           // checking if the input is valid
             if (this.$refs.form.validate()) {
               this.loading = true;
-              axios.post('http://localhost:8000/profile/', this.credentials).then(res => {
+              console.log("line 89");
+              axios.post('http://localhost:8000/login/', this.credentials).then(res => {
+                console.log("line 91");
                 this.$session.start();
                 this.$session.set('token', res.data.token);
+                console.log("line 93");
                 router.push('/');
               }).catch(e => {
                 this.loading = false;
+                console.log(e);
                 swal({
                   type: 'warning',
                   title: 'Error',

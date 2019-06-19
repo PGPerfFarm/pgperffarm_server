@@ -15,7 +15,7 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 # from django.urls import path
-from rest_framework_jwt.views import obtain_jwt_token
+from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token
 
 from rest_framework.authtoken import views
 from rest_framework.documentation import include_docs_urls
@@ -51,14 +51,14 @@ router.register(r'user-portal', UserPortalInfoViewSet, base_name="user-portal")
 
 urlpatterns = [
     url(r'^perf_farm_admin/', admin.site.urls),
-    # url(r'^admin/', include(admin.site.urls)),
-    url(r'^api-auth/', include('rest_framework.urls')),
-
+    # working, admin view
 
     url(r'^api-token-auth/', views.obtain_auth_token),
+    # not working
 
-    # user login(jwt auth)
+    # user login (jwt auth)
     url(r'^login/', obtain_jwt_token),
+    url(r'^refresh/', refresh_jwt_token),
 
     url(r'^machine-token-auth/', MachineAuthToken.as_view()),
     url(r'^', include(router.urls)),
@@ -66,6 +66,7 @@ urlpatterns = [
     url(r'upload/$', TestRecordCreate, name='test-upload'),
 
     url(r'docs/', include_docs_urls(title='pgperffarm')),
+
     # Static pages
     # url(r'^$', 'pgperffarm.views.index', name='index'),
     # url(r'^/licence$', 'pgperffarm.views.licence', name='licence'),

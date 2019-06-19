@@ -14,7 +14,6 @@
 
 <script>
   import PgPanel from './Panel.vue'
-  import router from '../router'
 
   export default {
     name: 'home',
@@ -32,9 +31,7 @@
     methods: {
       checkLoggedIn() {
         this.$session.start();
-        if (!this.$session.has("token")) {
-          router.push("/auth");
-        }
+        
       }
     }
   };
