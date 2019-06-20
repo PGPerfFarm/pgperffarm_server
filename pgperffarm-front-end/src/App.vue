@@ -21,10 +21,7 @@
 	<v-app>
 		<pg-toolbar></pg-toolbar>
 	    <pg-navbar></pg-navbar>
-	    <login></login>
-	    <!--
 	    <router-view></router-view>
-		-->
 	    <pg-footer></pg-footer>
 	</v-app>
 </template>
@@ -33,7 +30,7 @@
 	import PgNavbar from './components/Navbar.vue'
     import PgFooter from './components/Footer.vue'
     import PgToolbar from './components/Toolbar.vue'
-    import Login from './components/Login.vue'
+    // import Login from './components/Login.vue'
 
 	export default {
 	  name: 'App',
@@ -41,7 +38,7 @@
 	  	PgNavbar,
 	  	PgToolbar,
 	  	PgFooter,
-	  	Login
+	  	//Login
 	  }
 	}
 

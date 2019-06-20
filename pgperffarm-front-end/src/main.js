@@ -5,7 +5,8 @@
 
 import Vue from 'vue'
 import router from './router'
-import axios from 'axios'
+import Axios from 'axios'
+import store  from  './store'
 
 import Vuetify from 'vuetify'
 import App from './App'
@@ -20,12 +21,19 @@ Vue.use(Vuetify)
 import './stylus/main.styl' 
 
 Vue.use(VueSession)
-Vue.use(axios)
+
+// adding Axios to Vue instance
+Vue.prototype.$http = Axios;
+const token = localStorage.getItem('token')
+if (token) {
+    Vue.prototype.$http.defaults.headers.common['Authorization'] = token
+}
 
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
   router,
+  store,
   render: h => h(App),
   components: { App }
 }).$mount('#app')

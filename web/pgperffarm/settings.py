@@ -124,9 +124,11 @@ STATICFILES_DIRS = [
     "static/",
 ]
 
+# ???
 AUTHENTICATION_BACKENDS = (
     'users.views.CustomBackend',
 )
+
 AUTH_USER_MODEL = 'users.UserProfile'
 
 REST_FRAMEWORK = {

@@ -5,7 +5,7 @@
 	>
 		<v-toolbar-items >		      
 			<v-btn flat class="v-btn-navbar">
-		     	<router-link to="/">
+		     	<router-link to="{name: 'Home', params: {id: credentials.username}}">
 		     		<v-icon color="rgb(51, 103, 145)">home</v-icon>
 		     		&nbsp; Home
 		     	</router-link>

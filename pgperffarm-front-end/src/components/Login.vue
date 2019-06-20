@@ -39,13 +39,12 @@
                     :rules="rules.password"
                     maxlength="20"
                     required
-                    >
-                      
+                    > 
                     </v-text-field>
                   </v-form>
                 </v-card-text>
                 <v-card-actions>
-                  <v-btn block class="login-button" :disabled="!valid" v-on:click="login">Login</v-btn>
+                  <v-btn block class="login-button" :disabled="!valid" v-on:click="login()">Login</v-btn>
                 </v-card-actions>
               </v-card>
             </v-flex>
@@ -58,13 +57,14 @@
 
 <script>
   import axios from 'axios';
-  import swal from 'sweetalert2';
-  import router from '../router';
+
+  // curl -d '{"username":"test", "password":"password"}' -H "Content-Type: application/json" -X POST http://localhost:8000/login/
 
   export default {
     name: 'Login',
 
-    data: () => ({
+    data () {
+      return {
         credentials: {
           username: '',
           password: '',
@@ -82,31 +82,56 @@
             v => (v && v.length > 5) || "The password must be longer than 5 characters"
           ]
         }
-    }),
+      }
+    },
+
     methods: {
-        login() {
+      login() {
           // checking if the input is valid
             if (this.$refs.form.validate()) {
               this.loading = true;
-              console.log("line 89");
-              axios.post('http://localhost:8000/login/', this.credentials).then(res => {
-                console.log("line 91");
-                this.$session.start();
-                this.$session.set('token', res.data.token);
-                console.log("line 93");
-                router.push('/');
-              }).catch(e => {
-                this.loading = false;
-                console.log(e);
-                swal({
-                  type: 'warning',
-                  title: 'Error',
-                  text: 'Wrong username or password',
-                  showConfirmButton: false,
-                  showCloseButton: false,
-                  timer: 3000
-                })
-              })
+
+              axios.post(this.$store.state.endpoints.obtainJWT, this.credentials)
+              .then((response) => {
+                    console.log(response);
+                    this.$store.commit('updateToken', response.data.token)
+                    // get and set auth user
+                    const base = {
+                      baseURL: this.$store.state.endpoints.baseUrl,
+                      headers: {
+                      Authorization: `JWT ${this.$store.state.jwt}`,
+                        'Content-Type': 'application/json'
+                      },
+
+                      xhrFields: {
+                          withCredentials: true
+                      }
+                    }
+                  
+                    console.log('line 111');
+                    // fetching the user object
+                    /*
+                    const axiosInstance = axios.create(base)
+                    axiosInstance({
+                      url: "/profile/",
+                      method: "get",
+                      params: {}
+                    })
+                      .then((response) => {
+                        this.$store.commit("setAuthUser",
+                          {authUser: response.data, isAuthenticated: true}
+                        )
+                        this.$router.push('/profile')
+                      })
+                      */
+                  this.$router.push('/profile');
+
+                  })
+                  .catch((error) => {
+                    window.alert("Wrong username or password!");
+                    console.log(error);
+                  })
+            
             }
         }
     }
