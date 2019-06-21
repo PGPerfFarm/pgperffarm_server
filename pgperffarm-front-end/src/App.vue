@@ -9,13 +9,10 @@
 # https?
 
 # todo wip
-# fix pp & license bottom border
-# fix stylus
-# fix routing
-# add help link to homepage
-# fixed homepage and menu bar
+# fix navbar buttons
+# fixed homepage and menu nav
 # machine - status
-# disabled login button?
+# remove extra apps
 
 <template>
 	<v-app>

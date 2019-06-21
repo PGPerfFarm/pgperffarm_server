@@ -11,7 +11,7 @@
             </v-card>
             </v-flex>
           <v-flex>
-            <v-card flat class="pg-v-card">
+            <v-card flat class="pg-v-card-bottom">
                 <v-card-text class="pg-v-card-text-small">
                   <p>
                     <b> The Performance Farm </b> <br>

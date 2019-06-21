@@ -94,37 +94,11 @@
               axios.post(this.$store.state.endpoints.obtainJWT, this.credentials)
               .then((response) => {
                     console.log(response);
-                    this.$store.commit('updateToken', response.data.token)
-                    // get and set auth user
-                    const base = {
-                      baseURL: this.$store.state.endpoints.baseUrl,
-                      headers: {
-                      Authorization: `JWT ${this.$store.state.jwt}`,
-                        'Content-Type': 'application/json'
-                      },
 
-                      xhrFields: {
-                          withCredentials: true
-                      }
-                    }
-                  
-                    console.log('line 111');
-                    // fetching the user object
-                    /*
-                    const axiosInstance = axios.create(base)
-                    axiosInstance({
-                      url: "/profile/",
-                      method: "get",
-                      params: {}
-                    })
-                      .then((response) => {
-                        this.$store.commit("setAuthUser",
-                          {authUser: response.data, isAuthenticated: true}
-                        )
-                        this.$router.push('/profile')
-                      })
-                      */
-                  this.$router.push('/profile');
+                    this.$store.commit('updateToken', response.data.token)
+                    this.$store.commit("setAuthUser", {authUser: response.data.username, isAuthenticated: true})
+
+                    this.$router.push('/profile');
 
                   })
                   .catch((error) => {

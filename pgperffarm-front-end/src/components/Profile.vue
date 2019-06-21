@@ -55,7 +55,17 @@
 
 <script>
 export default {
-  name: 'Profile'
+  name: 'Profile',
+
+  data() {
+  	return {
+  		user: ''
+  	}
+  },
+
+  methods: {
+
+  }
 }
 
 </script>

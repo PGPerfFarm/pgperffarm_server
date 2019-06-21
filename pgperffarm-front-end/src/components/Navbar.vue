@@ -1,11 +1,11 @@
 <template>
 	<v-toolbar 
-	flat 
-	color="white"
+	class="main-navbar"
+	flat
 	>
 		<v-toolbar-items >		      
 			<v-btn flat class="v-btn-navbar">
-		     	<router-link to="{name: 'Home', params: {id: credentials.username}}">
+		     	<router-link to="/">
 		     		<v-icon color="rgb(51, 103, 145)">home</v-icon>
 		     		&nbsp; Home
 		     	</router-link>
