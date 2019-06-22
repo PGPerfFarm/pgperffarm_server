@@ -13,6 +13,9 @@
 # fixed homepage and menu nav
 # machine - status
 # remove extra apps
+# fetching mail?
+# too much recursion error
+# fix scrolling
 
 <template>
 	<v-app>

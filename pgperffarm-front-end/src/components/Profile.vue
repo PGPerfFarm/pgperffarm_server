@@ -45,7 +45,7 @@
       </v-flex>
       <v-flex d-flex fluid>
         <v-card color="white">
-          <v-card-title primary class="title">Welcome back, username</v-card-title>
+          <v-card-title primary class="title">Welcome back, {{ $store.getters.username }}!</v-card-title>
           <v-card-text>table</v-card-text>
         </v-card>
       </v-flex>

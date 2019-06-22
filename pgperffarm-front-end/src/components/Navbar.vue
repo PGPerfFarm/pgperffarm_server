@@ -3,7 +3,7 @@
 	class="main-navbar"
 	flat
 	>
-		<v-toolbar-items >		      
+		<v-toolbar-items>		      
 			<v-btn flat class="v-btn-navbar">
 		     	<router-link to="/">
 		     		<v-icon color="rgb(51, 103, 145)">home</v-icon>
@@ -50,14 +50,28 @@
 			    	</router-link>
 			      </v-list>
 			    </v-menu>
-			    <v-spacer></v-spacer>
-			   <v-btn flat class="v-btn-navbar">
-			   		<router-link to="/login">
-			   			<v-icon color="rgb(51, 103, 145)">input</v-icon>
-			   				&nbsp; Login
+			</v-toolbar-items>
+			<v-spacer></v-spacer>
+			<v-toolbar-items v-if="!$store.getters.authenticated">
+				   <v-btn flat class="v-btn-navbar">
+				   		<router-link to="/login">
+				   			<v-icon color="rgb(51, 103, 145)">input</v-icon>
+				   				&nbsp; Login
+						</router-link>
+					</v-btn>
+	    	</v-toolbar-items>
+	    	<v-toolbar-items v-else>
+	    		<v-btn flat class="v-btn-navbar">
+				   	<router-link to="/profile">
+				   		<v-icon color="rgb(51, 103, 145)">person</v-icon>
+				   			&nbsp; {{ $store.getters.username }} 
 					</router-link>
 				</v-btn>
-    	</v-toolbar-items>
+				<v-btn flat class="v-btn-navbar" v-on:click="logout()">
+					<v-icon color="rgb(51, 103, 145)">highlight_off</v-icon>
+					   	&nbsp; Logout
+				</v-btn>
+	    	</v-toolbar-items>
 	</v-toolbar>
 </template>
 
@@ -65,7 +79,14 @@
 	// import router from '../router'
 
 	export default {
-		name: 'PgNavbar'
+		name: 'PgNavbar',
 
+		methods: {
+		    logout() {
+		    	this.$store.commit('removeToken', this.$store.state);
+		    	this.$router.push("/");
+		    }
+		}
 	}
+
 </script>
