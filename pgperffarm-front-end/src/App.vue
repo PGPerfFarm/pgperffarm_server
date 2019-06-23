@@ -4,18 +4,20 @@
 # run with yarn serve
 
 # todo after website is complete
-# add packages to packages.json
 # fix tabs and spaces
 # https?
 
 # todo wip
-# fix navbar buttons
+# fix navbar buttons hover
 # fixed homepage and menu nav
 # machine - status
-# remove extra apps
+# add farmer - history
 # fetching mail?
 # too much recursion error
 # fix scrolling
+# profile buttons center
+# cards binding profile
+# fixing profile table style
 
 <template>
 	<v-app>

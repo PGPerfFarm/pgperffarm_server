@@ -64,7 +64,7 @@
 	    		<v-btn flat class="v-btn-navbar">
 				   	<router-link to="/profile">
 				   		<v-icon color="rgb(51, 103, 145)">person</v-icon>
-				   			&nbsp; {{ $store.getters.username }} 
+				   			{{ $store.getters.username }} 
 					</router-link>
 				</v-btn>
 				<v-btn flat class="v-btn-navbar" v-on:click="logout()">

@@ -2,12 +2,12 @@
 from __future__ import unicode_literals
 
 from django.contrib import admin
-from asynchronous_send_mail import send_mail
 from django.conf import settings
 # Register your models here.
 from .serializer import UserMachineSerializer
 from .models import UserMachine, UserProfile
 
+# removed mail sending
 
 class UserProfileAdmin(admin.ModelAdmin):
     list_display = ('id', 'username', 'email', 'is_active', 'last_login', )
@@ -35,22 +35,7 @@ class UserMachineAdmin(admin.ModelAdmin):
             if ret['is_success']:
                 success += 1
                 # send email to notice user
-                content = "Greetings,\n\
-\
-The machine you have applied for has been approved.\n\
-Here is the information about it: \n \
-\n \
-alias: %s\n \
-secret: %s\n \
-system: %s\n \
-compiler: %s\n \
-\n \
-Regards,\n \
-PG PERF FARM" % (ret['alias'], ret['secret'], ret['system'], ret['compiler'])
-
-                send_mail('[PG PERF FARM<test mail>]Machine Approval Notice', content, settings.EMAIL_HOST_USER, [ret['email']],
-                          fail_silently=False)
-
+                
             else:
                 error += 1
 

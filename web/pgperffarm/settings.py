@@ -52,8 +52,7 @@ INSTALLED_APPS = (
     'users',
     'test_records',
     'crispy_forms',
-    'user_operation',
-    'asynchronous_send_mail'
+    'user_operation'
 )
 
 MIDDLEWARE = (
@@ -67,9 +66,6 @@ MIDDLEWARE = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
 )
-
-# For backwards compatibility for Django 1.8
-MIDDLEWARE_CLASSES = MIDDLEWARE
 
 ROOT_URLCONF = 'pgperffarm.urls'
 
@@ -88,17 +84,6 @@ TEMPLATES = [
         },
     },
 ]
-
-# PASSWORD_HASHERS = (
-#     'django.contrib.auth.hashers.MD5PasswordHasher',
-#     'django.contrib.auth.hashers.PBKDF2PasswordHasher',
-#     'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
-#     'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
-#     'django.contrib.auth.hashers.BCryptPasswordHasher',
-#     'django.contrib.auth.hashers.SHA1PasswordHasher',
-#
-#     'django.contrib.auth.hashers.CryptPasswordHasher',
-# )
 
 WSGI_APPLICATION = 'pgperffarm.wsgi.application'
 
@@ -135,7 +120,7 @@ REST_FRAMEWORK = {
 
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
-        # 'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.IsAuthenticated',
     ],
 
     # 'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
@@ -147,7 +132,7 @@ REST_FRAMEWORK = {
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
-        # 'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
     ),
 
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
