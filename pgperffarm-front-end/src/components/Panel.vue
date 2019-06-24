@@ -3,7 +3,7 @@
     <v-flex>
     	<v-card flat class="pg-v-card">
         	<v-card-text class="pg-v-card-text-main">
-			Manage your test results!
+			     Manage your test results!
 			</v-card-text>
       </v-card>
   </v-flex>

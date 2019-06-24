@@ -11,8 +11,10 @@
 		     	</router-link>
 		     </v-btn>
 		     <v-btn flat class="v-btn-navbar">
-		     	<v-icon color="rgb(51, 103, 145)">dns</v-icon>
-		     	 &nbsp; Machine
+		     	<router-link to="/machines">
+		     		<v-icon color="rgb(51, 103, 145)">dns</v-icon>
+		     	 	&nbsp; Machines
+		     	</router-link>
 		     </v-btn>
 		     <v-btn flat class="v-btn-navbar">
 		     	<v-icon color="rgb(51, 103, 145)">list</v-icon>
