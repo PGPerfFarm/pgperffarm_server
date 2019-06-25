@@ -7,13 +7,12 @@
       <v-card flat class="pg-v-card">
         <v-card-text class="pg-v-card-text-main">
             Machines list
-            <v-btn block v-on:click="getMachines()">Get machines</v-btn>
         </v-card-text>
       </v-card>
   </v-flex>
   <v-flex>
       <v-card flat class="pg-v-card">
-            <v-card-title class="table-title">Shown here is the latest status of each farm member for each branch it has reported on in the last 30 days. Use the farm member link for history of that member on the relevant branch.
+            <v-card-title class="table-title">Shown here is the machine list, along with a summary of relevant information.
               <v-spacer></v-spacer>
               <v-text-field
                 v-model="search"
@@ -31,15 +30,18 @@
                 :items="machines"
                 :pagination.sync="pagination"
                 :search="search"
+                :loading="loading"
                 select-all
                 item-key="alias"
                 class="elevation-1"
               >
+              <!--
               <template v-slot:no-data>
                 <v-alert :value="true" color="error" icon="warning">
                   Sorry, nothing to display here :(
                 </v-alert>
               </template>
+                -->
               <template v-slot:no-results>
                 <v-alert :value="true" color="error" icon="warning">
                   Your search for "{{ search }}" found no results.
@@ -64,7 +66,6 @@
                     <td class="profile-td">{{ props.item.system }}</td>
                     <td class="profile-td">{{ props.item.state }}</td>
                     <td class="profile-td">{{ props.item.latest }}</td>
-                    <td class="profile-td">{{ props.item.history }}</td>
                     <td class="profile-td">{{ props.item.addDate }}</td>
                   </tr>
                 </template>
@@ -85,11 +86,24 @@ import axios from 'axios';
 export default {
   name: 'Machines',
 
-   data () {
+  data: () => ({
+      search: '',
+      loading: true,
+      pagination: {
+        sortBy: 'name'
+      },
 
-      return {
-      }
-  },
+      headers: [
+        { text: 'Alias', align: 'left', value: 'alias' },
+        { text: 'System', value: 'system' },
+        { text: 'State', value: 'state' },
+        { text: 'Latest', value: 'latest' },
+        { text: 'Add date', value: 'addDate' }
+      ],
+
+      machines: [],
+        
+  }),
 
   computed: {
     // fix this
@@ -104,10 +118,6 @@ export default {
 
 
   methods: {
-    logout() {
-        this.$store.commit('removeToken', this.$store.state);
-        this.$router.push("/");
-    },
 
     toggleAll() {
         if (this.selected.length) this.selected = []
@@ -127,11 +137,33 @@ export default {
     getMachines() {
        axios.get(this.$store.state.endpoints.machines)
         .then((response) => {
+
+          for(var i = 0; i < response.data.count; i++) {
+
+            console.log(response.data.results[i].lastest);
+
+            var lastest = '';
+
+            if (response.data.results[i].lastest.length > 0)
+              lastest = response.data.results[i].lastest[0].branch;
+
+            var machine = {
+              alias: response.data.results[i].alias,
+              system: response.data.results[i].os_name + ' ' + response.data.results[i].os_version,
+              state: response.data.results[i].state,
+              latest: lastest,
+              addDate: response.data.results[i].add_time.substring(0, 10)
+            };
+
+            this.machines.push(machine);
+          }
+
+          this.loading = false;
+
           // alias = response.data.results[0].alias
           // system = response.data.results[0].os_name + os_version
           // state = state
           // latest = [] / 
-          // history = link todo
           // addDate = add_time (fetch date)
           console.log(response)
         })
@@ -139,7 +171,12 @@ export default {
           console.log(error);
         })
     }
+  },
+
+  mounted() {
+    this.getMachines();
   }
+
 }
 
 </script>

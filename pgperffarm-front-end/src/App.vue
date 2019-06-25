@@ -10,14 +10,18 @@
 # todo wip
 # fix navbar buttons hover
 # fixed homepage and menu nav
-# machine - status
-# add farmer - history
+# status
+# add farmer
+# machine page
+# results page
 # fetching mail?
 # too much recursion error
 # fix scrolling
 # profile buttons center
 # cards binding profile
 # fixing profile table style
+
+# just keep the last 5 branches
 
 <template>
 	<v-app>

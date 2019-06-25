@@ -93,7 +93,6 @@
                     <td class="profile-td">{{ props.item.system }}</td>
                     <td class="profile-td">{{ props.item.state }}</td>
                     <td class="profile-td">{{ props.item.latest }}</td>
-                    <td class="profile-td">{{ props.item.history }}</td>
                     <td class="profile-td">{{ props.item.addDate }}</td>
                   </tr>
                 </template>
@@ -121,7 +120,6 @@ export default {
         { text: 'System', value: 'system' },
         { text: 'State', value: 'state' },
         { text: 'Latest', value: 'latest' },
-        { text: 'History', value: 'history' },
         { text: 'Add date', value: 'addDate' }
       ],
 
@@ -131,7 +129,6 @@ export default {
           system: 'Debian 9',
           state: 'active',
           latest: 'head',
-          history: 'link',
           addDate: '2018-80-10'
         }
       ]

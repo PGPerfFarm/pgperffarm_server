@@ -17,8 +17,11 @@
 		     	</router-link>
 		     </v-btn>
 		     <v-btn flat class="v-btn-navbar">
+		     	<router-link to="/status">
 		     	<v-icon color="rgb(51, 103, 145)">list</v-icon>
-		     	 &nbsp; Status</v-btn>
+		     	 &nbsp; Status
+		     	</router-link>
+		     	</v-btn>
 		     <v-menu open-on-hover bottom offset-y>
 		      	<template v-slot:activator="{ on }">
 			    	<v-btn flat v-on="on" class="v-btn-navbar">
