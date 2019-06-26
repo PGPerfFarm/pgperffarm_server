@@ -149,7 +149,7 @@ export default {
 
             var machine = {
               alias: response.data.results[i].alias,
-              system: response.data.results[i].os_name + ' ' + response.data.results[i].os_version,
+              system: response.data.results[i].os_name + ' ' + response.data.results[i].os_version + ' ' + response.data.results[i].comp_version,
               state: response.data.results[i].state,
               latest: lastest,
               addDate: response.data.results[i].add_time.substring(0, 10)
@@ -159,13 +159,7 @@ export default {
           }
 
           this.loading = false;
-
-          // alias = response.data.results[0].alias
-          // system = response.data.results[0].os_name + os_version
-          // state = state
-          // latest = [] / 
-          // addDate = add_time (fetch date)
-          console.log(response)
+          
         })
         .catch((error) => {
           console.log(error);

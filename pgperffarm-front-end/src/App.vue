@@ -6,11 +6,11 @@
 # todo after website is complete
 # fix tabs and spaces
 # https?
+# responsiveness on mobile
 
 # todo wip
 # fix navbar buttons hover
 # fixed homepage and menu nav
-# status
 # add farmer
 # machine page
 # results page
@@ -21,7 +21,7 @@
 # cards binding profile
 # fixing profile table style
 
-# just keep the last 5 branches
+# just keep 9.5 and after
 
 <template>
 	<v-app>
