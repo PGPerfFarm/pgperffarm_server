@@ -140,8 +140,6 @@ export default {
 
           for(var i = 0; i < response.data.count; i++) {
 
-            console.log(response.data.results[i].lastest);
-
             var lastest = '';
 
             if (response.data.results[i].lastest.length > 0)
@@ -159,7 +157,7 @@ export default {
           }
 
           this.loading = false;
-          
+
         })
         .catch((error) => {
           console.log(error);

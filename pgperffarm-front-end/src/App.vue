@@ -6,6 +6,7 @@
 # todo after website is complete
 # fix tabs and spaces
 # https?
+# fix cors headers same origin
 # responsiveness on mobile
 
 # todo wip
