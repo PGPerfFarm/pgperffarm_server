@@ -27,16 +27,19 @@
 					  			<v-expansion-panel
 								  expand
 								  v-model="panel">
-					    			<v-expansion-panel-content class="status-content">
+					    			<v-expansion-panel-content 
+					    			 class="status-content"
+					    			 v-for="(item, i) in branches"
+      								 :key="i">
 						      			<template v-slot:header>
-						      				<div class="panel-div">Head</div>
+						      				<div class="panel-div"> {{ item }} </div>
 						      			</template>
 						      			<v-card>
 						        			<template>
 							              		<v-data-table
 							              		 hide-actions
 								                 :headers="headers"
-								                 :items="machines_head"
+								                 :items="machines[item]"
 								                 :pagination.sync="pagination"
 								                 :search="search"
 								                 :loading="loading"
@@ -44,192 +47,11 @@
 								                 item-key="alias"
 								                 class="elevation-1"
 								              	>
-									            <!--
 									            <template v-slot:no-data>
 									                <v-alert :value="true" color="error" icon="warning">
 									                	Sorry, nothing to display here :(
 									                </v-alert>
 									            </template>
-									            -->
-							             			<template v-slot:no-results>
-							                			<v-alert :value="true" color="error" icon="warning">
-							                  				Your search for "{{ search }}" found no results.
-							                			</v-alert>
-							              			</template>
-							              			<template v-slot:headers="props">
-							                  			<tr>
-							                    			<th class="profile-th"
-							                     				v-for="header in props.headers"
-							                      				:key="header.text"
-							                      				:class="['column sortable', header.value === pagination.sortBy ? 'active' : '']"
-							                      				@click="changeSort(header.value)"
-							                    			>
-							                      				<v-icon small>arrow_upward</v-icon>
-							                      				{{ header.text }}
-							                    			</th>
-							                  			</tr>
-							                		</template>
-							                		<template v-slot:items="props">
-							                  			<tr>
-										                	<td class="profile-td">{{ props.item.alias }}</td>
-										                    <td class="profile-td">{{ props.item.system }}</td>
-										                    <td class="profile-td">{{ props.item.trending.improvement }}</td>
-										                    <td class="profile-td">{{ props.item.trending.status_quo }}</td>
-										                    <td class="profile-td">{{ props.item.trending.regression }}</td>
-										                    <td class="profile-td">{{ props.item.detail }}</td>
-										                    <td class="profile-td">
-										                    	<a :href=props.item.commit target="_blank"> <u>{{ props.item.commit.substring(63, 70) }} </u></a>
-										                    </td>
-										                    <td class="profile-td">{{ props.item.date }}</td>
-							                  			</tr>
-							                		</template>
-							              		</v-data-table>
-	            							</template>
-						      			</v-card>
-					    			</v-expansion-panel-content>
-					    			<v-expansion-panel-content class="status-content">
-						      			<template v-slot:header>
-						      				<div class="panel-div">10 stable</div>
-						      			</template>
-						      			<v-card>
-						        			<template>
-							              		<v-data-table
-							              		 hide-actions
-								                 :headers="headers"
-								                 :items="machines_10"
-								                 :pagination.sync="pagination"
-								                 :search="search"
-								                 :loading="loading"
-								                 select-all
-								                 item-key="alias"
-								                 class="elevation-1"
-								              	>
-									            <!--
-									            <template v-slot:no-data>
-									                <v-alert :value="true" color="error" icon="warning">
-									                	Sorry, nothing to display here :(
-									                </v-alert>
-									            </template>
-									            -->
-							             			<template v-slot:no-results>
-							                			<v-alert :value="true" color="error" icon="warning">
-							                  				Your search for "{{ search }}" found no results.
-							                			</v-alert>
-							              			</template>
-							              			<template v-slot:headers="props">
-							                  			<tr>
-							                    			<th class="profile-th"
-							                     				v-for="header in props.headers"
-							                      				:key="header.text"
-							                      				:class="['column sortable', header.value === pagination.sortBy ? 'active' : '']"
-							                      				@click="changeSort(header.value)"
-							                    			>
-							                      				<v-icon small>arrow_upward</v-icon>
-							                      				{{ header.text }}
-							                    			</th>
-							                  			</tr>
-							                		</template>
-							                		<template v-slot:items="props">
-							                  			<tr>
-										                	<td class="profile-td">{{ props.item.alias }}</td>
-										                    <td class="profile-td">{{ props.item.system }}</td>
-										                    <td class="profile-td">{{ props.item.trending.improvement }}</td>
-										                    <td class="profile-td">{{ props.item.trending.status_quo }}</td>
-										                    <td class="profile-td">{{ props.item.trending.regression }}</td>
-										                    <td class="profile-td">{{ props.item.detail }}</td>
-										                    <td class="profile-td">
-										                    	<a :href=props.item.commit target="_blank"><u> {{ props.item.commit.substring(63, 70) }} </u></a>
-										                    </td>
-										                    <td class="profile-td">{{ props.item.date }}</td>
-							                  			</tr>
-							                		</template>
-							              		</v-data-table>
-	            							</template>
-						      			</v-card>
-					    			</v-expansion-panel-content>
-					    			<v-expansion-panel-content class="status-content">
-						      			<template v-slot:header>
-						      				<div class="panel-div">9.6 stable</div>
-						      			</template>
-						      			<v-card>
-						        			<template>
-							              		<v-data-table
-							              		 hide-actions
-								                 :headers="headers"
-								                 :items="machines_9_6"
-								                 :pagination.sync="pagination"
-								                 :search="search"
-								                 :loading="loading"
-								                 select-all
-								                 item-key="alias"
-								                 class="elevation-1"
-								              	>
-									            <!--
-									            <template v-slot:no-data>
-									                <v-alert :value="true" color="error" icon="warning">
-									                	Sorry, nothing to display here :(
-									                </v-alert>
-									            </template>
-									            -->
-							             			<template v-slot:no-results>
-							                			<v-alert :value="true" color="error" icon="warning">
-							                  				Your search for "{{ search }}" found no results.
-							                			</v-alert>
-							              			</template>
-							              			<template v-slot:headers="props">
-							                  			<tr>
-							                    			<th class="profile-th"
-							                     				v-for="header in props.headers"
-							                      				:key="header.text"
-							                      				:class="['column sortable', header.value === pagination.sortBy ? 'active' : '']"
-							                      				@click="changeSort(header.value)"
-							                    			>
-							                      				<v-icon small>arrow_upward</v-icon>
-							                      				{{ header.text }}
-							                    			</th>
-							                  			</tr>
-							                		</template>
-							                		<template v-slot:items="props">
-							                  			<tr>
-										                	<td class="profile-td">{{ props.item.alias }}</td>
-										                    <td class="profile-td">{{ props.item.system }}</td>
-										                    <td class="profile-td">{{ props.item.trending.improvement }}</td>
-										                    <td class="profile-td">{{ props.item.trending.status_quo }}</td>
-										                    <td class="profile-td">{{ props.item.trending.regression }}</td>
-										                    <td class="profile-td">{{ props.item.detail }}</td>
-										                    <td class="profile-td">
-										                    	<a :href=props.item.commit target="_blank"> <u>{{ props.item.commit.substring(63, 70) }} </u></a>
-										                    </td>
-										                    <td class="profile-td">{{ props.item.date }}</td>
-							                  			</tr>
-							                		</template>
-							              		</v-data-table>
-	            							</template>
-						      			</v-card>
-					    			</v-expansion-panel-content>
-					    			<v-expansion-panel-content class="status-content">
-						      			<template v-slot:header>
-						      				<div class="panel-div">9.5 stable</div>
-						      			</template>
-						      			<v-card>
-						        			<template>
-							              		<v-data-table
-							              		 hide-actions
-								                 :headers="headers"
-								                 :items="machines_9_5"
-								                 :search="search"
-								                 :loading="loading"
-								                 select-all
-								                 item-key="alias"
-								                 class="elevation-1"
-								              	>
-									            <!--
-									            <template v-slot:no-data>
-									                <v-alert :value="true" color="error" icon="warning">
-									                	Sorry, nothing to display here :(
-									                </v-alert>
-									            </template>
-									            -->
 							             			<template v-slot:no-results>
 							                			<v-alert :value="true" color="error" icon="warning">
 							                  				Your search for "{{ search }}" found no results.
@@ -304,10 +126,13 @@
 		        { text: 'Date', value: 'date' }
       		],
 
-			machines_head: [],
-			machines_10: [],
-			machines_9_6: [],
-			machines_9_5: [],
+      		machines: {
+			'Head': [],
+			'10 stable': [],
+			'9.6 stable': [],
+			'9.5 stable': []
+			}
+
 		}),
 
 		methods: {
@@ -358,19 +183,19 @@
 		        		};
 
 		        		if (response.data.results[i].branch == 'HEAD') {
-		        			this.machines_head.push(machine);
+		        			this.machines['head'].push(machine);
 		        		}
 
 		        		else if (response.data.results[i].branch == 'REL_10_STABLE') {
-		        			this.machines_10.push(machine);
+		        			this.machines['10 stable'].push(machine);
 		        		}
 
 		        		else if (response.data.results[i].branch == 'REL_9_6_STABLE') {
-		        			this.machines_9_6.push(machine);
+		        			this.machines['9.6 stable'].push(machine);
 		        		}
 
 		        		else if (response.data.results[i].branch == 'REL_9_5_STABLE') {
-		        			this.machines_9_5.push(machine);
+		        			this.machines['9.5 stable'].push(machine);
 		        		}
 
 		        		this.loading = false;
