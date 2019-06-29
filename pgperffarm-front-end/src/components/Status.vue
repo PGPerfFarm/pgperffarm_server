@@ -183,7 +183,7 @@
 		        		};
 
 		        		if (response.data.results[i].branch == 'HEAD') {
-		        			this.machines['head'].push(machine);
+		        			this.machines['Head'].push(machine);
 		        		}
 
 		        		else if (response.data.results[i].branch == 'REL_10_STABLE') {

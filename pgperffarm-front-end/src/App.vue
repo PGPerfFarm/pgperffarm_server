@@ -21,6 +21,7 @@
 # profile buttons center
 # cards binding profile
 # fixing profile table style
+# fix table pagination and sorting
 
 # just keep 9.5 and after
 

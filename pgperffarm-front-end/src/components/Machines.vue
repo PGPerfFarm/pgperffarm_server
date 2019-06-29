@@ -62,7 +62,7 @@
                 </template>
                 <template v-slot:items="props">
                   <tr>
-                    <td class="profile-td">{{ props.item.alias }}</td>
+                    <td class="profile-td"> <router-link :to="{path: '/machine/'+ props.item.alias }"> {{ props.item.alias }} </router-link></td>
                     <td class="profile-td">{{ props.item.system }}</td>
                     <td class="profile-td">{{ props.item.state }}</td>
                     <td class="profile-td">{{ props.item.latest }}</td>
