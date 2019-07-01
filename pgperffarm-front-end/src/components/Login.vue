@@ -96,7 +96,7 @@
                     console.log(response);
 
                     this.$store.commit('updateToken', response.data.token)
-                    this.$store.commit("setAuthUser", {authUser: response.data.username, isAuthenticated: true})
+                    this.$store.commit('setAuthUser', {authUser: response.data.username, isAuthenticated: true})
 
                     this.$router.push('/profile');
 

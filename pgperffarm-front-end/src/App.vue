@@ -12,18 +12,14 @@
 # todo wip
 # fix navbar buttons hover
 # fixed homepage and menu nav
-# add farmer
-# machine page
 # results page
-# fetching mail?
+# fetching mail from profile
 # too much recursion error
 # fix scrolling
 # profile buttons center
 # cards binding profile
 # fixing profile table style
 # fix table pagination and sorting
-
-# just keep 9.5 and after
 
 <template>
 	<v-app>
