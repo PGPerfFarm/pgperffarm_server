@@ -6,14 +6,14 @@
               <v-flex d-flex xs12>
               	<v-layout column>
 	                <v-card flat class="profile-left-top">
-	                  <v-card-title>Your information</v-card-title>
+	                  <v-card-title><v-icon color="rgb(51, 103, 145)">person</v-icon>Your information</v-card-title>
 	                </v-card>
 	                <v-card flat class="profile-left-bottom">
 	                	<v-card-text>
-                      Total reports: <br>
-	                		N. machine(s): <br>
-	                		N. branch(es) involved: <br>
-	                		mail@mail.com
+                      <v-icon color="rgb(51, 103, 145)">archive</v-icon> &nbsp; Total reports: {{ $store.getters.reports }} <br>
+	                		<v-icon color="rgb(51, 103, 145)">computer</v-icon> &nbsp; N. machine(s): {{ $store.getters.machines }} <br>
+	                		<v-icon color="rgb(51, 103, 145)">format_list_bulleted</v-icon> &nbsp; N. branch(es) involved: {{ $store.getters.branches }}<br>
+	                		<v-icon color="rgb(51, 103, 145)">email</v-icon> &nbsp; {{ $store.getters.email }}
 	                	</v-card-text>
 	                </v-card>
             	</v-layout>
@@ -22,25 +22,30 @@
               	<v-layout column>
 	                <v-card flat class="profile-left-top"
 	                >
-	                  <v-card-title>Shortcuts</v-card-title>
+	                  <v-card-title><v-icon color="rgb(51, 103, 145)">bookmark</v-icon>Shortcuts</v-card-title>
                   </v-card>
                   <v-card flat class="profile-left-bottom">
                     <v-card-actions>
                     <v-btn block flat class="profile-button">
                   <router-link to="/addmachine">
-                   Add a new machine
+                    <v-icon color="rgb(51, 103, 145)">add</v-icon>
+                    Add a new machine
                   </router-link>
                   </v-btn>
                     </v-card-actions>
                     <v-card-actions>
                     <v-btn block flat class="profile-button">
                   <router-link to="/profile">
-                   My machines
+                    <v-icon color="rgb(51, 103, 145)">view_stream</v-icon>
+                    My machines
                   </router-link>
                   </v-btn>
                     </v-card-actions>
                     <v-card-actions>
-                    <v-btn block flat class="profile-button" v-on:click="logout()">Logout</v-btn>
+                    <v-btn block flat class="profile-button" v-on:click="logout()">
+                      <v-icon color="rgb(51, 103, 145)">arrow_back</v-icon>
+                      &nbsp; Logout
+                    </v-btn>
                 </v-card-actions>
 	             </v-card>
 	            </v-layout>

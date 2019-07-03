@@ -20,6 +20,8 @@
 # cards binding profile
 # fixing profile table style
 # fix table pagination and sorting
+# add n. branches to profile
+# avatars?
 
 <template>
 	<v-app>

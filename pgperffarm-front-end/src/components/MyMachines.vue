@@ -61,9 +61,11 @@
 
 <script>
 
+  import axios from 'axios';
+
   export default {
   name: 'MyMachines',
-data: () => ({
+  data: () => ({
       search: '',
       pagination: {
         sortBy: 'name'
@@ -77,15 +79,7 @@ data: () => ({
         { text: 'Add date', value: 'addDate' }
       ],
 
-      machines: [
-        {
-          alias: 'Dandelion',
-          system: 'Debian 9',
-          state: 'active',
-          latest: 'head',
-          addDate: '2018-80-10'
-        }
-      ]
+      machines: [],
   }),
 
   methods: {
@@ -103,8 +97,62 @@ data: () => ({
           this.pagination.sortBy = column
           this.pagination.descending = false
         }
+    },
+
+    getMachines() {
+      // reports, machines, branches
+
+      axios.defaults.headers.common["Authorization"] = 'Token ' + this.$store.getters.token;
+
+      var url = this.$store.state.endpoints.my_machine + '?page=1&machine_owner__username=' + this.$store.getters.username;
+
+      axios.get(url)
+        .then((response) => {
+
+          var info = {
+              reports: 0,
+              machines: response.data.count,
+              branches: 0,
+              email: ''
+          }
+
+          for(var i = 0; i < response.data.count; i++) {
+
+            var lastest = '';
+
+            if (response.data.results[i].lastest.length > 0) {
+              lastest = response.data.results[i].lastest[0].branch;
+              info.email = response.data.results[i].lastest[0].machine_info.owner.email;
+            }
+
+            var machine = {
+              alias: response.data.results[i].alias,
+              system: response.data.results[i].os_name + ' ' + response.data.results[i].os_version + ' ' + response.data.results[i].comp_version,
+              state: response.data.results[i].state,
+              latest: lastest,
+              addDate: response.data.results[i].add_time.substring(0, 10)
+            };
+
+            info.reports += response.data.results[i].reports;
+
+            this.machines.push(machine);
+          }
+
+          this.$store.commit('setProfile', info);
+
+          this.loading = false;
+
+        })
+        .catch((error) => {
+          console.log(error);
+        })
     }
+  },
+
+  mounted() {
+    this.getMachines();
   }
+
 }
 
 </script>
