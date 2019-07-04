@@ -8,12 +8,11 @@
 # https?
 # fix cors headers same origin
 # responsiveness on mobile
+# avatars?
 
 # todo wip
 # fix navbar buttons hover
 # fixed homepage and menu nav
-# results page
-# fetching mail from profile
 # too much recursion error
 # fix scrolling
 # profile buttons center
@@ -21,7 +20,8 @@
 # fixing profile table style
 # fix table pagination and sorting
 # add n. branches to profile
-# avatars?
+# status in the last 30 days
+# add machine link to profile and status
 
 <template>
 	<v-app>

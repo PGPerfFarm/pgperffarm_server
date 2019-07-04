@@ -77,7 +77,9 @@
 										                    <td class="profile-td">{{ props.item.trending.improvement }}</td>
 										                    <td class="profile-td">{{ props.item.trending.status_quo }}</td>
 										                    <td class="profile-td">{{ props.item.trending.regression }}</td>
-										                    <td class="profile-td">{{ props.item.detail }}</td>
+										                    <td class="profile-td"><router-link :to="{path: props.item.detail}">
+										                    	<v-icon color="rgb(51, 103, 145)">link</v-icon>
+                    											Link</router-link></td>
 										                    <td class="profile-td">
 										                    	<a :href=props.item.commit target="_blank"> <u>{{ props.item.commit.substring(63, 70) }} </u></a>
 										                    </td>
@@ -176,7 +178,7 @@
 		        				status_quo: response.data.results[i].trend.quo,
 		        				regression: response.data.results[i].trend.regressive
 		        			},	
-		        			detail: 'link',
+		        			detail: '/records/' + response.data.results[i].uuid,
 		        			commit: commit_url + response.data.results[i].commit,
 		        			date: response.data.results[i].add_time.substring(0, 10) + ' ' + response.data.results[i].add_time.substring(11, 16)
 

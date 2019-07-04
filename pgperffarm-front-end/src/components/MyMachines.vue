@@ -50,7 +50,11 @@
                     <td class="profile-td">{{ props.item.alias }}</td>
                     <td class="profile-td">{{ props.item.system }}</td>
                     <td class="profile-td">{{ props.item.state }}</td>
-                    <td class="profile-td">{{ props.item.latest }}</td>
+                    <td class="profile-td">
+                        <router-link :to="{path: props.item.uuid}">
+                            {{ props.item.latest }}
+                        </router-link>
+                    </td>
                     <td class="profile-td">{{ props.item.addDate }}</td>
                   </tr>
                 </template>
@@ -119,10 +123,12 @@
           for(var i = 0; i < response.data.count; i++) {
 
             var lastest = '';
+            var uuid = '';
 
             if (response.data.results[i].lastest.length > 0) {
               lastest = response.data.results[i].lastest[0].branch;
               info.email = response.data.results[i].lastest[0].machine_info.owner.email;
+              uuid = '/records/' + response.data.results[i].lastest[0].uuid;
             }
 
             var machine = {
@@ -130,6 +136,7 @@
               system: response.data.results[i].os_name + ' ' + response.data.results[i].os_version + ' ' + response.data.results[i].comp_version,
               state: response.data.results[i].state,
               latest: lastest,
+              uuid: uuid,
               addDate: response.data.results[i].add_time.substring(0, 10)
             };
 

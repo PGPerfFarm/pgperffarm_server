@@ -65,7 +65,10 @@
                     <td class="profile-td"> <router-link :to="{path: '/machine/'+ props.item.alias }"> {{ props.item.alias }} </router-link></td>
                     <td class="profile-td">{{ props.item.system }}</td>
                     <td class="profile-td">{{ props.item.state }}</td>
-                    <td class="profile-td">{{ props.item.latest }}</td>
+                    <td class="profile-td">
+                      <router-link :to="{path: props.item.uuid}">
+                    {{ props.item.latest }}</router-link>
+                  </td>
                     <td class="profile-td">{{ props.item.addDate }}</td>
                   </tr>
                 </template>
@@ -141,15 +144,19 @@ export default {
           for(var i = 0; i < response.data.count; i++) {
 
             var lastest = '';
+            var uuid = '';
 
-            if (response.data.results[i].lastest.length > 0)
+            if (response.data.results[i].lastest.length > 0) {
               lastest = response.data.results[i].lastest[0].branch;
+              uuid = '/records/' + response.data.results[i].lastest[0].uuid;
+            }
 
             var machine = {
               alias: response.data.results[i].alias,
               system: response.data.results[i].os_name + ' ' + response.data.results[i].os_version + ' ' + response.data.results[i].comp_version,
               state: response.data.results[i].state,
               latest: lastest,
+              uuid: uuid,
               addDate: response.data.results[i].add_time.substring(0, 10)
             };
 
