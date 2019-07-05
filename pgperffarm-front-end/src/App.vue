@@ -22,6 +22,7 @@
 # add n. branches to profile
 # status in the last 30 days
 # add machine link to profile and status
+# add report link to single machine page
 
 <template>
 	<v-app>
