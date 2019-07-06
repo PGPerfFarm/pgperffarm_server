@@ -47,7 +47,7 @@
                 </template>
                 <template v-slot:items="props">
                   <tr>
-                    <td class="profile-td">{{ props.item.alias }}</td>
+                    <td class="profile-td"> <router-link :to="{path: '/machine/'+ props.item.alias }"> {{ props.item.alias }} </router-link></td>
                     <td class="profile-td">{{ props.item.system }}</td>
                     <td class="profile-td">{{ props.item.state }}</td>
                     <td class="profile-td">
@@ -113,6 +113,8 @@
       axios.get(url)
         .then((response) => {
 
+          var branches = [];
+
           var info = {
               reports: 0,
               machines: response.data.count,
@@ -129,6 +131,7 @@
               lastest = response.data.results[i].lastest[0].branch;
               info.email = response.data.results[i].lastest[0].machine_info.owner.email;
               uuid = '/records/' + response.data.results[i].lastest[0].uuid;
+              branches.push(response.data.results[i].lastest[0].branch);
             }
 
             var machine = {
@@ -144,6 +147,8 @@
 
             this.machines.push(machine);
           }
+
+          info.branches = new Set(branches).size;
 
           this.$store.commit('setProfile', info);
 

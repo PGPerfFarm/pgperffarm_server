@@ -88,11 +88,15 @@
                                   <template v-slot:items="props">
                                       <tr>
                                       <td class="profile-td">{{ props.item.alias }}</td>
-                                        <td class="profile-td">{{ props.item.system }}</td>
                                         <td class="profile-td">{{ props.item.trending.improvement }}</td>
                                         <td class="profile-td">{{ props.item.trending.status_quo }}</td>
                                         <td class="profile-td">{{ props.item.trending.regression }}</td>
-                                        <td class="profile-td">{{ props.item.detail }}</td>
+                                        <td class="profile-td">
+                                          <router-link v-if="props.item.detail != ''" :to="{path: props.item.detail}">
+                                            <v-icon color="rgb(51, 103, 145)">link</v-icon>
+                                            Link
+                                          </router-link>
+                                        </td>
                                         <td class="profile-td">
                                           <a :href=props.item.commit target="_blank"> <u>{{ props.item.commit.substring(63, 70) }} </u></a>
                                         </td>
@@ -126,7 +130,6 @@
 
       headers: [
             { text: 'Alias', align: 'left', value: 'alias', sortable: true },
-            { text: 'System', value: 'system' },
             { text: 'Improvement', value: 'improvement'},
             { text: 'Status quo', value: 'status_quo'},
             { text: 'Regression', value: 'regression'},
@@ -147,7 +150,7 @@
       owner: '',
       os: '',
       compiler: '',
-      serial_number: ''
+      serial_number: '',
 
     }),
 
@@ -159,13 +162,21 @@
             axios.get(this.$store.state.endpoints.machine)
             .then((response) => {
 
+              var detail = '';
+
               axios.get(this.$store.state.endpoints.machines)
               .then((response) => {
 
                 for(var i = 0; i < response.data.count; i++)
-                  if (response.data.results[i].alias == machine_name)
+                  if (response.data.results[i].alias == machine_name) {
                     this.serial_number = response.data.results[i].machine_sn;
+                    if (response.data.results[i].lastest.length > 0)
+                      detail = '/records/' + response.data.results[i].lastest[0].uuid;
+                  }
+
               });
+
+              console.log(detail);
 
               var commit_url = 'https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=';
 
@@ -191,10 +202,9 @@
                       status_quo: response.data.results[i].trend.quo,
                       regression: response.data.results[i].trend.regressive
                     },  
-                    detail: 'link',
+                    detail: detail,
                     commit: commit_url + response.data.results[i].commit,
                     date: response.data.results[i].add_time.substring(0, 10) + ' ' + response.data.results[i].add_time.substring(11, 16)
-
                   };
 
                   if (response.data.results[i].branch == 'HEAD') {
