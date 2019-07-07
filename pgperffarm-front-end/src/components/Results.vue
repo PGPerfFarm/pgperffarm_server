@@ -73,7 +73,29 @@
 	                 	<!-- progress -->
 	                  	<v-tab-item>
 	                    	<v-card flat>
-	                      		<v-card-title> aaas </v-card-title>
+	                      		<v-card-title> Progress for each test </v-card-title>
+	                      		<v-container>
+		                      		<v-layout row>
+		                      			<v-container>
+				                      		<v-layout column>
+				                      			<v-flex v-for="(item, i) in this.ro" v-bind:key="item">
+				                      				<v-card flat>
+				                      					<results-table v-bind="data"></results-table>
+				                      				</v-card>
+				                      			</v-flex>
+				                      		</v-layout>
+			                      		</v-container>
+			                      		<v-container>
+				                      		<v-layout column>
+				                      			<v-flex v-for="(item, i) in this.rw" v-bind:key="item">
+				                      				<v-card flat>
+				                      					<results-table></results-table>
+				                      				</v-card>
+				                      			</v-flex>
+				                      		</v-layout>
+			                      		</v-container>
+		                      		</v-layout>
+	                      	</v-container>
 	                    	</v-card>
 	                  	</v-tab-item>
 
@@ -197,7 +219,15 @@
 	        branch: '',
 	        date: '',
 	        commit: '',
-	        previous: ''
+	        previous: '',
+
+	        ro: [],
+	        rw: [],
+
+	        data: {
+	        	run: 123,
+	        	latency: 456
+	        }
 
 		}),
 
@@ -238,6 +268,34 @@
 			        if (report.prev != undefined)
 			        	this.previous = '/records/' + report.prev;
 
+			        let data = {};
+
+			        for (let number in report.dataset_info.ro) 
+			        	for (let result in report.dataset_info.ro[number]) {
+
+			        		console.log(result);
+
+			        		data.latency = report.dataset_info.ro[number][result][0]["results"][0].latency;
+			        		data.mode = report.dataset_info.ro[number][result][0]["results"][0].mode;
+			        		data.clients = report.dataset_info.ro[number][result][0].clients;
+			       			data.median = report.dataset_info.ro[number][result][0].median;
+			       			data.run = report.dataset_info.ro[number][result][0]["results"][0].run;
+			       			data.tps = report.dataset_info.ro[number][result][0]["results"][0].tps;
+			       			data.percentage = report.dataset_info.ro[number][result][0].percentage;
+
+			        		console.log(data);
+
+			        		this.ro.push(data);
+			        	}
+
+			        console.log(this.ro[0]);
+
+			        for (let number in report.dataset_info.rw) 
+			        	for (let result in report.dataset_info.rw[number])
+			        		for (let object in report.dataset_info.rw[number][result]) {
+			        			this.rw.push(report.dataset_info.rw[number][result][object]);
+			        		}
+			      
         		})
         		.catch((error) => {
           			console.log(error);

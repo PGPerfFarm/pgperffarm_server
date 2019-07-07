@@ -14,7 +14,7 @@
   						<v-layout row class="status-layout">
      						<v-card flat>
             					<v-card-title class="table-title">
-            						Shown here is the latest status of each farm member for each branch it has reported on in the last 30 days. Use the farm member link for history of that member on the relevant branch.
+            						Shown here is the latest status of each farm member for each branch it has reported on. Use the farm member link for history of that member on the relevant branch.
             					</v-card-title>
         					</v-card>
         					<v-card flat>

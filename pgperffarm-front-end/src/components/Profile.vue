@@ -12,7 +12,7 @@
 	                	<v-card-text>
                       <v-icon color="rgb(51, 103, 145)">archive</v-icon> &nbsp; Total reports: {{ $store.getters.reports }} <br>
 	                		<v-icon color="rgb(51, 103, 145)">computer</v-icon> &nbsp; N. machine(s): {{ $store.getters.machines }} <br>
-	                		<v-icon color="rgb(51, 103, 145)">format_list_bulleted</v-icon> &nbsp; N. branch(es) of latest reports: {{ $store.getters.branches }}<br>
+	                		<v-icon color="rgb(51, 103, 145)">format_list_bulleted</v-icon> &nbsp; Branch(es) of latest reports: {{ $store.getters.branches }}<br>
 	                		<v-icon color="rgb(51, 103, 145)">email</v-icon> &nbsp; 
                       <a :href="`mailto:${$store.getters.email}`"> {{ $store.getters.email }} </a> <br>
 	                	</v-card-text>
