@@ -1,14 +1,14 @@
 <template>
-	<v-container fluid grid-list-md>
-    <v-layout row wrap>
+  <v-container fluid grid-list-md>
+      <v-layout row wrap>
       <v-flex d-flex xs12 sm6 md3>
-            <v-layout column>
+            <v-layout row v-bind="binding">
               <v-flex d-flex xs12>
               	<v-layout column>
-	                <v-card flat class="profile-left-top">
+	                <v-card flat class="profile-left-top" min-witdh=25>
 	                  <v-card-title><v-icon color="rgb(51, 103, 145)">person</v-icon>Your information</v-card-title>
 	                </v-card>
-	                <v-card flat class="profile-left-bottom">
+	                <v-card flat class="profile-left-bottom" min-witdh=25>
 	                	<v-card-text>
                       <v-icon color="rgb(51, 103, 145)">archive</v-icon> &nbsp; Total reports: {{ $store.getters.reports }} <br>
 	                		<v-icon color="rgb(51, 103, 145)">computer</v-icon> &nbsp; N. machine(s): {{ $store.getters.machines }} <br>
@@ -21,26 +21,21 @@
               </v-flex>
               <v-flex d-flex xs12>
               	<v-layout column>
-	                <v-card flat class="profile-left-top"
-	                >
+	                <v-card flat class="profile-left-top" min-witdh=25>
 	                  <v-card-title><v-icon color="rgb(51, 103, 145)">bookmark</v-icon>Shortcuts</v-card-title>
                   </v-card>
-                  <v-card flat class="profile-left-bottom">
+                  <v-card flat class="profile-left-bottom" min-witdh=25>
                     <v-card-actions>
-                    <v-btn block flat class="profile-button">
-                  <router-link to="/addmachine">
-                    <v-icon color="rgb(51, 103, 145)">add</v-icon>
-                    Add a new machine
-                  </router-link>
-                  </v-btn>
+                      <v-btn block flat class="profile-button" href="/addmachine">
+                        <v-icon color="rgb(51, 103, 145)">add</v-icon>
+                        Add a new machine
+                      </v-btn>
                     </v-card-actions>
                     <v-card-actions>
-                    <v-btn block flat class="profile-button">
-                  <router-link to="/profile">
-                    <v-icon color="rgb(51, 103, 145)">view_stream</v-icon>
-                    My machines
-                  </router-link>
-                  </v-btn>
+                      <v-btn block flat class="profile-button" href="/profile">
+                        <v-icon color="rgb(51, 103, 145)">view_stream</v-icon>
+                        My machines
+                      </v-btn>
                     </v-card-actions>
                     <v-card-actions>
                     <v-btn block flat class="profile-button" v-on:click="logout()">
@@ -79,7 +74,18 @@ export default {
   mounted() {
     if (!this.$store.getters.authenticated)
       this.$router.push("/");
-  }
+  },
+
+  computed: {
+    binding () {
+      const binding = {};
+
+      if (this.$vuetify.breakpoint.mdAndUp) 
+          binding.column = true;
+
+      return binding;
+      }
+    }
 }
 
 </script>

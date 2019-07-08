@@ -12,16 +12,14 @@
 # status in the last 30 days?
 
 # todo wip
-# fix navbar buttons hover
 # fixed homepage and menu nav
 # too much recursion error
 # fix scrolling (everywhere)
 # profile buttons center
-# cards binding profile
-# fixing profile table style
 # fix table pagination and sorting
 # fix pre text
-
+# loading and no data
+ 
 <template>
 	<v-app>
 		<pg-toolbar></pg-toolbar>
@@ -35,7 +33,6 @@
 	import PgNavbar from './components/Navbar.vue'
     import PgFooter from './components/Footer.vue'
     import PgToolbar from './components/Toolbar.vue'
-    // import Login from './components/Login.vue'
 
 	export default {
 	  name: 'App',

@@ -16,32 +16,33 @@
               <v-data-table
                 :headers="headers"
                 :items="machines"
-                :pagination.sync="pagination"
                 :search="search"
                 select-all
                 item-key="alias"
                 class="elevation-1"
+                hide-actions
+                :loading="loading"
               >
-              <template v-slot:no-data>
-                <v-alert :value="true" color="error" icon="warning">
-                  Sorry, nothing to display here :(
-                </v-alert>
-              </template>
               <template v-slot:no-results>
                 <v-alert :value="true" color="error" icon="warning">
                   Your search for "{{ search }}" found no results.
                 </v-alert>
               </template>
+              <template v-slot:no-data>
+              <div v-if="loading=true">
+                <v-alert color="white" icon="sync" :value="true">
+                  Loading...
+                </v-alert>
+              </div>
+              </template>
+
               <template v-slot:headers="props">
                   <tr>
                     <th class="profile-th"
                       v-for="header in props.headers"
                       :key="header.text"
-                      :class="['column sortable', pagination.descending ? 'desc' : 'asc', header.value === pagination.sortBy ? 'active' : '']"
-                      @click="changeSort(header.value)"
                     >
-                      <v-icon small>arrow_upward</v-icon>
-                      {{ header.text }}
+                      <b> {{ header.text }} </b>
                     </th>
                   </tr>
                 </template>
@@ -50,10 +51,10 @@
                     <td class="profile-td"> <router-link :to="{path: '/machine/'+ props.item.alias }"> {{ props.item.alias }} </router-link></td>
                     <td class="profile-td">{{ props.item.system }}</td>
                     <td class="profile-td">{{ props.item.state }}</td>
-                    <td class="profile-td">
+                    <td class="profile-td"> 
                         <router-link :to="{path: props.item.uuid}">
                             {{ props.item.latest }}
-                        </router-link>
+                        </router-link> 
                     </td>
                     <td class="profile-td">{{ props.item.addDate }}</td>
                   </tr>
@@ -71,9 +72,7 @@
   name: 'MyMachines',
   data: () => ({
       search: '',
-      pagination: {
-        sortBy: 'name'
-      },
+      loading: true,
 
       headers: [
         { text: 'Alias', align: 'left', value: 'alias' },
