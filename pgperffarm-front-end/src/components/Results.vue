@@ -2,8 +2,8 @@
 	<v-container fluid grid-list-md>
     <v-layout column>
       		<v-card flat class="machine-main-card">
-      			<v-toolbar flat>
-      				<v-toolbar-title>
+      			<v-toolbar flat class="result-toolbar">
+      				<v-toolbar-title class="result-toolbar"> 
       					Report page: {{this.$route.params.id}}
       				</v-toolbar-title>
       				<v-spacer></v-spacer>
@@ -39,17 +39,17 @@
     <v-layout>
       <v-flex d-flex xs12 sm6 md3>
               	<v-layout column>
-	                <v-card flat class="profile-left-top">
+	                <v-card flat class="profile-left-top" min-width=15>
 	                  <v-card-title>
 	                  	Owner: {{owner.username}} <br>
                     	Reports: {{reports}} <br>
                   	  </v-card-title> 
 	                </v-card>
-	                <v-card class="profile-left-bottom">
+	                <v-card flat class="profile-left-bottom" min-width=15>
 	                	<v-card-text>
-                      OS: {{os}} <br>
-                      Processor: {{compiler}} <br>
-                      Email: <a :href="`mailto:${owner.email}`"> {{ owner.email }} </a> <br> <br>
+	                      <v-icon color="rgb(51, 103, 145)">computer</v-icon> OS: {{os}} <br>
+	                      <v-icon color="rgb(51, 103, 145)">border_all</v-icon> Processor: {{compiler}} <br>
+	                      <v-icon color="rgb(51, 103, 145)">email</v-icon> Email: <a :href="`mailto:${owner.email}`"> {{ owner.email }} </a> <br> <br>
 	                	</v-card-text>
 	                </v-card>
             	</v-layout>
@@ -58,38 +58,41 @@
           	<v-card flat class="profile-card-title">
                 
             	<v-tabs
-                    color="cyan"
+            		dark
+            		height=70
                     align-with-title
                 >
-                    <v-tabs-slider color="yellow"></v-tabs-slider>
-                    <v-tab> Progress </v-tab>
-                    <v-tab> Meta information </v-tab>
-                    <v-tab> Settings </v-tab>
-                    <v-tab> Hardware </v-tab>
-					<v-tab> Operating system </v-tab>
+                    <v-tabs-slider color="white"></v-tabs-slider>
+                    <v-tab> <span style="color: white"> Progress </span> </v-tab>
+                    <v-tab> <span style="color: white"> Meta information </span> </v-tab>
+                    <v-tab> <span style="color: white"> Settings </span> </v-tab>
+                    <v-tab> <span style="color: white"> Hardware </span> </v-tab>
+					<v-tab> <span style="color: white"> Operating system </span> </v-tab>
 
                 	<v-tabs-items>
 
 	                 	<!-- progress -->
 	                  	<v-tab-item>
 	                    	<v-card flat>
-	                      		<v-card-title> Progress for each test </v-card-title>
-	                      		<v-container>
-		                      		<v-layout row>
+	                      		<v-card-title class="results-card-title"> Progress for each test, showing read-only and read-write. </v-card-title>
+	                      		<v-container class="results-container">
+		                      		<v-layout row v-bind="binding">
 		                      			<v-container>
 				                      		<v-layout column>
-				                      			<v-flex v-for="(item, i) in this.ro" v-bind:key="item">
+				                      			<v-card-title class="results-title"> Read only </v-card-title>
+				                      			<v-flex v-for="(object, index) in this.ro" v-bind:key="index">
 				                      				<v-card flat>
-				                      					<results-table v-bind="data"></results-table>
+				                      					<results-table v-bind:data="ro[index]"></results-table>
 				                      				</v-card>
 				                      			</v-flex>
 				                      		</v-layout>
 			                      		</v-container>
 			                      		<v-container>
 				                      		<v-layout column>
-				                      			<v-flex v-for="(item, i) in this.rw" v-bind:key="item">
+				                      			<v-card-title class="results-title"> Read/write </v-card-title>
+				                      			<v-flex v-for="(object, index) in this.rw" v-bind:key="index">
 				                      				<v-card flat>
-				                      					<results-table></results-table>
+				                      					<results-table v-bind:data="rw[index]"></results-table>
 				                      				</v-card>
 				                      			</v-flex>
 				                      		</v-layout>
@@ -102,11 +105,11 @@
 		                <!-- meta information -->
 		                <v-tab-item>
 		                    <v-card flat>
-		                    	<v-card-title>
+		                    	<v-card-title class="results-card-title">
 		                    		Displayed below is detail about the testing meta information.
 		                    	</v-card-title>
-		                    	<v-card-text v-for="(item, index) in meta_info_keys" v-bind:key="item">
-		                    		{{ meta_info_keys[index] }}: {{ meta_info_data[item] }}
+		                    	<v-card-text v-for="(item, index) in meta_info_keys" v-bind:key="item" class="results-text">
+		                    		<b>{{ meta_info_keys[index] }}</b>: {{ meta_info_data[item] }}
 		                    	</v-card-text>
 
 		                    </v-card>
@@ -115,11 +118,11 @@
 		                <!-- settings -->
 		                <v-tab-item>
 		                    <v-card flat>
-		                    	<v-card-title>
+		                    	<v-card-title class="results-card-title">
 		                    		Displayed below is information about the testing operating settings.
 		                    	</v-card-title>
-		                    	<v-card-text v-for="(item, index) in pg_info_keys" v-bind:key="item">
-		                    		{{ pg_info_keys[index] }}: {{ pg_info_data[item] }}
+		                    	<v-card-text v-for="(item, index) in pg_info_keys" v-bind:key="item" class="results-text">
+		                    		<b>{{ pg_info_keys[index] }}</b>: {{ pg_info_data[item] }}
 		                    	</v-card-text>
 
 		                    </v-card>
@@ -128,7 +131,7 @@
 		                <!-- hardware -->
 		                <v-tab-item>
 		                    <v-card flat>
-		                    	<v-card-title>
+		                    	<v-card-title class="results-card-title">
 		                    		Displayed below is information about the testing hardware.
 		                    	</v-card-title>
 		                    	<template>
@@ -142,7 +145,7 @@
 		                  <!-- os -->
 		                <v-tab-item>
 		                    <v-card flat>
-		                    	<v-card-title>
+		                    	<v-card-title class="results-card-title">
 		                    		Displayed below is information about the testing operating system.
 		                    	</v-card-title>
 		                    	<template>
@@ -175,6 +178,8 @@
 		},
 
 		data: () => ({
+
+			report: '',
 
 			hardware: [
 				{
@@ -224,11 +229,6 @@
 	        ro: [],
 	        rw: [],
 
-	        data: {
-	        	run: 123,
-	        	latency: 456
-	        }
-
 		}),
 
 		methods: {
@@ -242,6 +242,7 @@
         		.then((response) => {
 
         			var report = response.data;
+        			this.report = report;
 
         			this.hardware[0].children[0].name = report.hardware_info.cpuinfo.replace(/: /g, '');
         			this.hardware[1].children[0].name = report.hardware_info.meminfo.replace(/: /g, '');
@@ -267,13 +268,11 @@
 
 			        if (report.prev != undefined)
 			        	this.previous = '/records/' + report.prev;
-
-			        let data = {};
-
-			        for (let number in report.dataset_info.ro) 
+			      
+			        for (let number in report.dataset_info.ro)
 			        	for (let result in report.dataset_info.ro[number]) {
 
-			        		console.log(result);
+			        		let data = {};
 
 			        		data.latency = report.dataset_info.ro[number][result][0]["results"][0].latency;
 			        		data.mode = report.dataset_info.ro[number][result][0]["results"][0].mode;
@@ -283,18 +282,25 @@
 			       			data.tps = report.dataset_info.ro[number][result][0]["results"][0].tps;
 			       			data.percentage = report.dataset_info.ro[number][result][0].percentage;
 
-			        		console.log(data);
-
 			        		this.ro.push(data);
 			        	}
 
-			        console.log(this.ro[0]);
-
 			        for (let number in report.dataset_info.rw) 
-			        	for (let result in report.dataset_info.rw[number])
-			        		for (let object in report.dataset_info.rw[number][result]) {
-			        			this.rw.push(report.dataset_info.rw[number][result][object]);
-			        		}
+			        	for (let result in report.dataset_info.rw[number]) {
+
+			        		let data = {};
+
+			        		data.latency = report.dataset_info.rw[number][result][0]["results"][0].latency;
+			        		data.mode = report.dataset_info.rw[number][result][0]["results"][0].mode;
+			        		data.clients = report.dataset_info.rw[number][result][0].clients;
+			       			data.median = report.dataset_info.rw[number][result][0].median;
+			       			data.run = report.dataset_info.rw[number][result][0]["results"][0].run;
+			       			data.tps = report.dataset_info.rw[number][result][0]["results"][0].tps;
+			       			data.percentage = report.dataset_info.rw[number][result][0].percentage;
+
+			        		this.rw.push(data);
+
+			        	}
 			      
         		})
         		.catch((error) => {
@@ -316,7 +322,18 @@
 
 		mounted() {
 			this.getResult();
-		}
+		},
+
+		computed: {
+      		binding () {
+        		const binding = {};
+
+        		if (this.$vuetify.breakpoint.smAndDown) 
+        			binding.column = true;
+
+        	return binding
+      }
+    }
 	}
 
 

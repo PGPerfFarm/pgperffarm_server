@@ -30,7 +30,7 @@
                   <br>
                   <p>
                     <b> Machine </b> <br>
-                    The Machine page displays ???
+                    The Machine page displays a summary of all machines, which can be selected to see further details and recent tests.
                   </p>
                   <br>
                   <p>

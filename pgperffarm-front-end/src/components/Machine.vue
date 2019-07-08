@@ -21,9 +21,9 @@
 	                </v-card>
 	                <v-card class="profile-left-bottom">
 	                	<v-card-text>
-                      OS: {{ os }} <br>
-                      Processor: {{ compiler }} <br>
-                      Email: <a :href="`mailto:${owner.email}`"> {{ owner.email }} </a> <br>
+                      <v-icon color="rgb(51, 103, 145)">computer</v-icon> OS: {{ os }} <br>
+                      <v-icon color="rgb(51, 103, 145)">border_all</v-icon> Processor: {{ compiler }} <br>
+                      <v-icon color="rgb(51, 103, 145)">email</v-icon> Email: <a :href="`mailto:${owner.email}`"> {{ owner.email }} </a> <br>
 	                	</v-card-text>
 	                </v-card>
             	</v-layout>

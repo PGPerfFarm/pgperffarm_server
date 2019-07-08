@@ -9,19 +9,18 @@
 # fix cors headers same origin
 # responsiveness on mobile
 # avatars?
+# status in the last 30 days?
 
 # todo wip
 # fix navbar buttons hover
 # fixed homepage and menu nav
 # too much recursion error
-# fix scrolling
+# fix scrolling (everywhere)
 # profile buttons center
 # cards binding profile
 # fixing profile table style
 # fix table pagination and sorting
-# status in the last 30 days
-
-# add report link to single machine page
+# fix pre text
 
 <template>
 	<v-app>

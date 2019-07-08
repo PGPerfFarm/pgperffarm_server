@@ -171,11 +171,71 @@ v-datatable__actions__select {
   padding: 2%;
 }
 
- .results {
+ .results, .results-h, .results-d {
   font-size: 18px !important;
-  /* border-collapse: collapse; */
-  margin: 2%;
+  border: 1px solid #336791;
+  border-collapse: collapse;
+  color: #336791;
 }
 
+.results-d, .results-h {
+  padding-top: 3%;
+  padding-bottom: 3%;
+  padding-left: 3%;
+}
+
+.results {
+  width: 90%;
+  margin-top: 5%;
+  margin-bottom: 5%;
+}
+
+.results-h {
+  background-color: #d3e1ed;
+  font-weight: bold;
+}
+
+.results-card-title {
+   font-size: 20px !important;
+   color: #336791;
+}
+
+.results-text {
+   font-size: 17px !important;
+   color: #336791;
+   margin-bottom: -2%;
+}
+
+.results-container {
+  margin-top: -3% !important;
+}
+
+pre {
+  font-family: inherit !important;
+  font-size: 17px !important;
+  color: #336791 !important;
+}
+
+.v-tabs__wrapper {
+  background-color: #336791 !important;
+}
+
+.v-tabs__div {
+  font-size: 18px !important;
+  color: white !important;
+}
+
+.result-toolbar {
+  background-color: #d3e1ed !important;
+  color: #336791;
+  font-size: 25px !important;
+  font-weight: bold !important;
+}
+
+.results-title {
+  color: #336791;
+  font-size: 20px !important;
+  margin-bottom: -5%;
+}
 
 @import '~vuetify/src/stylus/main'
