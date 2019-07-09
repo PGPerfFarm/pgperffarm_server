@@ -106,3 +106,9 @@ yarn start
 
 
 
+possible issues with django:
+
+- Not found auth_user relation: delete migrations and remake everything
+
+
+

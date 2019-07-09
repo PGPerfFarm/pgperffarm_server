@@ -2,7 +2,7 @@ import os
 import sys
 
 # global configuration
-PERFFARM_URL = 'http://140.211.168.111:8000/upload/'
+PERFFARM_URL = 'http://127.0.0.1:8000/upload/'
 SECRET='CHANGEME'
 
 GIT_URL = 'https://github.com/postgres/postgres.git'

@@ -15,10 +15,11 @@ def byteify(input):
 
 
 token = '0232f37f8e1726684516434441af745'
-BASE_URL = 'http://140.211.168.111:8080/'
-# BASE_URL = 'http://127.0.0.1:8000/'
+# BASE_URL = 'http://140.211.168.111:8080/'
+BASE_URL = 'http://127.0.0.1:8000/'
 PATH_URL = 'upload/'
 url = BASE_URL + PATH_URL
+
 
 def http_post(url, data, token):  
     postdata = data  
@@ -34,7 +35,4 @@ def http_post(url, data, token):
 
 with open("./results.json",'r') as load_f:
     load_dict = (json.load(load_f, encoding="UTF-8"))
-    http_post(url,load_dict,token)
-
-# for line in s:
-#     print line.encode('utf-8')
+    http_post(url, load_dict,token)
