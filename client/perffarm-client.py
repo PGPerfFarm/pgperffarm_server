@@ -22,7 +22,7 @@ from settings import *
 if __name__ == '__main__':
 
     if os.path.exists(OUTPUT_DIR):
-        print "output directory '%s' already exists" % OUTPUT_DIR
+        print ("output directory '%s' already exists" % OUTPUT_DIR)
         sys.exit(1)
 
     with FileLock('.lock') as lock:
@@ -81,6 +81,6 @@ if __name__ == '__main__':
             # print the issues
             for k in issues:
                 for v in issues[k]:
-                    print k, ':', v
+                    print (k, ':', v)
         else:
             runner.run()

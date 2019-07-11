@@ -33,10 +33,9 @@ router = routers.DefaultRouter()
 router.register(r'users', views.UserViewSet)
 
 urlpatterns = [
-	url('', include(router.urls)),
+    url('', include(router.urls)),
     url(r'^admin/', admin.site.urls),
-    url(r'^auth/login/', obtain_jwt_token),
-  	url(r'^auth/refresh_token/', refresh_jwt_token),
-  	url(r'^auth/', include('rest_framework.urls', namespace='rest_framework')),
+    url(r'^login/', obtain_jwt_token),
+  	url(r'^refresh_token/', refresh_jwt_token),
   	# url(r'upload/$', CreateRecord, name='upload'),
 ]

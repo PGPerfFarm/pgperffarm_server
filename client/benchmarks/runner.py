@@ -1,7 +1,7 @@
 import json
 import os
 import codecs
-import urllib2
+import urllib.request
 
 from multiprocessing import Process, Queue
 from time import gmtime, strftime
@@ -132,16 +132,16 @@ class BenchmarkRunner(object):
         try:
             self._upload_results(r)
         except Exception as e:
-            print e
+            print (e)
 
     def _upload_results(self, results):
         postdata = results
         post = []
         post.append(postdata)
-        req = urllib2.Request(self._url, json.dumps(post))
+        req = Request(self._url, json.dumps(post))
         req.add_header('Authorization', self._secret) # add token in header
         req.add_header('Content-Type', 'application/json')
-        response = urllib2.urlopen(req)
+        response = urlopen(req)
 
 
     def run(self):

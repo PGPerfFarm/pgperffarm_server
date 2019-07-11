@@ -2,7 +2,8 @@
 
 import json
 import codecs
-import urllib2
+import urllib.request
+
 def byteify(input):
     if isinstance(input, dict):
         return {byteify(key):byteify(value) for key,value in input.iteritems()}
@@ -25,11 +26,11 @@ def http_post(url, data, token):
     postdata = data  
     post = []  
     post.append(postdata)
-    req = urllib2.Request(url, json.dumps(post))
+    req = Request(url, json.dumps(post))
     access_token = token  
     req.add_header('Authorization', access_token) # add token in header
     req.add_header('Content-Type', 'application/json')
-    response = urllib2.urlopen(req)  
+    response = urlopen(req)  
     result = json.loads(response.read())  
     print result.encode('utf-8')  
 

@@ -41,9 +41,10 @@ PGBENCH_CONFIG = {
 }
 
 # ignore missing file with local config
+
 try:
     from settings_local import *
 except Exception as e:
-    print >> sys.stderr, "ERROR: local configuration (settings_local.py) " \
-                         "not found"
+    print (sys.stderr, "ERROR: local configuration (settings_local.py) " \
+                         "not found")
     sys.exit(1)

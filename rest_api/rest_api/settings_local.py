@@ -4,7 +4,7 @@ DATABASES = {
         'default': {
                 'ENGINE': 'django.db.backends.postgresql_psycopg2',
                 'NAME': 'pgperffarm',
-                'USER': 'pgperffarm',
+                'USER': 'ila',
                 'PASSWORD': 'password',
                 'HOST': '/tmp'
                 }
