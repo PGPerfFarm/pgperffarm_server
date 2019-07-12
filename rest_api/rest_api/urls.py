@@ -21,8 +21,8 @@ from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token
 from rest_framework import routers
 
 # local imports
-# from rest_api.pgperffarm.records.views import CreateRecord
-from rest_api.apps.users import views
+from users import views
+from machines import views
 
 
 # $ curl -X POST -H "Content-Type: application/json" -d '{"username":"<your_username>","password":"<your_password>"}' http://<your_domain_and_port>/auth/
@@ -30,12 +30,13 @@ from rest_api.apps.users import views
 # $ curl -X POST -H "Content-Type: application/json" -d '{"token":"<EXISTING_TOKEN>"}' http://<your_domain_and_port>/auth/refresh_token/
 
 router = routers.DefaultRouter()
-router.register(r'users', views.UserViewSet)
+#router.register(r'users', views.UserViewSet)
 
 urlpatterns = [
     url('', include(router.urls)),
     url(r'^admin/', admin.site.urls),
     url(r'^login/', obtain_jwt_token),
   	url(r'^refresh_token/', refresh_jwt_token),
+    url('', include('machines.urls')),
   	# url(r'upload/$', CreateRecord, name='upload'),
 ]
