@@ -17,8 +17,10 @@ Including another URLconf
 # packages
 from django.conf.urls import url, include
 from django.contrib import admin
-from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token
+#from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token
 from rest_framework import routers
+from rest_framework.documentation import include_docs_urls
+from rest_framework.schemas import get_schema_view
 
 # local imports
 from users import views
@@ -29,14 +31,21 @@ from machines import views
 
 # $ curl -X POST -H "Content-Type: application/json" -d '{"token":"<EXISTING_TOKEN>"}' http://<your_domain_and_port>/auth/refresh_token/
 
+API_TITLE = 'Postgres Performance Farm API'
+API_DESCRIPTION = 'A Web API for managing Performance Farm test results.'
+schema_view = get_schema_view(title=API_TITLE)
+
 router = routers.DefaultRouter()
 #router.register(r'users', views.UserViewSet)
 
 urlpatterns = [
     url('', include(router.urls)),
     url(r'^admin/', admin.site.urls),
-    url(r'^login/', obtain_jwt_token),
-  	url(r'^refresh_token/', refresh_jwt_token),
+    url('authentication/', include('rest_framework.urls')),
+    #url(r'^obtain_token/', obtain_jwt_token),
+  	#url(r'^refresh_token/', refresh_jwt_token),
     url('', include('machines.urls')),
-  	# url(r'upload/$', CreateRecord, name='upload'),
+    url('', include('users.urls')),
+    url(r'^docs/', include_docs_urls(title=API_TITLE, description=API_DESCRIPTION)),
+    url(r'^schema/$', schema_view),
 ]

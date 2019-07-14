@@ -3,6 +3,9 @@ from rest_framework import serializers
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = User
-        fields = ('url', 'username', 'email')
+	machines = serializers.HyperlinkedRelatedField(
+many=True, view_name='machine-detail', read_only=True)
+
+	class Meta:
+		model = User
+		fields = ('url', 'id', 'username', 'machines')
