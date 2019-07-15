@@ -13,3 +13,6 @@ class MachineSerializer(serializers.HyperlinkedModelSerializer):
 		model = Machine
 		fields = ('id', 'alias', 'sn', 'os_name', 'os_version', 'comp_name', 'comp_version', 'reports', 'lastest', 'state', 'owner')
 		owner = serializers.ReadOnlyField(source='owner.username')
+
+
+
