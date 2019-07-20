@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python3
 
 import argparse
 import json
@@ -21,9 +21,11 @@ from settings import *
 
 if __name__ == '__main__':
 
+    '''
     if os.path.exists(OUTPUT_DIR):
         print ("output directory '%s' already exists" % OUTPUT_DIR)
         sys.exit(1)
+    '''
 
     with FileLock('.lock') as lock:
 

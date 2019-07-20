@@ -41,6 +41,7 @@ urlpatterns = [
   	url(r'^refresh_token/', refresh_jwt_token),
     url('', include('machines.urls')),
     url('', include('users.urls')),
+    url('', include('records.urls')),
     url(r'^docs/', include_docs_urls(title=API_TITLE, description=API_DESCRIPTION)),
     url(r'^schema/$', schema_view),
 ]

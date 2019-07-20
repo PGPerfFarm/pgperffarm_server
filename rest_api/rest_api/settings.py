@@ -10,7 +10,13 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
-# todo: add reverse
+# todo: add reverse, url list on the homepage
+# users: everything working, just let's add a password field, change password, and revoke crud permissions to non admins
+# machines: adding works, linking to username works (add email?), reports and lastest not working
+# records: filters not working!!!
+# branches: work, now they just need to be added
+# 'detail' and 'machine-records' give 'not found' (which might be correct?)
+# records-by-branch has some issue with foreign keys
 
 import os
 import datetime
@@ -198,6 +204,29 @@ CORS_ALLOW_HEADERS = (
 	'x-requested-with',
 	'Pragma',
 )
+
+
+DB_ENUM = {
+    "general_switch": {
+        "on": 1,
+        "off": 2
+    },
+    "mode": {
+        "simple": 1,
+        "other": 2
+    },
+    "machine_state": {
+        "prohibited": -1,
+        "pending": 0,
+        "active": 1,
+    },
+    "status": {
+        "none": -1,
+        "improved": 1,
+        "quo": 2,
+        "regressive": 3
+    }
+}
 
 
 # Internationalization

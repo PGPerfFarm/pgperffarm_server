@@ -1,17 +1,13 @@
 from rest_framework import serializers
 
-from pgperffarm.settings import DB_ENUM
-from test_records.models import TestRecord, TestResult, PGInfo, LinuxInfo, MetaInfo, TestDataSet, TestCategory, \
-    TestBranch
-from machines.serializer import MachineSerializer
+from rest_api.settings import DB_ENUM
+from records.models import TestRecord, TestResult, PGInfo, LinuxInfo, MetaInfo, TestDataSet, TestCategory, TestBranch
 from machines.models import Machine
+from machines.serializers import MachineSerializer
 from django.db.models import Count
 
 
 class TestBranchSerializer(serializers.ModelSerializer):
-    '''
-    use TestBranchSerializer
-    '''
 
     class Meta:
         model = TestBranch
@@ -19,9 +15,6 @@ class TestBranchSerializer(serializers.ModelSerializer):
 
 
 class TestCategorySerializer(serializers.ModelSerializer):
-    '''
-    use TestCategorySerializer
-    '''
 
     class Meta:
         model = TestCategory
@@ -29,9 +22,6 @@ class TestCategorySerializer(serializers.ModelSerializer):
 
 
 class CreatePGInfoSerializer(serializers.ModelSerializer):
-    '''
-    use CreatePGInfoSerializer
-    '''
 
     class Meta:
         model = PGInfo
@@ -39,22 +29,7 @@ class CreatePGInfoSerializer(serializers.ModelSerializer):
 
 
 class PGInfoSerializer(serializers.ModelSerializer):
-    '''
-    use PGInfoSerializer
-            "settings": {
-            "checkpoint_timeout": "15min",
-            "log_temp_files": "32",
-            "work_mem": "64MB",
-            "log_line_prefix": "%n %t ",
-            "shared_buffers": "1GB",
-            "log_autovacuum_min_duration": "0",
-            "checkpoint_completion_target": "0.9",
-            "maintenance_work_mem": "128MB",
-            "log_checkpoints": "on",
-            "max_wal_size": "4GB",
-            "min_wal_size": "2GB"
-        }
-    '''
+
     checkpoint_timeout = serializers.SerializerMethodField()
     work_mem = serializers.SerializerMethodField()
     shared_buffers = serializers.SerializerMethodField()
@@ -93,9 +68,6 @@ class PGInfoSerializer(serializers.ModelSerializer):
 
 
 class HardwareInfoDetailSerializer(serializers.ModelSerializer):
-    '''
-    use HardwareInfoDetailSerializer
-    '''
 
     class Meta:
         model = LinuxInfo
@@ -103,9 +75,6 @@ class HardwareInfoDetailSerializer(serializers.ModelSerializer):
 
 
 class LinuxInfoDetailSerializer(serializers.ModelSerializer):
-    '''
-    use LinuxInfoDetailSerializer
-    '''
 
     class Meta:
         model = LinuxInfo
@@ -113,9 +82,6 @@ class LinuxInfoDetailSerializer(serializers.ModelSerializer):
 
 
 class LinuxInfoSerializer(serializers.ModelSerializer):
-    '''
-    use LinuxInfoSerializer
-    '''
 
     class Meta:
         model = LinuxInfo
@@ -123,9 +89,6 @@ class LinuxInfoSerializer(serializers.ModelSerializer):
 
 
 class MetaInfoDetailSerializer(serializers.ModelSerializer):
-    '''
-    use MetaInfoSerializer
-    '''
 
     class Meta:
         model = MetaInfo
@@ -133,9 +96,6 @@ class MetaInfoDetailSerializer(serializers.ModelSerializer):
 
 
 class MetaInfoSerializer(serializers.ModelSerializer):
-    '''
-    use MetaInfoSerializer
-    '''
 
     class Meta:
         model = MetaInfo
@@ -143,9 +103,6 @@ class MetaInfoSerializer(serializers.ModelSerializer):
 
 
 class CreateTestResultSerializer(serializers.ModelSerializer):
-    '''
-    use CreateTestResultSerializer
-    '''
 
     class Meta:
         model = TestResult
@@ -153,9 +110,7 @@ class CreateTestResultSerializer(serializers.ModelSerializer):
 
 
 class TestResultSerializer(serializers.ModelSerializer):
-    '''
-    use TestResultSerializer
-    '''
+
     mode = serializers.SerializerMethodField()
 
     class Meta:
@@ -168,13 +123,6 @@ class TestResultSerializer(serializers.ModelSerializer):
 
 
 class CreateTestRecordSerializer(serializers.ModelSerializer):
-    '''
-    create ModelSerializer
-    '''
-
-    # pg_info =PGInfoSerializer()
-    # linux_info = LinuxInfoSerializer()
-    # meta_info = MetaInfoSerializer()
 
     class Meta:
         model = TestRecord
@@ -182,19 +130,6 @@ class CreateTestRecordSerializer(serializers.ModelSerializer):
 
 
 class CreateTestDateSetSerializer(serializers.ModelSerializer):
-    '''
-    create TestDateSetSerializer
-        'test_record': testRecordRet.id,
-        'clients': client_num,
-        'scale': scale,
-        'std': dataset['std'],
-        'metric': dataset['metric'],
-        'median': dataset['median'],
-        'test_cate': test_cate.id,
-        # status,percentage calc by tarr
-        'status': -1,
-        'percentage': 0.0,
-    '''
 
     class Meta:
         model = TestDataSet
@@ -202,9 +137,7 @@ class CreateTestDateSetSerializer(serializers.ModelSerializer):
 
 
 class TestStatusRecordListSerializer(serializers.ModelSerializer):
-    '''
-    use ModelSerializer
-    '''
+
     pg_info = PGInfoSerializer()
     linux_info = LinuxInfoSerializer()
     meta_info = MetaInfoSerializer()
@@ -262,9 +195,7 @@ class TestStatusRecordListSerializer(serializers.ModelSerializer):
 
 
 class TestRecordListSerializer(serializers.ModelSerializer):
-    '''
-    use ModelSerializer
-    '''
+
     # pg_info = PGInfoSerializer()
     linux_info = LinuxInfoSerializer()
     meta_info = MetaInfoSerializer()
@@ -419,54 +350,3 @@ class TestRecordDetailSerializer(serializers.ModelSerializer):
                     dataset[cate_sn][scale_item[0]][client_item[0]] = dataset_serializer.data
 
         return dataset
-
-
-class MachineHistoryRecordSerializer(serializers.ModelSerializer):
-    '''
-    use MachineHistoryRecordSerializer
-    '''
-    machine_info = serializers.SerializerMethodField()
-    reports = serializers.SerializerMethodField()
-    branches = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Machine
-        fields = ('machine_info', 'reports', 'branches')
-
-    def get_reports(self, obj):
-        target_records = TestRecord.objects.filter(test_machine_id=obj.id).values_list(
-            'branch').annotate(Count('id'))
-        # print(target_records) # <QuerySet [(2, 2), (1, 3)]>
-        ret = []
-        for branch_item in target_records:
-            item = {}
-            item['branch'] = branch_item[0]
-
-            records = TestRecord.objects.filter(test_machine_id=obj.id, branch_id=branch_item[0])
-
-            serializer = TestRecordListSerializer(records, many=True)
-            item['records'] = serializer.data
-            ret.append(item)
-        return ret
-
-    def get_machine_info(self, obj):
-        target_machine = Machine.objects.filter(id=obj.id).first()
-        serializer = MachineSerializer(target_machine)
-
-        return serializer.data
-
-    def get_branches(self, obj):
-        target_records = TestRecord.objects.filter(test_machine_id=obj.id).values_list(
-            'branch').annotate(Count('id'))
-
-        ret = []
-        for branch_item in target_records:
-            item = {}
-            item['value'] = branch_item[0]
-
-            branch = TestBranch.objects.filter(id=branch_item[0]).first()
-            serializer = TestBranchSerializer(branch)
-            item['branch'] = serializer.data["branch_name"]
-            ret.append(item)
-
-        return ret

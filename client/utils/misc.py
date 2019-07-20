@@ -30,6 +30,7 @@ def run_cmd(args, env=None, cwd=None):
     with TemporaryFile() as strout:
 
         start = time.time()
+        print('here')
         retcode = call(args, env=env, cwd=cwd, stdout=strout, stderr=STDOUT)
 
         strout.seek(0)

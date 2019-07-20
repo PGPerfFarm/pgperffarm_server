@@ -1,6 +1,6 @@
 from machines.models import Machine
-from machines.serializers import MachineSerializer
-from rest_framework import permissions, renderers, viewsets
+from machines.serializers import MachineSerializer, MachineHistoryRecordSerializer
+from rest_framework import permissions, renderers, viewsets, mixins
 from machines.permissions import IsOwnerOrReadOnly
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
@@ -24,3 +24,12 @@ class MachineViewSet(viewsets.ModelViewSet):
 
 	def perform_create(self, serializer):
 		serializer.save(owner=self.request.user)
+
+
+class MachineHistoryRecordViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    """
+    Machine info page
+    """
+    lookup_field = 'sn'
+    queryset = Machine.objects.all().order_by('added')
+    serializer_class = MachineHistoryRecordSerializer

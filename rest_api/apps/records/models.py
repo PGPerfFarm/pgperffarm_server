@@ -1,11 +1,9 @@
-# todo: enum, fix imports, exceptions, filters
-
 from datetime import datetime
 from django.utils import timezone
 from django.db import models
 
 # Create your models here.
-from machine.models import Machine
+from machines.models import Machine
 
 
 class TestBranch(models.Model):
@@ -14,8 +12,8 @@ class TestBranch(models.Model):
     """
     branch_name = models.CharField(max_length=128, unique=True,verbose_name="branch name", help_text="branch name")
     branch_order = models.IntegerField(default=5,verbose_name=" branch order", help_text="order in all the  branch")
-    is_show = models.BooleanField(verbose_name="branch isshow", default=True, help_text="branch isshow")
-    is_accept = models.BooleanField(verbose_name="branch weather accept accept new reports", default=True, help_text="branch weather accept new reports")
+    is_show = models.BooleanField(verbose_name="branch is shown", default=True, help_text="branch isshow")
+    is_accept = models.BooleanField(verbose_name="branch accepts new reports", default=True, help_text="branch accepts new reports")
     add_time = models.DateTimeField(default=timezone.now, verbose_name="branch added time",
                                     help_text="branch added time")
 

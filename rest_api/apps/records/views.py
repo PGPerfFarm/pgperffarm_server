@@ -7,15 +7,12 @@ import shortuuid
 from django.contrib.auth.hashers import make_password
 from rest_framework.pagination import PageNumberPagination
 
-from .exception import TestDataUploadError
-from .filters import TestRecordListFilter
-from .models import UserMachine, TestCategory, TestBranch
-from pgperffarm.settings import DB_ENUM
-from user_operation.views import UserMachinePermission
-from .serializer import MachineHistoryRecordSerializer, TestStatusRecordListSerializer, TestBranchSerializer, \
-    CreateTestResultSerializer, CreatePGInfoSerializer
-from .serializer import TestRecordListSerializer, TestRecordDetailSerializer, LinuxInfoSerializer, MetaInfoSerializer, \
-    PGInfoSerializer, CreateTestRecordSerializer, CreateTestDateSetSerializer, TestResultSerializer
+from records.exception import TestDataUploadError
+from records.filters import TestRecordListFilter
+from machines.models import Machine
+from records.models import TestCategory, TestBranch
+from rest_api.settings import DB_ENUM
+from records.serializers import TestStatusRecordListSerializer, TestBranchSerializer,CreateTestResultSerializer, CreatePGInfoSerializer, TestRecordListSerializer, TestRecordDetailSerializer, LinuxInfoSerializer, MetaInfoSerializer, PGInfoSerializer, CreateTestRecordSerializer, CreateTestDateSetSerializer, TestResultSerializer
 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
@@ -32,9 +29,11 @@ class StandardResultsSetPagination(PageNumberPagination):
     page_size_query_param = 'page_size'
     max_page_size = 100
 
+
 class BigResultsSetPagination(PageNumberPagination):
     page_size = 1000
     page_size_query_param = 'page_size'
+
 
 class TestBranchListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     """
@@ -45,6 +44,7 @@ class TestBranchListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = TestBranchSerializer
     pagination_class = BigResultsSetPagination
 
+
 class TestRecordListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     """
     List test records
@@ -54,7 +54,8 @@ class TestRecordListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = TestRecordListSerializer
     pagination_class = StandardResultsSetPagination
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
-    filter_class = TestRecordListFilter
+    #filter_class = TestRecordListFilter
+
 
 class TestRecordListByBranchViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     """
@@ -65,7 +66,7 @@ class TestRecordListByBranchViewSet(mixins.ListModelMixin, viewsets.GenericViewS
     serializer_class = TestRecordListSerializer
     pagination_class = StandardResultsSetPagination
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
-    filter_class = TestRecordListFilter
+    #filter_class = TestRecordListFilter
 
 
 class TestRecordDetailViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
@@ -77,17 +78,9 @@ class TestRecordDetailViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet
     serializer_class = TestRecordDetailSerializer
     # pagination_class = StandardResultsSetPagination
 
-class MachineHistoryRecordViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
-    """
-    machine info page
-    """
-    lookup_field = 'machine_sn'
-    queryset = UserMachine.objects.all().order_by('add_time')
-    serializer_class = MachineHistoryRecordSerializer
-    # pagination_class = StandardResultsSetPagination
 
 @api_view(['POST'])
-@permission_classes((UserMachinePermission, ))
+# @permission_classes((MachinePermission, ))
 def TestRecordCreate(request, format=None):
     """
     Receive data from client
@@ -106,7 +99,7 @@ def TestRecordCreate(request, format=None):
     try:
         # todo get machine by token
         secret = request.META.get("HTTP_AUTHORIZATION")
-        ret = UserMachine.objects.filter(machine_secret=secret, state=1).get()
+        ret = Machine.objects.filter(machine_secret=secret, state=ACTIVE).get()
         test_machine = ret.id
         if test_machine <= 0:
             raise TestDataUploadError("The machine is unavailable.")

@@ -33,13 +33,12 @@ class Machine(models.Model):
 
 	added = models.DateTimeField(auto_now_add=True)
 	alias = models.CharField(max_length=100, blank=True, default='')
+	machine_secret = models.CharField(max_length=32, blank=True, default='', verbose_name="machine secret")
 	sn = models.TextField()
 	os_name = models.CharField(max_length=100, blank=True, default='')
 	os_version = models.CharField(max_length=100, blank=True, default='')
 	comp_name = models.CharField(max_length=100, blank=True, default='')
 	comp_version = models.CharField(max_length=100, blank=True, default='')
-	reports = models.IntegerField(default=0)
-	lastest = models.CharField(max_length=100, blank=True, default='')
 	state = models.CharField(max_length=10, choices=STATE, default=PENDING)
 	owner = models.ForeignKey('auth.User', related_name='machines', on_delete=models.CASCADE)
 
