@@ -16,8 +16,7 @@ from records.serializers import TestStatusRecordListSerializer, TestBranchSerial
 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from rest_framework import mixins
-from rest_framework import status
+from rest_framework import mixins, status, permissions
 
 from rest_framework import viewsets
 from .models import TestRecord
@@ -80,7 +79,7 @@ class TestRecordDetailViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet
 
 
 @api_view(['POST'])
-# @permission_classes((MachinePermission, ))
+@permission_classes((permissions.AllowAny, ))
 def TestRecordCreate(request, format=None):
     """
     Receive data from client
@@ -89,8 +88,8 @@ def TestRecordCreate(request, format=None):
     data = request.data
 
     print(type(data[0]))
-    json_data = json.dumps(data[0], encoding="UTF-8", ensure_ascii=False)
-    json_data = json.loads(json_data, encoding="UTF-8")
+    json_data = json.dumps(data[0], ensure_ascii=False)
+    json_data = json.loads(json_data)
     # obj = data[0].pgbench
     # jsLoads = json.loads(data[0])
 
@@ -98,8 +97,9 @@ def TestRecordCreate(request, format=None):
 
     try:
         # todo get machine by token
-        secret = request.META.get("HTTP_AUTHORIZATION")
-        ret = Machine.objects.filter(machine_secret=secret, state=ACTIVE).get()
+        # secret = request.META.get("HTTP_AUTHORIZATION")
+        sn = '123'
+        ret = Machine.objects.filter(sn=sn).get() # state=active
         test_machine = ret.id
         if test_machine <= 0:
             raise TestDataUploadError("The machine is unavailable.")
@@ -229,9 +229,9 @@ def TestRecordCreate(request, format=None):
                                 raise TestDataUploadError(msg)
 
     except Exception as e:
-        msg = 'upload error:' + e.__str__()
+        msg = 'Upload error: ' + e.__str__()
         # todo add log
-        return Response(msg, status=status.HTTP_202_ACCEPTED)
+        return Response(msg, status=status.HTTP_406_NOT_ACCEPTABLE)
 
-    msg = 'upload success!'
+    msg = 'Upload successful!'
     return Response(msg, status=status.HTTP_201_CREATED)

@@ -39,7 +39,7 @@ SECRET_KEY = 'n)o!k04vu3i5%1q9!b0dd3v1&)8f1-c2st)ac@%v&2do4u&9h$'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -62,12 +62,12 @@ INSTALLED_APPS = [
 
 REST_FRAMEWORK = {
 	'DEFAULT_PERMISSION_CLASSES': (
-		#'rest_framework.permissions.IsAuthenticated',
+		'rest_framework.permissions.IsAuthenticated',
 		'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
 	),
 	'DEFAULT_AUTHENTICATION_CLASSES': (
-		'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
 		'rest_framework.authentication.SessionAuthentication',
+		#'rest_framework.permissions.IsAuthenticated',
 		#'rest_framework.authentication.BasicAuthentication',
 	),
 	'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',

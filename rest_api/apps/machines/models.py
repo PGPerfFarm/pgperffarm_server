@@ -1,4 +1,8 @@
 from django.db import models
+import shortuuid
+import hashlib
+from django.contrib.auth.hashers import make_password
+
 '''
 from pygments.lexers import get_all_lexers, get_lexer_by_name
 from pygments.styles import get_all_styles
@@ -34,7 +38,7 @@ class Machine(models.Model):
 	added = models.DateTimeField(auto_now_add=True)
 	alias = models.CharField(max_length=100, blank=True, default='')
 	machine_secret = models.CharField(max_length=32, blank=True, default='', verbose_name="machine secret")
-	sn = models.TextField()
+	sn = models.CharField(max_length=16, blank=True, default='')
 	os_name = models.CharField(max_length=100, blank=True, default='')
 	os_version = models.CharField(max_length=100, blank=True, default='')
 	comp_name = models.CharField(max_length=100, blank=True, default='')
@@ -55,4 +59,13 @@ class Machine(models.Model):
 		#options = {'title': self.title} if self.title else {}
 		#formatter = HtmlFormatter(style=self.style, linenos=linenos, full=True, **options)
 		#self.highlighted = highlight(self.code, lexer, formatter)
+
+		self.machine_sn = shortuuid.ShortUUID().random(length=16)
+
+		machine_str = self.alias + self.os_name + self.os_version + self.comp_name + self.comp_version + self.machine_sn
+
+		m = hashlib.md5()
+		m.update(make_password(str(machine_str), 'pg_perf_farm').encode('utf-8'))
+		self.machine_secret = m.hexdigest()
+
 		super(Machine, self).save(*args, **kwargs)
