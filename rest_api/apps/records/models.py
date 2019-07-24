@@ -11,7 +11,7 @@ class TestBranch(models.Model):
     test branch
     """
     branch_name = models.CharField(max_length=128, unique=True,verbose_name="branch name", help_text="branch name")
-    branch_order = models.IntegerField(default=5,verbose_name=" branch order", help_text="order in all the  branch")
+    branch_order = models.IntegerField(default=5,verbose_name="branch order", help_text="order in all the  branch")
     is_show = models.BooleanField(verbose_name="branch is shown", default=True, help_text="branch isshow")
     is_accept = models.BooleanField(verbose_name="branch accepts new reports", default=True, help_text="branch accepts new reports")
     add_time = models.DateTimeField(default=timezone.now, verbose_name="branch added time",
@@ -44,24 +44,24 @@ class TestCategory(models.Model):
 
 class PGInfo(models.Model):
 
-    checkpoint_timeout = models.IntegerField(verbose_name="checkpoint_timeout", help_text="checkpoint_timeout")
+    checkpoint_timeout = models.CharField(max_length=32, verbose_name="checkpoint_timeout", help_text="checkpoint_timeout")
     log_temp_files = models.IntegerField(verbose_name="log_temp_files", help_text="log_temp_files")
-    work_mem = models.IntegerField(verbose_name="work_mem", help_text="work_mem")
+    work_mem = models.CharField(max_length=32, verbose_name="work_mem", help_text="work_mem")
     log_line_prefix = models.CharField(max_length=64,verbose_name="checkpoint_timeout", help_text="checkpoint_timeout")
-    shared_buffers = models.IntegerField(verbose_name="shared_buffers", help_text="shared_buffers")
+    shared_buffers = models.CharField(max_length=32, verbose_name="shared_buffers", help_text="shared_buffers")
     log_autovacuum_min_duration =models.IntegerField(verbose_name="log_autovacuum_min_duration", help_text="log_autovacuum_min_duration")
 
 
     checkpoint_completion_target = models.DecimalField(max_digits=8, decimal_places=4,verbose_name="checkpoint_completion_target", help_text="checkpoint_completion_target")
-    maintenance_work_mem = models.IntegerField(verbose_name="maintenance_work_mem", help_text="maintenance_work_mem")
+    maintenance_work_mem = models.CharField(max_length=32, verbose_name="maintenance_work_mem", help_text="maintenance_work_mem")
 
     SWITCH_CHOICE = (
         (1, 'on'),
         (2, 'off')
     )
     log_checkpoints = models.IntegerField(choices=SWITCH_CHOICE,verbose_name="log_checkpoints", help_text="log_checkpoints")
-    max_wal_size = models.IntegerField(verbose_name="max_wal_size", help_text="max_wal_size")
-    min_wal_size = models.IntegerField(verbose_name="min_wal_size", help_text="min_wal_size")
+    max_wal_size = models.CharField(max_length=32, verbose_name="max_wal_size", help_text="max_wal_size")
+    min_wal_size = models.CharField(max_length=32, verbose_name="min_wal_size", help_text="min_wal_size")
 
     # pg_branch = models.ForeignKey(TestBranch, verbose_name="pg branch", help_text="pg branch")
 

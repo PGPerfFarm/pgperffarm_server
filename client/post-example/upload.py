@@ -31,8 +31,6 @@ def http_post(url, data, token):
 
     headers = {'Content-Type': 'application/json; charset=utf-8'}
     r = requests.post(url.encode('utf-8'), data=json.dumps(post).encode('utf-8'), headers=headers)
-    print('response')
-    print(r.text)
 
     #req = urllib.request.Request(url, json.dumps(post))
 

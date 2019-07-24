@@ -132,26 +132,48 @@ def TestRecordCreate(request, format=None):
 
             pg_data = json_data['postgres']
             branch_str = pg_data['branch']
-            if(branch_str == 'master'):
+
+            if (branch_str == 'master'):
                 branch_str = 'HEAD'
 
-            branch = TestBranch.objects.filter(branch_name__iexact=branch_str,is_accept=True).get()
+            branch = TestBranch()
+            branch.branch_name = branch_str
+            branch.save()
+
+            #branch = TestBranch.objects.filter(branch_name__iexact=branch_str,is_accept=True).get()
+
             if not branch:
+                '''
+                print('here')
+                branch = TestBranch()
+                branch.branch_name = branch_item["branch_name"]
+                print(branch.branch_name)
+                # branch.is_accept = True
+                # branch.is_show = True
+                branch.save()
+                '''
                 raise TestDataUploadError('The branch name is unavailable.')
 
             commit = pg_data['commit']
             pg_settings = pg_data['settings']
-            filtered=['checkpoint_timeout','work_mem','shared_buffers','maintenance_work_mem','max_wal_size','min_wal_size']
+
+            filtered = ['checkpoint_timeout','work_mem','shared_buffers','maintenance_work_mem','max_wal_size','min_wal_size']
+
             for item in filtered:
-                pg_settings[item] = pg_settings[item].encode('utf-8')
-                pg_settings[item] = filter(str.isdigit, pg_settings[item])
+                if item.isdigit():
+                    pg_settings[item] = int(pg_settings[item])
+                # pg_settings[item] = pg_settings[item].encode('utf-8')
+                # pg_settings[item] = filter(str.isdigit, pg_settings[item])
 
             pg_settings['log_checkpoints'] = DB_ENUM['general_switch'][pg_settings['log_checkpoints']]
             pgInfo = CreatePGInfoSerializer(data=pg_settings)
             pgInfoRet = None
+
             if pgInfo.is_valid():
                 pgInfoRet = pgInfo.save()
+
             else:
+                print(pg_settings)
                 msg = pgInfo.errors
                 raise TestDataUploadError(msg)
 
@@ -164,27 +186,38 @@ def TestRecordCreate(request, format=None):
                 'meta_time': metaInfoRet.date,
                 'hash': record_hash,
                 'commit': commit,
-                'branch':branch.id,
+                'branch': branch.id,
                 'uuid': shortuuid.uuid()
             }
+
             testRecord = CreateTestRecordSerializer(data=test_record_data)
             testRecordRet = None
+
+            # here
+
             if testRecord.is_valid():
                 testRecordRet = testRecord.save()
+
             else:
                 msg = 'testRecord invalid'
                 print(testRecord.errors)
                 raise TestDataUploadError(msg)
 
+
             pgbench = json_data['pgbench']
             # print(type(ro))
             ro = pgbench['ro']
+
+            # error here
+            print(pgbench)
             for tag, tag_list in pgbench.iteritems():
                 test_cate = TestCategory.objects.get(cate_sn=tag)
+
                 if not test_cate:
                     continue
                 else:
                     print(test_cate.cate_name)
+
                 for scale, dataset_list in tag_list.iteritems():
                     print("ro[%s]=" % scale, dataset_list)
                     for client_num, dataset in dataset_list.iteritems():
