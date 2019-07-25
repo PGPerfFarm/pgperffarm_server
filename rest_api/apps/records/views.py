@@ -12,7 +12,7 @@ from records.filters import TestRecordListFilter
 from machines.models import Machine
 from records.models import TestCategory, TestBranch
 from rest_api.settings import DB_ENUM
-from records.serializers import TestStatusRecordListSerializer, TestBranchSerializer,CreateTestResultSerializer, CreatePGInfoSerializer, TestRecordListSerializer, TestRecordDetailSerializer, LinuxInfoSerializer, MetaInfoSerializer, PGInfoSerializer, CreateTestRecordSerializer, CreateTestDateSetSerializer, TestResultSerializer
+from records.serializers import *
 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
@@ -34,14 +34,24 @@ class BigResultsSetPagination(PageNumberPagination):
     page_size_query_param = 'page_size'
 
 
-class TestBranchListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+class TestBranchListViewSet(viewsets.ModelViewSet):
     """
-    List test records
+    List test branches
     """
 
     queryset = TestBranch.objects.all().order_by('branch_order','add_time')
     serializer_class = TestBranchSerializer
     pagination_class = BigResultsSetPagination
+
+
+class TestCategoryViewSet(viewsets.ModelViewSet):
+    """
+    List test categories
+    """
+
+    queryset = TestCategory.objects.all().order_by('cate_name')
+    serializer_class = TestCategorySerializer
+    pagination_class = StandardResultsSetPagination
 
 
 class TestRecordListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -84,10 +94,8 @@ def TestRecordCreate(request, format=None):
     """
     Receive data from client
     """
-    print(request.__str__())
     data = request.data
 
-    print(type(data[0]))
     json_data = json.dumps(data[0], ensure_ascii=False)
     json_data = json.loads(json_data)
     # obj = data[0].pgbench
@@ -136,22 +144,9 @@ def TestRecordCreate(request, format=None):
             if (branch_str == 'master'):
                 branch_str = 'HEAD'
 
-            branch = TestBranch()
-            branch.branch_name = branch_str
-            branch.save()
-
-            #branch = TestBranch.objects.filter(branch_name__iexact=branch_str,is_accept=True).get()
+            branch = TestBranch.objects.filter(branch_name__iexact=branch_str, is_accept=True).get()
 
             if not branch:
-                '''
-                print('here')
-                branch = TestBranch()
-                branch.branch_name = branch_item["branch_name"]
-                print(branch.branch_name)
-                # branch.is_accept = True
-                # branch.is_show = True
-                branch.save()
-                '''
                 raise TestDataUploadError('The branch name is unavailable.')
 
             commit = pg_data['commit']
@@ -173,7 +168,6 @@ def TestRecordCreate(request, format=None):
                 pgInfoRet = pgInfo.save()
 
             else:
-                print(pg_settings)
                 msg = pgInfo.errors
                 raise TestDataUploadError(msg)
 
@@ -210,7 +204,9 @@ def TestRecordCreate(request, format=None):
 
             # error here
             print(pgbench)
-            for tag, tag_list in pgbench.iteritems():
+            #for tag, tag_list in pgbench.iteritems():
+            for tag, tag_list in pgbench.items():
+
                 test_cate = TestCategory.objects.get(cate_sn=tag)
 
                 if not test_cate:
@@ -218,9 +214,10 @@ def TestRecordCreate(request, format=None):
                 else:
                     print(test_cate.cate_name)
 
-                for scale, dataset_list in tag_list.iteritems():
+                for scale, dataset_list in tag_list.items():
                     print("ro[%s]=" % scale, dataset_list)
-                    for client_num, dataset in dataset_list.iteritems():
+
+                    for client_num, dataset in dataset_list.items():
                         print('std is:' + str(dataset['std']))
 
                         test_dataset_data = {

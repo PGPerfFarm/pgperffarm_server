@@ -17,6 +17,12 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 # branches: work, now they just need to be added
 # 'detail' and 'machine-records' give 'not found' (which might be correct?)
 # records-by-branch has some issue with foreign keys
+# add collectd dependency
+# runner.py
+# remove upload.py
+# users can edit and add, not remove --> status inactive
+# nothing test results
+# fix emails
 
 import os
 import datetime

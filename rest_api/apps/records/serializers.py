@@ -18,7 +18,7 @@ class TestCategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TestCategory
-        fields = ('cate_name', 'cate_sn')
+        fields = ('cate_name', 'cate_sn', 'cate_order')
 
 
 class CreatePGInfoSerializer(serializers.ModelSerializer):
