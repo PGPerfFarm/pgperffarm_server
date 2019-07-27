@@ -1,11 +1,14 @@
 import json
 import os
 import codecs
-import urllib.request
+import requests
+import csv
+import shutil
 
 from multiprocessing import Process, Queue
 from time import gmtime, strftime
 from subprocess import check_output
+import simplejson as json
 
 from utils.logging import log
 
@@ -135,31 +138,34 @@ class BenchmarkRunner(object):
             print (e)
 
     def _upload_results(self, results):
-        postdata = results
-        post = []
+
+        postdata = results  
+        post = []  
         post.append(postdata)
-        req = Request(self._url, json.dumps(post))
-        req.add_header('Authorization', self._secret) # add token in header
-        req.add_header('Content-Type', 'application/json')
-        response = urlopen(req)
+
+        headers = {'Content-Type': 'application/json; charset=utf-8'}
+        r = requests.post(self._url.encode('utf-8'), data=json.dumps(post).encode('utf-8'), headers=headers)
 
 
     def run(self):
         'run all the configured benchmarks'
 
-        # It's ok if the output directory already exists.  One of the other
-        # collector modules may have started before the benchmark.
+        # Removing the existing directory
+        
         try:
             os.mkdir(self._output)
         except OSError as e:
             log("WARNING: output directory already exists: %s" % self._output)
+            log("recreating existing folder")
+            shutil.rmtree(self._output)
+            os.mkdir(self._output)
 
         for config_name in self._configs:
             self._run_config(config_name)
 
 
 def csv_collect_results(bench_name, queue):
-    'collect results into a CSV files (through a queue)'
+    'collect results into a CSV file (through a queue)'
 
     with open("%s.csv" % (bench_name,), 'w') as results_file:
 

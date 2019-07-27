@@ -63,9 +63,13 @@ class CollectdCollector(object):
 
     def stop(self):
         log("stopping collectd")
-        pidfile = open(COLLECTD_PIDFILE, 'r')
-        pid = pidfile.read().strip()
-        run_cmd(['kill', pid])
+        try:
+            pidfile = open(COLLECTD_PIDFILE, 'r')
+            pid = pidfile.read().strip()
+            run_cmd(['kill', pid])
+        except FileNotFoundError:
+            log('collectd pid not found - processes may still be running')
+        
 
     def result(self):
         return {}

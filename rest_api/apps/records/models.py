@@ -88,10 +88,10 @@ class LinuxInfo(models.Model):
     """
     linux info
     """
-    mounts = models.TextField(verbose_name="mounts", help_text="mounts")
-    cpuinfo = models.TextField(verbose_name="cpuinfo", help_text="cpuinfo")
-    sysctl = models.TextField(verbose_name="sysctl", help_text="sysctl")
-    meminfo = models.TextField(verbose_name="meminfo", help_text="meminfo")
+    mounts = models.TextField(verbose_name="mounts", help_text="mounts", default="null")
+    cpuinfo = models.TextField(verbose_name="cpuinfo", help_text="cpuinfo", default="null")
+    sysctl = models.TextField(verbose_name="sysctl", help_text="sysctl", default="null")
+    meminfo = models.TextField(verbose_name="meminfo", help_text="meminfo", default="null")
 
     class Meta:
         verbose_name = "linux info"
@@ -163,7 +163,8 @@ from django.dispatch import receiver
 
 @receiver(pre_save, sender=TestDataSet)
 def calc_status(sender, instance, **kwargs):
-    print('dataset:' + str(instance.id) + "  prev:" + str(instance.prev) + " will be save ")
+    print('dataset: ' + str(instance.id))
+    print('previous: ' + str(instance.prev) + ' will be saved')
 
     machine_id = instance.test_record.test_machine_id
     add_time = instance.test_record.add_time
@@ -202,10 +203,10 @@ class TestResult(models.Model):
     test_dataset = models.ForeignKey(TestDataSet, verbose_name="test dataset id", help_text="test dataset id")
     latency = models.IntegerField(verbose_name="latency", help_text="latency of the test result")
     scale = models.IntegerField(verbose_name="scale", help_text="scale of the test result")
-    end = models.DecimalField(max_digits=16, decimal_places=6, verbose_name="end",
+    end = models.DecimalField(max_digits=32, decimal_places=12, verbose_name="end",
                               help_text="endtime of the test result")
     clients = models.IntegerField(verbose_name="clients", help_text="clients of the test result")
-    start = models.DecimalField(max_digits=16, decimal_places=6, verbose_name="start",
+    start = models.DecimalField(max_digits=32, decimal_places=12, verbose_name="start",
                                 help_text="starttime of the test result")
     tps = models.DecimalField(default=0, max_digits=18, decimal_places=6, verbose_name="tps",
                               help_text="tps of the test result")

@@ -43,7 +43,8 @@ class PgCluster(object):
 
         with TemporaryFile() as strout:
             log("killing all existing postgres processes")
-            call(['killall', 'postgres'], stdout=strout, stderr=STDOUT)
+            # psql, pgbench
+            #call(['killall', 'postgres'], stdout=strout, stderr=STDOUT)
 
         # remove the data directory
         if os.path.exists(self._data):

@@ -112,19 +112,28 @@ def TestRecordCreate(request, format=None):
         if test_machine <= 0:
             raise TestDataUploadError("The machine is unavailable.")
 
+        # check from here
         record_hash = make_password(str(json_data), 'pg_perf_farm')
         # print(record_hash.__len__()) 77
         r = TestRecord.objects.filter(hash=record_hash).count()
         if r != 0:
-            raise TestDataUploadError("The same record already exists, please do not submit it twice.")
+            print('test')
+            raise TestDataUploadError('The same record already exists, please do not submit it twice.')
 
         with transaction.atomic():
 
-            linux_data = json_data['linux']
-            linuxInfo = LinuxInfoSerializer(data=linux_data)
-            linuxInfoRet = None
+            if 'linux' not in json_data:
+                print('linuxInfo not found')
+                linuxInfo = LinuxInfoSerializer(data={'mounts': 'none', 'cpuinfo': 'none', 'sysctl': 'none', 'meminfo': 'none'})
+
+            else:
+                linux_data = json_data['linux']
+                linuxInfo = LinuxInfoSerializer(data=linux_data)
+                linuxInfoRet = None
+
             if linuxInfo.is_valid():
                 linuxInfoRet = linuxInfo.save()
+
             else:
                 msg = 'linuxInfo invalid'
                 raise TestDataUploadError(msg)
@@ -184,10 +193,10 @@ def TestRecordCreate(request, format=None):
                 'uuid': shortuuid.uuid()
             }
 
+            print(test_record_data)
+
             testRecord = CreateTestRecordSerializer(data=test_record_data)
             testRecordRet = None
-
-            # here
 
             if testRecord.is_valid():
                 testRecordRet = testRecord.save()
@@ -197,13 +206,10 @@ def TestRecordCreate(request, format=None):
                 print(testRecord.errors)
                 raise TestDataUploadError(msg)
 
-
             pgbench = json_data['pgbench']
             # print(type(ro))
             ro = pgbench['ro']
 
-            # error here
-            print(pgbench)
             #for tag, tag_list in pgbench.iteritems():
             for tag, tag_list in pgbench.items():
 
@@ -215,10 +221,8 @@ def TestRecordCreate(request, format=None):
                     print(test_cate.cate_name)
 
                 for scale, dataset_list in tag_list.items():
-                    print("ro[%s]=" % scale, dataset_list)
 
                     for client_num, dataset in dataset_list.items():
-                        print('std is:' + str(dataset['std']))
 
                         test_dataset_data = {
                             'test_record': testRecordRet.id,
@@ -235,7 +239,6 @@ def TestRecordCreate(request, format=None):
                         testDateSet = CreateTestDateSetSerializer(data=test_dataset_data)
                         testDateSetRet = None
                         if testDateSet.is_valid():
-                            print('dataset valid')
                             testDateSetRet = testDateSet.save()
                         else:
                             # print(testDateSet.errors)
@@ -243,6 +246,7 @@ def TestRecordCreate(request, format=None):
                             raise TestDataUploadError(msg)
 
                         test_result_list = dataset['results']
+
                         for test_result in test_result_list:
                             test_result_data = test_result
                             test_result_data['test_dataset'] = testDateSetRet.id
@@ -250,18 +254,19 @@ def TestRecordCreate(request, format=None):
                             testResult = CreateTestResultSerializer(data=test_result_data)
 
                             testResultRet = None
+
                             if testResult.is_valid():
-                                print('testResult valid')
                                 testResultRet = testResult.save()
+
                             else:
-                                # print(testResult.error_messages)
-                                msg = testResult.error_messages
+                                msg = testResult.errors
                                 raise TestDataUploadError(msg)
+
 
     except Exception as e:
         msg = 'Upload error: ' + e.__str__()
-        # todo add log
+        print(msg)
         return Response(msg, status=status.HTTP_406_NOT_ACCEPTABLE)
 
-    msg = 'Upload successful!'
-    return Response(msg, status=status.HTTP_201_CREATED)
+    print('Upload successful!')
+    return Response(status=status.HTTP_201_CREATED)

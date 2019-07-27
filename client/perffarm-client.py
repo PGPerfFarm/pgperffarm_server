@@ -33,8 +33,10 @@ if __name__ == '__main__':
 
         repository = GitRepository(url=GIT_URL, path=REPOSITORY_PATH)
 
+        '''
         repository.clone_or_update()
         repository.build_and_install(path=BUILD_PATH)
+        '''
 
         # build and start a postgres cluster
 

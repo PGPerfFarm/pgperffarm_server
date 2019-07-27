@@ -10,19 +10,21 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
-# todo: add reverse, url list on the homepage
+# todo: add reverse, url list on the homepage [optional]
 # users: everything working, just let's add a password field, change password, and revoke crud permissions to non admins
 # machines: adding works, linking to username works (add email?), reports and lastest not working
 # records: filters not working!!!
 # branches: work, now they just need to be added
 # 'detail' and 'machine-records' give 'not found' (which might be correct?)
 # records-by-branch has some issue with foreign keys
-# add collectd dependency
-# runner.py
-# remove upload.py
+
 # users can edit and add, not remove --> status inactive
-# nothing test results
+# no delete/update of test results
 # fix emails
+
+# remove upload.py [later] and use runner.py
+# cluster.py uncomment killing line
+# fix test already exists message
 
 import os
 import datetime

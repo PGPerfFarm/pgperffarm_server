@@ -49,22 +49,22 @@ class PGInfoSerializer(serializers.ModelSerializer):
         return new_dict[obj.log_checkpoints]
 
     def get_checkpoint_timeout(self, obj):
-        return obj.checkpoint_timeout.__str__() + 'min'
+        return obj.checkpoint_timeout.__str__()
 
     def get_work_mem(self, obj):
-        return obj.work_mem.__str__() + 'MB'
+        return obj.work_mem.__str__()
 
     def get_shared_buffers(self, obj):
-        return obj.shared_buffers.__str__() + 'GB'
+        return obj.shared_buffers.__str__()
 
     def get_maintenance_work_mem(self, obj):
-        return obj.maintenance_work_mem.__str__() + 'MB'
+        return obj.maintenance_work_mem.__str__()
 
     def get_max_wal_size(self, obj):
-        return obj.max_wal_size.__str__() + 'GB'
+        return obj.max_wal_size.__str__()
 
     def get_min_wal_size(self, obj):
-        return obj.min_wal_size.__str__() + 'GB'
+        return obj.min_wal_size.__str__()
 
 
 class HardwareInfoDetailSerializer(serializers.ModelSerializer):

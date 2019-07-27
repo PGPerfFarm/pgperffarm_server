@@ -84,6 +84,8 @@ class PgBench(object):
     def _parse_results(data):
         'extract results (including parameters) from the pgbench output'
 
+        data = data.decode('utf-8')
+
         scale = -1
         r = re.search('scaling factor: ([0-9]+)', data)
         if r:
@@ -237,7 +239,7 @@ class PgBench(object):
                     tag = 'rw'
 
                 for i in range(self._runs):
-                    log("pgbench : %s run=%d" % (tag, i))
+                    log("pgbench: %s run=%d" % (tag, i))
 
                     for clients in config['clients']:
                         if clients not in results[tag][scale]:
