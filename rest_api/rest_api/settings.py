@@ -10,8 +10,6 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
-# todo: add reverse, url list on the homepage [optional]
-# users: everything working, just let's add a password field, change password, and revoke crud permissions to non admins
 # machines: adding works, linking to username works (add email?), reports and lastest not working
 # records: filters not working!!!
 # branches: work, now they just need to be added
@@ -21,6 +19,7 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 # users can edit and add, not remove --> status inactive
 # no delete/update of test results
 # fix emails
+# change password and reset (reset + confirm, make a form)
 
 # remove upload.py [later] and use runner.py
 # cluster.py uncomment killing line
@@ -60,6 +59,7 @@ INSTALLED_APPS = [
 	'django.contrib.messages',
 	'django.contrib.staticfiles',
 	'rest_framework',
+	'rest_auth',
 	'rest_framework.authtoken',
 	'corsheaders',
 	'users',
@@ -81,6 +81,10 @@ REST_FRAMEWORK = {
 	'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
 	'PAGE_SIZE': 10
 }
+
+
+ACCOUNT_LOGOUT_ON_GET = True
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 
 MIDDLEWARE = [
@@ -186,6 +190,7 @@ JWT_AUTH = {
 }
 
 
+REST_USE_JWT = True
 
 
 CORS_ALLOW_METHODS = (

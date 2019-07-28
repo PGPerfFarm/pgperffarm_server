@@ -36,7 +36,6 @@ router = routers.DefaultRouter()
 urlpatterns = [
     url('', include(router.urls)),
     url(r'^admin/', admin.site.urls),
-    url('authentication/', include('rest_framework.urls')),
     url(r'^obtain_token/', obtain_jwt_token),
   	url(r'^refresh_token/', refresh_jwt_token),
     url('', include('machines.urls')),

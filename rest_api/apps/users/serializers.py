@@ -5,17 +5,25 @@ from machines.serializers import MachineSerializer
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
-	machines = serializers.HyperlinkedRelatedField(
-		many=True, view_name='machine-detail', read_only=True)
+	machines = serializers.HyperlinkedRelatedField(many=True, view_name='machine-detail', read_only=True)
+	password = serializers.CharField(write_only=True)
 
 	class Meta:
 		model = User
-		fields = ('url', 'id', 'username', 'password', 'machines')
+		fields = ('id', 'username', 'password', 'email', 'machines')
+
+	'''
+	def create(self, email, username, password):
+		user = super(UserSerializer, self).create(email=self.normalize_email(email), username=username)
+		user.set_password(password)
+		user.save()
+		return user
+	'''
 
 	def get_reports(self, obj):
-		'''
-		reports num
-		'''
+		"""
+		Number of reports
+		"""
 		machine_dict = []
 		target_machines = Machine.objects.filter(owner=obj.id)
 		serializer = MachineSerializer(target_machines, many=True)
@@ -30,3 +38,6 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
 class TokenSerializer(serializers.Serializer):
 	token = serializers.CharField(max_length=255)
+
+
+
