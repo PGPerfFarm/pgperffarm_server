@@ -10,7 +10,7 @@ from django.contrib.auth.models import AbstractUser
 
 
 # Create your models here.
-# from .serializer import JWTUserProfileSerializer
+# from .serializer import JWTUserProfileSerializer 
 
 
 class UserProfile(AbstractUser):

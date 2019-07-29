@@ -66,6 +66,15 @@ class TestRecordListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     #filter_class = TestRecordListFilter
 
 
+class MachineHistoryRecordViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    """
+    Machine info page
+    """
+    lookup_field = 'sn'
+    queryset = Machine.objects.all().order_by('add_time')
+    serializer_class = MachineHistoryRecordSerializer
+
+
 class TestRecordListByBranchViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     """
     List test records (/status)

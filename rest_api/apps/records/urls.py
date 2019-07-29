@@ -8,6 +8,7 @@ router.register(r'branches', views.TestBranchListViewSet, base_name="branches"),
 router.register(r'records-by-branch', views.TestRecordListByBranchViewSet, base_name="records-by-branch"),
 router.register(r'detail', views.TestRecordDetailViewSet, base_name="detail"),
 router.register(r'category', views.TestCategoryViewSet, base_name="test-category"),
+router.register(r'machine-records', views.MachineHistoryRecordViewSet, base_name="machine-records")
 
 urlpatterns = [
 	url(r'^', include(router.urls)),
