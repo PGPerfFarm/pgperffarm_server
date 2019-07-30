@@ -7,12 +7,13 @@ from machines.models import Machine, Alias
 class MachineSerializer(serializers.HyperlinkedModelSerializer):
 
 	reports = serializers.SerializerMethodField()
-	owner = serializers.ReadOnlyField(source='owner.username')
+	owner_username = serializers.ReadOnlyField()
+	owner_email = serializers.ReadOnlyField()
 	alias = serializers.SerializerMethodField()
 
 	class Meta:
 		model = Machine
-		fields = ('alias', 'os_name', 'os_version', 'comp_name', 'comp_version', 'reports', 'owner', 'sn')
+		fields = ('alias', 'os_name', 'os_version', 'comp_name', 'comp_version', 'reports', 'owner_username', 'owner_email', 'sn')
 
 	def get_alias(self, obj):
 		target_alias = Alias.objects.filter(name=obj.alias).first()

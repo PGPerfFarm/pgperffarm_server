@@ -36,40 +36,8 @@ class Machine(models.Model):
 	comp_name = models.CharField(max_length=100, blank=True, default='')
 	comp_version = models.CharField(max_length=100, blank=True, default='')
 	state = models.CharField(max_length=10, choices=STATE, default=ACTIVE)
-	owner = models.ForeignKey('auth.User', related_name='machines', on_delete=models.CASCADE)
+	owner_username = models.ForeignKey('auth.User', related_name='machines', on_delete=models.CASCADE)
+	owner_email = models.EmailField(max_length=256, verbose_name="email", unique=True, default='no@mail.com')
 
 	class Meta:
 		ordering = ('add_time',)
-
-	def save(self, *args, **kwargs):
-
-		alias = Alias.objects.filter(is_used=False).order_by('?').first()
-		if not alias:
-			return {"is_success": False, "alias": '', "secret": '', "email":''}
-
-		from django.db import transaction
-		with transaction.atomic():
-			alias.is_used = True
-			alias.save()
-
-			self.alias = alias['name']
-			self.state = 1
-
-		if not self.machine_sn:
-			self.sn = shortuuid.ShortUUID().random(length=16)
-
-		if not self.machine_secret:
-			machine_str = self.alias + self.os_name + self.os_version + self.comp_name + self.comp_version + self.sn
-
-		m = hashlib.md5()
-		m.update(make_password(str(machine_str), 'pg_perf_farm').encode('utf-8'))
-		self.machine_secret = m.hexdigest()
-
-		self.save()
-
-		print(self.machine_owner.email)
-		user_email = self.machine_owner.email
-		system = self.os_name + ' ' + self.os_version
-		compiler = self.comp_name + ' ' + self.comp_version
-		return  {"is_success": True, "alias": self.alias.name, "secret": self.machine_secret, "system": system,  "compiler":compiler,"email":user_email}
-

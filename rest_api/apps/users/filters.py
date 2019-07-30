@@ -12,7 +12,7 @@ class UserMachineListFilter(django_filters.rest_framework.FilterSet):
 
 	class Meta:
 		model = Machine
-		fields = ['owner__username', ]
+		fields = ['owner_username', ]
 
 
 class MachineRecordListFilter(django_filters.rest_framework.FilterSet):
