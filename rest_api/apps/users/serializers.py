@@ -5,7 +5,7 @@ from machines.serializers import MachineSerializer
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
-	machines = serializers.HyperlinkedRelatedField(many=True, view_name='machine-detail', read_only=True)
+	machines = serializers.HyperlinkedRelatedField(many=True, view_name='my-machines', read_only=True, lookup_field='alias')
 	password = serializers.CharField(write_only=True)
 
 	class Meta:

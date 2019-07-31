@@ -4,7 +4,7 @@ from machines import views
 
 router = DefaultRouter()
 router.register(r'machines', views.MachineViewSet)
-router.register(r'my-machines', views.UserMachineViewSet, base_name="my-machine")
+router.register(r'my-machines/<sn>', views.UserMachineViewSet, base_name="my-machines")
 router.register(r'aliases', views.AliasViewSet, base_name="aliases")
  
 urlpatterns = [

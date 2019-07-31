@@ -37,17 +37,16 @@ class UserMachineViewSet(viewsets.ModelViewSet):
 		owner = self.request.user
 
 		user = User.objects.get(username=owner)
-		user_serializer = UserSerializer(user)
+		user_serializer = UserSerializer(user, context={'request': request})
 
 		data['owner_username'] = user_serializer.data['username']
-		data['owner_mail'] = user_serializer.data['email']
+		data['owner_email'] = user_serializer.data['email']
 
 		alias = Alias.objects.filter(is_used=False).order_by('?').first()
-
-		'''
-		if not alias:
-			return {"is_success": False, "alias": '', "secret": '', "email": ''}
-		'''
+		
+		# if not alias:
+			# return {"is_success": False, "alias": '', "secret": '', "email": ''}
+		
 
 		from django.db import transaction
 		with transaction.atomic():
@@ -65,15 +64,16 @@ class UserMachineViewSet(viewsets.ModelViewSet):
 		m.update(make_password(str(machine_str), 'pg_perf_farm').encode('utf-8'))
 		data['machine_secret'] = m.hexdigest()
 
-		#self.save()
 		serializer = MachineSerializer(data=data)
 		serializer.is_valid(raise_exception=True)
 
-
-		serializer.save()
-
+		machine = self.perform_create(serializer)
 		headers = self.get_success_headers(serializer.data)
+
 		return Response('Machine added successfully!', status=status.HTTP_201_CREATED, headers=headers)
+
+	def perform_create(self, serializer):
+		return serializer.save()
 
 
 class MachineViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):

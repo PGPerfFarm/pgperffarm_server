@@ -1,13 +1,14 @@
 from rest_framework import serializers
 from machines.models import Machine, Alias
+from django.contrib.auth.models import User
 
 # an automatically determined set of fields
 # simple default implementations for the create() and update() methods
 
-class MachineSerializer(serializers.HyperlinkedModelSerializer):
+class MachineSerializer(serializers.ModelSerializer):
 
 	reports = serializers.SerializerMethodField()
-	owner_username = serializers.ReadOnlyField()
+	owner_username = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
 	owner_email = serializers.ReadOnlyField()
 	alias = serializers.SerializerMethodField()
 
