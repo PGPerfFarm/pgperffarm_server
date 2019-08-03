@@ -10,7 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
-# machines: adding works, linking to username works (add email?), reports and lastest not working
+# machines: add username to fields?
 # records: filters not working!!!
 # branches: work, now they just need to be added
 # 'detail' and 'machine-records' give 'not found' (which might be correct?)
@@ -59,14 +59,27 @@ INSTALLED_APPS = [
 	'django.contrib.sessions',
 	'django.contrib.messages',
 	'django.contrib.staticfiles',
+	'django.contrib.sites',
 	'rest_framework',
 	'rest_auth',
+	'allauth',
+	'allauth.account',
+	'rest_auth.registration',
+	'allauth.socialaccount',
+	'allauth.socialaccount.providers.facebook',
+	'allauth.socialaccount.providers.twitter',
+	'allauth.socialaccount.providers.github',
+	'allauth.socialaccount.providers.microsoft',
+	'allauth.socialaccount.providers.google',	
 	'rest_framework.authtoken',
 	'corsheaders',
 	'users',
 	'records',
 	'machines'
 ]
+
+
+SITE_ID = 1
 
 
 REST_FRAMEWORK = {
@@ -221,25 +234,25 @@ CORS_ALLOW_HEADERS = (
 
 
 DB_ENUM = {
-    "general_switch": {
-        "on": 1,
-        "off": 2
-    },
-    "mode": {
-        "simple": 1,
-        "other": 2
-    },
-    "machine_state": {
-        "prohibited": -1,
-        "pending": 0,
-        "active": 1,
-    },
-    "status": {
-        "none": -1,
-        "improved": 1,
-        "quo": 2,
-        "regressive": 3
-    }
+	"general_switch": {
+		"on": 1,
+		"off": 2
+	},
+	"mode": {
+		"simple": 1,
+		"other": 2
+	},
+	"machine_state": {
+		"prohibited": -1,
+		"pending": 0,
+		"active": 1,
+	},
+	"status": {
+		"none": -1,
+		"improved": 1,
+		"quo": 2,
+		"regressive": 3
+	}
 }
 
 

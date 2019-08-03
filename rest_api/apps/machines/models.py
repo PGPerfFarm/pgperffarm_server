@@ -37,7 +37,10 @@ class Machine(models.Model):
 	comp_version = models.CharField(max_length=100, blank=True, default='')
 	state = models.CharField(max_length=10, choices=STATE, default=ACTIVE)
 	owner_username = models.ForeignKey('auth.User', related_name='machines', on_delete=models.CASCADE)
-	owner_email = models.EmailField(max_length=256, verbose_name="email", unique=True)
+	owner_email = models.EmailField(max_length=256, verbose_name='email')
 
 	class Meta:
 		ordering = ('add_time',)
+
+	def __str__(self):
+		return self.alias

@@ -4,21 +4,13 @@ from machines.models import Machine
 from machines.serializers import MachineSerializer
 
 
-class UserSerializer(serializers.HyperlinkedModelSerializer):
-	machines = serializers.HyperlinkedRelatedField(many=True, view_name='my-machines', read_only=True, lookup_field='alias')
+class UserSerializer(serializers.ModelSerializer):
+	machines = serializers.StringRelatedField(many=True, read_only=True)
 	password = serializers.CharField(write_only=True)
 
 	class Meta:
 		model = User
 		fields = ('id', 'username', 'password', 'email', 'machines')
-
-	'''
-	def create(self, email, username, password):
-		user = super(UserSerializer, self).create(email=self.normalize_email(email), username=username)
-		user.set_password(password)
-		user.save()
-		return user
-	'''
 
 	def get_reports(self, obj):
 		"""

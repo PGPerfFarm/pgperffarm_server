@@ -7,6 +7,15 @@ from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework.decorators import list_route
 from django.shortcuts import get_object_or_404
 
+from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
+from allauth.socialaccount.providers.twitter.views import TwitterOAuthAdapter
+from rest_auth.social_serializers import TwitterLoginSerializer
+from allauth.socialaccount.providers.github.views import GitHubOAuth2Adapter
+from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
+from allauth.socialaccount.providers.microsoft.views import MicrosoftGraphOAuth2Adapter
+from allauth.socialaccount.providers.oauth2.client import OAuth2Client
+from rest_auth.registration.views import SocialLoginView
+
 from django.contrib.auth.models import User
 from users.serializers import UserSerializer
 from machines.models import Machine
@@ -42,24 +51,6 @@ class UserViewSet(viewsets.ViewSet):
 	def destroy(self, request, pk=None):
 		pass
 
-	'''
-	@list_route(methods=['put'], serializer_class=ChangePasswordSerializer)
-	def set_password(self, request):
-		serializer = ChangePasswordSerializer(data=request.data)
-		user = self.get_object()
-
-		if serializer.is_valid():
-			if not user.check_password(serializer.data.get('old_password')):
-				return Response({'old_password': ['wrong password.']}, 
-								status=status.HTTP_400_BAD_REQUEST)
-			# set_password also hashes the password that the user will get
-			user.set_password(serializer.data.get('new_password'))
-			user.save()
-			return Response({'status': 'password set'}, status=status.HTTP_200_OK)
-
-		return Response(serializer.errors,
-						status=status.HTTP_400_BAD_REQUEST)
-	'''
 
 class UserMachineRecordByBranchListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 	"""
@@ -120,4 +111,27 @@ class UserMachinePermission(permissions.BasePermission):
 		# alias = request.data.alias
 		ret = Machine.objects.filter(machine_secret=secret, state=1).exists()
 		return ret
+
+
+class FacebookLogin(SocialLoginView):
+	adapter_class = FacebookOAuth2Adapter
+
+
+class TwitterLogin(SocialLoginView):
+	serializer_class = TwitterLoginSerializer
+	adapter_class = TwitterOAuthAdapter
+
+
+class GithubLogin(SocialLoginView):
+	adapter_class = GitHubOAuth2Adapter
+	callback_url = 'localhost:8000'
+	client_class = OAuth2Client
+
+
+class GoogleLogin(SocialLoginView):
+	adapter_class = GoogleOAuth2Adapter
+
+
+class MicrosoftLogin(SocialLoginView):
+	adapter_class = MicrosoftGraphOAuth2Adapter
 

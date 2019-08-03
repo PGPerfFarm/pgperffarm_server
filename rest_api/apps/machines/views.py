@@ -1,5 +1,5 @@
 from machines.models import Machine, Alias
-from machines.serializers import MachineSerializer, AliasSerializer
+from machines.serializers import MachineSerializer, AliasSerializer, UserMachineSerializer
 from users.serializers import UserSerializer
 from rest_framework import permissions, renderers, viewsets, mixins, authentication, serializers, status
 from machines.permissions import IsOwnerOrReadOnly
@@ -17,63 +17,46 @@ class UserMachineViewSet(viewsets.ModelViewSet):
 	authentication_classes = (JSONWebTokenAuthentication, authentication.SessionAuthentication, )
 	permission_classes = (permissions.IsAuthenticated, )
 	queryset = Machine.objects.all().order_by('add_time')
-	serializer_class = MachineSerializer
-	'''
-	pagination_class = MiddleResultsSetPagination
-	filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
-	filter_class = UserMachineListFilter
-	'''
+	serializer_class = UserMachineSerializer
+	lookup_field = 'sn'
+
 
 	def post(self, request, *args, **kwargs):
 		return self.create(request, *args, **kwargs)
 
 	def create(self, request, *args, **kwargs):
-		data = {}
-		data['os_name'] = request.data['os_name']
-		data['os_version'] = request.data['os_version']
-		data['comp_name'] = request.data['comp_name']
-		data['comp_version'] = request.data['comp_version']
-
-		owner = self.request.user
-
-		user = User.objects.get(username=owner)
-		user_serializer = UserSerializer(user, context={'request': request})
-
-		data['owner_username'] = user_serializer.data['username']
-		data['owner_email'] = user_serializer.data['email']
 
 		alias = Alias.objects.filter(is_used=False).order_by('?').first()
 		
-		# if not alias:
-			# return {"is_success": False, "alias": '', "secret": '', "email": ''}
+		if not alias:
+			return Response('Alias not available!', status=status.HTTP_406_NOT_ACCEPTABLE)
 		
-
 		from django.db import transaction
 		with transaction.atomic():
-			#alias.is_used = True
-			#alias.save()
+			alias.is_used = True
+			alias.save()
 
-			data['alias'] = alias.name
-			data['state'] = 1
+		sn = shortuuid.ShortUUID().random(length=16)
 
-			data['sn'] = shortuuid.ShortUUID().random(length=16)
-
-			machine_str = str(data)
+		machine_str = 'test'
 
 		m = hashlib.md5()
 		m.update(make_password(str(machine_str), 'pg_perf_farm').encode('utf-8'))
-		data['machine_secret'] = m.hexdigest()
+		machine_secret = m.hexdigest()
 
-		serializer = MachineSerializer(data=data)
+		serializer = MachineSerializer(data=self.request.data)
 		serializer.is_valid(raise_exception=True)
+		serializer.save(
+			owner_username=self.request.user, 
+			owner_email=self.request.user.email, 
+			alias=alias.name, 
+			sn=sn,
+			machine_secret=machine_secret,
+			state=1
+			)
 
-		machine = self.perform_create(serializer)
 		headers = self.get_success_headers(serializer.data)
-
 		return Response('Machine added successfully!', status=status.HTTP_201_CREATED, headers=headers)
-
-	def perform_create(self, serializer):
-		return serializer.save()
 
 
 class MachineViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -82,6 +65,7 @@ class MachineViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 	"""
 	queryset =  Machine.objects.all().order_by('add_time')
 	serializer_class = MachineSerializer
+	lookup_field = 'sn'
 
 
 class AliasViewSet(viewsets.ModelViewSet):

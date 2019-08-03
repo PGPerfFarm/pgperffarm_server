@@ -113,17 +113,13 @@ def TestRecordCreate(request, format=None):
     from django.db import transaction
 
     try:
-        # todo get machine by token
-        # secret = request.META.get("HTTP_AUTHORIZATION")
-        sn = '123'
-        ret = Machine.objects.filter(sn=sn).get() # state=active
+        secret = request.META.get("HTTP_AUTHORIZATION")
+        ret = Machine.objects.filter(machine_secret=secret, state=1).get()
         test_machine = ret.id
         if test_machine <= 0:
             raise TestDataUploadError("The machine is unavailable.")
 
-        # check from here
         record_hash = make_password(str(json_data), 'pg_perf_farm')
-        # print(record_hash.__len__()) 77
         r = TestRecord.objects.filter(hash=record_hash).count()
         if r != 0:
             print('test')
@@ -222,6 +218,7 @@ def TestRecordCreate(request, format=None):
             #for tag, tag_list in pgbench.iteritems():
             for tag, tag_list in pgbench.items():
 
+                print(tag)
                 test_cate = TestCategory.objects.get(cate_sn=tag)
 
                 if not test_cate:
