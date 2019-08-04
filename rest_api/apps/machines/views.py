@@ -52,7 +52,7 @@ class UserMachineViewSet(viewsets.ModelViewSet):
 			alias=alias.name, 
 			sn=sn,
 			machine_secret=machine_secret,
-			state=1
+			state='A'
 			)
 
 		headers = self.get_success_headers(serializer.data)

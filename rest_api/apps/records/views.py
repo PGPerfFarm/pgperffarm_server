@@ -54,7 +54,7 @@ class TestCategoryViewSet(viewsets.ModelViewSet):
     pagination_class = StandardResultsSetPagination
 
 
-class TestRecordListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+class TestRecordListViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     """
     List test records
     """
@@ -63,7 +63,7 @@ class TestRecordListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = TestRecordListSerializer
     pagination_class = StandardResultsSetPagination
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
-    #filter_class = TestRecordListFilter
+    lookup_field = 'uuid'
 
 
 class MachineHistoryRecordViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
@@ -79,22 +79,11 @@ class TestRecordListByBranchViewSet(mixins.ListModelMixin, viewsets.GenericViewS
     """
     List test records (/status)
     """
-
-    queryset = TestRecord.objects.order_by('test_machine__alias__name','-add_time').distinct('test_machine__alias__name').all()
+    queryset = TestRecord.objects.order_by('test_machine__alias','-add_time').distinct('test_machine__alias').all()
     serializer_class = TestRecordListSerializer
     pagination_class = StandardResultsSetPagination
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     #filter_class = TestRecordListFilter
-
-
-class TestRecordDetailViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
-    """
-    detail test records
-    """
-    lookup_field = 'uuid'
-    queryset = TestRecord.objects.all().order_by('add_time')
-    serializer_class = TestRecordDetailSerializer
-    # pagination_class = StandardResultsSetPagination
 
 
 @api_view(['POST'])
@@ -114,7 +103,7 @@ def TestRecordCreate(request, format=None):
 
     try:
         secret = request.META.get("HTTP_AUTHORIZATION")
-        ret = Machine.objects.filter(machine_secret=secret, state=1).get()
+        ret = Machine.objects.filter(machine_secret=secret, state='A').get()
         test_machine = ret.id
         if test_machine <= 0:
             raise TestDataUploadError("The machine is unavailable.")

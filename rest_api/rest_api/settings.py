@@ -13,8 +13,6 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 # machines: add username to fields?
 # records: filters not working!!!
 # branches: work, now they just need to be added
-# 'detail' and 'machine-records' give 'not found' (which might be correct?)
-# records-by-branch has some issue with foreign keys
 # fix permissions for aliases and other admin stuff
 
 # users can edit and add, not remove --> status inactive

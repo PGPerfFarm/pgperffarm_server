@@ -3,7 +3,7 @@ from rest_framework import serializers
 from rest_api.settings import DB_ENUM
 from records.models import TestRecord, TestResult, PGInfo, LinuxInfo, MetaInfo, TestDataSet, TestCategory, TestBranch
 from machines.models import Machine
-from machines.serializers import MachineSerializer
+from machines.serializers import MachineSerializer, MachineRecordSerializer
 from django.db.models import Count
 
 
@@ -56,7 +56,7 @@ class MachineHistoryRecordSerializer(serializers.ModelSerializer):
 
     def get_machine_info(self, obj):
         target_machine = Machine.objects.filter(id=obj.id).first()
-        serializer = MachineSerializer(target_machine)
+        serializer = MachineRecordSerializer(target_machine)
 
         return serializer.data
 
@@ -245,7 +245,7 @@ class TestStatusRecordListSerializer(serializers.ModelSerializer):
 
 class TestRecordListSerializer(serializers.ModelSerializer):
 
-    # pg_info = PGInfoSerializer()
+    pg_info = PGInfoSerializer()
     linux_info = LinuxInfoSerializer()
     meta_info = MetaInfoSerializer()
     branch = serializers.SerializerMethodField()
@@ -255,7 +255,8 @@ class TestRecordListSerializer(serializers.ModelSerializer):
     # client_max_num = serializers.SerializerMethodField()
     class Meta:
         model = TestRecord
-        fields = ('uuid', 'add_time', 'machine_info', 'branch', 'trend', 'linux_info', 'meta_info', 'commit')
+        fields = ('uuid', 'add_time', 'machine_info', 'branch', 'trend', 'linux_info', 'meta_info', 'pg_info', 'commit')
+
 
     def get_branch(self, obj):
         branch = TestBranch.objects.filter(id=obj.branch.id).first()
@@ -292,13 +293,54 @@ class TestRecordListSerializer(serializers.ModelSerializer):
     def get_machine_info(self, obj):
         machine_data = Machine.objects.filter(id=obj.test_machine_id).get()
 
-        machine_info_serializer = MachineSerializer(machine_data)
+        machine_info_serializer = MachineRecordSerializer(machine_data)
         return machine_info_serializer.data
 
-    # def get_client_max_num(self, obj):
-    #     ro_client_num = TestResult.objects.filter(Q(test_record_id=obj.id ) ,test_cate_id=1).order_by('clients').distinct('clients').count()
-    #     rw_client_num = TestResult.objects.filter(Q(test_record_id=obj.id ) ,test_cate_id=2).order_by('clients').distinct('clients').count()
-    #     return max(ro_client_num,rw_client_num)
+
+class TestRecordLastestSerializer(serializers.ModelSerializer):
+
+    pg_info = PGInfoSerializer()
+    linux_info = LinuxInfoSerializer()
+    meta_info = MetaInfoSerializer()
+    branch = serializers.SerializerMethodField()
+    trend = serializers.SerializerMethodField()
+
+    class Meta:
+        model = TestRecord
+        fields = ('uuid', 'add_time', 'branch', 'trend', 'linux_info', 'meta_info', 'pg_info', 'commit')
+
+
+    def get_branch(self, obj):
+        branch = TestBranch.objects.filter(id=obj.branch.id).first()
+
+        serializer = TestBranchSerializer(branch)
+        return serializer.data["branch_name"]
+
+    def get_trend(self, obj):
+        dataset_list = TestDataSet.objects.filter(test_record_id=obj.id).values_list('status').annotate(Count('id'))
+        data_list_count = TestDataSet.objects.filter(test_record_id=obj.id).count()
+
+        trend = {}
+        trend['improved'] = 0
+        trend['quo'] = 0
+        trend['regressive'] = 0
+        trend['none'] = 0
+        trend['is_first'] = False
+        for i in dataset_list:
+            if i[0] == DB_ENUM['status']['improved']:
+                trend['improved'] += i[1]
+            elif i[0] == DB_ENUM['status']['quo']:
+                trend['quo'] += i[1]
+            elif i[0] == DB_ENUM['status']['regressive']:
+                trend['regressive'] += i[1]
+            elif i[0] == DB_ENUM['status']['none']:
+                trend['none'] += i[1]
+
+        if (data_list_count == trend['none']):
+            trend['is_first'] = True
+
+        print(str(data_list_count))
+        return trend
 
 
 class TestDataSetDetailSerializer(serializers.ModelSerializer):
