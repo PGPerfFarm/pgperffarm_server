@@ -10,13 +10,13 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
-# machines: add username to fields?
-# records: filters not working!!!
+# machines: add username to fields? 
 # branches: work, now they just need to be added
 # fix permissions for aliases and other admin stuff
 
+# working: records, machines, single machine, login
+# fix: my-machines
 # users can edit and add, not remove --> status inactive
-# no delete/update of test results
 # fix emails
 # change password and reset (reset + confirm, make a form)
 
@@ -82,13 +82,14 @@ SITE_ID = 1
 
 REST_FRAMEWORK = {
 	'DEFAULT_PERMISSION_CLASSES': (
-		'rest_framework.permissions.IsAuthenticated',
 		'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
+		'rest_framework.permissions.IsAuthenticated',
 	),
 	'DEFAULT_AUTHENTICATION_CLASSES': (
+		'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
 		'rest_framework.authentication.SessionAuthentication',
 		#'rest_framework.permissions.IsAuthenticated',
-		#'rest_framework.authentication.BasicAuthentication',
+		'rest_framework.authentication.BasicAuthentication',
 	),
 	'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
 	'PAGE_SIZE': 10
@@ -100,9 +101,9 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 
 MIDDLEWARE = [
+	'corsheaders.middleware.CorsMiddleware',
 	'django.middleware.security.SecurityMiddleware',
 	'django.contrib.sessions.middleware.SessionMiddleware',
-	'corsheaders.middleware.CorsMiddleware',
 	'django.middleware.common.CommonMiddleware',
 	'django.middleware.csrf.CsrfViewMiddleware',
 	'django.contrib.auth.middleware.AuthenticationMiddleware',

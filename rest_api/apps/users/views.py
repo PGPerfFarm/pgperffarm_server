@@ -59,7 +59,7 @@ class UserMachineRecordByBranchListViewSet(mixins.ListModelMixin, viewsets.Gener
 	queryset = TestRecord.objects.all().order_by('-add_time')
 	serializer_class = TestRecordListSerializer
 	filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
-	filter_class = MachineRecordListFilter
+	permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly, )
 
 
 class UserMachineListViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet):

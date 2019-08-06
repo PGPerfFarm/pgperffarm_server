@@ -259,8 +259,8 @@
         			this.alias = report.test_machine.alias;
 	        		this.os = report.test_machine.os_name + ' ' + report.test_machine.os_version;
 	        		this.compiler = report.test_machine.comp_name + ' ' + report.test_machine.comp_version;
-	        		this.owner.username = report.test_machine.owner.username;
-	        		this.owner.email = report.test_machine.owner.email;
+	        		//this.owner.username = report.test_machine.owner_username;
+	        		this.owner.email = report.test_machine.owner_email;
 			        this.reports = report.test_machine.reports;
 			        this.branch = report.branch;
 			        this.date = report.meta_time.substring(0, 10) + ' ' + report.meta_time.substring(11, 16);

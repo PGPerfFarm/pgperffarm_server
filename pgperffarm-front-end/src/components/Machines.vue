@@ -138,13 +138,18 @@ export default {
     },
 
     getMachines() {
-       axios.get(this.$store.state.endpoints.machines)
-        .then((response) => {
+
+      axios.get(this.$store.state.endpoints.machines).then((response) => {
 
           for(var i = 0; i < response.data.count; i++) {
 
             var lastest = '';
             var uuid = '';
+            var state = 'active';
+
+            if (response.data.results[i].state != 'A') {
+              state = 'inactive';
+            }
 
             if (response.data.results[i].lastest.length > 0) {
               lastest = response.data.results[i].lastest[0].branch;
@@ -154,7 +159,7 @@ export default {
             var machine = {
               alias: response.data.results[i].alias,
               system: response.data.results[i].os_name + ' ' + response.data.results[i].os_version + ' ' + response.data.results[i].comp_version,
-              state: response.data.results[i].state,
+              state: state,
               latest: lastest,
               uuid: uuid,
               addDate: response.data.results[i].add_time.substring(0, 10)

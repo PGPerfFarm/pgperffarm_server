@@ -59,13 +59,14 @@ class UserMachineViewSet(viewsets.ModelViewSet):
 		return Response('Machine added successfully!', status=status.HTTP_201_CREATED, headers=headers)
 
 
-class MachineViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+class MachineViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
 	"""
 	List all machines
 	"""
 	queryset =  Machine.objects.all().order_by('add_time')
 	serializer_class = MachineSerializer
 	lookup_field = 'sn'
+	permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly, )
 
 
 class AliasViewSet(viewsets.ModelViewSet):

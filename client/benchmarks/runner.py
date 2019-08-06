@@ -73,7 +73,6 @@ class BenchmarkRunner(object):
         return issues
 
     def _run_config(self, config_name):
-        ''
 
         log("running benchmark configuration '%s'" % (config_name,))
 
@@ -143,7 +142,7 @@ class BenchmarkRunner(object):
         post = []  
         post.append(postdata)
 
-        headers = {'Content-Type': 'application/json; charset=utf-8'}
+        headers = {'Content-Type': 'application/json; charset=utf-8', 'Authorization': self._secret}
         r = requests.post(self._url.encode('utf-8'), data=json.dumps(post).encode('utf-8'), headers=headers)
 
 

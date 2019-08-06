@@ -124,7 +124,6 @@ def TestRecordCreate(request, format=None):
     from django.db import transaction
 
     try:
-        # todo get machine by token
         secret = request.META.get("HTTP_AUTHORIZATION")
         ret = UserMachine.objects.filter(machine_secret=secret, state=1).get()
         test_machine = ret.id

@@ -180,8 +180,9 @@
                   this.reports += 1;
 
                   this.owner = {
-                    username: response.data.results[i].machine_info.owner.username,
-                    email: response.data.results[i].machine_info.owner.email,
+                    username: 'fixme',
+                    //username: response.data.results[i].machine_info.owner_username,
+                    email: response.data.results[i].machine_info.owner_email,
                   }
 
                   this.os = response.data.results[i].machine_info.os_name + ' ' + response.data.results[i].machine_info.os_version;

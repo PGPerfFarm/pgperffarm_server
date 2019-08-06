@@ -17,7 +17,7 @@ class MachineSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = Machine
-		fields = ('alias', 'os_name', 'os_version', 'comp_name', 'comp_version', 'reports', 'owner_username', 'owner_email', 'sn', 'lastest')
+		fields = ('alias', 'os_name', 'os_version', 'comp_name', 'comp_version', 'reports', 'owner_username', 'owner_email', 'sn', 'lastest', 'add_time', 'state')
 
 
 	def get_alias(self, obj):

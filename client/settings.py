@@ -2,9 +2,6 @@ import os
 import sys
 
 # global configuration
-PERFFARM_URL = 'http://127.0.0.1:8000/upload/'
-SECRET='CHANGEME'
-
 GIT_URL = 'https://github.com/postgres/postgres.git'
 REPOSITORY_PATH = '/tmp/git-postgres'
 BUILD_PATH = '/tmp/bin-postgres'
@@ -30,10 +27,8 @@ DATABASE_NAME = 'perf'
 OUTPUT_DIR = '/tmp/perf-output'
 
 # configuration for PgBench
-#
-# runs     - number of repetitions (including test for all client counts)
+# runs - number of repetitions (including test for all client counts)
 # duration - duration (in seconds) of a single benchmark (per client count)
-#
 PGBENCH_CONFIG = {
     'runs': 3,
     'duration': 600,
@@ -41,7 +36,6 @@ PGBENCH_CONFIG = {
 }
 
 # ignore missing file with local config
-
 try:
     from settings_local import *
 except Exception as e:

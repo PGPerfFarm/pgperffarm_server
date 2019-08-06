@@ -79,8 +79,8 @@ class GitRepository(object):
         with TemporaryFile() as strout:
             log("configuring sources in '%s' with prefix '%s'" %
                 (self._path, path))
-            call(['./configure', '--prefix', path], cwd=self._path,
-                 stdout=strout, stderr=STDOUT)
+            #call(['./configure', '--prefix', path], cwd=self._path,
+                 #stdout=strout, stderr=STDOUT)
 
         with TemporaryFile() as strout:
             log("building sources and installing into '%s'" % (path,))

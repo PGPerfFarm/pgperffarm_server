@@ -74,7 +74,7 @@
         rules: {
           username: [
             v => !!v || "Username is required",
-            v => (v && v.length > 3) || "A username must be more than 3 characters long",
+            v => (v && v.length > 1) || "A username must be more than 1 character long",
             v => /^[a-z0-9_]+$/.test(v) || "A username can only contain letters and digits"
           ],
           password: [
@@ -93,10 +93,8 @@
 
               axios.post(this.$store.state.endpoints.obtainJWT, this.credentials)
               .then((response) => {
-                    console.log(response);
-
                     this.$store.commit('updateToken', response.data.token)
-                    this.$store.commit('setAuthUser', {authUser: response.data.username, isAuthenticated: true})
+                    this.$store.commit('setAuthUser', {authUser: response.data.user.username, isAuthenticated: true, email: response.data.user.email})
 
                     this.$router.push('/profile');
 
