@@ -2,7 +2,7 @@
 import django_filters
 from django.db.models import Q
 
-from test_records.models import TestRecord
+from records.models import TestRecord
 
 
 class MachineRecordListFilter(django_filters.rest_framework.FilterSet):

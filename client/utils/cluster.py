@@ -42,9 +42,10 @@ class PgCluster(object):
         """
 
         with TemporaryFile() as strout:
-            log("killing all existing postgres processes")
-            # psql, pgbench
-            #call(['killall', 'postgres'], stdout=strout, stderr=STDOUT)
+            log("killing postgres processes")
+            pidfile = open(''.join([self._outdir, '/postmaster.pid']), 'r')
+            pid = pidfile.readline().strip()
+            run_cmd(['kill', '-9', pid])
 
         # remove the data directory
         if os.path.exists(self._data):

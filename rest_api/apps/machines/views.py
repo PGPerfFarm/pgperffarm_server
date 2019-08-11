@@ -10,19 +10,29 @@ from django.contrib.auth.models import User
 import shortuuid
 import hashlib
 from django.contrib.auth.hashers import make_password
-
+import django_filters
+#from .filters import MachineRecordListFilter, UserMachineListFilter
 
 class UserMachineViewSet(viewsets.ModelViewSet):
 
-	authentication_classes = (JSONWebTokenAuthentication, authentication.SessionAuthentication, )
-	permission_classes = (permissions.IsAuthenticated, )
-	queryset = Machine.objects.all().order_by('add_time')
+	#authentication_classes = (JSONWebTokenAuthentication, authentication.SessionAuthentication, )
+	#permission_classes = (permissions.IsAuthenticated, )
 	serializer_class = UserMachineSerializer
+	filter_backends = (django_filters.rest_framework.DjangoFilterBackend, )
+	#filter_class = UserMachineListFilter
 	lookup_field = 'sn'
+
+	permission_classes = (permissions.AllowAny, )
+
+
+	def get_queryset(self):
+		#return Machine.objects.filter(owner_username=self.request.user).order_by('add_time')
+		return Machine.objects.all().order_by('add_time')
 
 
 	def post(self, request, *args, **kwargs):
 		return self.create(request, *args, **kwargs)
+
 
 	def create(self, request, *args, **kwargs):
 
@@ -38,7 +48,7 @@ class UserMachineViewSet(viewsets.ModelViewSet):
 
 		sn = shortuuid.ShortUUID().random(length=16)
 
-		machine_str = 'test'
+		machine_str = alias.name + sn
 
 		m = hashlib.md5()
 		m.update(make_password(str(machine_str), 'pg_perf_farm').encode('utf-8'))

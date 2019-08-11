@@ -14,11 +14,11 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 # branches: work, now they just need to be added
 # fix permissions for aliases and other admin stuff
 
-# working: records, machines, single machine, login
+# working: records, machines, single machine, login, logout
 # fix: my-machines
 # users can edit and add, not remove --> status inactive
 # fix emails
-# change password and reset (reset + confirm, make a form)
+# change password?
 
 # remove upload.py [later] and use runner.py
 # cluster.py uncomment killing line
@@ -59,6 +59,7 @@ INSTALLED_APPS = [
 	'django.contrib.staticfiles',
 	'django.contrib.sites',
 	'rest_framework',
+	'rest_framework.authtoken',
 	'rest_auth',
 	'allauth',
 	'allauth.account',
@@ -69,7 +70,6 @@ INSTALLED_APPS = [
 	'allauth.socialaccount.providers.github',
 	'allauth.socialaccount.providers.microsoft',
 	'allauth.socialaccount.providers.google',	
-	'rest_framework.authtoken',
 	'corsheaders',
 	'users',
 	'records',
@@ -88,7 +88,6 @@ REST_FRAMEWORK = {
 	'DEFAULT_AUTHENTICATION_CLASSES': (
 		'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
 		'rest_framework.authentication.SessionAuthentication',
-		#'rest_framework.permissions.IsAuthenticated',
 		'rest_framework.authentication.BasicAuthentication',
 	),
 	'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
@@ -96,6 +95,7 @@ REST_FRAMEWORK = {
 }
 
 
+REST_USE_JWT = True
 ACCOUNT_LOGOUT_ON_GET = True
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
@@ -142,15 +142,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'rest_api.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/1.11/ref/settings/#databases
-# overridden with Postgres
-
-# DB_ENUM --> ?
-
-# Password validation
-# https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
 	{
 		'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -165,6 +156,7 @@ AUTH_PASSWORD_VALIDATORS = [
 		'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
 	},
 ]
+
 
 
 JWT_AUTH = {
@@ -198,12 +190,9 @@ JWT_AUTH = {
 	'JWT_ALLOW_REFRESH': False,
 	'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=7),
 
-	'JWT_AUTH_HEADER_PREFIX': 'Bearer',
+	'JWT_AUTH_HEADER_PREFIX': 'Token',
 	'JWT_AUTH_COOKIE': None,
 }
-
-
-REST_USE_JWT = True
 
 
 CORS_ALLOW_METHODS = (
