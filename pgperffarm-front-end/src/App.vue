@@ -16,6 +16,8 @@
 # profile buttons center
 # fix pre text
  
+# note: rest api works with python3.7
+
 <template>
 	<v-app>
 		<pg-toolbar></pg-toolbar>
