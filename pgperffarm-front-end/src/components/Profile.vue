@@ -14,7 +14,7 @@
 	                		<v-icon color="rgb(51, 103, 145)">computer</v-icon> &nbsp; N. machine(s): {{ $store.getters.machines }} <br>
 	                		<v-icon color="rgb(51, 103, 145)">format_list_bulleted</v-icon> &nbsp; Branch(es) of latest reports: {{ $store.getters.branches }}<br>
 	                		<v-icon color="rgb(51, 103, 145)">email</v-icon> &nbsp; 
-                      <a :href="`mailto:${$store.getters.email}`"> {{ $store.getters.email }} </a> <br>
+                      {{ $store.getters.email }} <br>
 	                	</v-card-text>
 	                </v-card>
             	</v-layout>
@@ -26,7 +26,7 @@
                   </v-card>
                   <v-card flat class="profile-left-bottom" min-witdh=25>
                     <v-card-actions>
-                      <v-btn block flat class="profile-button" href="/addmachine">
+                      <v-btn block flat class="profile-button" href="/addmachine"> 
                         <v-icon color="rgb(51, 103, 145)">add</v-icon>
                         Add a new machine
                       </v-btn>

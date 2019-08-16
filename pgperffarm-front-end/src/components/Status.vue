@@ -37,39 +37,14 @@
 						      			<v-card>
 						        			<template>
 							              		<v-data-table
-							              		 hide-actions
-								                 :headers="headers"
-								                 :items="machines[item]"
-								                 :pagination.sync="pagination"
-								                 :search="search"
-								                 :loading="loading"
-								                 select-all
-								                 item-key="alias"
-								                 class="elevation-1"
+							              		 v-bind:headers="headers"
+								                :items="machines[item]"
+								                hide-actions
+								                :loading="loading"
+								                item-key="alias"
+								                class="elevation-1"
 								              	>
-									            <template v-slot:no-data>
-									                <v-alert :value="true" color="error" icon="warning">
-									                	Sorry, nothing to display here :(
-									                </v-alert>
-									            </template>
-							             			<template v-slot:no-results>
-							                			<v-alert :value="true" color="error" icon="warning">
-							                  				Your search for "{{ search }}" found no results.
-							                			</v-alert>
-							              			</template>
-							              			<template v-slot:headers="props">
-							                  			<tr>
-							                    			<th class="profile-th"
-							                     				v-for="header in props.headers"
-							                      				:key="header.text"
-							                      				:class="['column sortable', header.value === pagination.sortBy ? 'active' : '']"
-							                      				@click="changeSort(header.value)"
-							                    			>
-							                      				<v-icon small>arrow_upward</v-icon>
-							                      				{{ header.text }}
-							                    			</th>
-							                  			</tr>
-							                		</template>
+							             	
 							                		<template v-slot:items="props">
 							                  			<tr>
 										                	<td class="profile-td"> <router-link :to="{path: '/machine/'+ props.item.alias }"> {{ props.item.alias }} </router-link></td>
@@ -113,19 +88,16 @@
 
 			search: '',
       		loading: true,
-      		pagination: {
-        		sortBy: 'name'
-      		},
 
       		headers: [
-		        { text: 'Alias', align: 'left', value: 'alias' },
-		        { text: 'System', value: 'system' },
-		        { text: 'Improvement', value: 'improvement'},
-		        { text: 'Status quo', value: 'status_quo'},
-		        { text: 'Regression', value: 'regression'},
-		        { text: 'Detail', value: 'detail'},
-		        { text: 'Commit', value: 'commit'},
-		        { text: 'Date', value: 'date' }
+		        { text: 'Alias', align: 'center', value: 'alias' },
+		        { text: 'System', align: 'center', value: 'system' },
+		        { text: 'Improv.', align: 'center', value: 'improvement'},
+		        { text: 'Status quo', align: 'center', value: 'status_quo'},
+		        { text: 'Regr.', align: 'center', value: 'regression'},
+		        { text: 'Detail', align: 'center', value: 'detail'},
+		        { text: 'Commit', align: 'center', value: 'commit'},
+		        { text: 'Date', align: 'center', value: 'date' }
       		],
 
       		machines: {
@@ -172,7 +144,7 @@
 
 		        		var machine = {
 		        			alias: response.data.results[i].machine_info.alias,
-              				system: response.data.results[i].machine_info.os_name + ' ' + response.data.results[i].machine_info.os_version + ' ' + response.data.results[i].machine_info.comp_version,
+              				system: response.data.results[i].machine_info.os_name + ' ' + response.data.results[i].machine_info.os_version,
 		        			trending: {
 		        				improvement: response.data.results[i].trend.improved,
 		        				status_quo: response.data.results[i].trend.quo,

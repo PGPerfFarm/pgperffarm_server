@@ -9,8 +9,8 @@ from django.contrib.auth.models import User
 class MachineSerializer(serializers.ModelSerializer):
 
 	reports = serializers.SerializerMethodField()
-	owner_username = serializers.ReadOnlyField(source='owner.username')
 	owner_email = serializers.ReadOnlyField()
+	owner_username = serializers.ReadOnlyField()
 	alias = serializers.SerializerMethodField()
 	sn = serializers.ReadOnlyField()
 	lastest = serializers.SerializerMethodField()
@@ -79,12 +79,10 @@ class MachineRecordSerializer(serializers.ModelSerializer):
 class UserMachineSerializer(serializers.ModelSerializer):
 
 	reports = serializers.SerializerMethodField()
-	owner_username = serializers.ReadOnlyField(source='owner.username')
-	owner_email = serializers.ReadOnlyField()
+	owner_username = serializers.ReadOnlyField()
 	alias = serializers.SerializerMethodField()
 	sn = serializers.ReadOnlyField()
 	machine_secret = serializers.ReadOnlyField()
-	owner_email = serializers.ReadOnlyField()
 	lastest = serializers.SerializerMethodField()
 
 	class Meta:

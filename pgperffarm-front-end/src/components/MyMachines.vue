@@ -50,43 +50,20 @@
 			<!-- check server side pagination-->
 			<template>
 			  <v-data-table
-				:headers="headers"
+				v-bind:headers="headers"
 				:items="machines"
 				:search="search"
-				select-all
 				item-key="alias"
 				class="elevation-1"
 				hide-actions
 				:loading="loading"
+				loading-text="Loading..."
 			  >
 
-			  <template v-slot:no-results>
-    				<v-alert :value="true" color="error" icon="warning">
-    				  Your search for "{{ search }}" found no results.
-    				</v-alert>
-    			  </template>
-    			  <template v-slot:no-data>
-    			  <div v-if="loading=true">
-    				<v-alert color="white" icon="sync" :value="true">
-    				  Loading...
-    				</v-alert>
-    			  </div>
-			  </template>
-
-			  <template v-slot:headers="props">
-				  <tr>
-					<th class="profile-th"
-					  v-for="header in props.headers"
-					  :key="header.text"
-					>
-					  <b> {{ header.text }} </b>
-					</th>
-				  </tr>
-				</template>
 				<template v-slot:items="props">
 				  <tr>
 					<td class="profile-td"> <router-link :to="{path: '/machine/'+ props.item.alias }"> {{ props.item.alias }} </router-link></td>
-					<td class="profile-td">{{ props.item.system.os_name + ' ' + props.item.system.os_version + ' ' + props.item.system.comp_version}}</td>
+					<td class="profile-td">{{ props.item.system.os_name + ' ' + props.item.system.os_version + ' ' + props.item.system.comp_name + ' ' + props.item.system.comp_version}}</td>
 					<td class="profile-td">{{ props.item.state }}</td>
 					<td class="profile-td"> 
 						<router-link :to="{path: props.item.uuid}">
@@ -95,28 +72,58 @@
 					</td>
 					<td class="profile-td">{{ props.item.addDate }}</td>
 				  <td class="profile-td">
-                <v-icon
-                  small
-                  class="mr-2"
-                  @click="editMachine(props.item)"
-                  >
-                  edit
-              </v-icon>
-              <v-icon
-                v-if="props.item.state == 'A'"
-                small
-                @click="stopMachine(props.item)"
-                >
-                stop
-          </v-icon>
-          <v-icon
-                v-if="props.item.state == 'I'"
-                small
-                @click="startMachine(props.item)"
-                >
-                play_arrow
-          </v-icon>
-
+				  	<v-tooltip top>
+				  		<template v-slot:activator="{ on }">
+							 <v-icon
+			                  small
+			                  class="mr-2"
+			                  @click="viewSecret(props.item)"
+			                  v-on="on"
+			                  >
+			                  lock_open
+           					</v-icon>
+           				</template>
+           				<span>View machine secret</span>
+           			</v-tooltip>
+           			<v-tooltip top>
+				  		<template v-slot:activator="{ on }">
+			                <v-icon
+			                  small
+			                  class="mr-2"
+			                  @click="editMachine(props.item)"
+			                  v-on="on"
+			                  >
+			                  edit
+			              </v-icon>
+			          </template>
+			          <span>Edit machine</span>
+			      </v-tooltip>
+			      <v-tooltip top>
+				  		<template v-slot:activator="{ on }">
+				            <v-icon
+				                v-if="props.item.state == 'A'"
+				                small
+				                @click="stopMachine(props.item)"
+				                v-on="on"
+				                >
+				                stop
+				          	</v-icon>
+				        </template>
+				        <span>Deactivate machine</span>
+				   </v-tooltip>
+				  <v-tooltip top>
+				  		<template v-slot:activator="{ on }">
+				          <v-icon
+				                v-if="props.item.state == 'I'"
+				                small
+				                @click="startMachine(props.item)"
+				                v-on="on"
+				                >
+				                play_arrow
+				          </v-icon>
+				      </template>
+				      <span>Activate machine</span>
+				</v-tooltip>
             </td>
           </tr>
         </template>
@@ -137,12 +144,12 @@
 	  dialog: false,
 
 	  headers: [
-		{ text: 'Alias', align: 'left', value: 'alias' },
-		{ text: 'System', value: 'system' },
-		{ text: 'State', value: 'state' },
-		{ text: 'Latest', value: 'latest' },
-		{ text: 'Add date', value: 'addDate' },
-		{ text: 'Actions', value: 'action', sortable: false },
+		{ text: 'Alias', align: 'center', value: 'alias' },
+		{ text: 'System', align: 'center', value: 'system' },
+		{ text: 'State', align: 'center', value: 'state' },
+		{ text: 'Latest', align: 'center', value: 'latest' },
+		{ text: 'Add date', align: 'center', value: 'addDate' },
+		{ text: 'Actions', align: 'center', value: 'action', sortable: false },
 	  ],
 
 	  machines: [],
@@ -151,10 +158,10 @@
 		os_version: '',
 		comp_name: '',
 		comp_version: '',
-    sn: ''
-	  },
-	  editedIndex: -1,
-  }),
+    	sn: ''
+	  	},
+	  	editedIndex: -1,
+  	}),
 
   watch: {
 	  dialog (val) {
@@ -167,27 +174,33 @@
 	editMachine (machine) {
 		this.editedIndex = this.machines.indexOf(machine)
 		this.editedMachine.os_name = machine.system.os_name;
-    this.editedMachine.os_version = machine.system.os_version;
-    this.editedMachine.comp_name = machine.system.comp_name;
-    this.editedMachine.comp_version = machine.system.comp_version;
-    this.editedMachine.sn = machine.sn;
+	    this.editedMachine.os_version = machine.system.os_version;
+	    this.editedMachine.comp_name = machine.system.comp_name;
+	    this.editedMachine.comp_version = machine.system.comp_version;
+	    this.editedMachine.sn = machine.sn;
 		this.dialog = true
 	  },
 
-	  stopMachine (machine) {
-		  var url = this.$store.state.endpoints.my_machine + machine.sn + '/';
-      axios.put(url, {state: 'I'})
-      .then (() => {
-        window.alert("State changed successfully!")
-        location.reload(); 
-      })
-      .catch((error) => {
-      console.log(error);
-    })
+	  viewSecret (machine) {
+		window.alert('Machine secret: ' + machine.secret);
+	  },
+
+	 stopMachine (machine) {
+	  	axios.defaults.headers.common["Authorization"] = 'Bearer ' + this.$store.getters.token;
+		var url = this.$store.state.endpoints.my_machine + machine.sn + '/';
+      	axios.put(url, {state: 'I'})
+      	.then (() => {
+	        window.alert("State changed successfully!")
+	        location.reload(); 
+      	})
+      	.catch((error) => {
+      	console.log(error);
+    	})
     },
 
     startMachine (machine) {
       var url = this.$store.state.endpoints.my_machine + machine.sn + '/';
+      axios.defaults.headers.common["Authorization"] = 'Bearer ' + this.$store.getters.token;
       axios.put(url, {state: 'A'})
       .then (() => {
         window.alert("State changed successfully!")
@@ -205,8 +218,9 @@
 	  },
 
 	  save () {
+	  	axios.defaults.headers.common["Authorization"] = 'Bearer ' + this.$store.getters.token;
 		var url = this.$store.state.endpoints.my_machine + this.editedMachine.sn + '/';
-      axios.put(url, {os_name: this.editedMachine.os_name, os_version: this.editedMachine.os_version, comp_name: this.editedMachine.comp_name, comp_version: this.editedMachine.comp_version})
+      	axios.put(url, {os_name: this.editedMachine.os_name, os_version: this.editedMachine.os_version, comp_name: this.editedMachine.comp_name, comp_version: this.editedMachine.comp_version})
       .then (() => {
         window.alert("Information changed successfully!")
         location.reload(); 
@@ -235,7 +249,7 @@
 	getMachines() {
 	  // reports, machines, branches
 
-	  //axios.defaults.headers.common["Authorization"] = 'Token ' + this.$store.getters.token;
+	  axios.defaults.headers.common["Authorization"] = 'Bearer ' + this.$store.getters.token;
 	  var url = this.$store.state.endpoints.my_machine //+ '?page=1&machine_owner__username=' + this.$store.getters.username;
 
 	  axios.get(url)
@@ -263,13 +277,14 @@
 
 			var machine = {
 			  alias: response.data.results[i].alias,
-        sn: response.data.results[i].sn,
+		      sn: response.data.results[i].sn,
+		      secret: response.data.results[i].machine_secret,
 			  system: {
-          os_name: response.data.results[i].os_name,
-          os_version: response.data.results[i].os_version,
-          comp_name: response.data.results[i].comp_name,
-          comp_version: response.data.results[i].comp_version
-        },
+		          os_name: response.data.results[i].os_name,
+		          os_version: response.data.results[i].os_version,
+		          comp_name: response.data.results[i].comp_name,
+		          comp_version: response.data.results[i].comp_version
+		      },
 			  state: response.data.results[i].state,
 			  latest: lastest,
 			  uuid: uuid,

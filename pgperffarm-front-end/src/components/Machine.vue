@@ -23,24 +23,22 @@
 	                	<v-card-text>
                       <v-icon color="rgb(51, 103, 145)">computer</v-icon> OS: {{ os }} <br>
                       <v-icon color="rgb(51, 103, 145)">border_all</v-icon> Processor: {{ compiler }} <br>
-                      <v-icon color="rgb(51, 103, 145)">email</v-icon> Email: <a :href="`mailto:${owner.email}`"> {{ owner.email }} </a> <br>
+                      <v-icon color="rgb(51, 103, 145)">email</v-icon> Email: {{ owner.email }} <br>
 	                	</v-card-text>
 	                </v-card>
             	</v-layout>
       </v-flex>
       <v-flex d-flex fluid>
-          <v-card flat class="profile-card-title">
-                <v-toolbar color="cyan" dark tabs>
-                  <v-toolbar-title>Machine by branch</v-toolbar-title>
+          <v-card flat class="machine-card">
+                <v-toolbar flat dark color="rgb(51, 103, 145)">
+                  <v-toolbar-title><b>Machine by branch</b></v-toolbar-title>
                   <v-spacer></v-spacer>
 
                   <template v-slot:extension>
                     <v-tabs
                       v-model="tab"
-                      color="cyan"
-                      align-with-title
                     >
-                      <v-tabs-slider color="yellow"></v-tabs-slider>
+                      <v-tabs-slider color="#d3e1ed"></v-tabs-slider>
 
                       <v-tab v-for="item in branches" :key="item">
                         {{ item }}
@@ -49,10 +47,9 @@
                   </template>
                 </v-toolbar>
 
-                <v-tabs-items v-model="tab">
+                <v-tabs-items v-model="tab" class="tabs-div">
                   <v-tab-item v-for="item in branches" :key="item">
                     <v-card flat>
-                      <v-card-title> {{ item }} </v-card-title>
                       <template>
                                 <v-data-table
                                  hide-actions
@@ -167,7 +164,7 @@
 
                 for(var i = 0; i < response.data.count; i++)
                   if (response.data.results[i].alias == machine_name) 
-                    this.serial_number = response.data.results[i].machine_sn;
+                    this.serial_number = response.data.results[i].sn;
                     
               });
 
@@ -178,15 +175,17 @@
                 if (response.data.results[i].machine_info.alias == machine_name) {
 
                   this.reports += 1;
+                  var email = response.data.results[i].machine_info.owner_email;
+                  email = email.replace('@', '<at>');
+                  //email = email.replace(/\./g, '<dot>');
 
                   this.owner = {
-                    username: 'fixme',
-                    //username: response.data.results[i].machine_info.owner_username,
-                    email: response.data.results[i].machine_info.owner_email,
+                    username: response.data.results[i].machine_info.owner_username,
+                    email: email,
                   }
 
                   this.os = response.data.results[i].machine_info.os_name + ' ' + response.data.results[i].machine_info.os_version;
-                  this.compiler = response.data.results[i].machine_info.comp_version;
+                  this.compiler = response.data.results[i].machine_info.comp_name + ' ' + response.data.results[i].machine_info.comp_version;
 
                   var machine = {
                     alias: response.data.results[i].machine_info.alias,

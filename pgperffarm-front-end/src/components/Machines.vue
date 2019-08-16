@@ -11,7 +11,7 @@
       </v-card>
   </v-flex>
   <v-flex>
-      <v-card flat class="pg-v-card">
+      <v-card flat class="pg-v-card-bottom">
             <v-card-title class="table-title">Shown here is the machine list, along with a summary of relevant information.
               <v-spacer></v-spacer>
               <v-text-field
@@ -26,40 +26,15 @@
             <!-- check server side pagination-->
             <template>
               <v-data-table
-                :headers="headers"
+                v-bind:headers="headers"
                 :items="machines"
-                :pagination.sync="pagination"
+                hide-actions
                 :search="search"
                 :loading="loading"
-                select-all
                 item-key="alias"
                 class="elevation-1"
               >
-              <!--
-              <template v-slot:no-data>
-                <v-alert :value="true" color="error" icon="warning">
-                  Sorry, nothing to display here :(
-                </v-alert>
-              </template>
-                -->
-              <template v-slot:no-results>
-                <v-alert :value="true" color="error" icon="warning">
-                  Your search for "{{ search }}" found no results.
-                </v-alert>
-              </template>
-              <template v-slot:headers="props">
-                  <tr>
-                    <th class="profile-th"
-                      v-for="header in props.headers"
-                      :key="header.text"
-                      :class="['column sortable', pagination.descending ? 'desc' : 'asc', header.value === pagination.sortBy ? 'active' : '']"
-                      @click="changeSort(header.value)"
-                    >
-                      <v-icon small>arrow_upward</v-icon>
-                      {{ header.text }}
-                    </th>
-                  </tr>
-                </template>
+              
                 <template v-slot:items="props">
                   <tr>
                     <td class="profile-td"> <router-link :to="{path: '/machine/'+ props.item.alias }"> {{ props.item.alias }} </router-link></td>
@@ -92,16 +67,13 @@ export default {
   data: () => ({
       search: '',
       loading: true,
-      pagination: {
-        sortBy: 'name'
-      },
 
       headers: [
-        { text: 'Alias', align: 'left', value: 'alias' },
-        { text: 'System', value: 'system' },
-        { text: 'State', value: 'state' },
-        { text: 'Latest', value: 'latest' },
-        { text: 'Add date', value: 'addDate' }
+        { text: 'Alias', align: 'center', value: 'alias' },
+        { text: 'System', align: 'center', value: 'system' },
+        { text: 'State', align: 'center', value: 'state' },
+        { text: 'Latest', align: 'center', value: 'latest' },
+        { text: 'Add date', align: 'center', value: 'addDate' }
       ],
 
       machines: [],
@@ -141,11 +113,13 @@ export default {
 
       axios.get(this.$store.state.endpoints.machines).then((response) => {
 
+          console.log(this.$store.state.endpoints.machines);
+
           for(var i = 0; i < response.data.count; i++) {
 
             var lastest = '';
             var uuid = '';
-            var state = 'active';
+            var state = 'active'; 
 
             if (response.data.results[i].state != 'A') {
               state = 'inactive';

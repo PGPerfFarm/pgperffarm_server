@@ -77,7 +77,7 @@
 		methods: {
 			addMachine() {
 
-				axios.defaults.headers.common["Authorization"] = 'Token ' + this.$store.getters.token;
+				axios.defaults.headers.common["Authorization"] = 'Bearer ' + this.$store.getters.token;
 
       			axios.post(this.$store.state.endpoints.my_machine, this.machine)
 		        .then((response) => {

@@ -106,9 +106,12 @@ a {
   color: #336791 !important;
   text-transform: none !important;
   font-size: 18px !important;
-  text-align: left !important;
 }
 
+.profile-button__content {
+  color: red !important;
+  text-align: left !important;
+}
 
 .profile-left-bottom {
   color: #336791 !important;
@@ -120,15 +123,16 @@ a {
   font-size: 20px;
 }
 
-.profile-td {
+.profile-td, .text-xs-center {
   font-size: 18px !important;
   text-align: center !important; 
 }
 
-.profile-th {
+.profile-th, thead, th {
   font-size: 18px !important;
   color: #336791 !important;
   background-color: #d3e1ed;
+  font-weight: bold !important;
 }
 
 v-datatable__actions__select {
@@ -227,9 +231,22 @@ pre {
   background-color: #336791 !important;
 }
 
-.v-tabs__div {
-  font-size: 18px !important;
+.v-tabs__item {
   color: white !important;
+  font-size: 16px !important;
+
+}
+
+.v-tabs__item--active {
+  font-weight: bold !important;
+}
+
+.tabs-div {
+  margin: 2%;
+}
+
+.machine-card {
+  background-color: #336791 !important;
 }
 
 .result-toolbar {

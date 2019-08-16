@@ -7,15 +7,6 @@ from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework.decorators import list_route
 from django.shortcuts import get_object_or_404
 
-from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
-from allauth.socialaccount.providers.twitter.views import TwitterOAuthAdapter
-from rest_auth.social_serializers import TwitterLoginSerializer
-from allauth.socialaccount.providers.github.views import GitHubOAuth2Adapter
-from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
-from allauth.socialaccount.providers.microsoft.views import MicrosoftGraphOAuth2Adapter
-from allauth.socialaccount.providers.oauth2.client import OAuth2Client
-from rest_auth.registration.views import SocialLoginView
-
 from django.contrib.auth.models import User
 from users.serializers import UserSerializer
 from machines.models import Machine
@@ -29,27 +20,15 @@ jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
 jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
 
 
-class UserViewSet(viewsets.ViewSet):
+class UserViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 	"""
 	API endpoint that allows users to be viewed or edited.
 	"""
-	#permission_classes = (permissions.IsSuperuserOrIsSelf,)
+
+	permission_classes = (permissions.IsAuthenticated, )
 	serializer_class = UserSerializer
 	queryset = User.objects.all().order_by('-date_joined')
-
-	def list(self, request):
-		queryset = User.objects.all()
-		serializer = UserSerializer(queryset, many=True)
-		return response.Response(serializer.data)
-
-	def retrieve(self, request, pk=None):
-		queryset = User.objects.all()
-		user = get_object_or_404(queryset, pk=pk)
-		serializer = UserSerializer(user)
-		return response.Response(serializer.data)
-
-	def destroy(self, request, pk=None):
-		pass
+	lookup_field = ('username')
 
 
 class UserMachineRecordByBranchListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -111,27 +90,3 @@ class UserMachinePermission(permissions.BasePermission):
 		# alias = request.data.alias
 		ret = Machine.objects.filter(machine_secret=secret, state=1).exists()
 		return ret
-
-
-class FacebookLogin(SocialLoginView):
-	adapter_class = FacebookOAuth2Adapter
-
-
-class TwitterLogin(SocialLoginView):
-	serializer_class = TwitterLoginSerializer
-	adapter_class = TwitterOAuthAdapter
-
-
-class GithubLogin(SocialLoginView):
-	adapter_class = GitHubOAuth2Adapter
-	callback_url = 'localhost:8000'
-	client_class = OAuth2Client
-
-
-class GoogleLogin(SocialLoginView):
-	adapter_class = GoogleOAuth2Adapter
-
-
-class MicrosoftLogin(SocialLoginView):
-	adapter_class = MicrosoftGraphOAuth2Adapter
-

@@ -36,8 +36,9 @@ class Machine(models.Model):
 	comp_name = models.CharField(max_length=100, blank=True, default='')
 	comp_version = models.CharField(max_length=100, blank=True, default='')
 	state = models.CharField(max_length=10, choices=STATE, default=ACTIVE)
-	owner_username = models.ForeignKey('auth.User', related_name='machines', on_delete=models.CASCADE)
+	owner_id = models.ForeignKey('auth.User', related_name='machines', on_delete=models.CASCADE)
 	owner_email = models.EmailField(max_length=256, verbose_name='email')
+	owner_username = models.CharField(max_length=100, blank=True, default='')
 
 	class Meta:
 		ordering = ('add_time',)

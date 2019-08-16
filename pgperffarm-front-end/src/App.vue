@@ -6,9 +6,7 @@
 # todo after website is complete
 # fix tabs and spaces
 # https?
-# fix cors headers same origin
 # responsiveness on mobile
-# avatars?
 # status in the last 30 days?
 
 # todo wip
@@ -16,9 +14,7 @@
 # too much recursion error
 # fix scrolling (everywhere)
 # profile buttons center
-# fix table pagination and sorting
 # fix pre text
-# loading and no data
  
 <template>
 	<v-app>

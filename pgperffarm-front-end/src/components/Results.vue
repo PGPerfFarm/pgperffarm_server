@@ -49,7 +49,7 @@
 	                	<v-card-text>
 	                      <v-icon color="rgb(51, 103, 145)">computer</v-icon> OS: {{os}} <br>
 	                      <v-icon color="rgb(51, 103, 145)">border_all</v-icon> Processor: {{compiler}} <br>
-	                      <v-icon color="rgb(51, 103, 145)">email</v-icon> Email: <a :href="`mailto:${owner.email}`"> {{ owner.email }} </a> <br> <br>
+	                      <v-icon color="rgb(51, 103, 145)">email</v-icon> Email: {{ owner.email }} <br> <br>
 	                	</v-card-text>
 	                </v-card>
             	</v-layout>
@@ -259,8 +259,12 @@
         			this.alias = report.test_machine.alias;
 	        		this.os = report.test_machine.os_name + ' ' + report.test_machine.os_version;
 	        		this.compiler = report.test_machine.comp_name + ' ' + report.test_machine.comp_version;
+
 	        		//this.owner.username = report.test_machine.owner_username;
-	        		this.owner.email = report.test_machine.owner_email;
+	        		var email = report.test_machine.owner_email;
+                  	email = email.replace('@', '<at>');
+                  	this.owner.email = email;
+                  	
 			        this.reports = report.test_machine.reports;
 			        this.branch = report.branch;
 			        this.date = report.meta_time.substring(0, 10) + ' ' + report.meta_time.substring(11, 16);

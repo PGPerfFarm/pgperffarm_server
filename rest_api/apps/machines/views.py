@@ -5,7 +5,7 @@ from rest_framework import permissions, renderers, viewsets, mixins, authenticat
 from machines.permissions import IsOwnerOrReadOnly
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
-from rest_framework_jwt.authentication import JSONWebTokenAuthentication
+
 from django.contrib.auth.models import User
 import shortuuid
 import hashlib
@@ -15,19 +15,15 @@ import django_filters
 
 class UserMachineViewSet(viewsets.ModelViewSet):
 
-	#authentication_classes = (JSONWebTokenAuthentication, authentication.SessionAuthentication, )
-	#permission_classes = (permissions.IsAuthenticated, )
+	permission_classes = (permissions.IsAuthenticated, )
 	serializer_class = UserMachineSerializer
 	filter_backends = (django_filters.rest_framework.DjangoFilterBackend, )
-	#filter_class = UserMachineListFilter
 	lookup_field = 'sn'
-
-	permission_classes = (permissions.AllowAny, )
 
 
 	def get_queryset(self):
-		#return Machine.objects.filter(owner_username=self.request.user).order_by('add_time')
-		return Machine.objects.all().order_by('add_time')
+		return Machine.objects.filter(owner_username=self.request.user.username).order_by('add_time')
+		# return Machine.objects.all().order_by('add_time')
 
 
 	def post(self, request, *args, **kwargs):
@@ -40,11 +36,6 @@ class UserMachineViewSet(viewsets.ModelViewSet):
 		
 		if not alias:
 			return Response('Alias not available!', status=status.HTTP_406_NOT_ACCEPTABLE)
-		
-		from django.db import transaction
-		with transaction.atomic():
-			alias.is_used = True
-			alias.save()
 
 		sn = shortuuid.ShortUUID().random(length=16)
 
@@ -57,8 +48,9 @@ class UserMachineViewSet(viewsets.ModelViewSet):
 		serializer = MachineSerializer(data=self.request.data)
 		serializer.is_valid(raise_exception=True)
 		serializer.save(
-			owner_username=self.request.user, 
+			owner_id=self.request.user, 
 			owner_email=self.request.user.email, 
+			owner_username=self.request.user.username,
 			alias=alias.name, 
 			sn=sn,
 			machine_secret=machine_secret,
@@ -66,6 +58,12 @@ class UserMachineViewSet(viewsets.ModelViewSet):
 			)
 
 		headers = self.get_success_headers(serializer.data)
+
+		from django.db import transaction
+		with transaction.atomic():
+			alias.is_used = True
+			alias.save()
+
 		return Response('Machine added successfully!', status=status.HTTP_201_CREATED, headers=headers)
 
 

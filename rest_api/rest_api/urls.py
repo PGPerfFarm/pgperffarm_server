@@ -17,10 +17,11 @@ Including another URLconf
 # packages
 from django.conf.urls import url, include
 from django.contrib import admin
-from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token
+#from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token
 from rest_framework import routers
 from rest_framework.documentation import include_docs_urls
 from rest_framework.schemas import get_schema_view
+from rest_framework_simplejwt import views as jwt_views
 
 
 # $ curl -X POST -H "Content-Type: application/json" -d '{"username":"<your_username>","password":"<your_password>"}' http://<your_domain_and_port>/auth/
@@ -36,8 +37,8 @@ router = routers.DefaultRouter()
 urlpatterns = [
     url('', include(router.urls)),
     url(r'^admin/', admin.site.urls),
-    url(r'^obtain_token/', obtain_jwt_token),
-  	url(r'^refresh_token/', refresh_jwt_token),
+    url('login_token/', jwt_views.TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    url('refresh_token/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
     url('', include('machines.urls')),
     url('', include('users.urls')),
     url('', include('records.urls')),

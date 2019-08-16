@@ -60,16 +60,6 @@ INSTALLED_APPS = [
 	'django.contrib.sites',
 	'rest_framework',
 	'rest_framework.authtoken',
-	'rest_auth',
-	'allauth',
-	'allauth.account',
-	'rest_auth.registration',
-	'allauth.socialaccount',
-	'allauth.socialaccount.providers.facebook',
-	'allauth.socialaccount.providers.twitter',
-	'allauth.socialaccount.providers.github',
-	'allauth.socialaccount.providers.microsoft',
-	'allauth.socialaccount.providers.google',	
 	'corsheaders',
 	'users',
 	'records',
@@ -86,17 +76,16 @@ REST_FRAMEWORK = {
 		'rest_framework.permissions.IsAuthenticated',
 	),
 	'DEFAULT_AUTHENTICATION_CLASSES': (
-		'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+		'rest_framework_simplejwt.authentication.JWTAuthentication',
 		'rest_framework.authentication.SessionAuthentication',
 		'rest_framework.authentication.BasicAuthentication',
+		'rest_framework.authentication.TokenAuthentication',
 	),
 	'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
 	'PAGE_SIZE': 10
 }
 
 
-REST_USE_JWT = True
-ACCOUNT_LOGOUT_ON_GET = True
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 
@@ -121,6 +110,7 @@ CORS_ORIGIN_WHITELIST = (
 
 
 ROOT_URLCONF = 'rest_api.urls'
+REST_USE_JWT = True
 
 
 TEMPLATES = [
@@ -138,6 +128,7 @@ TEMPLATES = [
 		},
 	},
 ]
+
 
 WSGI_APPLICATION = 'rest_api.wsgi.application'
 
@@ -158,40 +149,28 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=30),
+    'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': True,
 
-JWT_AUTH = {
-	'JWT_ENCODE_HANDLER':
-	'rest_framework_jwt.utils.jwt_encode_handler',
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,
+    'VERIFYING_KEY': None,
 
-	'JWT_DECODE_HANDLER':
-	'rest_framework_jwt.utils.jwt_decode_handler',
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
 
-	'JWT_PAYLOAD_HANDLER':
-	'rest_framework_jwt.utils.jwt_payload_handler',
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    'TOKEN_TYPE_CLAIM': 'token_type',
 
-	'JWT_PAYLOAD_GET_USER_ID_HANDLER':
-	'rest_framework_jwt.utils.jwt_get_user_id_from_payload_handler',
+    'JTI_CLAIM': 'jti',
 
-	'JWT_RESPONSE_PAYLOAD_HANDLER':
-	'rest_framework_jwt.utils.jwt_response_payload_handler',
-
-	'JWT_SECRET_KEY': SECRET_KEY,
-	'JWT_GET_USER_SECRET_KEY': None,
-	'JWT_PUBLIC_KEY': None,
-	'JWT_PRIVATE_KEY': None,
-	'JWT_ALGORITHM': 'HS256',
-	'JWT_VERIFY': True,
-	'JWT_VERIFY_EXPIRATION': True,
-	'JWT_LEEWAY': 0,
-	'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=300),
-	'JWT_AUDIENCE': None,
-	'JWT_ISSUER': None,
-
-	'JWT_ALLOW_REFRESH': False,
-	'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=7),
-
-	'JWT_AUTH_HEADER_PREFIX': 'Token',
-	'JWT_AUTH_COOKIE': None,
+    'SLIDING_TOKEN_REFRESH_EXP_CLAIM': 'refresh_exp',
+    'SLIDING_TOKEN_LIFETIME': datetime.timedelta(minutes=5),
+    'SLIDING_TOKEN_REFRESH_LIFETIME': datetime.timedelta(days=1),
 }
 
 

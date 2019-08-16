@@ -93,19 +93,33 @@
 
               axios.post(this.$store.state.endpoints.obtainJWT, this.credentials)
               .then((response) => {
-                    this.$store.commit('updateToken', response.data.token)
-                    this.$store.commit('setAuthUser', {authUser: response.data.user.username, isAuthenticated: true, email: response.data.user.email})
+                    this.$store.commit('updateToken', response.data.access)
 
-                    this.$router.push('/profile');
+                    axios.defaults.headers.common["Authorization"] = 'Bearer ' + this.$store.getters.token;
+                    var url = this.$store.state.endpoints.users + this.credentials.username + '/';
+
+                    axios.get(url)
+                    .then((response) => {
+
+                        var email = response.data.email;
+                        email = email.replace('@', '<at>');
+
+                        this.$store.commit('setAuthUser', {authUser: response.data.username, isAuthenticated: true, email: email})
+                        this.$router.push('/profile');
+                      })
+                    .catch((error) => {
+                      window.alert("Server error!");
+                      console.log(error);
+                    });
 
                   })
                   .catch((error) => {
                     window.alert("Wrong username or password!");
                     console.log(error);
-                  })
-            
+                  });
             }
-        }
+        },
+
     }
 }
     

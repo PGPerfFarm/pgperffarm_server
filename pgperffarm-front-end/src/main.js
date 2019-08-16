@@ -11,6 +11,8 @@ import store  from  './store'
 import Vuetify from 'vuetify'
 import App from './App'
 import VueSession from 'vue-session'
+//import VueAuthenticate from 'vue-authenticate'
+//import VueResource from 'vue-resource'
 
 // Vue.prototype.$axios = axios;
 Vue.config.productionTip = false
