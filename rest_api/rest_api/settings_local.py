@@ -7,6 +7,7 @@ DATABASES = {
                 'USER': 'ila',
                 'PASSWORD': 'password',
                 'HOST': '/var/run/postgresql'
+                #'HOST': '/tmp'
                 }
         }
 

@@ -53,10 +53,12 @@ class MachineSerializer(serializers.ModelSerializer):
 class MachineRecordSerializer(serializers.ModelSerializer):
 
 	reports = serializers.SerializerMethodField()
-	owner_username = serializers.ReadOnlyField(source='owner.username')
+	owner_username = serializers.ReadOnlyField()
 	owner_email = serializers.ReadOnlyField()
 	alias = serializers.SerializerMethodField()
 	sn = serializers.ReadOnlyField()
+	state = serializers.ReadOnlyField()
+
 
 	class Meta:
 		model = Machine
@@ -80,6 +82,9 @@ class UserMachineSerializer(serializers.ModelSerializer):
 
 	reports = serializers.SerializerMethodField()
 	owner_username = serializers.ReadOnlyField()
+	owner_id = serializers.ReadOnlyField(source='owner.id')
+	owner_email = serializers.ReadOnlyField()
+	state = serializers.ReadOnlyField()
 	alias = serializers.SerializerMethodField()
 	sn = serializers.ReadOnlyField()
 	machine_secret = serializers.ReadOnlyField()
