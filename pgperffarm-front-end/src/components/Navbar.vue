@@ -33,7 +33,7 @@
 			          <v-list-tile-title>&nbsp; GitHub</v-list-tile-title>
 			        </v-list-tile>
 
-			        <v-list-tile class="v-btn-navbar" href="/privacypolicy">
+			        <v-list-tile class="v-btn-navbar" href="/help">
 			        	<v-icon color="rgb(51, 103, 145)">help</v-icon>
 			          	<v-list-tile-title>&nbsp; Help</v-list-tile-title>
 			        </v-list-tile>
@@ -43,7 +43,7 @@
 			          	<v-list-tile-title>&nbsp; Privacy Policy</v-list-tile-title>
 			        </v-list-tile>
 
-			        <v-list-tile class="v-btn-navbar" href="/privacypolicy">
+			        <v-list-tile class="v-btn-navbar" href="/license">
 			        	<v-icon color="rgb(51, 103, 145)">copyright</v-icon>
 			          	<v-list-tile-title>&nbsp; License</v-list-tile-title>
 			        </v-list-tile>
