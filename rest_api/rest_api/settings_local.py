@@ -14,7 +14,7 @@ DATABASES = {
 PGAUTH_REDIRECT = ''
 PGAUTH_KEY = ''
 
-PROJECT_PATH = '/var/www/web/pgperffarm'
+PROJECT_PATH = '/var/www/rest_api/'
 PGAUTH_REDIRECT = ''
 PGAUTH_KEY = ''
 
