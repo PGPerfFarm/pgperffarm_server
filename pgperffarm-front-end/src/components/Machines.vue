@@ -79,35 +79,8 @@ export default {
       machines: [],
         
   }),
-
-  computed: {
-    // fix this
-      binding () {
-        const binding = {}
-
-        if (this.$vuetify.breakpoint.mdAndUp) binding.rows = true
-
-        return binding
-      }
-  },
-
-
+  
   methods: {
-
-    toggleAll() {
-        if (this.selected.length) this.selected = []
-        else this.selected = this.machines.slice()
-      },
-
-    changeSort(column) {
-        if (this.pagination.sortBy === column) {
-          this.pagination.descending = !this.pagination.descending
-        } 
-        else {
-          this.pagination.sortBy = column
-          this.pagination.descending = false
-        }
-    },
 
     getMachines() {
 
@@ -132,7 +105,7 @@ export default {
 
             var machine = {
               alias: response.data.results[i].alias,
-              system: response.data.results[i].os_name + ' ' + response.data.results[i].os_version + ' ' + response.data.results[i].comp_version,
+              system: response.data.results[i].os_name + ' ' + response.data.results[i].os_version + ' ' + response.data.results[i].comp_name + ' ' + response.data.results[i].comp_version,
               state: state,
               latest: lastest,
               uuid: uuid,

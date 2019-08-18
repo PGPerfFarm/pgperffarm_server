@@ -53,35 +53,14 @@
                       <template>
                                 <v-data-table
                                  hide-actions
-                                 :headers="headers"
+                                 v-bind:headers="headers"
                                  :items="machines[item]"
                                  :search="search"
                                  :loading="loading"
-                                 select-all
                                  item-key="alias"
                                  class="elevation-1"
                                 >
-                              <template v-slot:no-data>
-                                  <v-alert :value="true" color="error" icon="warning">
-                                    Sorry, nothing to display here :(
-                                  </v-alert>
-                              </template>
-                                <template v-slot:no-results>
-                                    <v-alert :value="true" color="error" icon="warning">
-                                        Your search for "{{ search }}" found no results.
-                                    </v-alert>
-                                  </template>
-                                  <template v-slot:headers="props">
-                                      <tr>
-                                        <th class="profile-th"
-                                          v-for="header in props.headers"
-                                            :key="header.text"
-                                        >
-                                            <v-icon small>arrow_upward</v-icon>
-                                            {{ header.text }}
-                                        </th>
-                                      </tr>
-                                  </template>
+                              
                                   <template v-slot:items="props">
                                       <tr>
                                       <td class="profile-td">{{ props.item.alias }}</td>
@@ -126,13 +105,13 @@
       loading: true,
 
       headers: [
-            { text: 'Alias', align: 'left', value: 'alias', sortable: true },
-            { text: 'Improvement', value: 'improvement'},
-            { text: 'Status quo', value: 'status_quo'},
-            { text: 'Regression', value: 'regression'},
-            { text: 'Detail', value: 'detail'},
-            { text: 'Commit', value: 'commit'},
-            { text: 'Date', value: 'date' }
+            { text: 'Alias', align: 'center', value: 'alias', sortable: true },
+            { text: 'Improvement', align: 'center', value: 'improvement'},
+            { text: 'Status quo', align: 'center', value: 'status_quo'},
+            { text: 'Regression', align: 'center', value: 'regression'},
+            { text: 'Detail', align: 'center', value: 'detail'},
+            { text: 'Commit', align: 'center', value: 'commit'},
+            { text: 'Date', align: 'center', value: 'date' }
           ],
 
           machines: {
@@ -162,9 +141,25 @@
               axios.get(this.$store.state.endpoints.machines)
               .then((response) => {
 
-                for(var i = 0; i < response.data.count; i++)
-                  if (response.data.results[i].alias == machine_name) 
+                for(var i = 0; i < response.data.count; i++) {
+                  if (response.data.results[i].alias == machine_name) {
                     this.serial_number = response.data.results[i].sn;
+                    
+                    var email = response.data.results[i].owner_email;
+                    email = email.replace('@', '<at>');
+                    //email = email.replace(/\./g, '<dot>');
+                    this.email = email;
+
+                    this.owner = {
+                      username: response.data.results[i].owner_username,
+                      email: email,
+                    }
+
+                    this.os = response.data.results[i].os_name + ' ' + response.data.results[i].os_version;
+                    this.compiler = response.data.results[i].comp_name + ' ' + response.data.results[i].comp_version;
+                  }
+                }
+                
                     
               });
 
@@ -175,18 +170,7 @@
                 if (response.data.results[i].machine_info.alias == machine_name) {
 
                   this.reports += 1;
-                  var email = response.data.results[i].machine_info.owner_email;
-                  email = email.replace('@', '<at>');
-                  //email = email.replace(/\./g, '<dot>');
-
-                  this.owner = {
-                    username: response.data.results[i].machine_info.owner_username,
-                    email: email,
-                  }
-
-                  this.os = response.data.results[i].machine_info.os_name + ' ' + response.data.results[i].machine_info.os_version;
-                  this.compiler = response.data.results[i].machine_info.comp_name + ' ' + response.data.results[i].machine_info.comp_version;
-
+                  
                   var machine = {
                     alias: response.data.results[i].machine_info.alias,
                         system: response.data.results[i].machine_info.os_name + ' ' + response.data.results[i].machine_info.os_version + ' ' + response.data.results[i].machine_info.comp_version,
