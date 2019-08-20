@@ -216,6 +216,7 @@ class TestResult(models.Model):
     MODE_CHOICE = (
         (1, 'simple'),
         (2, 'other'),
+        (-1, 'test')
     )
     mode = models.IntegerField(choices=MODE_CHOICE, verbose_name="mode", help_text="test mode")
     add_time = models.DateTimeField(default=timezone.now, verbose_name="test result added time")

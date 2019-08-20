@@ -6,8 +6,8 @@ DATABASES = {
                 'NAME': 'pgperffarm',
                 'USER': 'ila',
                 'PASSWORD': 'password',
-                'HOST': '/var/run/postgresql'
-                #'HOST': '/tmp'
+                #'HOST': '/var/run/postgresql'
+                'HOST': '/tmp'
                 }
         }
 

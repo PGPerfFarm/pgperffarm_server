@@ -123,7 +123,6 @@ def TestRecordCreate(request, format=None):
 		record_hash = make_password(str(json_data), 'pg_perf_farm')
 		r = TestRecord.objects.filter(hash=record_hash).count()
 		if r != 0:
-			print('test')
 			raise TestDataUploadError('The same record already exists, please do not submit it twice.')
 
 		with transaction.atomic():
@@ -199,8 +198,6 @@ def TestRecordCreate(request, format=None):
 				'uuid': shortuuid.uuid()
 			}
 
-			print(test_record_data)
-
 			testRecord = CreateTestRecordSerializer(data=test_record_data)
 			testRecordRet = None
 
@@ -218,8 +215,9 @@ def TestRecordCreate(request, format=None):
 
 			#for tag, tag_list in pgbench.iteritems():
 			for tag, tag_list in pgbench.items():
+				#print(tag)
+				#print(tag_list)
 
-				print(tag)
 				test_cate = TestCategory.objects.get(cate_sn=tag)
 
 				if not test_cate:
@@ -239,16 +237,18 @@ def TestRecordCreate(request, format=None):
 							'metric': dataset['metric'],
 							'median': dataset['median'],
 							'test_cate': test_cate.id,
-							# status,percentage will calc by receiver
+							# status, percentage will calc by receiver
 							'status': -1,
 							'percentage': 0.0,
 						}
+
 						testDateSet = CreateTestDateSetSerializer(data=test_dataset_data)
 						testDateSetRet = None
+
 						if testDateSet.is_valid():
 							testDateSetRet = testDateSet.save()
 						else:
-							# print(testDateSet.errors)
+							print(testDateSet.errors)
 							msg = 'testDateSet invalid'
 							raise TestDataUploadError(msg)
 
@@ -266,6 +266,7 @@ def TestRecordCreate(request, format=None):
 								testResultRet = testResult.save()
 
 							else:
+								print(testResult.errors)
 								msg = testResult.errors
 								raise TestDataUploadError(msg)
 

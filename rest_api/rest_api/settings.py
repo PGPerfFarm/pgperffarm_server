@@ -128,6 +128,11 @@ TEMPLATES = [
 	},
 ]
 
+'''
+AUTHENTICATION_BACKENDS = (
+    'users.auth.AuthBackend',
+)'''
+
 
 WSGI_APPLICATION = 'rest_api.wsgi.application'
 
@@ -206,7 +211,8 @@ DB_ENUM = {
 	},
 	"mode": {
 		"simple": 1,
-		"other": 2
+		"other": 2,
+		-1: -1,
 	},
 	"machine_state": {
 		"prohibited": -1,
