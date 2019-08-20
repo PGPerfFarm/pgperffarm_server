@@ -18,8 +18,7 @@ def byteify(input):
 
 
 token = 'bae596fd98f42bfde08b41bfd8401b49'
-#BASE_URL = 'http://140.211.168.111:8080/'
-BASE_URL = 'http://127.0.0.1:8000/'
+BASE_URL = 'http://140.211.168.111:8080/'
 PATH_URL = 'upload/'
 url = BASE_URL + PATH_URL
 
