@@ -55,6 +55,14 @@ Changes have been added to `requirements.txt`. The whole application now works w
 
 
 
+#### osX support
+
+Since the system has been developed using macOS, support for osX operating systems has been added. Being a unix-based distribution, changes have been minor, aside from package managers. 
+
+The client code is now able to collect test results from an operating system different from Linux, yet there seem to be no available packages to collect operating system information on macOS - therefore its section remains empty.
+
+
+
 #### Django version changes
 
 Using Django1.11 is recommended because the authentication module is on a Django application, so there might be incompatibilies. The version has nonetheless been updated from 1.11.10 to 1.11.17, since the older one has bugs concerning Python3.
@@ -118,7 +126,8 @@ Future development most certainly includes finishing setting up authentication o
 
 - Style changes to the website (better responsiveness, text align, …);
 - Adding custom branches fetched with GitHub (work in progress);
-- Adding custom time span on the Status page.
+- Adding custom time span on the Status page;
+- Improve osX compatibility.
 
 
 

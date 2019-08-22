@@ -18,7 +18,7 @@ This application is being developed as part of the Google Summer of Code project
 
 The Performance Farm requires:
 
-- osX or any Linux based distribution;
+- osX or any Linux based distribution (note that the Python script will be unable to collect Linux information on osX);
 - Python 3.5 or later (and pip3);
 - Node 8.12 or later;
 - Django 1.11.17;
