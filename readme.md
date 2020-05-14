@@ -66,10 +66,10 @@ $ pip3 install -r web/requirements.txt
 Next, create a `settings_local.py` file:
 
 ```bash
-$ cp rest_api/settings_local.py.in rest_api/pgperffarm/settings_local.py
+$ cp rest_api/settings_local.py.in rest_api/settings_local.py
 ```
 
-Edit the file and change the database configuration and other settings to suit your environment. Make sure you create the required database and user account on your PostgreSQL server.
+Edit the file and change the database configuration and other settings to suit your environment. Make sure you cyareate the required database and user account on your PostgreSQL server.
 
 - If you're on osX, usually the host is '/tmp';
 - If you're on Linux, usually the host is '/var/run/postgresql'.
