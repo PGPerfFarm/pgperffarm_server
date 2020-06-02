@@ -30,7 +30,7 @@ def build(git_path, build_path, install_path, log_path):
         with open(log_path + '/log.txt', 'w+') as file:
 
             file.write("configure error: \n")
-            file.write(b.stderr)
+            file.write(a.stderr)
 
             file.write("\nmake clean error: \n")
             file.write(b.stderr)
