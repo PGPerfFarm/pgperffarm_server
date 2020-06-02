@@ -35,10 +35,19 @@ if __name__ == '__main__':
 
             if (not REUSE_REPO):
                 shutil.rmtree(REPOSITORY_PATH)
+
+                if (os.path.exists(BUILD_PATH)):
+                    shutil.rmtree(BUILD_PATH)
+                os.mkdir(BUILD_PATH)
+
+                if (os.path.exists(INSTALL_PATH)):
+                    shutil.rmtree(INSTALL_PATH)
+                os.mkdir(INSTALL_PATH)
+
                 # clone and build
                 log("Removing existing repository and reinitializing...")
                 git.Git(GIT_PATH).clone(GIT_URL)
-                build(REPOSITORY_PATH, BUILD_PATH)
+                build(REPOSITORY_PATH, BUILD_PATH, INSTALL_PATH)
 
             else:
                 branch = (git.Repo(REPOSITORY_PATH)).active_branch
@@ -55,28 +64,40 @@ if __name__ == '__main__':
                     if (latest_commit != commit or latest_branch != branch):
                         log("Rebuilding repository to apply updates...")
 
-                        shutil.rmtree(BUILD_PATH)
-                        build(REPOSITORY_PATH, BUILD_PATH)
+                        if (os.path.exists(BUILD_PATH)):
+                            shutil.rmtree(BUILD_PATH)
+                        os.mkdir(BUILD_PATH)
+
+                        if (os.path.exists(INSTALL_PATH)):
+                            shutil.rmtree(INSTALL_PATH)
+                        os.mkdir(INSTALL_PATH)
+
+                        build(REPOSITORY_PATH, BUILD_PATH, INSTALL_PATH)
 
                     log("Repository is up to date. ")
 
                 else:
                     if (not (os.path.exists(BUILD_PATH))):
                         # build
-                        build(REPOSITORY_PATH, BUILD_PATH)
+                        build(REPOSITORY_PATH, BUILD_PATH, INSTALL_PATH)
 
                     # if it exists, proceed to run tests
 
         else:
-            # remove build path just to be sure
+            # remove build and install path just to be sure
             if (os.path.exists(BUILD_PATH)):
                 shutil.rmtree(BUILD_PATH)
+            os.mkdir(BUILD_PATH)
+
+            if (os.path.exists(INSTALL_PATH)):
+                shutil.rmtree(INSTALL_PATH)
+            os.mkdir(INSTALL_PATH)
 
             # and finally, clone
             log("Cloning repository...")
             git.Git(GIT_PATH).clone(GIT_URL)
             # and build
-            build(REPOSITORY_PATH, BUILD_PATH)
+            build(REPOSITORY_PATH, BUILD_PATH, INSTALL_PATH)
 
         # get (or rewrite) current branch and commit
         # string because it must be JSON serializable
@@ -108,15 +129,14 @@ if __name__ == '__main__':
         # register the three tests we currently have
         runner.register_benchmark('pgbench', PgBench)
 
-        # register one config for each benchmark (should be moved to a config
-        # file)
+        # register one config for each benchmark (should be moved to a config file)
         PGBENCH_CONFIG['results_dir'] = OUTPUT_DIR
         runner.register_config('pgbench-basic',
                                'pgbench',
                                branch,
                                commit,
                                dbname=DATABASE_NAME,
-                               bin_path=('%s/bin' % (BUILD_PATH,)),
+                               bin_path=BIN_PATH,
                                postgres_config=POSTGRES_CONFIG,
                                **PGBENCH_CONFIG)
 
@@ -135,3 +155,4 @@ if __name__ == '__main__':
         if (REMOVE_AFTERWARDS):
             shutil.rmtree(REPOSITORY_PATH)
             shutil.rmtree(BUILD_PATH)
+            shutil.rmtree(INSTALL_PATH)

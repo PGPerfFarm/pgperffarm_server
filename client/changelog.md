@@ -13,6 +13,16 @@ Key points: the code is not supposed to be run using an existing personal Postgr
 - Error during make should be logged, but otherwise the git cloning and installing works.
 - Killing processes is now embedded into a try-catch statement, so that if the postmaster.pid file is not found, the program does not break.
 
+##### 02.06.20
+
+* After defining a deterministic workflow for cloning, pulling and building the repository, the process is complete.
+* The git custom written functions have been completely replaced by gitpython.
+* Still missing a bit of refactoring, especially within the part of killing processes and deleting folders.
+* Now next goal is trying to improve JSON output results, so that they can be parsed and displayed better. First thing to focus on is "linux", next is understanding why "collectd" is always empty;
+* Then it is time to find out where Linux specifics are generated:
+  * Part of it is in misc.py, launching a "free -m" command;
+  * Mostly in linux.py, which is composed by "sysctl", "meminfo" etc.
+
 
 
 ##### Files and folders
@@ -30,7 +40,8 @@ Key points: the code is not supposed to be run using an existing personal Postgr
   * upload.py: takes the output file and sends it to the API;
 * Utils: 
   * cluster.py: 
-  * git.py: hand-written module to extract information from a git repository;
+  * git.py: hand-written module to extract information from a git repository (deleted and replaced by build.py);
+  * build.py: module which takes care of executing a build from source from a git repository;
   * locking.py: ensures locking of files;
   * logging.py: prints nice logging;
   * misc.py: connects to database and returns available RAM.

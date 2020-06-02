@@ -2,11 +2,24 @@ import os
 import sys
 
 # global configuration
+REUSE_REPO = True
+UPDATE = True
+REMOVE_AFTERWARDS = True
+
+# default url: master branch
 GIT_URL = 'https://github.com/postgres/postgres.git'
-REPOSITORY_PATH = '/tmp/git-postgres'
-BUILD_PATH = '/tmp/bin-postgres'
-BIN_PATH = os.path.join(BUILD_PATH, 'bin')
+GIT_PATH = '/tmp' 
+BUILD_PATH = '/tmp/build'
+INSTALL_PATH = '/tmp/install'
+BIN_PATH = os.path.join(INSTALL_PATH, 'bin')
+
+# be careful with changing this, might compromise existing external Postgres processes
+# furthermore, make sure that a non-superuser can access this folder
 DATADIR_PATH = '/tmp/data-postgres'
+
+API_URL = 'http://140.211.168.111:8080/'
+MACHINE_SECRET = 'CHANGEME'
+# test secret
 
 POSTGRES_CONFIG = {
     'shared_buffers': '1GB',

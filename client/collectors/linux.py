@@ -11,7 +11,7 @@ class LinuxCollector(object):
     def __init__(self, outdir):
         self._outdir = outdir
 
-        # Hard code all possible places a packager might install sysctl.
+        # hard code all possible places a packager might install sysctl.
         self._env = os.environ
         self._env['PATH'] = ':'.join(['/usr/sbin/', '/sbin/', self._env['PATH']])
 

@@ -6,28 +6,29 @@ from multiprocessing import cpu_count
 from tempfile import TemporaryFile
 from utils.logging import log
 
-def build(git_path, build_path):
+def build(git_path, build_path, install_path):
 
     log("Building repository...")
 
     with TemporaryFile() as strout:
         log("Configuring sources in '%s' with prefix '%s'" %
             (git_path, build_path))
-        subprocess.run(['./configure', '--prefix', build_path], cwd=git_path,
+        subprocess.run([git_path + '/configure', '--prefix', install_path], cwd=build_path,
              capture_output=True)
 
     with TemporaryFile() as strout:
-        log("Building sources and installing into '%s'" % (build_path,))
+        log("Building sources and installing into '%s'" % (install_path,))
 
             # cleanup and build using multiple cpus
-        subprocess.run(['make', '-s', 'clean'], cwd=git_path, capture_output=True)
+        subprocess.run(['make', '-s', 'clean'], cwd=build_path, capture_output=True)
         subprocess.run(['make', '-s', '-j', str(cpu_count()), 'install'],
-            cwd=git_path, capture_output=True)
+            cwd=build_path, capture_output=True)
 
         # various things needs to be installed because of various changes
         # between releases.  Take a systematic approach and check
         # if the directory exist, then try to install it.
 
+        '''
         print("Installing additional tools...")
 
         items = [
@@ -44,3 +45,4 @@ def build(git_path, build_path):
             if os.path.isdir(srcdir):
                 subprocess.run(['make', '-s', '-j', str(cpu_count()), 'install'],
                 cwd=srcdir, capture_output=True)
+        '''
