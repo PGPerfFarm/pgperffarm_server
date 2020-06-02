@@ -43,9 +43,14 @@ class PgCluster(object):
 
         with TemporaryFile() as strout:
             log("killing postgres processes")
-            pidfile = open(''.join([self._outdir, '/postmaster.pid']), 'r')
-            pid = pidfile.readline().strip()
-            run_cmd(['kill', '-9', pid])
+            try: 
+                pidfile = open(''.join([self._outdir, '/postmaster.pid']), 'r')
+                pid = pidfile.readline().strip()
+                run_cmd(['kill', '-9', pid])
+                log("found postmaster.pid")
+            except FileNotFoundError:
+                log("postmaster.pid not found")
+        
 
         # remove the data directory
         if os.path.exists(self._data):

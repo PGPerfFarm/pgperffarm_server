@@ -18,7 +18,6 @@ class BenchmarkRunner(object):
 
     def __init__(self, out_dir, url, secret, cluster, collector):
         ''
-
         self._output = out_dir  # where to store output files
         self._benchmarks = {}  # bench name => class implementing the benchmark
         self._configs = {}  # config name => (bench name, config)
@@ -48,7 +47,7 @@ class BenchmarkRunner(object):
     def _check_config(self, config_name):
         ''
 
-        log("checking benchmark configuration '%s'" % (config_name,))
+        log("Checking benchmark configuration '%s'" % (config_name,))
 
         # construct the benchmark class for the given config name
         config = self._configs[config_name]
@@ -74,7 +73,7 @@ class BenchmarkRunner(object):
 
     def _run_config(self, config_name):
 
-        log("running benchmark configuration '%s'" % (config_name,))
+        log("Running benchmark configuration '%s'" % (config_name,))
 
         # construct the benchmark class for the given config name
         config = self._configs[config_name]
@@ -154,8 +153,8 @@ class BenchmarkRunner(object):
         try:
             os.mkdir(self._output)
         except OSError as e:
-            log("WARNING: output directory already exists: %s" % self._output)
-            log("recreating existing folder")
+            log("Output directory already exists: %s" % self._output)
+            log("Recreating existing folder...")
             shutil.rmtree(self._output)
             os.mkdir(self._output)
 
@@ -176,7 +175,7 @@ def csv_collect_results(bench_name, queue):
 
             # if we got a string, it means 'terminate'
             if isinstance(v, str):
-                log("terminating CSV result collector")
+                log("Terminating CSV result collector...")
                 return
 
             v = [str(x) for x in v]
