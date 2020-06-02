@@ -12,6 +12,7 @@ GIT_PATH = '/tmp'
 BUILD_PATH = '/tmp/build'
 INSTALL_PATH = '/tmp/install'
 BIN_PATH = os.path.join(INSTALL_PATH, 'bin')
+LOG_PATH = '/tmp' # choose an existing directory
 
 # be careful with changing this, might compromise existing external Postgres processes
 # furthermore, make sure that a non-superuser can access this folder

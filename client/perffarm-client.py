@@ -47,7 +47,7 @@ if __name__ == '__main__':
                 # clone and build
                 log("Removing existing repository and reinitializing...")
                 git.Git(GIT_PATH).clone(GIT_URL)
-                build(REPOSITORY_PATH, BUILD_PATH, INSTALL_PATH)
+                build(REPOSITORY_PATH, BUILD_PATH, INSTALL_PATH, LOG_PATH)
 
             else:
                 branch = (git.Repo(REPOSITORY_PATH)).active_branch
@@ -79,7 +79,7 @@ if __name__ == '__main__':
                 else:
                     if (not (os.path.exists(BUILD_PATH))):
                         # build
-                        build(REPOSITORY_PATH, BUILD_PATH, INSTALL_PATH)
+                        build(REPOSITORY_PATH, BUILD_PATH, INSTALL_PATH, LOG_PATH)
 
                     # if it exists, proceed to run tests
 
@@ -97,7 +97,7 @@ if __name__ == '__main__':
             log("Cloning repository...")
             git.Git(GIT_PATH).clone(GIT_URL)
             # and build
-            build(REPOSITORY_PATH, BUILD_PATH, INSTALL_PATH)
+            build(REPOSITORY_PATH, BUILD_PATH, INSTALL_PATH, LOG_PATH)
 
         # get (or rewrite) current branch and commit
         # string because it must be JSON serializable
