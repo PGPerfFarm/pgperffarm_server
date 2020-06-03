@@ -58,6 +58,14 @@ Key points: the code is not supposed to be run using an existing personal Postgr
   * Part of it is in misc.py, launching a "free -m" command;
   * Mostly in linux.py, which is composed by "sysctl", "meminfo" etc.
 
+##### 03.06
+
+* Continuing the process of removing walls of text in the output and gradually switching them with JSON parameters, trying to replace as much as possible;
+* Integration with 3 Python modules able to collect statistics in a much more portable and readable way;
+* Redefining the whole JSON structure;
+
+
+
 
 
 ##### Files and folders
