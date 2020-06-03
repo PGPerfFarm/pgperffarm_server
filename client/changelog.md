@@ -1,5 +1,40 @@
 ### Performance Farm Benchmarks: bug fixing and change log
 
+
+
+#### TODO LIST
+
+* Benchmarks:
+  * Refactoring Linux collectors, having some of the outputs written to a file and some in the JSON output to be displayed;
+  * Understanding where files should be saved, for how long, or if they should just be embedded in JSON and then not parsed;
+  * Understanding what should be displayed and in which way;
+  * Installing collectd to run further tests (?);
+  * Adding more tests or more options to pgbench, or automated testing (?);
+  * Reviewing process shutdown;
+  * Add list of branches;
+  * Portability tests;
+* API:
+  * Whole refactoring of the code, especially the serializing of JSON output, since its structure will change and right now code is not really clean;
+  * Handle credentials;
+  * Speed up the whole thing with more compact information and less requests from the website;
+* Website:
+  * Improve displaying of results compatible with the new JSON structure;
+  * Add possibility to download further files;
+  * Add automatic update of list of branches;
+  * Fix login and permissions (compatible with Postgres web infrastructure);
+  * Style changes, general bug fixes;
+* Server:
+  * Updating all Python versions, Node, all software being used;
+  * Cleaning existing databases with old test data;
+  * Setting up automatic benchmarks.
+
++ Documentation:
+  + Detailed explanation of JSON fields;
+  + Update README and installation procedure;
+  + Update requirements (in progress).
+
+
+
 ##### 01.06.2020
 
 Key points: the code is not supposed to be run using an existing personal Postgres installation. There is also a list of important branches, and the script should clone and run benchmarks on each one separately. 
@@ -36,7 +71,7 @@ Key points: the code is not supposed to be run using an existing personal Postgr
   * collector.py: combines other collectors and calls them;
   * linux.py: contains a collection of shell commands to extract system information such as CPU usage, kernel configuration and memory;
   * postgres.py: manly a function that connects to Postgres and selects its settings;
-* Post example: 
+* Post example (removed in later versions): 
   * upload.py: takes the output file and sends it to the API;
 * Utils: 
   * cluster.py: 

@@ -6,12 +6,13 @@ import os
 import git
 import pathlib
 import shutil
+import psutil
 
 from benchmarks.pgbench import PgBench
 from benchmarks.runner import BenchmarkRunner
 
 from collectors.collectd import CollectdCollector
-from collectors.linux import LinuxCollector
+from collectors.system import SystemCollector
 from collectors.postgres import PostgresCollector
 from collectors.collector import MultiCollector
 
@@ -19,16 +20,26 @@ from utils.locking import FileLock
 from utils.build import build
 from utils.cluster import PgCluster
 from utils.logging import log
+from utils.upload import upload
 
 from settings_local import *
+
+BUILD_PATH = os.path.join(BASE_PATH, 'build')
+INSTALL_PATH = os.path.join(BASE_PATH, 'install')
+BIN_PATH = os.path.join(INSTALL_PATH, 'bin')
+OUTPUT_DIR = os.path.join(BASE_PATH, 'output')
+REPOSITORY_PATH = os.path.join(BASE_PATH, 'postgres')
+DATADIR_PATH = os.path.join(BASE_PATH, 'data')
 
 if __name__ == '__main__':
 
     with FileLock('.lock') as lock:
 
-        log("Starting client...")
+        # cleanup
+        if (not (os.path.exists(BASE_PATH))):
+            os.mkdir(BASE_PATH)
 
-        REPOSITORY_PATH = os.path.join(GIT_PATH, 'postgres')
+        log("Starting client...")
 
         # checking for local installation
         if (os.path.exists(REPOSITORY_PATH)):
@@ -46,8 +57,8 @@ if __name__ == '__main__':
 
                 # clone and build
                 log("Removing existing repository and reinitializing...")
-                git.Git(GIT_PATH).clone(GIT_URL)
-                build(REPOSITORY_PATH, BUILD_PATH, INSTALL_PATH, LOG_PATH)
+                git.Git(BASE_PATH).clone(GIT_URL)
+                build(REPOSITORY_PATH, BUILD_PATH, INSTALL_PATH, BASE_PATH)
 
             else:
                 branch = (git.Repo(REPOSITORY_PATH)).active_branch
@@ -79,7 +90,7 @@ if __name__ == '__main__':
                 else:
                     if (not (os.path.exists(BUILD_PATH))):
                         # build
-                        build(REPOSITORY_PATH, BUILD_PATH, INSTALL_PATH, LOG_PATH)
+                        build(REPOSITORY_PATH, BUILD_PATH, INSTALL_PATH, BASE_PATH)
 
                     # if it exists, proceed to run tests
 
@@ -95,9 +106,9 @@ if __name__ == '__main__':
 
             # and finally, clone
             log("Cloning repository...")
-            git.Git(GIT_PATH).clone(GIT_URL)
+            git.Git(BASE_PATH).clone(GIT_URL)
             # and build
-            build(REPOSITORY_PATH, BUILD_PATH, INSTALL_PATH, LOG_PATH)
+            build(REPOSITORY_PATH, BUILD_PATH, INSTALL_PATH, BASE_PATH)
 
         # get (or rewrite) current branch and commit
         # string because it must be JSON serializable
@@ -112,10 +123,12 @@ if __name__ == '__main__':
         collectors = MultiCollector()
 
         system = os.popen("uname").readlines()[0].split()[0]
-        if system == 'Linux':
-            collectors.register('linux', LinuxCollector(OUTPUT_DIR))
 
-        # add mac?
+        if system == 'Linux':
+            collectors.register('linux', SystemCollector(OUTPUT_DIR))
+
+        if system == 'Darwin':
+            collectors.register('osx', SystemCollector(OUTPUT_DIR))
 
         collectors.register('collectd',
                             CollectdCollector(OUTPUT_DIR, DATABASE_NAME, ''))
@@ -150,6 +163,12 @@ if __name__ == '__main__':
                     print (k, ':', v)
         else:
             runner.run()
+
+        if (AUTOMATIC_UPLOAD):
+            upload(API_URL, OUTPUT_DIR, MACHINE_SECRET)
+
+        else:
+            log("Benchmark completed, check results in '%s'" % (OUTPUT_DIR, ))
 
         # cleanup
         if (REMOVE_AFTERWARDS):

@@ -4,6 +4,7 @@ import codecs
 import requests
 import csv
 import shutil
+import psutil
 
 from multiprocessing import Process, Queue
 from time import gmtime, strftime

@@ -5,22 +5,17 @@ import sys
 REUSE_REPO = True
 UPDATE = True
 REMOVE_AFTERWARDS = True
+AUTOMATIC_UPLOAD = False
 
 # default url: master branch
 GIT_URL = 'https://github.com/postgres/postgres.git'
-GIT_PATH = '/tmp' 
-BUILD_PATH = '/tmp/build'
-INSTALL_PATH = '/tmp/install'
-BIN_PATH = os.path.join(INSTALL_PATH, 'bin')
-LOG_PATH = '/tmp' # choose an existing directory
 
-# be careful with changing this, might compromise existing external Postgres processes
-# furthermore, make sure that a non-superuser can access this folder
-DATADIR_PATH = '/tmp/data-postgres'
+# base path where to clone, install and fetch results
+# parent must exist!
+# also should have non-superuser access
+BASE_PATH = '/tmp/perffarm' 
 
-API_URL = 'http://140.211.168.111:8080/'
 MACHINE_SECRET = 'CHANGEME'
-# test secret
 
 POSTGRES_CONFIG = {
     'shared_buffers': '1GB',
@@ -37,8 +32,6 @@ POSTGRES_CONFIG = {
 }
 
 DATABASE_NAME = 'perf'
-
-OUTPUT_DIR = '/tmp/perf-output'
 
 # configuration for PgBench
 # runs - number of repetitions (including test for all client counts)

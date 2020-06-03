@@ -5,7 +5,6 @@ import codecs
 import urllib.request
 import requests
 
-
 def byteify(input):
     if isinstance(input, dict):
         return {byteify(key):byteify(value) for key, value in input.items()}
@@ -16,13 +15,6 @@ def byteify(input):
     else:
         return input
 
-
-token = 'bae596fd98f42bfde08b41bfd8401b49'
-BASE_URL = 'http://140.211.168.111:8080/'
-PATH_URL = 'upload/'
-url = BASE_URL + PATH_URL
-
-
 def http_post(url, data, token):  
     postdata = data  
     post = []  
@@ -31,7 +23,13 @@ def http_post(url, data, token):
     headers = {'Content-Type': 'application/json; charset=utf-8', 'Authorization': token}
     r = requests.post(url.encode('utf-8'), data=json.dumps(post).encode('utf-8'), headers=headers)
 
+def upload(api_url, results_directory, token):
 
-with open("./results-linux.json",'r') as load_f:
-    load_dict = (json.load(load_f, encoding="UTF-8"))
-    http_post(url, load_dict, token)
+    path_url = 'upload/'
+    url = api_url + path_url
+
+    json_file = results_directory + "/results.json"
+
+    with open(json_file,'r') as load_f:
+        load_dict = (json.load(load_f, encoding="UTF-8"))
+        http_post(url, load_dict, token)
