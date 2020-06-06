@@ -52,6 +52,10 @@ class SystemCollector(object):
         system['memory'] = {}
         system['disk'] = {}
         system['process'] = {}
+        system['compiler'] = {}
+
+        system['compiler']['make'] = run_cmd(['make', '--version'], env=self._env)
+        system['compiler']['gcc'] = run_cmd(['gcc', '--version'], env=self._env)
 
         system['cpu']['information'] = get_cpu_info()
         system['cpu']['number'] = psutil.cpu_count()

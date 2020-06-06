@@ -13,10 +13,17 @@
   * Reviewing process shutdown;
   * Add list of branches;
   * Portability tests;
+  * Allow overriding of default scaling and clients;
+  * Allow logging of build/install even with an empty result;
 * API:
   * Whole refactoring of the code, especially the serializing of JSON output, since its structure will change and right now code is not really clean;
   * Handle credentials;
   * Speed up the whole thing with more compact information and less requests from the website;
+  * Drop alias table, so that a person can use their own;
+  * Make machine secret larger (128);
+  * Add approved flag in place of status;
+  * Add benchmark table;
+  * Calculate hash string of configuration;
 * Website:
   * Improve displaying of results compatible with the new JSON structure;
   * Add possibility to download further files;

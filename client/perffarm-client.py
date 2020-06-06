@@ -7,6 +7,8 @@ import git
 import pathlib
 import shutil
 import psutil
+import logging
+from datetime import datetime
 
 from benchmarks.pgbench import PgBench
 from benchmarks.runner import BenchmarkRunner
@@ -31,9 +33,20 @@ OUTPUT_DIR = os.path.join(BASE_PATH, 'output')
 REPOSITORY_PATH = os.path.join(BASE_PATH, 'postgres')
 DATADIR_PATH = os.path.join(BASE_PATH, 'data')
 
+#GIT_PYTHON_TRACE = full
+logging.basicConfig(level=logging.INFO)
+
 if __name__ == '__main__':
 
     with FileLock('.lock') as lock:
+
+        git_clone_runtime = ''
+        build_runtime = ''
+        cleanup_runtime = ''
+        git_pull_time = ''
+
+        # run received time
+        run_received_time = datetime.now()
 
         # cleanup
         if (not (os.path.exists(BASE_PATH))):
@@ -43,6 +56,10 @@ if __name__ == '__main__':
 
         # checking for local installation
         if (os.path.exists(REPOSITORY_PATH)):
+
+            if (os.path.exists(SOCKET_PATH)):
+                shutil.rmtree(SOCKET_PATH)
+                os.mkdir(SOCKET_PATH)
 
             if (not REUSE_REPO):
                 shutil.rmtree(REPOSITORY_PATH)
@@ -57,7 +74,12 @@ if __name__ == '__main__':
 
                 # clone and build
                 log("Removing existing repository and reinitializing...")
+
+                git_clone_start_time = datetime.now()
                 git.Git(BASE_PATH).clone(GIT_URL)
+                git_clone_end_time = datetime.now()
+                git_clone_runtime = git_clone_end_time - git_clone_start_time
+
                 build(REPOSITORY_PATH, BUILD_PATH, INSTALL_PATH, BASE_PATH)
 
             else:
@@ -67,7 +89,10 @@ if __name__ == '__main__':
                 if (UPDATE):
                     # call git pull
                     log("Updating repository...")
+                    git_pull_start_time = datetime.now()
                     git.Git().pull()
+                    git_pull_end_time = datetime.now()
+                    git_pull_runtime = git_pull_end_time - git_pull_start_time
 
                     latest_branch = (git.Repo(REPOSITORY_PATH)).active_branch
                     latest_commit = (git.Repo(REPOSITORY_PATH)).head.commit
@@ -104,9 +129,17 @@ if __name__ == '__main__':
                 shutil.rmtree(INSTALL_PATH)
             os.mkdir(INSTALL_PATH)
 
+            if (os.path.exists(SOCKET_PATH)):
+                shutil.rmtree(SOCKET_PATH)
+            os.mkdir(SOCKET_PATH)
+
             # and finally, clone
             log("Cloning repository...")
+            git_clone_start_time = datetime.now()
             git.Git(BASE_PATH).clone(GIT_URL)
+            git_clone_end_time = datetime.now()
+            git_clone_runtime = git_clone_end_time - git_clone_start_time
+
             # and build
             build(REPOSITORY_PATH, BUILD_PATH, INSTALL_PATH, BASE_PATH)
 
@@ -162,7 +195,11 @@ if __name__ == '__main__':
                 for v in issues[k]:
                     print (k, ':', v)
         else:
+            # run start time
+            run_start_time = datetime.now()
             runner.run()
+            run_end_time = datetime.now()
+
 
         if (AUTOMATIC_UPLOAD):
             upload(API_URL, OUTPUT_DIR, MACHINE_SECRET)
@@ -172,6 +209,9 @@ if __name__ == '__main__':
 
         # cleanup
         if (REMOVE_AFTERWARDS):
-            shutil.rmtree(REPOSITORY_PATH)
-            shutil.rmtree(BUILD_PATH)
-            shutil.rmtree(INSTALL_PATH)
+            cleanup_start_time = datetime.now()
+            shutil.rmtree(BASE_PATH)
+
+            cleanup_end_time = datetime.now()
+
+            cleanup_runtime = cleanup_end_time - cleanup_start_time

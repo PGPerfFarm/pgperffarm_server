@@ -10,6 +10,7 @@ from numpy import mean, median, std
 from multiprocessing import cpu_count
 from utils.logging import log
 from utils.misc import available_ram, run_cmd
+from settings_local import *
 
 
 class PgBench(object):
@@ -75,8 +76,8 @@ class PgBench(object):
         run_cmd(['createdb', self._dbname], env=self._env)
 
         log("initializing pgbench '%s' with scale %s" % (self._dbname, scale))
-        r = run_cmd(['pgbench', '-i', '-s', str(scale), self._dbname],
-                    env=self._env, cwd=self._outdir)
+        r = run_cmd(['pgbench', '-i', '-s', str(scale), '-h', SOCKET_PATH, self._dbname], env=self._env, cwd=self._outdir)
+        #r = run_cmd(['pgbench', self._dbname, '-r'], env=self._env, cwd=self._outdir)
 
         # remember the init duration
         self._results['results']['init'] = r[2]
@@ -86,6 +87,10 @@ class PgBench(object):
         'extract results (including parameters) from the pgbench output'
 
         data = data.decode('utf-8')
+
+        with open(BASE_PATH + '/pgbench_log.txt', 'w+') as file:
+            file.write("pgbench log: \n")
+            file.write(data)
 
         scale = -1
         r = re.search('scaling factor: ([0-9]+)', data)
@@ -215,15 +220,16 @@ class PgBench(object):
         # derive configuration for the CPU count / RAM size
         configs = PgBench._configure(cpu_count(), available_ram())
 
-        results = {'ro': {}, 'rw': {}}
+        info = {}
+        results = []
+        result = {}
+
+        configuration = {}
+
         j = 0
         for config in configs:
+            info['clients'] = config['clients']
             scale = config['scale']
-
-            if scale not in results['ro']:
-                results['ro'][scale] = {}
-            if scale not in results['rw']:
-                results['rw'][scale] = {}
 
             # init for the dataset scale and warmup
             self._init(scale)
@@ -243,21 +249,16 @@ class PgBench(object):
                     log("pgbench: %s run=%d" % (tag, i))
 
                     for clients in config['clients']:
-                        if clients not in results[tag][scale]:
-                            results[tag][scale][clients] = {}
-                            results[tag][scale][clients]['results'] = []
+                        if clients not in results:
+                            result['clients'] = clients
 
                         r = self._run(i, scale, self._duration, clients,
                                       clients, ro, True, csv_queue)
+
                         r.update({'run': i})
-                        results[tag][scale][clients]['results'].append(r)
+                        results.append(r)
 
-                        tps = []
-                        for result in results[tag][scale][clients]['results']:
-                            tps.append(float(result['tps']))
-                        results[tag][scale][clients]['metric'] = mean(tps)
-                        results[tag][scale][clients]['median'] = median(tps)
-                        results[tag][scale][clients]['std'] = std(tps)
+        info['runs'] = results
 
-        self._results['pgbench'] = results
+        self._results['pgbench'] = info
         return self._results

@@ -6,6 +6,7 @@ from multiprocessing import cpu_count, Process, Queue
 from subprocess import call, STDOUT
 from tempfile import TemporaryFile
 from utils.logging import log
+from settings_local import SOCKET_PATH
 
 
 class PgCluster(object):
@@ -18,6 +19,13 @@ class PgCluster(object):
 
         self._env = os.environ
         self._env['PATH'] = ':'.join([bin_path, self._env['PATH']])
+        '''
+        self._env['USER'] = "postgres"
+        self._env['USERNAME'] = "postgres"
+        self._env['LOGNAME'] = "postgres"
+        self._env['PGUSER'] = "postgres"
+        '''
+        self._env['PGDATABASE'] = "postgres"
 
         self._options = ""
 
@@ -26,8 +34,13 @@ class PgCluster(object):
 
         with TemporaryFile() as strout:
             log("initializing cluster into '%s'" % (self._data,))
-            call(['pg_ctl', '-D', self._data, 'init'], env=self._env,
+            call(['pg_ctl', '-D', self._data, 'init', '-U', 'postgres'], env=self._env,
                  stdout=strout, stderr=STDOUT)
+
+        # editing postgresql.auto.conf
+        # assuming building and installing went correctly
+        with open(self._data + '/postgresql.auto.conf', 'w+') as file:
+            file.write("unix_socket_directories = '%s'" % SOCKET_PATH)
 
     def _configure(self, config):
         'build options list to use with pg_ctl'
@@ -40,7 +53,6 @@ class PgCluster(object):
         forced cleanup of possibly existing cluster processes and data
         directory
         """
-
         with TemporaryFile() as strout:
             log("killing postgres processes")
             try: 
@@ -51,10 +63,11 @@ class PgCluster(object):
             except FileNotFoundError:
                 log("postmaster.pid not found")
         
-
         # remove the data directory
+        '''
         if os.path.exists(self._data):
             shutil.rmtree(self._data)
+        '''
 
     def start(self, config, destroy=True):
         'init, configure and start the cluster'
