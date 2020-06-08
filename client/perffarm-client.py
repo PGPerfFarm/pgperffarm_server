@@ -99,7 +99,7 @@ if __name__ == '__main__':
                     # call git pull
                     log("Updating repository...")
                     git_pull_start_time = datetime.now()
-                    a = git.Git().pull()
+                    a = git.Git(REPOSITORY_PATH).pull()
 
                     with open(BASE_PATH + '/git_log.txt', 'a+') as file:
                         file.write("git pull log: \n")
