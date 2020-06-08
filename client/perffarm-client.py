@@ -24,7 +24,7 @@ from utils.cluster import PgCluster
 from utils.logging import log
 from utils.upload import upload
 
-from settings_local import *
+from settings_local import * 
 
 BUILD_PATH = os.path.join(BASE_PATH, 'build')
 INSTALL_PATH = os.path.join(BASE_PATH, 'install')
