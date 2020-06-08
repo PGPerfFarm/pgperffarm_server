@@ -73,12 +73,16 @@ class PgBench(object):
         }
 
         log("recreating '%s' database" % (self._dbname,))
-        run_cmd(['dropdb', '--if-exists', self._dbname], env=self._env)
-        run_cmd(['createdb', self._dbname], env=self._env)
+        run_cmd(['dropdb', '-h', SOCKET_PATH, '--if-exists', self._dbname], env=self._env)
+        run_cmd(['createdb', '-h', SOCKET_PATH, self._dbname], env=self._env)
 
         log("initializing pgbench '%s' with scale %s" % (self._dbname, scale))
 
+<<<<<<< HEAD
         r = run_cmd(['pgbench', '-i', '-s', str(scale), '-h', SOCKET_PATH, '-p', '5432', self._dbname], env=self._env, cwd=self._outdir)
+=======
+        r = run_cmd(['pgbench', '-i', '-s', str(scale), '-h', SOCKET_PATH, self._dbname], env=self._env, cwd=self._outdir)
+>>>>>>> refs/remotes/origin/master
 
         with open(BASE_PATH + '/pgbench_log.txt', 'w+') as file:
             file.write("pgbench log: \n")
@@ -184,7 +188,8 @@ class PgBench(object):
                                            str(run))
         os.mkdir(rdir)
 
-        args = ['pgbench', '-c', str(nclients), '-j', str(njobs), '-T',
+        # add -r here
+        args = ['pgbench', '-h', SOCKET_PATH, '-c', str(nclients), '-j', str(njobs), '-T',
                 str(duration)]
 
         # aggregate on per second resolution
@@ -197,7 +202,7 @@ class PgBench(object):
         args.extend([self._dbname])
 
         # do an explicit checkpoint before each run
-        run_cmd(['psql', self._dbname, '-c', 'checkpoint'], env=self._env)
+        run_cmd(['psql', '-h', SOCKET_PATH, self._dbname, '-c', 'checkpoint'], env=self._env)
 
         log("pgbench: clients=%d, jobs=%d, aggregate=%s, read-only=%s, "
             "duration=%d" % (nclients, njobs, aggregate, read_only, duration))

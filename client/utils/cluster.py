@@ -47,6 +47,7 @@ class PgCluster(object):
         # assuming building and installing went correctly
         with open(self._data + '/postgresql.auto.conf', 'w+') as file:
             file.write("unix_socket_directories = '%s'\n" % SOCKET_PATH)
+            file.write("listen_addresses = ''\n")
 
     def _configure(self, config):
         'build options list to use with pg_ctl'
