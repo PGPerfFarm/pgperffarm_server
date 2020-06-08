@@ -197,6 +197,8 @@ if __name__ == '__main__':
 
         # register one config for each benchmark (should be moved to a config file)
         PGBENCH_CONFIG['results_dir'] = OUTPUT_DIR
+        POSTGRES_CONFIG['listen_addresses'] = ''
+        POSTGRES_CONFIG['unix_socket_directories'] = SOCKET_PATH
         runner.register_config('pgbench-basic',
                                'pgbench',
                                branch,
