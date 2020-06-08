@@ -13,10 +13,8 @@ GIT_URL = 'https://github.com/postgres/postgres.git'
 # base path where to clone, install and fetch results
 # parent must exist!
 # also should have non-superuser access
-BASE_PATH = '/tmp/perffarm' 
-
-API_URL = 'http://140.211.168.111:8080/'
 MACHINE_SECRET = 'CHANGEME'
+API_URL = 'http://140.211.168.111:8080/'
 
 POSTGRES_CONFIG = {
     'shared_buffers': '1GB',
