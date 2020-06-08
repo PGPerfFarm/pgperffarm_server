@@ -16,6 +16,8 @@
   * Allow overriding of default scaling and clients;
   * Allow logging of build/install even with an empty result;
   * Also import settings_local
+  * collectd?
+  * git pull needs to have a repo path!
 * API:
   * Whole refactoring of the code, especially the serializing of JSON output, since its structure will change and right now code is not really clean;
   * Handle credentials;

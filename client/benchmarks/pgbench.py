@@ -78,7 +78,7 @@ class PgBench(object):
 
         log("initializing pgbench '%s' with scale %s" % (self._dbname, scale))
 
-        r = run_cmd(['pgbench', '-s', str(scale), '-h', SOCKET_PATH, '-p', '5432', self._dbname], env=self._env, cwd=self._outdir)
+        r = run_cmd(['pgbench', '-i', '-s', str(scale), '-h', SOCKET_PATH, '-p', '5432', self._dbname], env=self._env, cwd=self._outdir)
 
         with open(BASE_PATH + '/pgbench_log.txt', 'w+') as file:
             file.write("pgbench log: \n")
