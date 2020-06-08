@@ -76,7 +76,13 @@ class PgBench(object):
         run_cmd(['createdb', self._dbname], env=self._env)
 
         log("initializing pgbench '%s' with scale %s" % (self._dbname, scale))
-        r = run_cmd(['pgbench', '-i', '-s', str(scale), '-h', SOCKET_PATH, self._dbname], env=self._env, cwd=self._outdir)
+
+        r = run_cmd(['pgbench', '-s', str(scale), '-h', SOCKET_PATH, '-p', '5432', self._dbname], env=self._env, cwd=self._outdir)
+
+        with open(BASE_PATH + '/pgbench_log.txt', 'w+') as file:
+            file.write("pgbench log: \n")
+            file.write(r[1].decode("utf-8"))
+
         #r = run_cmd(['pgbench', self._dbname, '-r'], env=self._env, cwd=self._outdir)
 
         # remember the init duration
@@ -88,8 +94,7 @@ class PgBench(object):
 
         data = data.decode('utf-8')
 
-        with open(BASE_PATH + '/pgbench_log.txt', 'w+') as file:
-            file.write("pgbench log: \n")
+        with open(BASE_PATH + '/pgbench_log.txt', 'a+') as file:
             file.write(data)
 
         scale = -1

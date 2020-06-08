@@ -76,7 +76,12 @@ if __name__ == '__main__':
                 log("Removing existing repository and reinitializing...")
 
                 git_clone_start_time = datetime.now()
-                git.Git(BASE_PATH).clone(GIT_URL)
+
+                a = git.Git(BASE_PATH).clone(GIT_URL)
+                with open(BASE_PATH + '/git_log.txt', 'a+') as file:
+                    file.write("git clone log: \n")
+                    file.write(a)
+
                 git_clone_end_time = datetime.now()
                 git_clone_runtime = git_clone_end_time - git_clone_start_time
 
@@ -90,7 +95,12 @@ if __name__ == '__main__':
                     # call git pull
                     log("Updating repository...")
                     git_pull_start_time = datetime.now()
-                    git.Git().pull()
+                    a = git.Git().pull()
+
+                    with open(BASE_PATH + '/git_log.txt', 'a+') as file:
+                        file.write("git pull log: \n")
+                        file.write(a)
+
                     git_pull_end_time = datetime.now()
                     git_pull_runtime = git_pull_end_time - git_pull_start_time
 
@@ -136,7 +146,12 @@ if __name__ == '__main__':
             # and finally, clone
             log("Cloning repository...")
             git_clone_start_time = datetime.now()
-            git.Git(BASE_PATH).clone(GIT_URL)
+            a = git.Git(BASE_PATH).clone(GIT_URL)
+
+            with open(BASE_PATH + '/git_log.txt', 'a+') as file:
+                file.write("git clone log: \n")
+                file.write(a)
+
             git_clone_end_time = datetime.now()
             git_clone_runtime = git_clone_end_time - git_clone_start_time
 
@@ -150,6 +165,7 @@ if __name__ == '__main__':
         commit = str(repository.head.commit)
 
         # build and start a postgres cluster
+
         cluster = PgCluster(OUTPUT_DIR, bin_path=BIN_PATH, data_path=DATADIR_PATH)
 
         # create collectors

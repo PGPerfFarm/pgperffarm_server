@@ -19,13 +19,16 @@ class PgCluster(object):
 
         self._env = os.environ
         self._env['PATH'] = ':'.join([bin_path, self._env['PATH']])
-        '''
-        self._env['USER'] = "postgres"
-        self._env['USERNAME'] = "postgres"
-        self._env['LOGNAME'] = "postgres"
-        self._env['PGUSER'] = "postgres"
-        '''
-        self._env['PGDATABASE'] = "postgres"
+        
+        #self._env['USER'] = "postgres"
+        #self._env['USERNAME'] = "postgres"
+        #self._env['LOGNAME'] = "postgres"
+        
+        #self._env['PGUSER'] = "postgres"
+        
+        #self._env['PGDATABASE'] = "postgres"
+
+        #print(self._env)
 
         self._options = ""
 
@@ -34,13 +37,17 @@ class PgCluster(object):
 
         with TemporaryFile() as strout:
             log("initializing cluster into '%s'" % (self._data,))
-            call(['pg_ctl', '-D', self._data, 'init', '-U', 'postgres'], env=self._env,
+            r = call(['pg_ctl', '-D', self._data, 'init'], env=self._env,
                  stdout=strout, stderr=STDOUT)
+            print("AAAAAA")
+            print(r)
+            #print (r.strout)
+            #print (r.STDOUT)
 
         # editing postgresql.auto.conf
         # assuming building and installing went correctly
         with open(self._data + '/postgresql.auto.conf', 'w+') as file:
-            file.write("unix_socket_directories = '%s'" % SOCKET_PATH)
+            file.write("unix_socket_directories = '%s'\n" % SOCKET_PATH)
 
     def _configure(self, config):
         'build options list to use with pg_ctl'
@@ -82,6 +89,7 @@ class PgCluster(object):
         with TemporaryFile() as strout:
             log("starting cluster in '%s' using '%s' binaries" %
                 (self._data, self._bin))
+
             cmd = ['pg_ctl', '-D', self._data, '-l',
                    ''.join([self._outdir, '/pg.log']), '-w']
             if len(self._options) > 0:
