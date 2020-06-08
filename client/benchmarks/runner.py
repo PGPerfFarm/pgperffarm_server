@@ -128,7 +128,7 @@ class BenchmarkRunner(object):
                 'settings': config['postgres'],
         }
 
-        with open('%s/results.json' % self._output, 'w') as f:
+        with open('%s/results.json' % self._output, 'w+') as f:
             f.write(json.dumps(r, indent=4))
 
         try:

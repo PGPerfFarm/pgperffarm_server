@@ -18,6 +18,7 @@
   * Also import settings_local
   * collectd?
   * git pull needs to have a repo path!
+  * -r 
 * API:
   * Whole refactoring of the code, especially the serializing of JSON output, since its structure will change and right now code is not really clean;
   * Handle credentials;
