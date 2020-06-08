@@ -40,14 +40,6 @@ class PgCluster(object):
             log("initializing cluster into '%s'" % (self._data,))
             r = call(['pg_ctl', '-D', self._data, 'init'], env=self._env,
                  stdout=strout, stderr=STDOUT)
-            print("Initdb log: ")
-            print(r)
-
-        # editing postgresql.auto.conf
-        # assuming building and installing went correctly
-        with open(self._data + '/postgresql.auto.conf', 'w+') as file:
-            file.write("unix_socket_directories = '%s'\n" % SOCKET_PATH)
-            file.write("listen_addresses = ''\n")
 
     def _configure(self, config):
         'build options list to use with pg_ctl'
@@ -71,10 +63,8 @@ class PgCluster(object):
                 log("postmaster.pid not found")
         
         # remove the data directory
-        '''
         if os.path.exists(self._data):
             shutil.rmtree(self._data)
-        '''
 
     def start(self, config, destroy=True):
         'init, configure and start the cluster'
