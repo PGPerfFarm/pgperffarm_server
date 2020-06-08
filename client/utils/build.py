@@ -49,7 +49,7 @@ def build(git_path, build_path, install_path, log_path):
         file.write(c.stderr)
 
         d = subprocess.run(['/tmp/perffarm/install/bin/psql'], capture_output=True, text=True)
-        print("XXXXXXX")
+        print("psql log: ")
         print(d)
         print(d.stderr)
 

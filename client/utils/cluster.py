@@ -26,7 +26,7 @@ class PgCluster(object):
         
         #self._env['PGUSER'] = "postgres"
         
-        #self._env['PGDATABASE'] = "postgres"
+        self._env['PGDATABASE'] = "postgres"
 
         #print(self._env)
 
@@ -39,10 +39,8 @@ class PgCluster(object):
             log("initializing cluster into '%s'" % (self._data,))
             r = call(['pg_ctl', '-D', self._data, 'init'], env=self._env,
                  stdout=strout, stderr=STDOUT)
-            print("AAAAAA")
+            print("Initdb log: ")
             print(r)
-            #print (r.strout)
-            #print (r.STDOUT)
 
         # editing postgresql.auto.conf
         # assuming building and installing went correctly
