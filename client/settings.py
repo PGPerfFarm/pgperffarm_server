@@ -14,6 +14,7 @@ GIT_URL = 'https://github.com/postgres/postgres.git'
 # parent must exist!
 # also should have non-superuser access
 BASE_PATH = '/tmp/perffarm' 
+SOCKET_PATH = os.path.join(BASE_PATH, 'socket')
 
 MACHINE_SECRET = 'CHANGEME'
 

@@ -12,6 +12,7 @@ from utils.logging import log
 from utils.misc import available_ram, run_cmd
 from settings_local import *
 
+SOCKET_PATH = os.path.join(BASE_PATH, 'socket')
 
 class PgBench(object):
     'a simple wrapper around pgbench, running TPC-B-like workload by default'

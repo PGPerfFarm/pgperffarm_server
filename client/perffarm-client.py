@@ -32,8 +32,9 @@ BIN_PATH = os.path.join(INSTALL_PATH, 'bin')
 OUTPUT_DIR = os.path.join(BASE_PATH, 'output')
 REPOSITORY_PATH = os.path.join(BASE_PATH, 'postgres')
 DATADIR_PATH = os.path.join(BASE_PATH, 'data')
+SOCKET_PATH = os.path.join(BASE_PATH, 'socket')
 
-class Progress(git.RemoteProgress):
+class Progress(git.UpdateProgress):
     def update(self, op_code, cur_count, max_count=None, message=''):
         print(op_code, cur_count, max_count, cur_count / (max_count or 100.0), message or "NO MESSAGE")
 

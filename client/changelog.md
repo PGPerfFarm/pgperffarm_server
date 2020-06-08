@@ -42,7 +42,7 @@
 
 
 
-##### 01.06.2020
+##### Week 1
 
 Key points: the code is not supposed to be run using an existing personal Postgres installation. There is also a list of important branches, and the script should clone and run benchmarks on each one separately. 
 
@@ -55,8 +55,6 @@ Key points: the code is not supposed to be run using an existing personal Postgr
 - Error during make should be logged, but otherwise the git cloning and installing works.
 - Killing processes is now embedded into a try-catch statement, so that if the postmaster.pid file is not found, the program does not break.
 
-##### 02.06.20
-
 * After defining a deterministic workflow for cloning, pulling and building the repository, the process is complete.
 * The git custom written functions have been completely replaced by gitpython.
 * Still missing a bit of refactoring, especially within the part of killing processes and deleting folders.
@@ -65,13 +63,18 @@ Key points: the code is not supposed to be run using an existing personal Postgr
   * Part of it is in misc.py, launching a "free -m" command;
   * Mostly in linux.py, which is composed by "sysctl", "meminfo" etc.
 
-##### 03.06
-
 * Continuing the process of removing walls of text in the output and gradually switching them with JSON parameters, trying to replace as much as possible;
 * Integration with 3 Python modules able to collect statistics in a much more portable and readable way;
 * Redefining the whole JSON structure;
 
 
+
+##### Week 2
+
+* Added log messages and files for git operations;
+* Removed unnecessary nesting of JSON, adding "mode" and "scale" parameters as values specific to the result;
+* Added all times to build, clone, install etc;
+* 
 
 
 
