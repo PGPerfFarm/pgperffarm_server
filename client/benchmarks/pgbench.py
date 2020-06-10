@@ -10,9 +10,10 @@ from numpy import mean, median, std
 from multiprocessing import cpu_count
 from utils.logging import log
 from utils.misc import available_ram, run_cmd
-from settings_local import *
 
-SOCKET_PATH = os.path.join(BASE_PATH, 'socket')
+from settings import *
+from settings_local import *
+from folders import *
 
 class PgBench(object):
     'a simple wrapper around pgbench, running TPC-B-like workload by default'
@@ -80,7 +81,7 @@ class PgBench(object):
 
         r = run_cmd(['pgbench', '-i', '-s', str(scale), '-h', SOCKET_PATH, '-p', '5432', self._dbname], env=self._env, cwd=self._outdir)
 
-        with open(BASE_PATH + '/pgbench_log.txt', 'w+') as file:
+        with open(LOG_PATH + '/pgbench_log.txt', 'w+') as file:
             file.write("pgbench log: \n")
             file.write(r[1].decode("utf-8"))
 
@@ -93,7 +94,9 @@ class PgBench(object):
 
         data = data.decode('utf-8')
 
-        with open(BASE_PATH + '/pgbench_log.txt', 'a+') as file:
+        print('\n', data)
+
+        with open(LOG_PATH + '/pgbench_log.txt', 'a+') as file:
             file.write(data)
 
         scale = -1
@@ -124,6 +127,7 @@ class PgBench(object):
         latency = -1
         r = re.search('latency average: ([0-9\.]+) ms', data)
         if r:
+            print("fouuuuuuund")
             latency = r.group(1)
 
         tps = -1
@@ -183,7 +187,7 @@ class PgBench(object):
         os.mkdir(rdir)
 
         # add -r here
-        args = ['pgbench', '-h', SOCKET_PATH, '-c', str(nclients), '-j', str(njobs), '-T',
+        args = ['pgbench', '-r', '-h', SOCKET_PATH, '-c', str(nclients), '-j', str(njobs), '-T',
                 str(duration)]
 
         # aggregate on per second resolution

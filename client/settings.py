@@ -2,9 +2,7 @@ import os
 import sys
 
 # global configuration
-REUSE_REPO = True
 UPDATE = True
-REMOVE_AFTERWARDS = True
 AUTOMATIC_UPLOAD = False
 
 # default url: master branch

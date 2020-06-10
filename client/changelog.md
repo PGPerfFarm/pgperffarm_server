@@ -5,9 +5,6 @@
 #### TODO LIST
 
 * Benchmarks:
-  * Refactoring Linux collectors, having some of the outputs written to a file and some in the JSON output to be displayed;
-  * Understanding where files should be saved, for how long, or if they should just be embedded in JSON and then not parsed;
-  * Understanding what should be displayed and in which way;
   * Installing collectd to run further tests (?);
   * Adding more tests or more options to pgbench, or automated testing (?);
   * Reviewing process shutdown;
@@ -15,9 +12,6 @@
   * Portability tests;
   * Allow overriding of default scaling and clients;
   * Allow logging of build/install even with an empty result;
-  * Also import settings_local
-  * collectd?
-  * git pull needs to have a repo path!
   * -r 
 * API:
   * Whole refactoring of the code, especially the serializing of JSON output, since its structure will change and right now code is not really clean;
@@ -78,7 +72,10 @@ Key points: the code is not supposed to be run using an existing personal Postgr
 * Added log messages and files for git operations;
 * Removed unnecessary nesting of JSON, adding "mode" and "scale" parameters as values specific to the result;
 * Added all times to build, clone, install etc;
-* 
+* Patched pgbench and cluster scripts to be able to execute in different environments without conflicting with existing processes;
+* Code refactoring;
+* Added a better folder structure;
+* Fixed a bug in logging where the regular expression could not match because of a semicolon;
 
 
 

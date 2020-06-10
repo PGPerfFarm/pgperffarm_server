@@ -6,9 +6,8 @@ from multiprocessing import cpu_count, Process, Queue
 from subprocess import call, STDOUT
 from tempfile import TemporaryFile
 from utils.logging import log
-from settings_local import BASE_PATH
 
-SOCKET_PATH = os.path.join(BASE_PATH, 'socket')
+from folders import *
 
 class PgCluster(object):
     'basic manipulation of postgres cluster (init, start, stop, destroy)'

@@ -24,15 +24,9 @@ from utils.cluster import PgCluster
 from utils.logging import log
 from utils.upload import upload
 
+from settings import *
 from settings_local import * 
-
-BUILD_PATH = os.path.join(BASE_PATH, 'build')
-INSTALL_PATH = os.path.join(BASE_PATH, 'install')
-BIN_PATH = os.path.join(INSTALL_PATH, 'bin')
-OUTPUT_DIR = os.path.join(BASE_PATH, 'output')
-REPOSITORY_PATH = os.path.join(BASE_PATH, 'postgres')
-DATADIR_PATH = os.path.join(BASE_PATH, 'data')
-SOCKET_PATH = os.path.join(BASE_PATH, 'socket')
+from folders import *
 
 class Progress(git.UpdateProgress):
     def update(self, op_code, cur_count, max_count=None, message=''):
@@ -52,7 +46,7 @@ if __name__ == '__main__':
         # run received time
         run_received_time = datetime.now()
 
-        # cleanup
+        # first of all, creating base path
         if (not (os.path.exists(BASE_PATH))):
             os.mkdir(BASE_PATH)
 
@@ -61,77 +55,50 @@ if __name__ == '__main__':
         # checking for local installation
         if (os.path.exists(REPOSITORY_PATH)):
 
+            # an existing installation has been found
+            # avoid rebuilding and reinstalling
+
+            # cleaning socket path
             if (os.path.exists(SOCKET_PATH)):
                 shutil.rmtree(SOCKET_PATH)
                 os.mkdir(SOCKET_PATH)
 
-            if (not REUSE_REPO):
-                shutil.rmtree(REPOSITORY_PATH)
+            log("Existing installation found...")
 
-                if (os.path.exists(BUILD_PATH)):
-                    shutil.rmtree(BUILD_PATH)
-                os.mkdir(BUILD_PATH)
+            branch = (git.Repo(REPOSITORY_PATH)).active_branch
+            commit = (git.Repo(REPOSITORY_PATH)).head.commit
 
-                if (os.path.exists(INSTALL_PATH)):
-                    shutil.rmtree(INSTALL_PATH)
-                os.mkdir(INSTALL_PATH)
+            if (UPDATE):
+                # call git pull
+                log("Updating repository...")
+                git_pull_start_time = datetime.now()
+                a = git.Git(REPOSITORY_PATH).pull()
 
-                # clone and build
-                log("Removing existing repository and reinitializing...")
-
-                git_clone_start_time = datetime.now()
-
-                a = git.Git(BASE_PATH).clone(GIT_URL)
-                with open(BASE_PATH + '/git_log.txt', 'a+') as file:
-                    file.write("git clone log: \n")
+                with open(LOG_PATH + '/git_pull_log.txt', 'a+') as file:
+                    file.write("git pull log: \n")
                     file.write(a)
 
-                git_clone_end_time = datetime.now()
-                git_clone_runtime = git_clone_end_time - git_clone_start_time
+                git_pull_end_time = datetime.now()
+                git_pull_runtime = git_pull_end_time - git_pull_start_time
 
-                build(REPOSITORY_PATH, BUILD_PATH, INSTALL_PATH, BASE_PATH)
+                latest_branch = (git.Repo(REPOSITORY_PATH)).active_branch
+                latest_commit = (git.Repo(REPOSITORY_PATH)).head.commit
 
-            else:
-                branch = (git.Repo(REPOSITORY_PATH)).active_branch
-                commit = (git.Repo(REPOSITORY_PATH)).head.commit
+                if (latest_commit != commit or latest_branch != branch):
+                    log("Rebuilding repository to apply updates...")
 
-                if (UPDATE):
-                    # call git pull
-                    log("Updating repository...")
-                    git_pull_start_time = datetime.now()
-                    a = git.Git(REPOSITORY_PATH).pull()
+                    if (os.path.exists(BUILD_PATH)):
+                        shutil.rmtree(BUILD_PATH)
+                    os.mkdir(BUILD_PATH)
 
-                    with open(BASE_PATH + '/git_log.txt', 'a+') as file:
-                        file.write("git pull log: \n")
-                        file.write(a)
+                    if (os.path.exists(INSTALL_PATH)):
+                        shutil.rmtree(INSTALL_PATH)
+                    os.mkdir(INSTALL_PATH)
 
-                    git_pull_end_time = datetime.now()
-                    git_pull_runtime = git_pull_end_time - git_pull_start_time
-
-                    latest_branch = (git.Repo(REPOSITORY_PATH)).active_branch
-                    latest_commit = (git.Repo(REPOSITORY_PATH)).head.commit
-
-                    if (latest_commit != commit or latest_branch != branch):
-                        log("Rebuilding repository to apply updates...")
-
-                        if (os.path.exists(BUILD_PATH)):
-                            shutil.rmtree(BUILD_PATH)
-                        os.mkdir(BUILD_PATH)
-
-                        if (os.path.exists(INSTALL_PATH)):
-                            shutil.rmtree(INSTALL_PATH)
-                        os.mkdir(INSTALL_PATH)
-
-                        build(REPOSITORY_PATH, BUILD_PATH, INSTALL_PATH)
-
-                    log("Repository is up to date. ")
+                    build()
 
                 else:
-                    if (not (os.path.exists(BUILD_PATH))):
-                        # build
-                        build(REPOSITORY_PATH, BUILD_PATH, INSTALL_PATH, BASE_PATH)
-
-                    # if it exists, proceed to run tests
+                    log("Repository is up to date. ")
 
         else:
             # remove build and install path just to be sure
@@ -147,20 +114,30 @@ if __name__ == '__main__':
                 shutil.rmtree(SOCKET_PATH)
             os.mkdir(SOCKET_PATH)
 
+            if (os.path.exists(LOG_PATH)):
+                shutil.rmtree(LOG_PATH)
+            os.mkdir(LOG_PATH)
+
             # and finally, clone
             log("Cloning repository...")
             git_clone_start_time = datetime.now()
-            a = git.Git(BASE_PATH).clone(GIT_URL)
 
-            with open(BASE_PATH + '/git_log.txt', 'a+') as file:
-                file.write("git clone log: \n")
-                file.write(a)
+            try:
+                a = git.Git(BASE_PATH).clone(GIT_URL)
 
-            git_clone_end_time = datetime.now()
-            git_clone_runtime = git_clone_end_time - git_clone_start_time
+                git_clone_end_time = datetime.now()
+                git_clone_runtime = git_clone_end_time - git_clone_start_time
 
-            # and build
-            build(REPOSITORY_PATH, BUILD_PATH, INSTALL_PATH, BASE_PATH)
+                # and build
+                build()
+
+            except Exception as e: # any exception
+                with open(LOG_PATH + '/git_clone_log.txt', 'a+') as file:
+                    file.write("git clone log: \n")
+                    file.write(e.stderr)
+                    log("Error while cloning, check logs.")
+                    sys.exit(1)
+
 
         # get (or rewrite) current branch and commit
         # string because it must be JSON serializable
@@ -186,8 +163,8 @@ if __name__ == '__main__':
         collectors.register('collectd',
                             CollectdCollector(OUTPUT_DIR, DATABASE_NAME, ''))
 
-        pg_collector = PostgresCollector(OUTPUT_DIR, dbname=DATABASE_NAME,
-                                         bin_path=('%s/bin' % (BUILD_PATH)))
+        pg_collector = PostgresCollector(OUTPUT_DIR, dbname=DATABASE_NAME, bin_path=('%s/bin' % (BUILD_PATH)))
+
         collectors.register('postgres', pg_collector)
 
         runner = BenchmarkRunner(OUTPUT_DIR, API_URL, MACHINE_SECRET, cluster, collectors)
@@ -228,12 +205,3 @@ if __name__ == '__main__':
 
         else:
             log("Benchmark completed, check results in '%s'" % (OUTPUT_DIR, ))
-
-        # cleanup
-        if (REMOVE_AFTERWARDS):
-            cleanup_start_time = datetime.now()
-            shutil.rmtree(BASE_PATH)
-
-            cleanup_end_time = datetime.now()
-
-            cleanup_runtime = cleanup_end_time - cleanup_start_time
