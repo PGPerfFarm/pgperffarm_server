@@ -94,8 +94,6 @@ class PgBench(object):
 
         data = data.decode('utf-8')
 
-        print('\n', data)
-
         with open(LOG_PATH + '/pgbench_log.txt', 'a+') as file:
             file.write(data)
 
@@ -135,12 +133,19 @@ class PgBench(object):
         if r:
             tps = r.group(1)
 
+        statement_latencies = -1
+        r = re.search('statement latencies in milliseconds:([\s\S]+)', data)
+
+        if r:
+            statement_latencies = r.group(1)
+
         return {'scale': scale,
                 'mode': mode,
                 'clients': clients,
                 'threads': threads,
                 'duration': duration,
                 'latency': latency,
+                'statement_latencies' : statement_latencies,
                 'tps': tps}
 
     def check_config(self):

@@ -5,14 +5,14 @@
 #### TODO LIST
 
 * Benchmarks:
-  * Installing collectd to run further tests (?);
+  * Script for installing collectd to run further tests;
   * Adding more tests or more options to pgbench, or automated testing (?);
   * Reviewing process shutdown;
   * Add list of branches;
   * Portability tests;
   * Allow overriding of default scaling and clients;
   * Allow logging of build/install even with an empty result;
-  * -r 
+  * Pull pg_stat_statement data;
 * API:
   * Whole refactoring of the code, especially the serializing of JSON output, since its structure will change and right now code is not really clean;
   * Handle credentials;
@@ -76,6 +76,7 @@ Key points: the code is not supposed to be run using an existing personal Postgr
 * Code refactoring;
 * Added a better folder structure;
 * Fixed a bug in logging where the regular expression could not match because of a semicolon;
+* Added logging of statement latencies;
 
 
 
