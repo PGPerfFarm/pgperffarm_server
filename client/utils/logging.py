@@ -5,8 +5,7 @@ import time
 def log(message):
     ''
 
-    print ('%(epoch)s	%(date)s	%(message)s' % {
-        'epoch': time.time(),
+    print ('%(date)s	%(message)s' % {
         'date': time.strftime('%Y-%m-%d %H:%M:%S'),
         'message': message})
 
