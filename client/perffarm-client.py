@@ -138,7 +138,6 @@ if __name__ == '__main__':
                     log("Error while cloning, check logs.")
                     sys.exit(1)
 
-
         # get (or rewrite) current branch and commit
         # string because it must be JSON serializable
         repository = git.Repo(REPOSITORY_PATH)
@@ -147,7 +146,7 @@ if __name__ == '__main__':
 
         # build and start a postgres cluster
 
-        cluster = PgCluster(OUTPUT_DIR, bin_path=BIN_PATH, data_path=DATADIR_PATH)
+        cluster = PgCluster(OUTPUT_PATH, bin_path=BIN_PATH, data_path=DATADIR_PATH)
 
         # create collectors
         collectors = MultiCollector()
@@ -155,25 +154,25 @@ if __name__ == '__main__':
         system = os.popen("uname").readlines()[0].split()[0]
 
         if system == 'Linux':
-            collectors.register('linux', SystemCollector(OUTPUT_DIR))
+            collectors.register('linux', SystemCollector(OUTPUT_PATH))
 
         if system == 'Darwin':
-            collectors.register('osx', SystemCollector(OUTPUT_DIR))
+            collectors.register('osx', SystemCollector(OUTPUT_PATH))
 
         collectors.register('collectd',
-                            CollectdCollector(OUTPUT_DIR, DATABASE_NAME, ''))
+                            CollectdCollector(OUTPUT_PATH, DATABASE_NAME, ''))
 
-        pg_collector = PostgresCollector(OUTPUT_DIR, dbname=DATABASE_NAME, bin_path=('%s/bin' % (BUILD_PATH)))
+        pg_collector = PostgresCollector(OUTPUT_PATH, dbname=DATABASE_NAME, bin_path=('%s/bin' % (BUILD_PATH)))
 
         collectors.register('postgres', pg_collector)
 
-        runner = BenchmarkRunner(OUTPUT_DIR, API_URL, MACHINE_SECRET, cluster, collectors)
+        runner = BenchmarkRunner(OUTPUT_PATH, API_URL, MACHINE_SECRET, cluster, collectors)
 
         # register the three tests we currently have
         runner.register_benchmark('pgbench', PgBench)
 
         # register one config for each benchmark (should be moved to a config file)
-        PGBENCH_CONFIG['results_dir'] = OUTPUT_DIR
+        PGBENCH_CONFIG['results_dir'] = OUTPUT_PATH
         POSTGRES_CONFIG['listen_addresses'] = ''
         POSTGRES_CONFIG['unix_socket_directories'] = SOCKET_PATH
         runner.register_config('pgbench-basic',
@@ -201,7 +200,7 @@ if __name__ == '__main__':
 
 
         if (AUTOMATIC_UPLOAD):
-            upload(API_URL, OUTPUT_DIR, MACHINE_SECRET)
+            upload(API_URL, OUTPUT_PATH, MACHINE_SECRET)
 
         else:
-            log("Benchmark completed, check results in '%s'" % (OUTPUT_DIR, ))
+            log("Benchmark completed, check results in '%s'" % (OUTPUT_PATH, ))

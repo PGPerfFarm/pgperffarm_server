@@ -9,6 +9,7 @@ from multiprocessing import Process, Queue
 from utils.logging import log
 from utils.misc import run_cmd
 
+from folders import *
 
 class PostgresCollector(object):
     """
@@ -21,25 +22,36 @@ class PostgresCollector(object):
         self._dbname = dbname
         self._bin_path = bin_path
 
+        self._env = os.environ
+        self._env['PATH'] = ':'.join([bin_path, self._env['PATH']])
+ 
+        self._env['PGDATABASE'] = "postgres"
+
     def start(self):
         log("saving postgres settings")
         try:
-            conn = psycopg2.connect('host=localhost dbname=%s' % self._dbname)
+
+            conn = psycopg2.connect('host=%s dbname=%s' % (SOCKET_PATH, self._dbname))
             cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
             cur.execute(
                 'SELECT name, setting, source '
                 'FROM pg_settings ORDER BY lower(name)'
             )
+
             fields = [desc[0] for desc in cur.description]
-            filename = ''.join([self._outdir, '/settings.csv'])
-            settings_log = csv.DictWriter(open(filename, 'w'), fields,
-                                          lineterminator='\n')
-            settings_log.writeheader()
-            settings_log.writerows(cur.fetchall())
-            settings_log.close()
+
+            with open(LOG_PATH + '/postgres_settings.csv', 'w+') as file:
+
+                r = csv.DictWriter(file, fields)
+                r.writeheader()
+                r.writerows(cur.fetchall())
+
             conn.close()
+
         except Exception as ex:
-            pass
+            with open(LOG_PATH + '/pg_settings_log.txt', 'a+') as file:
+                    file.write(e.stderr)
+                    log("Error while extracting Postgres configuration, check logs.")
 
     def stop(self):
         pass

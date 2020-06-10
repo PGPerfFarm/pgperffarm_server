@@ -19,16 +19,8 @@ class PgCluster(object):
 
         self._env = os.environ
         self._env['PATH'] = ':'.join([bin_path, self._env['PATH']])
-        
-        #self._env['USER'] = "postgres"
-        #self._env['USERNAME'] = "postgres"
-        #self._env['LOGNAME'] = "postgres"
-        
-        #self._env['PGUSER'] = "postgres"
-        
+ 
         self._env['PGDATABASE'] = "postgres"
-
-        #print(self._env)
 
         self._options = ""
 
