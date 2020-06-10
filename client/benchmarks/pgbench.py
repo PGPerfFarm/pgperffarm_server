@@ -125,9 +125,8 @@ class PgBench(object):
             duration = r.group(1)
 
         latency = -1
-        r = re.search('latency average: ([0-9\.]+) ms', data)
+        r = re.search('latency average = ([0-9\.]+) ms', data)
         if r:
-            print("fouuuuuuund")
             latency = r.group(1)
 
         tps = -1
