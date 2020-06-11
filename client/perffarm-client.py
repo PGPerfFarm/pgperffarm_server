@@ -203,11 +203,18 @@ if __name__ == '__main__':
             run_end_time = datetime.now()
 
         # remove the data directory
-        cleanup_start_time = datetime.now()
-        if os.path.exists(DATADIR_PATH):
-            shutil.rmtree(DATADIR_PATH)
-        cleanup_end_time = datetime.now()
-        cleanup_runtime = cleanup_end_time - cleanup_start_time
+        try:
+            cleanup_start_time = datetime.now()
+            if os.path.exists(DATADIR_PATH):
+                shutil.rmtree(DATADIR_PATH)
+            cleanup_end_time = datetime.now()
+            cleanup_runtime = cleanup_end_time - cleanup_start_time
+
+        except Exception as e: # any exception
+            with open(LOG_PATH + '/cleanup_log.txt', 'w+') as file:
+                    file.write(e.stderr)
+                    log("Error while cleaning directories, check logs.")
+                    sys.exit(1)
 
         # saving times in a text file
         with open(LOG_PATH + '/runtime_log.txt', 'w+') as file:
