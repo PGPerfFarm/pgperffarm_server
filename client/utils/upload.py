@@ -4,6 +4,9 @@ import json
 import codecs
 import urllib.request
 import requests
+import os
+
+from folders import *
 
 def byteify(input):
     if isinstance(input, dict):
@@ -32,4 +35,19 @@ def upload(api_url, results_directory, token):
 
     with open(json_file,'r') as load_f:
         load_dict = (json.load(load_f, encoding="UTF-8"))
-        http_post(url, load_dict, token)
+
+    # extracting logs
+    for file in os.scandir(LOG_PATH):
+
+        filename = os.path.basename(file)
+        name = os.path.splitext(filename)[0]
+
+        with open (file, 'r') as f:
+            content = f.read()
+
+        temp = {name: content}
+        load_dict.update(temp)
+
+    with open(OUTPUT_PATH + '/results_complete.json', 'w+') as results:
+        results.write(json.dumps(load_dict))
+        http_post(url, results, token)

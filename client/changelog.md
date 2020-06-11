@@ -7,7 +7,6 @@
 * Benchmarks:
   * Script for installing collectd to run further tests;
   * Adding more tests or more options to pgbench, or automated testing (?);
-  * Reviewing process shutdown;
   * Add list of branches;
   * Portability tests;
   * Allow logging of build/install even with an empty result;

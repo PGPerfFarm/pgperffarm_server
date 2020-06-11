@@ -28,20 +28,19 @@ from settings import *
 from settings_local import * 
 from folders import *
 
-class Progress(git.UpdateProgress):
-    def update(self, op_code, cur_count, max_count=None, message=''):
-        print(op_code, cur_count, max_count, cur_count / (max_count or 100.0), message or "NO MESSAGE")
-
 logging.basicConfig(level=logging.INFO)
+
 
 if __name__ == '__main__':
 
     with FileLock('.lock') as lock:
 
+        git_pull_runtime = ''
         git_clone_runtime = ''
+
         build_runtime = ''
-        cleanup_runtime = ''
-        git_pull_time = ''
+        install_runtime = ''
+        configure_runtime = ''
 
         # run received time
         run_received_time = datetime.now()
@@ -62,6 +61,11 @@ if __name__ == '__main__':
             if (os.path.exists(SOCKET_PATH)):
                 shutil.rmtree(SOCKET_PATH)
                 os.mkdir(SOCKET_PATH)
+
+            # cleaning log path
+            if (os.path.exists(LOG_PATH)):
+                shutil.rmtree(LOG_PATH)
+                os.mkdir(LOG_PATH)
 
             log("Existing installation found...")
 
@@ -95,7 +99,7 @@ if __name__ == '__main__':
                         shutil.rmtree(INSTALL_PATH)
                     os.mkdir(INSTALL_PATH)
 
-                    build()
+                    configure_runtime, build_runtime, install_runtime = build()
 
                 else:
                     log("Repository is up to date. ")
@@ -129,7 +133,7 @@ if __name__ == '__main__':
                 git_clone_runtime = git_clone_end_time - git_clone_start_time
 
                 # and build
-                build()
+                configure_runtime, build_runtime, install_runtime = build()
 
             except Exception as e: # any exception
                 with open(LOG_PATH + '/git_clone_log.txt', 'w+') as file:
@@ -197,6 +201,25 @@ if __name__ == '__main__':
             run_start_time = datetime.now()
             runner.run()
             run_end_time = datetime.now()
+
+        # remove the data directory
+        cleanup_start_time = datetime.now()
+        if os.path.exists(DATADIR_PATH):
+            shutil.rmtree(DATADIR_PATH)
+        cleanup_end_time = datetime.now()
+        cleanup_runtime = cleanup_end_time - cleanup_start_time
+
+        # saving times in a text file
+        with open(LOG_PATH + '/runtime_log.txt', 'w+') as file:
+            file.write("run_received_time: '%s' \n" % run_received_time)
+            file.write("run_start_time: '%s' \n" % run_start_time)
+            file.write("run_end_time: '%s' \n" % run_end_time)
+            file.write("git_clone_runtime: '%s' \n" % git_clone_runtime)
+            file.write("git_pull_runtime: '%s' \n" % git_pull_runtime)
+            file.write("configure_runtime: '%s' \n" % configure_runtime)
+            file.write("build_runtime: '%s' \n" % build_runtime)
+            file.write("install_runtime: '%s' \n" % install_runtime)
+            file.write("cleanup_runtime: '%s' \n" % cleanup_runtime)
 
 
         if (AUTOMATIC_UPLOAD):

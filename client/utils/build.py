@@ -55,5 +55,9 @@ def build():
 
             sys.exit()
 
+    return configure_runtime, build_runtime, install_runtime
+
+
+
 
 

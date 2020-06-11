@@ -52,10 +52,7 @@ class PgCluster(object):
                 log("found postmaster.pid")
             except FileNotFoundError:
                 log("postmaster.pid not found")
-        
-        # remove the data directory
-        if os.path.exists(self._data):
-            shutil.rmtree(self._data)
+
 
     def start(self, config, destroy=True):
         'init, configure and start the cluster'
