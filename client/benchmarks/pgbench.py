@@ -22,7 +22,7 @@ class PgBench(object):
     #      read-write/read-only tests
     # TODO allow running 'prepared' mode
 
-    def __init__(self, bin_path, dbname, runs=3, duration=60, csv=False,
+    def __init__(self, bin_path, dbname, scale, clients, runs=3, duration=60, csv=False,
                  results_dir=None):
         '''
         bin_path   - path to PostgreSQL binaries (dropdb, createdb, psql
@@ -39,27 +39,13 @@ class PgBench(object):
         self._duration = duration
         self._outdir = results_dir
         self._runs = runs
+        self._scale = scale
+        self._clients = clients
 
         self._env = os.environ
         self._env['PATH'] = ':'.join([bin_path, self._env['PATH']])
 
         self._results = {}
-
-    @staticmethod
-    def _configure(cpu_count, ram_mbs):
-        'derive the configurations to benchmark from CPU count and RAM size'
-
-        config = []
-
-        # TODO allow overriding this from a global config
-
-        # scales: 10 (small), 50% of RAM, 200% of RAM
-        # for s in [10, ram_mbs/15/2, ram_mbs*2/15]:
-        for s in [10]:
-            config.append({'scale': int(math.ceil(s / 10) * 10),
-                           'clients': [1, cpu_count, 2 * cpu_count]})
-
-        return config
 
     def _init(self, scale):
         """
@@ -96,11 +82,6 @@ class PgBench(object):
 
         with open(LOG_PATH + '/pgbench_log.txt', 'a+') as file:
             file.write(data)
-
-        scale = -1
-        r = re.search('scaling factor: ([0-9]+)', data)
-        if r:
-            scale = r.group(1)
 
         mode = -1
         r = re.search('query mode: (.+)', data)
@@ -139,8 +120,7 @@ class PgBench(object):
         if r:
             statement_latencies = r.group(1)
 
-        return {'scale': scale,
-                'mode': mode,
+        return {'mode': mode,
                 'clients': clients,
                 'threads': threads,
                 'duration': duration,
@@ -231,13 +211,13 @@ class PgBench(object):
         """
 
         # derive configuration for the CPU count / RAM size
-        configs = PgBench._configure(cpu_count(), available_ram())
+
+        configs = []
+        configs.append({'scale': PGBENCH_CONFIG['scale'], 'clients': PGBENCH_CONFIG['clients']})
 
         info = {}
         results = []
         result = {}
-
-        configuration = {}
 
         j = 0
         for config in configs:
@@ -271,6 +251,7 @@ class PgBench(object):
                         r.update({'run': i})
                         results.append(r)
 
+        info['scale'] = scale
         info['runs'] = results
 
         self._results['pgbench'] = info
