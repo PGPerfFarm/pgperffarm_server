@@ -212,9 +212,9 @@ if __name__ == '__main__':
 
         except Exception as e: # any exception
             with open(LOG_PATH + '/cleanup_log.txt', 'w+') as file:
-                    file.write(e.stderr)
-                    log("Error while cleaning directories, check logs.")
-                    sys.exit(1)
+                file.write(e.stderr)
+                log("Error while cleaning directories, check logs.")
+                sys.exit(1)
 
         # saving times in a text file
         with open(LOG_PATH + '/runtime_log.txt', 'w+') as file:
