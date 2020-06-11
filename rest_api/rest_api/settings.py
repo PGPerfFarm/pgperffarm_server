@@ -10,20 +10,6 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
-# machines: add username to fields? 
-# branches: work, now they just need to be added
-# fix permissions for aliases and other admin stuff
-
-# working: records, machines, single machine, login, logout
-# fix: my-machines
-# users can edit and add, not remove --> status inactive
-# fix emails
-# change password?
-
-# remove upload.py [later] and use runner.py
-# cluster.py uncomment killing line
-# fix test already exists message
-
 import os
 import datetime
 import sys
