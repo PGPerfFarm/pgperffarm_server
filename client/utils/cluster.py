@@ -72,7 +72,7 @@ class PgCluster(object):
                 (self._data, self._bin))
 
             cmd = ['pg_ctl', '-D', self._data, '-l',
-                   ''.join([self._outdir, '/pg.log']), '-w']
+                   ''.join([LOG_PATH, '/pg_ctl.log']), '-w']
             if len(self._options) > 0:
                 cmd.extend(['-o', self._options])
             cmd.append('start')
