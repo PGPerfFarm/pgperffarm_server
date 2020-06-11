@@ -10,7 +10,6 @@
   * Reviewing process shutdown;
   * Add list of branches;
   * Portability tests;
-  * Allow overriding of default scaling and clients;
   * Allow logging of build/install even with an empty result;
   * Pull pg_stat_statement data;
   * Make sure the right libpq is used;

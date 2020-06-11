@@ -74,7 +74,7 @@ if __name__ == '__main__':
                 git_pull_start_time = datetime.now()
                 a = git.Git(REPOSITORY_PATH).pull()
 
-                with open(LOG_PATH + '/git_pull_log.txt', 'a+') as file:
+                with open(LOG_PATH + '/git_pull_log.txt', 'w+') as file:
                     file.write("git pull log: \n")
                     file.write(a)
 
@@ -132,7 +132,7 @@ if __name__ == '__main__':
                 build()
 
             except Exception as e: # any exception
-                with open(LOG_PATH + '/git_clone_log.txt', 'a+') as file:
+                with open(LOG_PATH + '/git_clone_log.txt', 'w+') as file:
                     file.write("git clone log: \n")
                     file.write(e.stderr)
                     log("Error while cloning, check logs.")

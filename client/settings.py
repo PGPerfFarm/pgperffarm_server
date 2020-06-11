@@ -1,5 +1,6 @@
 import os
 import sys
+import multiprocessing
 
 # global configuration
 UPDATE = True

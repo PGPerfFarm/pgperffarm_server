@@ -7,6 +7,8 @@ from datetime import datetime, timedelta, time
 from utils.logging import log
 from utils.misc import run_cmd
 
+from folders import *
+
 class SystemCollector(object):
     'Collect various Linux-specific statistics (cpuinfo, mounts)'
 
@@ -26,8 +28,8 @@ class SystemCollector(object):
     def result(self):
         'build the results'
 
-        r = {'sysctl': self._collect_sysctl()}
-
+        r = {}
+        self._collect_sysctl()
         r.update(self._collect_system_info())
 
         return r
@@ -38,8 +40,8 @@ class SystemCollector(object):
         log("collecting sysctl")
         r = run_cmd(['sysctl', '-a'], env=self._env)
 
-        return "tbd"
-
+        with open(LOG_PATH + '/sysctl_log.txt', 'w+') as file:
+            file.write(r[1].decode("utf-8"))
 
     def _collect_system_info(self):
         'collect cpuinfo, meminfo, mounts'
