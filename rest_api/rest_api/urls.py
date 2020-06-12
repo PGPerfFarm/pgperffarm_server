@@ -39,9 +39,6 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url('login_token/', jwt_views.TokenObtainPairView.as_view(), name='token_obtain_pair'),
     url('refresh_token/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
-    url('', include('machines.urls')),
-    url('', include('users.urls')),
-    url('', include('records.urls')),
     url(r'^docs/', include_docs_urls(title=API_TITLE, description=API_DESCRIPTION)),
     url(r'^schema/$', schema_view),
 ]

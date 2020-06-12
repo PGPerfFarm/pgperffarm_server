@@ -3,19 +3,16 @@ import shortuuid
 import hashlib
 
 
-class PostgresInfo(models.Model):
-
-	# automatic id
-	info = JsonField()
-	hash = CharField(max_length=1000, unique=True, blank=False)
-
-
 class PostgresSettingsSet(models.Model):
+
+	postgres_settings_set_id = models.AutoField(primary_key=True)
 
 	settings_sha256 = models.BinaryField(max_length=256)
 
 
 class PostgresSettings(models.Model):
+
+	postgres_settings_id = models.AutoField(primary_key=True)
 
 	db_settings_id = models.ForeignKey(PostgresSettingsSet)
 
@@ -24,7 +21,7 @@ class PostgresSettings(models.Model):
 	setting_value = models.TextField()
 
 	class Meta:
-    unique_together = ('db_settings_id', 'setting_name',)
+		unique_together = ('db_settings_id', 'setting_name',)
 
 
 

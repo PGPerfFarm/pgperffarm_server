@@ -4,7 +4,6 @@ from users import views, auth
 
 router = DefaultRouter()
 router.register(r'users', views.UserViewSet, base_name="users"),
-router.register(r'machine-records-by-branch', views.UserMachineRecordByBranchListViewSet, base_name="machine-records-by-branch")
  
 # https://django-rest-auth.readthedocs.io/en/latest/api_endpoints.html
 urlpatterns = [

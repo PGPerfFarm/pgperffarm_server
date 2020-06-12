@@ -46,9 +46,12 @@ INSTALLED_APPS = [
 	'rest_framework',
 	'rest_framework.authtoken',
 	'corsheaders',
+	'machines',
+	'benchmarks',
 	'users',
-	'records',
-	'machines'
+	'postgres',
+	'runs',
+	'systems'
 ]
 
 

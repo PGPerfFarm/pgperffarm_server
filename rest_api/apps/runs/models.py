@@ -14,6 +14,8 @@ class RunInfo(models.Model):
 
 	# run_id is implicit and auto incrementing by default
 
+	run_id = models.AutoField(primary_key=True)
+
 	machine_id = models.ForeignKey('machines.Machine', on_delete=models.CASCADE)
 
 	add_time = models.DateTimeField(auto_now_add=True)
@@ -32,7 +34,7 @@ class RunInfo(models.Model):
 
 	benchmark_id = models.ForeignKey('benchmarks.Benchmark')
 
-	benchmark_result_id = models.ForeignKey('results.Result')
+	#benchmark_result_id = models.ForeignKey('results.Result')
 
 	git_branch = models.CharField(max_length=100, blank=False)
 
@@ -61,16 +63,4 @@ class RunInfo(models.Model):
 	cleanup_runtime = models.TimeField()
 
 	postgres_log = models.TextField()
-	postgres_info = models.ForeignKey('postgres.PostgresInfo')
-
-
-class RunSettings(models.Model):
-
-	run_id = models.ForeignKey(RunInfo)
-
-	db_settings_id = models.ForeignKey('postgres.PostgresSettingsSet')
-
-	class Meta:
-    unique_together = ('db_settings_id', 'run_id',)
-
-
+	postgres_info = models.ForeignKey('postgres.PostgresSettingsSet')

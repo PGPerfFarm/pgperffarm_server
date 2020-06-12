@@ -5,7 +5,7 @@ import hashlib
 
 class Machine(models.Model):
 
-	# id is implicit and auto incrementing by default
+	machine_id = models.AutoField(primary_key=True)
 
 	add_time = models.DateTimeField(auto_now_add=True)
 
@@ -13,7 +13,7 @@ class Machine(models.Model):
 
 	machine_secret = models.CharField(max_length=128, blank=False, default='')
 
-	approved = models.BooleanField(default=FALSE)
+	approved = models.BooleanField(default=False)
 
 	owner_id = models.ForeignKey('auth.User', related_name='machines', on_delete=models.CASCADE)
 

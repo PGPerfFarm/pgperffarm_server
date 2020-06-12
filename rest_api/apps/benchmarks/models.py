@@ -5,6 +5,8 @@ import hashlib
 
 class Benchmark(models.Model):
 
+	benchmark_id = models.AutoField(primary_key=True)
+
 	bench = (
 		('PgBench', 'PgBench'),
 		('TBD', 'Something else')
@@ -17,24 +19,44 @@ class Benchmark(models.Model):
 
 class PgBenchBenchmark(models.Model):
 
-	jobs = IntegerField()
-	clients = IntegerField()
-	length = IntegerField()
-	init = IntegerField()
-	warmup = IntegerField()
-	runs = IntegerField()
-	scale = IntegerField()
-	duration = IntegerField()
+	pgbench_benchmark_id = models.AutoField(primary_key=True)
+
+	jobs = models.IntegerField()
+	clients = models.IntegerField()
+	length = models.IntegerField()
+	init = models.IntegerField()
+	warmup = models.IntegerField()
+	runs = models.IntegerField()
+	scale = models.IntegerField()
+	duration = models.IntegerField()
 
 
 class PgBenchResult(models.Model):
 
-	tps = IntegerField()
-	mode = IntegerField()
-	threads = IntegerField()
-	clients = IntegerField()
-	latency = IntegerField()
-	read_only = IntegerField()
-	start = IntegerField()
-	end = IntegerField()
-	run = IntegerField()
+	pgbench_result_id = models.AutoField(primary_key=True)
+
+	tps = models.IntegerField()
+	mode = models.IntegerField()
+	threads = models.IntegerField()
+	clients = models.IntegerField()
+	latency = models.FloatField()
+	read_only = models.BooleanField()
+	start = models.IntegerField()
+	end = models.IntegerField()
+	run = models.IntegerField()
+
+
+class PgBenchRunStatement(models.Model):
+
+	pgbench_run_statement_id = models.AutoField(primary_key=True)
+
+	run_id = models.ForeignKey('runs.RunInfo')
+	line_id = models.IntegerField()
+	latency = models.FloatField()
+
+
+class PgBenchStatement(models.Model):
+
+	pgbench_statement_id = models.AutoField(primary_key=True)
+
+	statement = models.TextField()
