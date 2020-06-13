@@ -5,13 +5,13 @@ import hashlib
 
 class Machine(models.Model):
 
-	machine_id = models.AutoField(primary_key=True)
+	machine_id = models.BigAutoField(primary_key=True)
 
 	add_time = models.DateTimeField(auto_now_add=True)
 
 	alias = models.CharField(max_length=100, blank=False, default='', unique=True)
 
-	machine_secret = models.CharField(max_length=128, blank=False, default='')
+	machine_secret = models.CharField(max_length=128, blank=False, default='', unique=True)
 
 	approved = models.BooleanField(default=False)
 

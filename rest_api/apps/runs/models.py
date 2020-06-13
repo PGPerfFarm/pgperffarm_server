@@ -14,7 +14,7 @@ class RunInfo(models.Model):
 
 	# run_id is implicit and auto incrementing by default
 
-	run_id = models.AutoField(primary_key=True)
+	run_id = models.BigAutoField(primary_key=True)
 
 	machine_id = models.ForeignKey('machines.Machine', on_delete=models.CASCADE)
 
@@ -40,27 +40,27 @@ class RunInfo(models.Model):
 
 	git_commit = models.CharField(max_length=100, blank=False)
 
-	run_received_time = models.DateTimeField()
-	run_start_time = models.DateTimeField()
-	run_end_time = models.DateTimeField()
+	run_received_time = models.DateTimeField(null=True)
+	run_start_time = models.DateTimeField(null=True)
+	run_end_time = models.DateTimeField(null=True)
 
-	git_clone_log = models.TextField()
-	git_clone_runtime = models.TimeField()
+	git_clone_log = models.TextField(null=True)
+	git_clone_runtime = models.TimeField(null=True)
 
-	configure_log = models.TextField()
-	configure_runtime = models.TimeField()
+	configure_log = models.TextField(null=True)
+	configure_runtime = models.FloatField(null=True)
 
-	build_log = models.TextField()
-	build_runtime = models.TimeField()
+	build_log = models.TextField(null=True)
+	build_runtime = models.FloatField(null=True)
 
-	install_log = models.TextField()
-	install_runtime = models.TimeField()
+	install_log = models.TextField(null=True)
+	install_runtime = models.FloatField(null=True)
 
-	benchmark_log = models.TextField()
-	benckmark = models.FloatField()
+	benchmark_log = models.TextField(null=True)
+	benckmark = models.CharField(max_length=100)
 
-	cleanup_log = models.TextField()
-	cleanup_runtime = models.TimeField()
+	cleanup_log = models.TextField(null=True)
+	cleanup_runtime = models.FloatField(null=True)
 
-	postgres_log = models.TextField()
+	postgres_log = models.TextField(null=True)
 	postgres_info = models.ForeignKey('postgres.PostgresSettingsSet', on_delete=models.CASCADE)
