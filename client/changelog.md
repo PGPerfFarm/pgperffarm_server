@@ -13,14 +13,12 @@
   * Pull pg_stat_statement data;
   * Make sure the right libpq is used;
 * API:
+  * Adding time zones;
   * Whole refactoring of the code, especially the serializing of JSON output, since its structure will change and right now code is not really clean;
   * Handle credentials;
   * Speed up the whole thing with more compact information and less requests from the website;
-  * Drop alias table, so that a person can use their own;
-  * Make machine secret larger (128);
-  * Add approved flag in place of status;
-  * Add benchmark table;
   * Calculate hash string of configuration;
+  * collectd tables;
 * Website:
   * Improve displaying of results compatible with the new JSON structure;
   * Add possibility to download further files;
@@ -76,6 +74,8 @@ Key points: the code is not supposed to be run using an existing personal Postgr
 * Added a better folder structure;
 * Fixed a bug in logging where the regular expression could not match because of a semicolon;
 * Added logging of statement latencies;
+* Pgbench output has again been refactored;
+* Upload has been rewritten to also include logs;
 
 
 
@@ -99,4 +99,13 @@ Key points: the code is not supposed to be run using an existing personal Postgr
   * locking.py: ensures locking of files;
   * logging.py: prints nice logging;
   * misc.py: connects to database and returns available RAM.
+
+
+
+##### Assumptions and expectations
+
+* A run is an execution of the script on a single client;
+* A benchmark is a single execution of pgbench;
+* A given run can have multiple benchmarks done;
+* A run should have at least one benchmark.
 

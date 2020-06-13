@@ -22,7 +22,7 @@ class PgBench(object):
     #      read-write/read-only tests
     # TODO allow running 'prepared' mode
 
-    def __init__(self, bin_path, dbname, scale, clients, runs=3, duration=60, csv=False,
+    def __init__(self, bin_path, dbname, scale, clients, runs, duration, csv=False,
                  results_dir=None):
         '''
         bin_path   - path to PostgreSQL binaries (dropdb, createdb, psql
@@ -55,7 +55,6 @@ class PgBench(object):
         # initialize results for this dataset scale
         self._results['results'] = {
             'init': None,
-            'runs': [],
             'warmup': None,
         }
 
@@ -123,7 +122,6 @@ class PgBench(object):
         return {'mode': mode,
                 'clients': clients,
                 'threads': threads,
-                'duration': duration,
                 'latency': latency,
                 'statement_latencies' : statement_latencies,
                 'tps': tps}
@@ -253,6 +251,7 @@ class PgBench(object):
 
         info['scale'] = scale
         info['runs'] = results
+        info['duration'] = self._duration
 
         self._results['pgbench'] = info
         return self._results

@@ -1,297 +1,98 @@
 {
     "results": {
-        "init": 0.0033736228942871094,
+        "init": 0.20986461639404297,
         "runs": [],
         "warmup": null
     },
     "pgbench": {
-        "ro": {
-            "10": {
-                "1": {
-                    "results": [
-                        {
-                            "scale": -1,
-                            "mode": -1,
-                            "clients": -1,
-                            "threads": -1,
-                            "duration": -1,
-                            "latency": -1,
-                            "tps": -1,
-                            "read-only": true,
-                            "start": 1591184446.0433643,
-                            "end": 1591184446.0477588,
-                            "run": 0
-                        },
-                        {
-                            "scale": -1,
-                            "mode": -1,
-                            "clients": -1,
-                            "threads": -1,
-                            "duration": -1,
-                            "latency": -1,
-                            "tps": -1,
-                            "read-only": true,
-                            "start": 1591184446.0770652,
-                            "end": 1591184446.0813088,
-                            "run": 1
-                        },
-                        {
-                            "scale": -1,
-                            "mode": -1,
-                            "clients": -1,
-                            "threads": -1,
-                            "duration": -1,
-                            "latency": -1,
-                            "tps": -1,
-                            "read-only": true,
-                            "start": 1591184446.1042693,
-                            "end": 1591184446.1089642,
-                            "run": 2
-                        }
-                    ],
-                    "metric": -1.0,
-                    "median": -1.0,
-                    "std": 0.0
-                },
-                "8": {
-                    "results": [
-                        {
-                            "scale": -1,
-                            "mode": -1,
-                            "clients": -1,
-                            "threads": -1,
-                            "duration": -1,
-                            "latency": -1,
-                            "tps": -1,
-                            "read-only": true,
-                            "start": 1591184446.053794,
-                            "end": 1591184446.0596287,
-                            "run": 0
-                        },
-                        {
-                            "scale": -1,
-                            "mode": -1,
-                            "clients": -1,
-                            "threads": -1,
-                            "duration": -1,
-                            "latency": -1,
-                            "tps": -1,
-                            "read-only": true,
-                            "start": 1591184446.0864236,
-                            "end": 1591184446.089707,
-                            "run": 1
-                        },
-                        {
-                            "scale": -1,
-                            "mode": -1,
-                            "clients": -1,
-                            "threads": -1,
-                            "duration": -1,
-                            "latency": -1,
-                            "tps": -1,
-                            "read-only": true,
-                            "start": 1591184446.1141622,
-                            "end": 1591184446.1191041,
-                            "run": 2
-                        }
-                    ],
-                    "metric": -1.0,
-                    "median": -1.0,
-                    "std": 0.0
-                },
-                "16": {
-                    "results": [
-                        {
-                            "scale": -1,
-                            "mode": -1,
-                            "clients": -1,
-                            "threads": -1,
-                            "duration": -1,
-                            "latency": -1,
-                            "tps": -1,
-                            "read-only": true,
-                            "start": 1591184446.0659654,
-                            "end": 1591184446.0712764,
-                            "run": 0
-                        },
-                        {
-                            "scale": -1,
-                            "mode": -1,
-                            "clients": -1,
-                            "threads": -1,
-                            "duration": -1,
-                            "latency": -1,
-                            "tps": -1,
-                            "read-only": true,
-                            "start": 1591184446.0945075,
-                            "end": 1591184446.0985067,
-                            "run": 1
-                        },
-                        {
-                            "scale": -1,
-                            "mode": -1,
-                            "clients": -1,
-                            "threads": -1,
-                            "duration": -1,
-                            "latency": -1,
-                            "tps": -1,
-                            "read-only": true,
-                            "start": 1591184446.1240752,
-                            "end": 1591184446.1276546,
-                            "run": 2
-                        }
-                    ],
-                    "metric": -1.0,
-                    "median": -1.0,
-                    "std": 0.0
-                }
+        "clients": [
+            1,
+            8,
+            16
+        ],
+        "scale": 1,
+        "runs": [
+            {
+                "mode": "simple",
+                "clients": "1",
+                "threads": "1",
+                "duration": "1",
+                "latency": "0.036",
+                "statement_latencies": "\n         0.000  \\set aid random(1, 100000 * :scale)\n         0.035  SELECT abalance FROM pgbench_accounts WHERE aid = :aid;\n",
+                "tps": "28227.554922",
+                "read-only": true,
+                "start": 1591879647.9364672,
+                "end": 1591879648.9747896,
+                "run": 0
+            },
+            {
+                "mode": "simple",
+                "clients": "8",
+                "threads": "8",
+                "duration": "1",
+                "latency": "0.072",
+                "statement_latencies": "\n         0.001  \\set aid random(1, 100000 * :scale)\n         0.091  SELECT abalance FROM pgbench_accounts WHERE aid = :aid;\n",
+                "tps": "111239.738102",
+                "read-only": true,
+                "start": 1591879648.9975586,
+                "end": 1591879650.0231273,
+                "run": 0
+            },
+            {
+                "mode": "simple",
+                "clients": "16",
+                "threads": "16",
+                "duration": "1",
+                "latency": "0.149",
+                "statement_latencies": "\n         0.001  \\set aid random(1, 100000 * :scale)\n         0.205  SELECT abalance FROM pgbench_accounts WHERE aid = :aid;\n",
+                "tps": "107991.134548",
+                "read-only": true,
+                "start": 1591879650.0405066,
+                "end": 1591879651.0585172,
+                "run": 0
+            },
+            {
+                "mode": "simple",
+                "clients": "1",
+                "threads": "1",
+                "duration": "1",
+                "latency": "2.311",
+                "statement_latencies": "\n         0.002  \\set aid random(1, 100000 * :scale)\n         0.001  \\set bid random(1, 1 * :scale)\n         0.001  \\set tid random(1, 10 * :scale)\n         0.001  \\set delta random(-5000, 5000)\n         0.105  BEGIN;\n         0.303  UPDATE pgbench_accounts SET abalance = abalance + :delta WHERE aid = :aid;\n         0.236  SELECT abalance FROM pgbench_accounts WHERE aid = :aid;\n         0.270  UPDATE pgbench_tellers SET tbalance = tbalance + :delta WHERE tid = :tid;\n         0.252  UPDATE pgbench_branches SET bbalance = bbalance + :delta WHERE bid = :bid;\n         0.204  INSERT INTO pgbench_history (tid, bid, aid, delta, mtime) VALUES (:tid, :bid, :aid, :delta, CURRENT_TIMESTAMP);\n         0.926  END;\n",
+                "tps": "434.467601",
+                "read-only": false,
+                "start": 1591879651.0778685,
+                "end": 1591879652.1172063,
+                "run": 0
+            },
+            {
+                "mode": "simple",
+                "clients": "8",
+                "threads": "8",
+                "duration": "1",
+                "latency": "10.343",
+                "statement_latencies": "\n         0.003  \\set aid random(1, 100000 * :scale)\n         0.001  \\set bid random(1, 1 * :scale)\n         0.001  \\set tid random(1, 10 * :scale)\n         0.001  \\set delta random(-5000, 5000)\n         0.092  BEGIN;\n         0.343  UPDATE pgbench_accounts SET abalance = abalance + :delta WHERE aid = :aid;\n         0.224  SELECT abalance FROM pgbench_accounts WHERE aid = :aid;\n         3.581  UPDATE pgbench_tellers SET tbalance = tbalance + :delta WHERE tid = :tid;\n         4.777  UPDATE pgbench_branches SET bbalance = bbalance + :delta WHERE bid = :bid;\n         0.219  INSERT INTO pgbench_history (tid, bid, aid, delta, mtime) VALUES (:tid, :bid, :aid, :delta, CURRENT_TIMESTAMP);\n         0.944  END;\n",
+                "tps": "780.136080",
+                "read-only": false,
+                "start": 1591879652.1654508,
+                "end": 1591879653.2117307,
+                "run": 0
+            },
+            {
+                "mode": "simple",
+                "clients": "16",
+                "threads": "16",
+                "duration": "1",
+                "latency": "17.994",
+                "statement_latencies": "\n         0.002  \\set aid random(1, 100000 * :scale)\n         0.001  \\set bid random(1, 1 * :scale)\n         0.001  \\set tid random(1, 10 * :scale)\n         0.001  \\set delta random(-5000, 5000)\n         0.080  BEGIN;\n         0.269  UPDATE pgbench_accounts SET abalance = abalance + :delta WHERE aid = :aid;\n         0.168  SELECT abalance FROM pgbench_accounts WHERE aid = :aid;\n        10.409  UPDATE pgbench_tellers SET tbalance = tbalance + :delta WHERE tid = :tid;\n         5.611  UPDATE pgbench_branches SET bbalance = bbalance + :delta WHERE bid = :bid;\n         0.167  INSERT INTO pgbench_history (tid, bid, aid, delta, mtime) VALUES (:tid, :bid, :aid, :delta, CURRENT_TIMESTAMP);\n         0.862  END;\n",
+                "tps": "899.336663",
+                "read-only": false,
+                "start": 1591879653.2671237,
+                "end": 1591879654.3348927,
+                "run": 0
             }
-        },
-        "rw": {
-            "10": {
-                "1": {
-                    "results": [
-                        {
-                            "scale": -1,
-                            "mode": -1,
-                            "clients": -1,
-                            "threads": -1,
-                            "duration": -1,
-                            "latency": -1,
-                            "tps": -1,
-                            "read-only": false,
-                            "start": 1591184446.1335306,
-                            "end": 1591184446.1388826,
-                            "run": 0
-                        },
-                        {
-                            "scale": -1,
-                            "mode": -1,
-                            "clients": -1,
-                            "threads": -1,
-                            "duration": -1,
-                            "latency": -1,
-                            "tps": -1,
-                            "read-only": false,
-                            "start": 1591184446.1678267,
-                            "end": 1591184446.1726089,
-                            "run": 1
-                        },
-                        {
-                            "scale": -1,
-                            "mode": -1,
-                            "clients": -1,
-                            "threads": -1,
-                            "duration": -1,
-                            "latency": -1,
-                            "tps": -1,
-                            "read-only": false,
-                            "start": 1591184446.1996717,
-                            "end": 1591184446.204206,
-                            "run": 2
-                        }
-                    ],
-                    "metric": -1.0,
-                    "median": -1.0,
-                    "std": 0.0
-                },
-                "8": {
-                    "results": [
-                        {
-                            "scale": -1,
-                            "mode": -1,
-                            "clients": -1,
-                            "threads": -1,
-                            "duration": -1,
-                            "latency": -1,
-                            "tps": -1,
-                            "read-only": false,
-                            "start": 1591184446.145292,
-                            "end": 1591184446.1503706,
-                            "run": 0
-                        },
-                        {
-                            "scale": -1,
-                            "mode": -1,
-                            "clients": -1,
-                            "threads": -1,
-                            "duration": -1,
-                            "latency": -1,
-                            "tps": -1,
-                            "read-only": false,
-                            "start": 1591184446.1785855,
-                            "end": 1591184446.1833394,
-                            "run": 1
-                        },
-                        {
-                            "scale": -1,
-                            "mode": -1,
-                            "clients": -1,
-                            "threads": -1,
-                            "duration": -1,
-                            "latency": -1,
-                            "tps": -1,
-                            "read-only": false,
-                            "start": 1591184446.2099156,
-                            "end": 1591184446.2142272,
-                            "run": 2
-                        }
-                    ],
-                    "metric": -1.0,
-                    "median": -1.0,
-                    "std": 0.0
-                },
-                "16": {
-                    "results": [
-                        {
-                            "scale": -1,
-                            "mode": -1,
-                            "clients": -1,
-                            "threads": -1,
-                            "duration": -1,
-                            "latency": -1,
-                            "tps": -1,
-                            "read-only": false,
-                            "start": 1591184446.156505,
-                            "end": 1591184446.1603043,
-                            "run": 0
-                        },
-                        {
-                            "scale": -1,
-                            "mode": -1,
-                            "clients": -1,
-                            "threads": -1,
-                            "duration": -1,
-                            "latency": -1,
-                            "tps": -1,
-                            "read-only": false,
-                            "start": 1591184446.1891837,
-                            "end": 1591184446.1931057,
-                            "run": 1
-                        },
-                        {
-                            "scale": -1,
-                            "mode": -1,
-                            "clients": -1,
-                            "threads": -1,
-                            "duration": -1,
-                            "latency": -1,
-                            "tps": -1,
-                            "read-only": false,
-                            "start": 1591184446.2203522,
-                            "end": 1591184446.224543,
-                            "run": 2
-                        }
-                    ],
-                    "metric": -1.0,
-                    "median": -1.0,
-                    "std": 0.0
-                }
-            }
-        }
+        ]
     },
     "linux": {
-        "sysctl": "tbd",
         "cpu": {
             "information": {
                 "python_version": "3.7.3.final.0 (64 bit)",
@@ -307,13 +108,13 @@
                 "vendor_id": "GenuineIntel",
                 "brand": "Intel(R) Core(TM) i7-8565U CPU @ 1.80GHz",
                 "hz_advertised": "1.8000 GHz",
-                "hz_actual": "1.9002 GHz",
+                "hz_actual": "4.1985 GHz",
                 "hz_advertised_raw": [
                     1800000000,
                     0
                 ],
                 "hz_actual_raw": [
-                    1900200000,
+                    4198538000,
                     0
                 ],
                 "stepping": 11,
@@ -452,39 +253,39 @@
             },
             "number": 8,
             "times": {
-                "user": 71791.02,
-                "nice": 96.87,
-                "system": 18633.46,
-                "idle": 99864.66,
-                "iowait": 290.65,
+                "user": 12746.87,
+                "nice": 65.62,
+                "system": 3602.73,
+                "idle": 138216.52,
+                "iowait": 155.73,
                 "irq": 0.0,
-                "softirq": 2619.6,
+                "softirq": 990.65,
                 "steal": 0.0,
                 "guest": 0.0,
                 "guest_nice": 0.0
             },
             "percent": {
-                "user": 13.6,
-                "nice": 0.3,
-                "system": 5.1,
-                "idle": 79.9,
-                "iowait": 0.1,
+                "user": 25.3,
+                "nice": 0.0,
+                "system": 6.7,
+                "idle": 64.7,
+                "iowait": 2.7,
                 "irq": 0.0,
-                "softirq": 1.1,
+                "softirq": 0.5,
                 "steal": 0.0,
                 "guest": 0.0,
                 "guest_nice": 0.0
             },
             "stats": {
-                "ctx_switches": 1192494504,
-                "interrupts": 150342586,
-                "soft_interrupts": 136297986,
+                "ctx_switches": 131800200,
+                "interrupts": 35415351,
+                "soft_interrupts": 43630653,
                 "syscalls": 0
             },
             "load_avg": [
-                0.26,
-                0.21,
-                0.29
+                1.6,
+                0.79,
+                0.85
             ]
         },
         "os": {
@@ -503,16 +304,16 @@
         "memory": {
             "virtual": {
                 "total": 16460414976,
-                "available": 12343414784,
-                "percent": 25.0,
-                "used": 3170136064,
-                "free": 1765203968,
-                "active": 6560374784,
-                "inactive": 6681874432,
-                "buffers": 654553088,
-                "cached": 10870521856,
-                "shared": 607371264,
-                "slab": 1239273472
+                "available": 12637425664,
+                "percent": 23.2,
+                "used": 3000578048,
+                "free": 8276733952,
+                "active": 4355964928,
+                "inactive": 2420027392,
+                "buffers": 584044544,
+                "cached": 4599058432,
+                "shared": 479313920,
+                "slab": 1189928960
             },
             "swap": {
                 "total": 16814960640,
@@ -530,38 +331,56 @@
                     "opts": "rw,relatime,errors=remount-ro"
                 },
                 {
-                    "device": "/dev/loop2",
+                    "device": "/dev/loop1",
+                    "mountpoint": "/snap/gtk-common-themes/1506",
+                    "fstype": "squashfs",
+                    "opts": "ro,nodev,relatime"
+                },
+                {
+                    "device": "/dev/loop4",
                     "mountpoint": "/snap/whatsdesk/17",
                     "fstype": "squashfs",
                     "opts": "ro,nodev,relatime"
                 },
                 {
                     "device": "/dev/loop0",
-                    "mountpoint": "/snap/core/9066",
-                    "fstype": "squashfs",
-                    "opts": "ro,nodev,relatime"
-                },
-                {
-                    "device": "/dev/loop1",
-                    "mountpoint": "/snap/core18/1754",
-                    "fstype": "squashfs",
-                    "opts": "ro,nodev,relatime"
-                },
-                {
-                    "device": "/dev/loop4",
-                    "mountpoint": "/snap/core/8935",
+                    "mountpoint": "/snap/gnome-3-28-1804/128",
                     "fstype": "squashfs",
                     "opts": "ro,nodev,relatime"
                 },
                 {
                     "device": "/dev/loop3",
-                    "mountpoint": "/snap/gotop/3",
+                    "mountpoint": "/snap/core18/1754",
+                    "fstype": "squashfs",
+                    "opts": "ro,nodev,relatime"
+                },
+                {
+                    "device": "/dev/loop2",
+                    "mountpoint": "/snap/whatsdesk/19",
+                    "fstype": "squashfs",
+                    "opts": "ro,nodev,relatime"
+                },
+                {
+                    "device": "/dev/loop6",
+                    "mountpoint": "/snap/core/9289",
                     "fstype": "squashfs",
                     "opts": "ro,nodev,relatime"
                 },
                 {
                     "device": "/dev/loop5",
                     "mountpoint": "/snap/scuolabook/15",
+                    "fstype": "squashfs",
+                    "opts": "ro,nodev,relatime"
+                },
+                {
+                    "device": "/dev/loop7",
+                    "mountpoint": "/snap/core/9066",
+                    "fstype": "squashfs",
+                    "opts": "ro,nodev,relatime"
+                },
+                {
+                    "device": "/dev/loop8",
+                    "mountpoint": "/snap/gotop/3",
                     "fstype": "squashfs",
                     "opts": "ro,nodev,relatime"
                 },
@@ -588,60 +407,72 @@
         "disk": {
             "usage": {
                 "total": 29392539648,
-                "used": 23759171584,
-                "free": 4116709376,
-                "percent": 85.2
+                "used": 22660231168,
+                "free": 5215649792,
+                "percent": 81.3
             },
             "io": {
-                "read_count": 473971,
-                "write_count": 32970837,
-                "read_bytes": 12756827136,
-                "write_bytes": 248541295616,
-                "read_time": 131691,
-                "write_time": 16301071,
-                "read_merged_count": 10,
-                "write_merged_count": 905637,
-                "busy_time": 61714356
+                "read_count": 334277,
+                "write_count": 2646626,
+                "read_bytes": 4924426240,
+                "write_bytes": 48328660992,
+                "read_time": 87378,
+                "write_time": 1525498,
+                "read_merged_count": 11,
+                "write_merged_count": 335308,
+                "busy_time": 15641828
             }
         },
         "process": {
             "io": {
-                "read_count": 9517,
-                "write_count": 22202,
+                "read_count": 9048,
+                "write_count": 22353,
                 "read_bytes": 0,
-                "write_bytes": 40775680,
-                "read_chars": 41692964,
-                "write_chars": 61210517
+                "write_bytes": 40988672,
+                "read_chars": 41584857,
+                "write_chars": 61492201
             },
             "context_switches": {
-                "voluntary": 147,
-                "involuntary": 26
+                "voluntary": 92,
+                "involuntary": 4
             },
             "cpu_times": {
-                "user": 1.0,
-                "system": 0.64,
-                "children_user": 1.89,
-                "children_system": 0.55,
+                "user": 0.76,
+                "system": 0.5,
+                "children_user": 3.86,
+                "children_system": 2.05,
                 "iowait": 0.0
             },
             "threads": 1,
             "cpu_percent": 0.0,
             "memory": {
-                "rss": 47054848,
-                "vms": 396812288,
-                "shared": 20008960,
+                "rss": 46321664,
+                "vms": 397283328,
+                "shared": 18997248,
                 "text": 2445312,
                 "lib": 0,
-                "data": 296448000,
+                "data": 296919040,
                 "dirty": 0
             },
-            "memory_percent": 0.2858667176289785
+            "memory_percent": 0.2814124921366745
+        },
+        "compiler": {
+            "make": [
+                0,
+                "GNU Make 4.2.1\nBuilt for x86_64-pc-linux-gnu\nCopyright (C) 1988-2016 Free Software Foundation, Inc.\nLicense GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\nThis is free software: you are free to change and redistribute it.\nThere is NO WARRANTY, to the extent permitted by law.\n",
+                0.0031104087829589844
+            ],
+            "gcc": [
+                0,
+                "gcc (Debian 8.3.0-6) 8.3.0\nCopyright (C) 2018 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n",
+                0.0027132034301757812
+            ]
         }
     },
     "collectd": {},
     "postgres": {
         "branch": "master",
-        "commit": "4d685f6d7b65fa1ca5afb5138e610cd08a3c1e12",
+        "commit": "d9fa17aa7c34dea66ce64da6fb4c643e75ba452c",
         "settings": {
             "shared_buffers": "2GB",
             "work_mem": "512MB",
@@ -653,12 +484,14 @@
             "log_autovacuum_min_duration": "0",
             "log_temp_files": "32",
             "checkpoint_timeout": "30min",
-            "checkpoint_completion_target": "0.9"
+            "checkpoint_completion_target": "0.9",
+            "listen_addresses": "",
+            "unix_socket_directories": "/tmp/perffarm/socket"
         }
     },
     "meta": {
         "benchmark": "pgbench",
-        "date": "2020-06-03 11:40:47.000000+00",
+        "date": "2020-06-11 12:47:35.000000+00",
         "name": "pgbench-basic",
         "uname": "Linux ila-debian 4.19.0-9-amd64 #1 SMP Debian 4.19.118-2 (2020-04-29) x86_64 GNU/Linux\n"
     }
