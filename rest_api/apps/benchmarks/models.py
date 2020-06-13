@@ -50,7 +50,7 @@ class PgBenchRunStatement(models.Model):
 
 	pgbench_run_statement_id = models.AutoField(primary_key=True)
 
-	run_id = models.ForeignKey('runs.RunInfo')
+	run_id = models.ForeignKey('runs.RunInfo', on_delete=models.CASCADE)
 	line_id = models.IntegerField()
 	latency = models.FloatField()
 

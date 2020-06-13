@@ -26,13 +26,13 @@ class RunInfo(models.Model):
 
 	os_version = models.CharField(max_length=100, blank=False)
 
-	os_config_info = models.ForeignKey('systems.LinuxInfo')
+	os_config_info = models.ForeignKey('systems.LinuxInfo', on_delete=models.CASCADE)
 
 	comp_name = models.CharField(max_length=100, blank=False)
 
 	comp_version = models.CharField(max_length=100, blank=False)
 
-	benchmark_id = models.ForeignKey('benchmarks.Benchmark')
+	benchmark_id = models.ForeignKey('benchmarks.Benchmark', on_delete=models.CASCADE)
 
 	#benchmark_result_id = models.ForeignKey('results.Result')
 
@@ -63,4 +63,4 @@ class RunInfo(models.Model):
 	cleanup_runtime = models.TimeField()
 
 	postgres_log = models.TextField()
-	postgres_info = models.ForeignKey('postgres.PostgresSettingsSet')
+	postgres_info = models.ForeignKey('postgres.PostgresSettingsSet', on_delete=models.CASCADE)
