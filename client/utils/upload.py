@@ -50,4 +50,4 @@ def upload(api_url, results_directory, token):
 
     with open(OUTPUT_PATH + '/results_complete.json', 'w+') as results:
         results.write(json.dumps(load_dict))
-        http_post(url, results, token)
+        http_post(url, load_dict, token)
