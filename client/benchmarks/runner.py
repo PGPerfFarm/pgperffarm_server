@@ -131,6 +131,8 @@ class BenchmarkRunner(object):
         with open('%s/results.json' % self._output, 'w+') as f:
             f.write(json.dumps(r, indent=4))
 
+
+    '''
         try:
             self._upload_results(r)
         except Exception as e:
@@ -144,6 +146,7 @@ class BenchmarkRunner(object):
 
         headers = {'Content-Type': 'application/json; charset=utf-8', 'Authorization': self._secret}
         r = requests.post(self._url.encode('utf-8'), data=json.dumps(post).encode('utf-8'), headers=headers)
+    '''
 
 
     def run(self):

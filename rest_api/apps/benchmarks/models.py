@@ -34,6 +34,8 @@ class PgBenchResult(models.Model):
 
 	pgbench_result_id = models.AutoField(primary_key=True)
 
+	run_id = models.ForeignKey('runs.RunInfo', on_delete=models.CASCADE)
+
 	tps = models.FloatField()
 	mode = models.CharField(max_length=100)
 	threads = models.IntegerField()
@@ -49,9 +51,10 @@ class PgBenchRunStatement(models.Model):
 
 	pgbench_run_statement_id = models.AutoField(primary_key=True)
 
-	run_id = models.ForeignKey('runs.RunInfo', on_delete=models.CASCADE)
+	result_id = models.ForeignKey('benchmarks.PgBenchResult', on_delete=models.CASCADE)
 	line_id = models.IntegerField(null=True)
 	latency = models.FloatField(null=True)
+	result_id = models.ForeignKey('benchmarks.PgBenchStatement', on_delete=models.CASCADE)
 
 
 class PgBenchStatement(models.Model):

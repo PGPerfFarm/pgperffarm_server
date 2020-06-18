@@ -80,8 +80,3 @@ Key points: the code is not supposed to be run using an existing personal Postgr
 
 
 
-##### Week 3
-
-* Documentation has been written, defining a folder with all documents;
-* Minor database structure changes;
-

@@ -1,5 +1,9 @@
 # PostgreSQL Performance Farm
 
+THIS README IS OUTDATED - WILL BE UPDATED IN THE NEXT WEEKS
+
+
+
 This repository contains the code for the PostgreSQL Performance Farm, aiming to collect Postgres performance data through a Python script, outputting results on a JSON file. Results are then being sent to a Django-REST application and browsed with a Vue.js website on top of it.
 
 ----

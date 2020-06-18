@@ -6,6 +6,8 @@ from django.contrib.postgres.fields.jsonb import JSONField
 
 class LinuxInfo(models.Model):
 
+	# do not insert every time, only check if there are duplicates
+
 	linux_info_id = models.AutoField(primary_key=True)
 
 	cpu_brand = models.CharField(max_length=100, null=True)
