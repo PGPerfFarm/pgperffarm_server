@@ -43,33 +43,22 @@ def CreateRunInfo(request, format=None):
 		if test_machine <= 0:
 			raise RuntimeError("The machine is unavailable.")
 
-		
-		record_hash = make_password(str(json_data), 'pg_perf_farm')
-		r = TestRecord.objects.filter(hash=record_hash).count()
-		if r != 0:
-			raise TestDataUploadError('The same record already exists, please do not submit it twice.')
-		
-
 		with transaction.atomic():
 
-			if 'linux' not in json_data:
-				print('LinuxInfo not found')
+			os = 'L'
+			os_name = json_data['linux']['os']['release']
+			os_version = json_data['linux']['os']['version']
 				
-			else:
-				os = 'L'
-				os_name = json_data['linux']['os']['release']
-				os_version = json_data['linux']['os']['version']
-				
-				linux_data = json_data['linux']
-				linuxInfo = LinuxInfoSerializer(data=linux_data)
-				linuxInfoRet = None
+			linux_data = json_data['linux']
+			linuxInfo = LinuxInfoSerializer(data=linux_data)
+			linuxInfoRet = None
 
 			if linuxInfo.is_valid():
 				linuxInfoRet = linuxInfo.save()
 
 			else:
 				msg = 'linuxInfo invalid'
-				raise TestDataUploadError(msg)
+				raise RuntimeError(msg)
 
 			branch = json_data['postgres']['branch']
 			commit = json_data['postgres']['commit']
