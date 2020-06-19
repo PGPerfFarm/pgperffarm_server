@@ -13,6 +13,8 @@
   * Pull pg_stat_statement data;
   * Make sure the right libpq is used;
   * remove pgbench runs;
+  * make compiler on first level of json;
+  * make 3 separate logs in build.py;
 * API:
   * Adding time zones;
   * Whole refactoring of the code, especially the serializing of JSON output, since its structure will change and right now code is not really clean;
