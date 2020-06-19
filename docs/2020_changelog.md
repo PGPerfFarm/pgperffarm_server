@@ -12,6 +12,7 @@
   * Allow logging of build/install even with an empty result;
   * Pull pg_stat_statement data;
   * Make sure the right libpq is used;
+  * remove pgbench runs;
 * API:
   * Adding time zones;
   * Whole refactoring of the code, especially the serializing of JSON output, since its structure will change and right now code is not really clean;

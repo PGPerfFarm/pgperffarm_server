@@ -25,7 +25,7 @@ class PgBenchBenchmark(models.Model):
 	clients = models.IntegerField()
 	init = models.IntegerField()
 	warmup = models.IntegerField(null=True)
-	runs = models.IntegerField()
+	#runs = models.IntegerField()
 	scale = models.IntegerField()
 	duration = models.FloatField()
 
