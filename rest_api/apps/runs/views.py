@@ -10,6 +10,8 @@ from rest_framework.pagination import PageNumberPagination
 
 from machines.models import Machine
 from system.serializers import LinuxInfoSerializer
+from runs.models import RunInfoSerializer, RuntimeSerializer
+# todo: benchmarks serializers, hashing of postgres settings
 
 
 
@@ -17,9 +19,6 @@ from system.serializers import LinuxInfoSerializer
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import mixins, status, permissions
-
-from rest_framework import viewsets
-from .models import TestRecord
 
 
 @api_view(['POST'])
