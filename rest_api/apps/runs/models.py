@@ -32,8 +32,6 @@ class RunInfo(models.Model):
 
 	comp_version = models.CharField(max_length=100, blank=False)
 
-	benchmark_id = models.ForeignKey('benchmarks.Benchmark', on_delete=models.CASCADE)
-
 	git_branch = models.CharField(max_length=100, blank=False)
 
 	git_commit = models.CharField(max_length=100, blank=False)

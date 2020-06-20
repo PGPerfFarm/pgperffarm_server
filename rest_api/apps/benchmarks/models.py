@@ -3,21 +3,6 @@ import shortuuid
 import hashlib
 
 
-class Benchmark(models.Model):
-
-	benchmark_id = models.BigAutoField(primary_key=True)
-
-	bench = (
-		('PgBench', 'PgBench'),
-		('TBD', 'Something else')
-		)
-
-	# displays as char in Postgres, plain enum datatypes are not supported in Django
-	benchmark_type = models.CharField(max_length=10, blank=False, choices=bench)
-
-	benchmark_config = models.BigIntegerField(blank=False)
-
-
 class PgBenchBenchmark(models.Model):
 
 	pgbench_benchmark_id = models.BigAutoField(primary_key=True)
@@ -35,6 +20,8 @@ class PgBenchResult(models.Model):
 	pgbench_result_id = models.AutoField(primary_key=True)
 
 	run_id = models.ForeignKey('runs.RunInfo', on_delete=models.CASCADE)
+
+	benchmark_config = models.ForeignKey('benchmarks.PgBenchBenchmark', on_delete=models.CASCADE)
 
 	tps = models.FloatField()
 	mode = models.CharField(max_length=100)

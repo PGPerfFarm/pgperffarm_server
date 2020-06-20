@@ -1,18 +1,49 @@
 import django_filters
 import shortuuid
 import json
+import pandas
+import hashlib
 from rest_framework import serializers
 
 from systems.models import LinuxInfo
 
+# calculate the hash first
+# see if it exists
+# if so, just use pg_id for that run
+# else, insert it and then populate the other table
+
 
 class PostgresSettingsSetSerializer(serializers.ModelSerializer):
 
-	sysctl = serializers.SerializerMethodField()
+	settings_sha256 = serializers.SerializerMethodField()
 
     class Meta:
         model = PostgresSettingsSet
-        fields = '__all__'
+        fields = 'settings_sha256'
 
-    # ??????
+    def get_settings_sha256(self, obj):
+
+        data_frame = pandas.DataFrame(data=obj)
+        data_frame.query('source <> "default" and source <> "client"', inplace = True) 
+
+        hash_string = data_frame.to_string()
+        return hashlib.sha256(hash_string)
+
+
+class PostgresSettingsSerializer(serializers.ModelSerializer):
+
+    db_settings_id = serializers.SerializerMethodField()
+
+    setting_name = serializers.SerializerMethodField()
+    setting_unit = serializers.SerializerMethodField()
+    setting_value = serializers.SerializerMethodField()
+
+
+    # todo from here!
+    def get_db_settings_id:
+
+        machine_data = Machine.objects.filter(id=obj.test_machine_id)
+
+            machine_info_serializer = MachineSerializer(machine_data, many=True)
+            return machine_info_serializer.data
 
