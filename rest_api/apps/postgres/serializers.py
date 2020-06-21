@@ -30,20 +30,20 @@ class PostgresSettingsSetSerializer(serializers.ModelSerializer):
         return hashlib.sha256(hash_string)
 
 
-class PostgresSettingsSerializer(serializers.ModelSerializer):
+class PostgresSettingsSerializer(serializers.ModelSerializer, id):
 
-    db_settings_id = serializers.SerializerMethodField()
+    db_settings_id = serializers.SerializerMethodField(id)
 
     setting_name = serializers.SerializerMethodField()
     setting_unit = serializers.SerializerMethodField()
     setting_value = serializers.SerializerMethodField()
 
+    def get_db_settings_id(self, obj, id):
 
-    # todo from here!
-    def get_db_settings_id:
+        db_settings_id = PostgresSettingsSet.objects.filter(id=id).postgres_settings_set_id
 
-        machine_data = Machine.objects.filter(id=obj.test_machine_id)
+        return db_settings_id
 
-            machine_info_serializer = MachineSerializer(machine_data, many=True)
-            return machine_info_serializer.data
+    def get_setting_name:
+        pass
 

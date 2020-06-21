@@ -9,11 +9,11 @@ from django.contrib.auth.hashers import make_password
 from rest_framework.pagination import PageNumberPagination
 
 from machines.models import Machine
+from postgres.models import PostgresSettingsSet
 from system.serializers import LinuxInfoSerializer
 from runs.models import RunInfoSerializer, RuntimeSerializer
+
 # todo: benchmarks serializers, hashing of postgres settings
-
-
 
 
 from rest_framework.decorators import api_view, permission_classes
@@ -24,9 +24,7 @@ from rest_framework import mixins, status, permissions
 @api_view(['POST'])
 @permission_classes((permissions.AllowAny, ))
 def CreateRunInfo(request, format=None):
-	"""
-	Receive data from client
-	"""
+
 	data = request.data
 
 	json_data = json.dumps(data[0], ensure_ascii=False)
@@ -64,11 +62,26 @@ def CreateRunInfo(request, format=None):
 
 			postgres_settings = json_data['postgres_settings']
 
-			postgres_info = PostgresSettingsSetSerializer(data=pg_settings)
-			pgInfoRet = None
+			'''
+			postgres_info = PostgresSettingsSetSerializer(data=postgres_settings)
 
-			if postgres_info.is_valid():
-				pgInfoRet = postgres_info.save()
+			# hash set is returned
+			ret = PostgresSettingsSet.objects.filter(settings_sha256=postgres_info).get()
+
+			if ret.settings_sha256 == postgres_info:
+				# existing configuration
+				postgres_settings_set = PostgresSettingsSerializer()
+
+			else:
+				if postgres_info.is_valid():
+					postgres_info.save()
+
+			if postgres_settings_set.is_valid():
+				postgres_settings_set.save()
+
+			'''
+
+			
 
 			runtime_info = json_data['runtime_log']
 
@@ -104,11 +117,16 @@ def CreateRunInfo(request, format=None):
 			
 			pgbench = json_data['pgbench']
 
+			'''
 			pgbench_info = PgBenchBenchmarkSerializer(data=pgbench)
 			pgbenchRet = None
 
 			if pgbench_info.is_valid():
 				pgbenchRet = pgbench_info.save()
+
+			'''
+
+			# save???
 			
 
 	except Exception as e:

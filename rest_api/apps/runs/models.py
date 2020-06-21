@@ -28,9 +28,9 @@ class RunInfo(models.Model):
 
 	os_config_info = models.ForeignKey('systems.LinuxInfo', on_delete=models.CASCADE)
 
-	comp_name = models.CharField(max_length=100, blank=False)
+	#comp_name = models.CharField(max_length=100, blank=False)
 
-	comp_version = models.CharField(max_length=100, blank=False)
+	compiler = models.CharField(max_length=200, blank=False)
 
 	git_branch = models.CharField(max_length=100, blank=False)
 
