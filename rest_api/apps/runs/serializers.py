@@ -1,4 +1,3 @@
-import django_filters
 import shortuuid
 import json
 from rest_framework import serializers
@@ -19,12 +18,14 @@ class RuntimeSerializer(serializers.ModelSerializer):
 	install_runtime = serializers.FloatField()
 	cleanup_runtime = serializers.FloatField()
 
-    class Meta:
-        model = RunInfo
-        fields = ['run_received_time', 'run_start_time', 'run_end_time', 'git_clone_runtime', 'configure_runtime', 'build_runtime', 'install_runtime', 'cleanup_runtime']
+	class Meta:
+		model = RunInfo
+		fields = ['run_received_time', 'run_start_time', 'run_end_time', 'git_clone_runtime', 'configure_runtime', 'build_runtime', 'install_runtime', 'cleanup_runtime']
 
-    
+	
 class RunInfoSerializer(serializers.ModelSerializer):
 
 	class Meta:
-        model = RunInfo
+		model = RunInfo
+		fields = '__all__'
+

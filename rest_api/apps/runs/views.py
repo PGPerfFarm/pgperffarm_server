@@ -1,17 +1,19 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-import django_filters
 import shortuuid
 import json
 
 from django.contrib.auth.hashers import make_password
 from rest_framework.pagination import PageNumberPagination
 
+from rest_framework import permissions, renderers, viewsets, mixins, authentication, serializers, status
+
 from machines.models import Machine
 from postgres.models import PostgresSettingsSet
-from system.serializers import LinuxInfoSerializer
-from runs.models import RunInfoSerializer, RuntimeSerializer
+from runs.models import RunInfo
+from systems.serializers import LinuxInfoSerializer
+from runs.serializers import RunInfoSerializer, RuntimeSerializer
 
 # todo: benchmarks serializers, hashing of postgres settings
 
@@ -19,6 +21,14 @@ from runs.models import RunInfoSerializer, RuntimeSerializer
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import mixins, status, permissions
+
+class RunViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
+	"""
+	List all machines
+	"""
+	queryset =  RunInfo.objects.all().order_by('add_time')
+	serializer_class = RunInfoSerializer
+	permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly, )
 
 
 @api_view(['POST'])
@@ -36,7 +46,7 @@ def CreateRunInfo(request, format=None):
 	try:
 		secret = request.META.get("HTTP_AUTHORIZATION")
 		ret = Machine.objects.filter(machine_secret=secret).get()
-		test_machine = ret.id
+		test_machine = ret.machine_id
 		if test_machine <= 0:
 			raise RuntimeError("The machine is unavailable.")
 
@@ -45,8 +55,19 @@ def CreateRunInfo(request, format=None):
 			os = 'L'
 			os_name = json_data['linux']['os']['release']
 			os_version = json_data['linux']['os']['version']
-				
-			linux_data = json_data['linux']
+
+			linux_data = {
+				'cpu_brand': json_data['linux']['cpu']['information']['brand'],
+				'hz': json_data['linux']['cpu']['information']['hz_actual'],
+				'cpu_cores': json_data['linux']['cpu']['information']['count'],
+				'cpu_times': json_data['linux']['cpu']['times'],
+				'memory': json_data['linux']['memory']['virtual'],
+				'swap': json_data['linux']['memory']['swap'],
+				'mounts': json_data['linux']['memory']['mounts'],
+				'io': json_data['linux']['disk']['io'],
+				'sysctl': json_data['sysctl_log']
+				}
+
 			linuxInfo = LinuxInfoSerializer(data=linux_data)
 			linuxInfoRet = None
 
