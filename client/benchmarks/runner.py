@@ -12,6 +12,7 @@ from subprocess import check_output
 import simplejson as json
 
 from utils.logging import log
+from utils.misc import run_cmd
 
 
 class BenchmarkRunner(object):
@@ -127,6 +128,8 @@ class BenchmarkRunner(object):
                 'commit': config['commit'],
                 'settings': config['postgres'],
         }
+
+        r['compiler'] = run_cmd(['gcc', '--version'])[1]
 
         with open('%s/results.json' % self._output, 'w+') as f:
             f.write(json.dumps(r, indent=4))

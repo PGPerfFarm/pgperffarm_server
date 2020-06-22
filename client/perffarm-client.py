@@ -33,6 +33,10 @@ logging.basicConfig(level=logging.INFO)
 
 if __name__ == '__main__':
 
+    if (AUTOMATIC_UPLOAD):
+        upload(API_URL, OUTPUT_PATH, MACHINE_SECRET)
+
+    '''
     with FileLock('.lock') as lock:
 
         git_pull_runtime = ''
@@ -234,3 +238,4 @@ if __name__ == '__main__':
 
         else:
             log("Benchmark completed, check results in '%s'" % (OUTPUT_PATH, ))
+    '''

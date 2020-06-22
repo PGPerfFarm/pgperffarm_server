@@ -39,21 +39,19 @@ def build():
         install_end_time = datetime.now()
         install_runtime = install_end_time - install_start_time
             
-    with open(LOG_PATH + '/build_log.txt', 'w+') as file:
-
-        file.write("configure error: \n")
+    with open(LOG_PATH + '/configure_log.txt', 'w+') as file:
         file.write(a.stderr)
 
-        file.write("\nmake clean error: \n")
+    with open(LOG_PATH + '/build_log.txt', 'w+') as file:
         file.write(b.stderr)
 
-        file.write("\nmake install error: \n")
+    with open(LOG_PATH + '/install_log.txt', 'w+') as file:
         file.write(c.stderr)
 
-        if (a.stderr != '' or b.stderr != '' or c.stderr != ''):
-            log("Errors have been found while installing, please check build_log.txt in '%s'" % (LOG_PATH,))
+    if (a.stderr != '' or b.stderr != '' or c.stderr != ''):
+        log("Errors have been found while installing, please check build_log.txt in '%s'" % (LOG_PATH,))
 
-            sys.exit()
+        sys.exit()
 
     return configure_runtime, build_runtime, install_runtime
 

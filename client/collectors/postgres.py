@@ -4,6 +4,7 @@ import os
 import psycopg2
 import psycopg2.extras
 import time
+import sys
 
 from multiprocessing import Process, Queue
 from utils.logging import log
@@ -46,12 +47,20 @@ class PostgresCollector(object):
                 r.writeheader()
                 r.writerows(cur.fetchall())
 
+            cur.execute('SELECT version()')
+
+            with open(LOG_PATH + '/compiler.txt', 'w+') as file:
+                row = cur.fetchone()
+                file.write(row['version'])
+
             conn.close()
 
-        except Exception as ex:
+
+        except Exception as e:
             with open(LOG_PATH + '/pg_settings_log.txt', 'a+') as file:
-                    file.write(e.stderr)
+                    file.write(str(e))
                     log("Error while extracting Postgres configuration, check logs.")
+                    sys.exit()
 
     def stop(self):
         pass
