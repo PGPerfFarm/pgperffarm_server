@@ -3,6 +3,10 @@ from __future__ import unicode_literals
 
 import shortuuid
 import json
+import pandas
+import io
+import csv
+import hashlib
 
 from django.contrib.auth.hashers import make_password
 from rest_framework.pagination import PageNumberPagination
@@ -11,9 +15,11 @@ from rest_framework import permissions, renderers, viewsets, mixins, authenticat
 
 from machines.models import Machine
 from postgres.models import PostgresSettingsSet
+from postgres.serializers import PostgresSettingsSetSerializer
 from runs.models import RunInfo
 from systems.serializers import LinuxInfoSerializer
 from runs.serializers import RunInfoSerializer, RuntimeSerializer
+from runs.parsing_functions import ParseLinuxData, GetHash
 
 # todo: benchmarks serializers, hashing of postgres settings
 
@@ -23,9 +29,7 @@ from rest_framework.response import Response
 from rest_framework import mixins, status, permissions
 
 class RunViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
-	"""
-	List all machines
-	"""
+
 	queryset =  RunInfo.objects.all().order_by('add_time')
 	serializer_class = RunInfoSerializer
 	permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly, )
@@ -45,9 +49,12 @@ def CreateRunInfo(request, format=None):
 	# check if machine exists
 	try:
 		secret = request.META.get("HTTP_AUTHORIZATION")
-		ret = Machine.objects.filter(machine_secret=secret).get()
-		test_machine = ret.machine_id
-		if test_machine <= 0:
+
+		try: 
+			ret = Machine.objects.filter(machine_secret=secret).get()
+			test_machine = ret.machine_id
+
+		except Machine.DoesNotExist:
 			raise RuntimeError("The machine is unavailable.")
 
 		with transaction.atomic():
@@ -56,17 +63,7 @@ def CreateRunInfo(request, format=None):
 			os_name = json_data['linux']['os']['release']
 			os_version = json_data['linux']['os']['version']
 
-			linux_data = {
-				'cpu_brand': json_data['linux']['cpu']['information']['brand'],
-				'hz': json_data['linux']['cpu']['information']['hz_actual'],
-				'cpu_cores': json_data['linux']['cpu']['information']['count'],
-				'cpu_times': json_data['linux']['cpu']['times'],
-				'memory': json_data['linux']['memory']['virtual'],
-				'swap': json_data['linux']['memory']['swap'],
-				'mounts': json_data['linux']['memory']['mounts'],
-				'io': json_data['linux']['disk']['io'],
-				'sysctl': json_data['sysctl_log']
-				}
+			linux_data = ParseLinuxData(json_data)
 
 			linuxInfo = LinuxInfoSerializer(data=linux_data)
 			linuxInfoRet = None
@@ -75,34 +72,38 @@ def CreateRunInfo(request, format=None):
 				linuxInfoRet = linuxInfo.save()
 
 			else:
-				msg = 'linuxInfo invalid'
+				msg = 'LinuxInfo is invalid.'
 				raise RuntimeError(msg)
 
 			branch = json_data['postgres']['branch']
 			commit = json_data['postgres']['commit']
 
-			postgres_settings = json_data['postgres_settings']
+			postgres_hash = GetHash(json_data['postgres_settings'])
 
-			'''
-			postgres_info = PostgresSettingsSetSerializer(data=postgres_settings)
+			postgres_hash_object = {'settings_sha256': postgres_hash}
 
-			# hash set is returned
-			ret = PostgresSettingsSet.objects.filter(settings_sha256=postgres_info).get()
+			postgres_info = PostgresSettingsSetSerializer(data=postgres_hash_object)
 
-			if ret.settings_sha256 == postgres_info:
-				# existing configuration
-				postgres_settings_set = PostgresSettingsSerializer()
+			if postgres_info.is_valid():
+
+				try:
+					ret = PostgresSettingsSet.objects.filter(settings_sha256=postgres_hash_object).get()
+
+					pg_settings_id = ret.settings_sha256
+
+				except PostgresSettingsSet.DoesNotExist:
+
+					postgres_info.save()
 
 			else:
-				if postgres_info.is_valid():
-					postgres_info.save()
+				msg = 'Error hashing Postgres configuration.'
+				raise RuntimeError(msg)
+
+			'''
 
 			if postgres_settings_set.is_valid():
 				postgres_settings_set.save()
 
-			'''
-
-			
 
 			runtime_info = json_data['runtime_log']
 
@@ -138,7 +139,6 @@ def CreateRunInfo(request, format=None):
 			
 			pgbench = json_data['pgbench']
 
-			'''
 			pgbench_info = PgBenchBenchmarkSerializer(data=pgbench)
 			pgbenchRet = None
 

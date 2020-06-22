@@ -7,7 +7,7 @@ class PostgresSettingsSet(models.Model):
 
 	postgres_settings_set_id = models.BigAutoField(primary_key=True)
 
-	settings_sha256 = models.BinaryField(max_length=256, unique=True)
+	settings_sha256 = models.CharField(max_length=256, unique=True, null=False)
 
 
 class PostgresSettings(models.Model):

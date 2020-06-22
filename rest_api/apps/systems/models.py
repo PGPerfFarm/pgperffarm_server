@@ -21,3 +21,9 @@ class LinuxInfo(models.Model):
 	io = JSONField(null=True)
 
 	sysctl = models.TextField(null=True)
+
+
+class Compiler(models.Model):
+
+	compiler_id = models.AutoField(primary_key=True)
+	compiler = models.CharField(max_length=100, null=False, unique=True)

@@ -30,7 +30,7 @@ class RunInfo(models.Model):
 
 	#comp_name = models.CharField(max_length=100, blank=False)
 
-	compiler = models.CharField(max_length=200, blank=False)
+	compiler = models.ForeignKey('systems.Compiler', on_delete=models.CASCADE)
 
 	git_branch = models.CharField(max_length=100, blank=False)
 

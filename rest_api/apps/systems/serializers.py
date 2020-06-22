@@ -2,7 +2,7 @@ import shortuuid
 import json
 from rest_framework import serializers
 
-from systems.models import LinuxInfo
+from systems.models import LinuxInfo, Compiler
 
 
 class LinuxInfoSerializer(serializers.ModelSerializer):
@@ -22,3 +22,8 @@ class LinuxInfoSerializer(serializers.ModelSerializer):
 		fields = ['cpu_brand', 'hz', 'cpu_cores', 'cpu_times', 'memory', 'swap']
 
 	
+class CompilerSerializer(serializers.ModelSerializer):
+
+	class Meta:
+		model = Compiler
+		fields = '__all__'
