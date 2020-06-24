@@ -23,17 +23,10 @@ class PostgresSettingsSetSerializer(serializers.ModelSerializer):
 
 class PostgresSettingsSerializer(serializers.ModelSerializer):
 
-	db_settings_id = serializers.SerializerMethodField(id)
+	class Meta:
+		model = PostgresSettings
+		fields = '__all__'
 
-	setting_name = serializers.SerializerMethodField()
-	setting_unit = serializers.SerializerMethodField()
-	setting_value = serializers.SerializerMethodField()
-
-	def get_db_settings_id(self, obj, id):
-
-		db_settings_id = PostgresSettingsSet.objects.filter(id=id).postgres_settings_set_id
-
-		return db_settings_id
 
 
 

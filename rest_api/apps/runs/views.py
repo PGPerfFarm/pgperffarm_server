@@ -19,7 +19,8 @@ from postgres.serializers import PostgresSettingsSetSerializer
 from runs.models import RunInfo
 from systems.serializers import LinuxInfoSerializer
 from runs.serializers import RunInfoSerializer, RuntimeSerializer
-from runs.parsing_functions import ParseLinuxData, GetHash
+
+from runs.parsing_functions import ParseLinuxData, GetHash, AddPostgresSettings
 
 # todo: benchmarks serializers, hashing of postgres settings
 
@@ -78,25 +79,27 @@ def CreateRunInfo(request, format=None):
 			branch = json_data['postgres']['branch']
 			commit = json_data['postgres']['commit']
 
-			postgres_hash = GetHash(json_data['postgres_settings'])
+			postgres_hash, postgres_hash_object = GetHash(json_data['postgres_settings'])
 
-			postgres_hash_object = {'settings_sha256': postgres_hash}
+			postgres_configuration = {'settings_sha256': postgres_hash}
 
-			postgres_info = PostgresSettingsSetSerializer(data=postgres_hash_object)
+			postgres_info = PostgresSettingsSetSerializer(data=postgres_configuration)
 
 			if postgres_info.is_valid():
 
 				try:
-					ret = PostgresSettingsSet.objects.filter(settings_sha256=postgres_hash_object).get()
+					ret = PostgresSettingsSet.objects.filter(settings_sha256=postgres_hash).get()
 
 					pg_settings_id = ret.settings_sha256
 
 				except PostgresSettingsSet.DoesNotExist:
 
 					postgres_info.save()
+					AddPostgresSettings(postgres_hash, postgres_hash_object)
 
 			else:
 				msg = 'Error hashing Postgres configuration.'
+				print(postgres_info.errors)
 				raise RuntimeError(msg)
 
 			'''

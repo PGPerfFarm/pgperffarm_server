@@ -4,6 +4,8 @@ import json
 import hashlib
 import io
 
+from postgres.models import PostgresSettingsSet
+from postgres.serializers import PostgresSettingsSerializer
 
 def ParseLinuxData(json_data):
 
@@ -35,4 +37,35 @@ def GetHash(postgres_settings):
 
 	hash_value = hashlib.sha256((hash_string.encode('utf-8')))
 
-	return hash_value.hexdigest()
+	return hash_value.hexdigest(), data_frame
+
+
+def AddPostgresSettings(hash_value, settings):
+
+	settings_set = PostgresSettingsSet.objects.filter(settings_sha256=hash_value).get()
+
+	settings_set_id = settings_set.postgres_settings_set_id
+
+	# now parsing all settings
+	for index, row in settings.iterrows():
+		name = row['name']
+		unit = row['source']
+		value = row['setting']
+
+		settings_object = {
+		'db_settings_id': settings_set_id,
+		'setting_name': name,
+		'setting_unit': unit,
+		'setting_value': value
+		}
+
+		serializer = PostgresSettingsSerializer(data=settings_object)
+
+		if serializer.is_valid():
+				serializer.save()
+
+		else:
+			print(serializer.errors)
+			raise RuntimeError('Invalid Postgres settings.')
+
+

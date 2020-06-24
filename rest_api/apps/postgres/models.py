@@ -18,7 +18,7 @@ class PostgresSettings(models.Model):
 
 	setting_name = models.TextField(blank=False)
 	setting_unit = models.TextField(null=True)
-	setting_value = models.TextField(null=True)
+	setting_value = models.TextField(null=True, blank=True)
 
 	class Meta:
 		unique_together = ('db_settings_id', 'setting_name',)
