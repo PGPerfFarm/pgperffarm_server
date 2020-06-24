@@ -42,11 +42,20 @@ def upload(api_url, results_directory, token):
         filename = os.path.basename(file)
         name = os.path.splitext(filename)[0]
 
-        with open (file, 'r') as f:
-            content = f.read()
+        if (name == 'runtime_log'):
+            with open (file, 'r') as f:
+                runtime_data = json.load(f)
 
-        temp = {name: content}
-        load_dict.update(temp)
+                load_dict.update(runtime_data)
+
+        else:
+
+            with open (file, 'r') as f:
+                content = f.read()
+
+            temp = {name: content}
+            load_dict.update(temp)
+
 
     with open(OUTPUT_PATH + '/results_complete.json', 'w+') as results:
         results.write(json.dumps(load_dict))
