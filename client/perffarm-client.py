@@ -33,10 +33,13 @@ logging.basicConfig(level=logging.INFO)
 
 if __name__ == '__main__':
 
+    '''
+
     if (AUTOMATIC_UPLOAD):
         upload(API_URL, OUTPUT_PATH, MACHINE_SECRET)
-
     '''
+
+    
     with FileLock('.lock') as lock:
 
         git_pull_runtime = ''
@@ -220,17 +223,21 @@ if __name__ == '__main__':
                 log("Error while cleaning directories, check logs.")
                 sys.exit(1)
 
+        runtime = {
+            'run_received_time': run_received_time.strftime("%m/%d/%Y, %H:%M:%S"),
+            'run_start_time': run_start_time.strftime("%m/%d/%Y, %H:%M:%S"), 
+            'run_end_time': run_end_time.strftime("%m/%d/%Y, %H:%M:%S"), 
+            'git_clone_runtime': git_clone_runtime,
+            'git_pull_runtime': str(git_pull_runtime),
+            'configure_runtime': str(configure_runtime),
+            'build_runtime': str(build_runtime), 
+            'install_runtime': str(install_runtime), 
+            'cleanup_runtime': str(cleanup_runtime)
+        }
+
         # saving times in a text file
         with open(LOG_PATH + '/runtime_log.txt', 'w+') as file:
-            file.write("run_received_time: '%s' \n" % run_received_time)
-            file.write("run_start_time: '%s' \n" % run_start_time)
-            file.write("run_end_time: '%s' \n" % run_end_time)
-            file.write("git_clone_runtime: '%s' \n" % git_clone_runtime)
-            file.write("git_pull_runtime: '%s' \n" % git_pull_runtime)
-            file.write("configure_runtime: '%s' \n" % configure_runtime)
-            file.write("build_runtime: '%s' \n" % build_runtime)
-            file.write("install_runtime: '%s' \n" % install_runtime)
-            file.write("cleanup_runtime: '%s' \n" % cleanup_runtime)
+            file.write(json.dumps(runtime))
 
 
         if (AUTOMATIC_UPLOAD):
@@ -238,4 +245,4 @@ if __name__ == '__main__':
 
         else:
             log("Benchmark completed, check results in '%s'" % (OUTPUT_PATH, ))
-    '''
+    
