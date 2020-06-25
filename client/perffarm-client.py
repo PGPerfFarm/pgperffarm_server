@@ -34,7 +34,7 @@ logging.basicConfig(level=logging.INFO)
 if __name__ == '__main__':
 
     
-
+    '''
     if (AUTOMATIC_UPLOAD):
         upload(API_URL, OUTPUT_PATH, MACHINE_SECRET)
     '''
@@ -224,10 +224,10 @@ if __name__ == '__main__':
                 sys.exit(1)
 
         runtime = {
-            'run_received_time': run_received_time.strftime("%m/%d/%Y, %H:%M:%S"),
-            'run_start_time': run_start_time.strftime("%m/%d/%Y, %H:%M:%S"), 
-            'run_end_time': run_end_time.strftime("%m/%d/%Y, %H:%M:%S"), 
-            'git_clone_runtime': git_clone_runtime,
+            'run_received_time': run_received_time.strftime("%Y-%m-%dT%H:%M:%S"),
+            'run_start_time': run_start_time.strftime("%Y-%m-%dT%H:%M:%S"), 
+            'run_end_time': run_end_time.strftime("%Y-%m-%dT%H:%M:%S"), 
+            'git_clone_runtime': str(git_clone_runtime),
             'git_pull_runtime': str(git_pull_runtime),
             'configure_runtime': str(configure_runtime),
             'build_runtime': str(build_runtime), 
@@ -246,4 +246,4 @@ if __name__ == '__main__':
         else:
             log("Benchmark completed, check results in '%s'" % (OUTPUT_PATH, ))
     
-        '''
+    
