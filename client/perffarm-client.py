@@ -34,7 +34,7 @@ logging.basicConfig(level=logging.INFO)
 if __name__ == '__main__':
 
     
-    '''
+    
     if (AUTOMATIC_UPLOAD):
         upload(API_URL, OUTPUT_PATH, MACHINE_SECRET)
     '''
@@ -42,12 +42,12 @@ if __name__ == '__main__':
     
     with FileLock('.lock') as lock:
 
-        git_pull_runtime = ''
-        git_clone_runtime = ''
+        git_pull_runtime = None
+        git_clone_runtime = None
 
-        build_runtime = ''
-        install_runtime = ''
-        configure_runtime = ''
+        build_runtime = None
+        install_runtime = None
+        configure_runtime = None
 
         # run received time
         run_received_time = datetime.now()
@@ -90,7 +90,7 @@ if __name__ == '__main__':
                     file.write(a)
 
                 git_pull_end_time = datetime.now()
-                git_pull_runtime = git_pull_end_time - git_pull_start_time
+                git_pull_runtime = str(git_pull_end_time - git_pull_start_time)
 
                 latest_branch = (git.Repo(REPOSITORY_PATH)).active_branch
                 latest_commit = (git.Repo(REPOSITORY_PATH)).head.commit
@@ -137,7 +137,7 @@ if __name__ == '__main__':
                 a = git.Git(BASE_PATH).clone(GIT_URL)
 
                 git_clone_end_time = datetime.now()
-                git_clone_runtime = git_clone_end_time - git_clone_start_time
+                git_clone_runtime = str(git_clone_end_time - git_clone_start_time)
 
                 # and build
                 configure_runtime, build_runtime, install_runtime = build()
@@ -215,7 +215,7 @@ if __name__ == '__main__':
             if os.path.exists(DATADIR_PATH):
                 shutil.rmtree(DATADIR_PATH)
             cleanup_end_time = datetime.now()
-            cleanup_runtime = cleanup_end_time - cleanup_start_time
+            cleanup_runtime = str(cleanup_end_time - cleanup_start_time)
 
         except Exception as e: # any exception
             with open(LOG_PATH + '/cleanup_log.txt', 'w+') as file:
@@ -223,16 +223,17 @@ if __name__ == '__main__':
                 log("Error while cleaning directories, check logs.")
                 sys.exit(1)
 
+
         runtime = {
             'run_received_time': run_received_time.strftime("%Y-%m-%dT%H:%M:%S"),
             'run_start_time': run_start_time.strftime("%Y-%m-%dT%H:%M:%S"), 
             'run_end_time': run_end_time.strftime("%Y-%m-%dT%H:%M:%S"), 
-            'git_clone_runtime': str(git_clone_runtime),
-            'git_pull_runtime': str(git_pull_runtime),
-            'configure_runtime': str(configure_runtime),
-            'build_runtime': str(build_runtime), 
-            'install_runtime': str(install_runtime), 
-            'cleanup_runtime': str(cleanup_runtime)
+            'git_clone_runtime': git_clone_runtime,
+            'git_pull_runtime': git_pull_runtime,
+            'configure_runtime': configure_runtime,
+            'build_runtime': build_runtime, 
+            'install_runtime': install_runtime, 
+            'cleanup_runtime': cleanup_runtime
         }
 
         # saving times in a text file
@@ -245,5 +246,5 @@ if __name__ == '__main__':
 
         else:
             log("Benchmark completed, check results in '%s'" % (OUTPUT_PATH, ))
-    
+    '''
     

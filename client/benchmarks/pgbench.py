@@ -192,7 +192,7 @@ class PgBench(object):
         end = time.time()
 
         r = PgBench._parse_results(r[1])
-        r.update({'read-only': read_only})
+        r.update({'read_only': read_only})
 
         r.update({'start': start, 'end': end})
 
