@@ -28,35 +28,34 @@ class RunInfo(models.Model):
 
 	os_config_info = models.ForeignKey('systems.LinuxInfo', on_delete=models.CASCADE)
 
-	#comp_name = models.CharField(max_length=100, blank=False)
-
 	compiler = models.ForeignKey('systems.Compiler', on_delete=models.CASCADE)
 
 	git_branch = models.CharField(max_length=100, blank=False)
 
 	git_commit = models.CharField(max_length=100, blank=False)
 
-	run_received_time = models.DateTimeField(null=True)
-	run_start_time = models.DateTimeField(null=True)
-	run_end_time = models.DateTimeField(null=True)
+	run_received_time = models.DateTimeField(null=True, blank=True)
+	run_start_time = models.DateTimeField(null=True, blank=True)
+	run_end_time = models.DateTimeField(null=True, blank=True)
 
-	git_clone_log = models.TextField(null=True)
-	git_clone_runtime = models.TimeField(null=True)
+	git_clone_log = models.TextField(null=True, blank=True)
+	git_clone_runtime = models.DurationField(null=True, blank=True)
+	git_pull_runtime = models.DurationField(null=True, blank=True)
 
-	configure_log = models.TextField(null=True)
-	configure_runtime = models.FloatField(null=True)
+	configure_log = models.TextField(null=True, blank=True)
+	configure_runtime = models.DurationField(null=True, blank=True)
 
-	build_log = models.TextField(null=True)
-	build_runtime = models.FloatField(null=True)
+	build_log = models.TextField(null=True, blank=True)
+	build_runtime = models.DurationField(null=True, blank=True)
 
-	install_log = models.TextField(null=True)
-	install_runtime = models.FloatField(null=True)
+	install_log = models.TextField(null=True, blank=True)
+	install_runtime = models.DurationField(null=True, blank=True)
 
-	benchmark_log = models.TextField(null=True)
-	benckmark = models.CharField(max_length=100)
+	benchmark_log = models.TextField(null=True, blank=True)
+	benchmark = models.CharField(max_length=100)
 
-	cleanup_log = models.TextField(null=True)
-	cleanup_runtime = models.FloatField(null=True)
+	cleanup_log = models.TextField(null=True, blank=True)
+	cleanup_runtime = models.DurationField(null=True, blank=True)
 
-	postgres_log = models.TextField(null=True)
+	postgres_log = models.TextField(null=True, blank=True)
 	postgres_info = models.ForeignKey('postgres.PostgresSettingsSet', on_delete=models.CASCADE)

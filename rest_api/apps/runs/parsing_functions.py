@@ -3,9 +3,11 @@ import csv
 import json
 import hashlib
 import io
+import re
 
 from postgres.models import PostgresSettingsSet
 from postgres.serializers import PostgresSettingsSerializer
+from benchmarks.serializers import PgBenchResultSerializer
 
 def ParseLinuxData(json_data):
 
@@ -65,7 +67,60 @@ def AddPostgresSettings(hash_value, settings):
 				serializer.save()
 
 		else:
-			print(serializer.errors)
 			raise RuntimeError('Invalid Postgres settings.')
+
+
+def ParsePgBenchOptions(json_file):
+
+	result = {
+		'clients': json_file['pgbench']['clients'],
+		'init': json_file['results']['init'],
+		'warmup': json_file['results']['warmup'],
+		'scale': json_file['pgbench']['scale'],
+		'duration': json_file['pgbench']['duration'],
+	}
+
+	return result
+
+
+def ParsePgBenchStatementLatencies(statement_latencies): 
+
+	# extract the nonempty statements
+	statements = statement_latencies.split("\n")
+	statements = list(filter(None, statements))
+
+	for statement in statements:
+		line = re.findall('\d+\.\d+', statement)[0]
+		line_id = 0
+		text = (statement.split(line)[1]).strip()
+		print(text)
+
+		# todo
+		
+
+
+
+def ParsePgBenchResults(json, run_id, benchmark_id):
+
+	for result in json:
+
+		# remove statement latencies
+		statement_latencies = result['statement_latencies']
+
+		ParsePgBenchStatementLatencies(statement_latencies)
+
+		result.pop('statement_latencies')
+
+		result['run_id'] = run_id
+		result['benchmark_config'] = benchmark_id
+
+		result_serializer = PgBenchResultSerializer(data=result)
+
+		if result_serializer.is_valid():
+				result_valid = result_serializer.save()
+
+		else:
+			print(result_serializer.errors)
+			raise RuntimeError('Invalid PgBench data.')
 
 

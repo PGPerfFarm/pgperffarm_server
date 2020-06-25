@@ -8,8 +8,6 @@ import io
 import csv
 import hashlib
 
-from django.contrib.auth.hashers import make_password
-from rest_framework.pagination import PageNumberPagination
 
 from rest_framework import permissions, renderers, viewsets, mixins, authentication, serializers, status
 
@@ -17,17 +15,17 @@ from machines.models import Machine
 from postgres.models import PostgresSettingsSet
 from postgres.serializers import PostgresSettingsSetSerializer
 from runs.models import RunInfo
-from systems.serializers import LinuxInfoSerializer
-from runs.serializers import RunInfoSerializer, RuntimeSerializer
+from runs.serializers import RunInfoSerializer
+from systems.serializers import LinuxInfoSerializer, CompilerSerializer
+from systems.models import LinuxInfo, Compiler
+from benchmarks.serializers import PgBenchBenchmarkSerializer
 
-from runs.parsing_functions import ParseLinuxData, GetHash, AddPostgresSettings
-
-# todo: benchmarks serializers, hashing of postgres settings
-
+from runs.parsing_functions import ParseLinuxData, GetHash, AddPostgresSettings, ParsePgBenchOptions, ParsePgBenchResults
 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import mixins, status, permissions
+
 
 class RunViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
 
@@ -52,13 +50,33 @@ def CreateRunInfo(request, format=None):
 		secret = request.META.get("HTTP_AUTHORIZATION")
 
 		try: 
-			ret = Machine.objects.filter(machine_secret=secret).get()
-			test_machine = ret.machine_id
+			machine = Machine.objects.filter(machine_secret=secret).get()
+			machine_id = machine.machine_id
 
 		except Machine.DoesNotExist:
 			raise RuntimeError("The machine is unavailable.")
 
 		with transaction.atomic():
+
+			try: 
+				compiler_result = Compiler.objects.filter(compiler=json_data['compiler']).get()
+				compiler_id = compiler_result.compiler_id
+
+			except Compiler.DoesNotExist:
+
+				compiler = {'compiler': json_data['compiler']}
+
+				compiler_serializer = CompilerSerializer(data=compiler)
+
+				if compiler_serializer.is_valid():
+					compiler_valid = compiler_serializer.save()
+					compiler_id = compiler_valid.compiler_id
+
+				else:
+					msg = 'Compiler information is invalid.'
+					print (compiler_serializer.errors)
+					raise RuntimeError(msg)
+
 
 			os = 'L'
 			os_name = json_data['linux']['os']['release']
@@ -66,14 +84,13 @@ def CreateRunInfo(request, format=None):
 
 			linux_data = ParseLinuxData(json_data)
 
-			linuxInfo = LinuxInfoSerializer(data=linux_data)
-			linuxInfoRet = None
+			linux_info = LinuxInfoSerializer(data=linux_data)
 
-			if linuxInfo.is_valid():
-				linuxInfoRet = linuxInfo.save()
+			if linux_info.is_valid():
+				linux_valid_info = linux_info.save()
 
 			else:
-				msg = 'LinuxInfo is invalid.'
+				msg = 'Linux information is invalid.'
 				raise RuntimeError(msg)
 
 			branch = json_data['postgres']['branch']
@@ -88,29 +105,20 @@ def CreateRunInfo(request, format=None):
 			if postgres_info.is_valid():
 
 				try:
-					ret = PostgresSettingsSet.objects.filter(settings_sha256=postgres_hash).get()
+					obj = PostgresSettingsSet.objects.filter(settings_sha256=postgres_hash).get()
 
-					pg_settings_id = ret.settings_sha256
+					pg_settings_id = obj.postgres_settings_set_id
 
 				except PostgresSettingsSet.DoesNotExist:
 
-					postgres_info.save()
+					postgres_valid_info = postgres_info.save()
 					AddPostgresSettings(postgres_hash, postgres_hash_object)
+
+					pg_settings_id = postgres_valid_info.postgres_settings_set_id
 
 			else:
 				msg = 'Error hashing Postgres configuration.'
-				print(postgres_info.errors)
 				raise RuntimeError(msg)
-
-			'''
-
-			if postgres_settings_set.is_valid():
-				postgres_settings_set.save()
-
-
-			runtime_info = json_data['runtime_log']
-
-			times = RuntimeSerializer(data=runtime_info)
 
 			if 'git_clone_log' not in json_data:
 				git_clone_log = ''
@@ -139,18 +147,62 @@ def CreateRunInfo(request, format=None):
 
 			postgres_log = json_data['pg_ctl']
 			benchmark_log = json_data['pgbench_log']
-			
-			pgbench = json_data['pgbench']
+
+			# also create the benchmark
+			pgbench = ParsePgBenchOptions(json_data)
 
 			pgbench_info = PgBenchBenchmarkSerializer(data=pgbench)
-			pgbenchRet = None
 
 			if pgbench_info.is_valid():
-				pgbenchRet = pgbench_info.save()
+				pgbench_valid = pgbench_info.save()
 
-			'''
+			else:
+				msg = 'Error parsing PgBench configuration.'
+				raise RuntimeError(msg)
 
-			# save???
+			# before doing anything else related to benchmarks, save the run
+
+			run_info = {
+				'machine_id': machine_id,
+				'os_type': os,
+				'os_name': os_name,
+				'os_version': os_version,
+				'os_config_info': linux_valid_info.linux_info_id,
+				'compiler': compiler_id,
+				'git_branch': branch,
+				'git_commit': commit,
+				'git_clone_log': git_clone_log,
+				'configure_log': configure_log,
+				'build_log': build_log,
+				'install_log': install_log,
+				'benchmark_log': benchmark_log,
+				'cleanup_log': cleanup_log,
+				'postgres_log': postgres_log,
+				'postgres_info': pg_settings_id,
+				'run_received_time': json_data['run_received_time'],
+				'run_start_time': json_data['run_start_time'],
+				'run_end_time': json_data['run_end_time'],
+				'git_pull_runtime': json_data['git_pull_runtime'],
+				'git_clone_runtime': json_data['git_clone_runtime'],
+				'configure_runtime': json_data['configure_runtime'],
+				'build_runtime': json_data['build_runtime'],
+				'install_runtime': json_data['install_runtime'],
+				'benchmark': pgbench_valid.pgbench_benchmark_id,
+				'cleanup_runtime': json_data['cleanup_runtime']
+			}
+
+			run_info_serializer = RunInfoSerializer(data=run_info)
+
+			if run_info_serializer.is_valid():
+				run_valid = run_info_serializer.save()
+
+			else:
+				msg = 'Error parsing run configuration.'
+				print (run_info_serializer.errors)
+				raise RuntimeError(msg)
+
+			# now continue with benchmarks
+			ParsePgBenchResults(json_data['pgbench']['runs'], run_valid.run_id, pgbench_valid.pgbench_benchmark_id)
 			
 
 	except Exception as e:

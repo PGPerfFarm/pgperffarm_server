@@ -16,6 +16,7 @@ class AddMachineViewSet(viewsets.ModelViewSet):
 	permission_classes = (permissions.IsAuthenticated, )
 	serializer_class = MachineSerializer
 	lookup_field = 'alias'
+	queryset =  Machine.objects.all().order_by('add_time')
 
 
 	def post(self, request, *args, **kwargs):

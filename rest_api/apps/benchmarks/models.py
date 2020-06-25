@@ -1,16 +1,14 @@
 from django.db import models
-import shortuuid
-import hashlib
+from django.contrib.postgres.fields import ArrayField
 
 
 class PgBenchBenchmark(models.Model):
 
 	pgbench_benchmark_id = models.BigAutoField(primary_key=True)
 
-	clients = models.IntegerField()
-	init = models.IntegerField()
-	warmup = models.IntegerField(null=True)
-	#runs = models.IntegerField()
+	clients = ArrayField(models.IntegerField())
+	init = models.FloatField()
+	warmup = models.FloatField(null=True, blank=True)
 	scale = models.IntegerField()
 	duration = models.FloatField()
 
@@ -38,7 +36,7 @@ class PgBenchRunStatement(models.Model):
 
 	pgbench_run_statement_id = models.AutoField(primary_key=True)
 
-	result_id = models.ForeignKey('benchmarks.PgBenchResult', on_delete=models.CASCADE)
+	pgbench_result_id = models.ForeignKey('benchmarks.PgBenchResult', on_delete=models.CASCADE)
 	line_id = models.IntegerField(null=True)
 	latency = models.FloatField(null=True)
 	result_id = models.ForeignKey('benchmarks.PgBenchStatement', on_delete=models.CASCADE)

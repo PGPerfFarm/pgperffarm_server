@@ -26,4 +26,4 @@ class LinuxInfo(models.Model):
 class Compiler(models.Model):
 
 	compiler_id = models.AutoField(primary_key=True)
-	compiler = models.CharField(max_length=100, null=False, unique=True)
+	compiler = models.CharField(max_length=200, null=False, unique=True)
