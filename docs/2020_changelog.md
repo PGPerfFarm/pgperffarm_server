@@ -9,20 +9,26 @@
   * Adding more tests or more options to pgbench, or automated testing (?);
   * Add list of branches;
   * Portability tests;
-  * Allow logging of build/install even with an empty result;
+  * Allow logging of build/install/postgres errors even with an empty result;
   * Pull pg_stat_statement data;
   * Make sure the right libpq is used;
-  * remove pgbench runs;
-  * make compiler on first level of json;
-  * make 3 separate logs in build.py;
+  * check if warmup actually works;
+  * add compatibility with windows, mac (linux by default in the API);
 * API:
   * Adding time zones;
-  * Whole refactoring of the code, especially the serializing of JSON output, since its structure will change and right now code is not really clean;
   * Handle credentials;
+  * cronjob: 2h;
   * Speed up the whole thing with more compact information and less requests from the website;
-  * Calculate hash string of configuration;
   * collectd tables;
   * we expect that the operating system stays the same for each machine;
+  * check that the same record does not get uploaded twice;
+    * unique constraint on start time for each machine
+  * check pgbenchbenchmark duplicates;
+  * cliens: every client in the array must be a separate configuration row;
+    * uniqueness clients, init, warmup, scale, duration
+  * ask about line_id (currently is zero) -> auto incrementing value;
+  * ask about what should happen if a single insert fails -> rollback completely, dump to file on server;
+  * backups of data
 * Website:
   * Improve displaying of results compatible with the new JSON structure;
   * Add possibility to download further files;
@@ -38,6 +44,7 @@
   + Detailed explanation of JSON fields;
   + Update README and installation procedure;
   + Update requirements (in progress).
+  + add bison and flex to requirements;
 
 
 
