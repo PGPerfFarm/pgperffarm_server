@@ -40,6 +40,7 @@ urlpatterns = [
     url('', include('runs.urls')),
     url('', include('systems.urls')),
     url('', include('postgres.urls')),
+    url('', include('benchmarks.urls')),
     url(r'^admin/', admin.site.urls),
     url('login_token/', jwt_views.TokenObtainPairView.as_view(), name='token_obtain_pair'),
     url('refresh_token/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),

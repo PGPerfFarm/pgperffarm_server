@@ -22,6 +22,9 @@ class LinuxInfo(models.Model):
 
 	sysctl = models.TextField(null=True)
 
+	class Meta:
+		unique_together = ('cpu_brand', 'hz', 'cpu_cores', 'memory', 'swap')
+
 
 class Compiler(models.Model):
 

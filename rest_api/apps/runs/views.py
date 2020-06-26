@@ -10,6 +10,7 @@ import hashlib
 
 
 from rest_framework import permissions, renderers, viewsets, mixins, authentication, serializers, status
+from django.db import IntegrityError
 
 from machines.models import Machine
 from postgres.models import PostgresSettingsSet
@@ -55,6 +56,7 @@ def CreateRunInfo(request, format=None):
 
 		except Machine.DoesNotExist:
 			raise RuntimeError("The machine is unavailable.")
+			
 
 		with transaction.atomic():
 
@@ -84,14 +86,22 @@ def CreateRunInfo(request, format=None):
 
 			linux_data = ParseLinuxData(json_data)
 
-			linux_info = LinuxInfoSerializer(data=linux_data)
+			try: 
+				linux_valid_info = LinuxInfo.objects.filter(cpu_brand=linux_data['cpu_brand'], cpu_cores=linux_data['cpu_cores'], hz=linux_data['hz'], memory=linux_data['memory'], swap=linux_data['swap']).get()
+			
 
-			if linux_info.is_valid():
-				linux_valid_info = linux_info.save()
+			except LinuxInfo.DoesNotExist:
 
-			else:
-				msg = 'Linux information is invalid.'
-				raise RuntimeError(msg)
+				linux_info = LinuxInfoSerializer(data=linux_data)
+
+				if linux_info.is_valid():
+					linux_valid_info = linux_info.save()
+
+				else:
+					msg = 'Linux information is invalid.'
+					raise RuntimeError(msg)
+
+			compiler_id = compiler_result.compiler_id
 
 			branch = json_data['postgres']['branch']
 			commit = json_data['postgres']['commit']

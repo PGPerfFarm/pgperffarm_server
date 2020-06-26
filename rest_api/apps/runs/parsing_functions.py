@@ -7,7 +7,7 @@ import re
 
 from postgres.models import PostgresSettingsSet
 from postgres.serializers import PostgresSettingsSerializer
-from benchmarks.serializers import PgBenchResultSerializer
+from benchmarks.serializers import PgBenchResultSerializer, PgBenchStatementSerializer, PgBenchRunStatementSerializer
 
 def ParseLinuxData(json_data):
 
@@ -83,20 +83,42 @@ def ParsePgBenchOptions(json_file):
 	return result
 
 
-def ParsePgBenchStatementLatencies(statement_latencies): 
+def ParsePgBenchStatementLatencies(statement_latencies, pgbench_result_id): 
 
 	# extract the nonempty statements
 	statements = statement_latencies.split("\n")
 	statements = list(filter(None, statements))
 
 	for statement in statements:
-		line = re.findall('\d+\.\d+', statement)[0]
+		latency = re.findall('\d+\.\d+', statement)[0]
 		line_id = 0
-		text = (statement.split(line)[1]).strip()
-		print(text)
-
-		# todo
+		text = (statement.split(latency)[1]).strip()
 		
+		pgbench_statement = {'statement': text}
+
+		statement_serializer = PgBenchStatementSerializer(data=pgbench_statement)
+
+		if statement_serializer.is_valid():
+				statement_valid = statement_serializer.save()
+
+				data = {
+					'latency': latency,
+					'line_id': line_id,
+					'pgbench_result_id': pgbench_result_id,
+					'result_id': statement_valid.pgbench_statement_id
+					}
+
+				run_statement_serializer = PgBenchRunStatementSerializer(data=data)
+
+				if run_statement_serializer.is_valid():
+					run_statement_serializer.save()
+
+				else:
+					print(run_statement_serializer.errors)
+					raise RuntimeError('Invalid PgBench run statement data.')
+
+		else:
+			raise RuntimeError('Invalid PgBench statement data.')
 
 
 
@@ -106,8 +128,6 @@ def ParsePgBenchResults(json, run_id, benchmark_id):
 
 		# remove statement latencies
 		statement_latencies = result['statement_latencies']
-
-		ParsePgBenchStatementLatencies(statement_latencies)
 
 		result.pop('statement_latencies')
 
@@ -119,8 +139,10 @@ def ParsePgBenchResults(json, run_id, benchmark_id):
 		if result_serializer.is_valid():
 				result_valid = result_serializer.save()
 
+				ParsePgBenchStatementLatencies(statement_latencies, result_valid.pgbench_result_id)
+
+
 		else:
-			print(result_serializer.errors)
 			raise RuntimeError('Invalid PgBench data.')
 
 

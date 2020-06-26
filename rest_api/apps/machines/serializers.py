@@ -9,6 +9,8 @@ from django.contrib.auth.models import User
 class MachineSerializer(serializers.ModelSerializer):
 
 	alias = serializers.CharField()
+	owner_id = serializers.ReadOnlyField()
+	approved = serializers.ReadOnlyField()
 
 	class Meta:
 		model = Machine
