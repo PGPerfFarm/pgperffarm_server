@@ -59,3 +59,7 @@ class RunInfo(models.Model):
 
 	postgres_log = models.TextField(null=True, blank=True)
 	postgres_info = models.ForeignKey('postgres.PostgresSettingsSet', on_delete=models.CASCADE)
+
+
+	class Meta:
+		unique_together = ('machine_id', 'run_start_time')

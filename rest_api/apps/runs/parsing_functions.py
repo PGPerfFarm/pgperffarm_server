@@ -70,10 +70,10 @@ def AddPostgresSettings(hash_value, settings):
 			raise RuntimeError('Invalid Postgres settings.')
 
 
-def ParsePgBenchOptions(json_file):
+def ParsePgBenchOptions(json_file, clients):
 
 	result = {
-		'clients': json_file['pgbench']['clients'],
+		'clients': clients,
 		'init': json_file['results']['init'],
 		'warmup': json_file['results']['warmup'],
 		'scale': json_file['pgbench']['scale'],
@@ -89,9 +89,10 @@ def ParsePgBenchStatementLatencies(statement_latencies, pgbench_result_id):
 	statements = statement_latencies.split("\n")
 	statements = list(filter(None, statements))
 
+	line_id = 0
+
 	for statement in statements:
 		latency = re.findall('\d+\.\d+', statement)[0]
-		line_id = 0
 		text = (statement.split(latency)[1]).strip()
 		
 		pgbench_statement = {'statement': text}
@@ -112,6 +113,7 @@ def ParsePgBenchStatementLatencies(statement_latencies, pgbench_result_id):
 
 				if run_statement_serializer.is_valid():
 					run_statement_serializer.save()
+					line_id += 1
 
 				else:
 					print(run_statement_serializer.errors)
@@ -130,6 +132,7 @@ def ParsePgBenchResults(json, run_id, benchmark_id):
 		statement_latencies = result['statement_latencies']
 
 		result.pop('statement_latencies')
+		result.pop('clients')
 
 		result['run_id'] = run_id
 		result['benchmark_config'] = benchmark_id

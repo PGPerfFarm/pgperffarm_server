@@ -19,6 +19,7 @@ from runs.models import RunInfo
 from runs.serializers import RunInfoSerializer
 from systems.serializers import LinuxInfoSerializer, CompilerSerializer
 from systems.models import LinuxInfo, Compiler
+from benchmarks.models import PgBenchBenchmark
 from benchmarks.serializers import PgBenchBenchmarkSerializer
 
 from runs.parsing_functions import ParseLinuxData, GetHash, AddPostgresSettings, ParsePgBenchOptions, ParsePgBenchResults
@@ -56,7 +57,6 @@ def CreateRunInfo(request, format=None):
 
 		except Machine.DoesNotExist:
 			raise RuntimeError("The machine is unavailable.")
-			
 
 		with transaction.atomic():
 
@@ -76,7 +76,6 @@ def CreateRunInfo(request, format=None):
 
 				else:
 					msg = 'Compiler information is invalid.'
-					print (compiler_serializer.errors)
 					raise RuntimeError(msg)
 
 
@@ -100,8 +99,6 @@ def CreateRunInfo(request, format=None):
 				else:
 					msg = 'Linux information is invalid.'
 					raise RuntimeError(msg)
-
-			compiler_id = compiler_result.compiler_id
 
 			branch = json_data['postgres']['branch']
 			commit = json_data['postgres']['commit']
@@ -159,16 +156,23 @@ def CreateRunInfo(request, format=None):
 			benchmark_log = json_data['pgbench_log']
 
 			# also create the benchmark
-			pgbench = ParsePgBenchOptions(json_data)
+			for client in json_data['pgbench']['clients']:
+				pgbench = ParsePgBenchOptions(json_data, client)
 
-			pgbench_info = PgBenchBenchmarkSerializer(data=pgbench)
+				pgbench_info = PgBenchBenchmarkSerializer(data=pgbench)
 
-			if pgbench_info.is_valid():
-				pgbench_valid = pgbench_info.save()
+				if pgbench_info.is_valid():
 
-			else:
-				msg = 'Error parsing PgBench configuration.'
-				raise RuntimeError(msg)
+					try:
+						pgbench_valid = PgBenchBenchmark.objects.filter(clients=pgbench['clients'], init=pgbench['init'], warmup=pgbench['warmup'], scale=pgbench['scale'], duration=pgbench['duration']).get()
+
+					except PgBenchBenchmark.DoesNotExist:
+
+						pgbench_valid = pgbench_info.save()
+
+				else:
+					msg = 'Error parsing PgBench configuration.'
+					raise RuntimeError(msg)
 
 			# before doing anything else related to benchmarks, save the run
 
