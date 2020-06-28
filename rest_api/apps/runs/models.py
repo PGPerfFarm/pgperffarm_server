@@ -3,6 +3,16 @@ import shortuuid
 import hashlib
 
 
+class GitRepo(models.Model):
+
+	git_repo_id = models.BigAutoField(primary_key=True)
+	url = models.CharField(max_length=100)
+	author = models.CharField(max_length=100)
+
+	class Meta:
+		unique_together = ('url', 'author')
+
+
 class RunInfo(models.Model):
 
 	os = (
@@ -11,8 +21,6 @@ class RunInfo(models.Model):
 		('W', 'Windows'), 
 		('B', 'FreeBsd')
 		)
-
-	# run_id is implicit and auto incrementing by default
 
 	run_id = models.BigAutoField(primary_key=True)
 
@@ -41,6 +49,7 @@ class RunInfo(models.Model):
 	git_clone_log = models.TextField(null=True, blank=True)
 	git_clone_runtime = models.DurationField(null=True, blank=True)
 	git_pull_runtime = models.DurationField(null=True, blank=True)
+	git_repo = models.ForeignKey('runs.GitRepo', on_delete=models.CASCADE)
 
 	configure_log = models.TextField(null=True, blank=True)
 	configure_runtime = models.DurationField(null=True, blank=True)
@@ -63,3 +72,5 @@ class RunInfo(models.Model):
 
 	class Meta:
 		unique_together = ('machine_id', 'run_start_time')
+
+

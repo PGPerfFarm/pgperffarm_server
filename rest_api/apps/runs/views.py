@@ -15,8 +15,8 @@ from django.db import IntegrityError
 from machines.models import Machine
 from postgres.models import PostgresSettingsSet
 from postgres.serializers import PostgresSettingsSetSerializer
-from runs.models import RunInfo
-from runs.serializers import RunInfoSerializer
+from runs.models import RunInfo, GitRepo
+from runs.serializers import RunInfoSerializer, GitRepoSerializer
 from systems.serializers import LinuxInfoSerializer, CompilerSerializer
 from systems.models import LinuxInfo, Compiler
 from benchmarks.models import PgBenchBenchmark
@@ -78,6 +78,25 @@ def CreateRunInfo(request, format=None):
 					msg = 'Compiler information is invalid.'
 					raise RuntimeError(msg)
 
+			try: 
+				repo_result = GitRepo.objects.filter(url=json_data['git']['remote'], author=json_data['git']['author']).get()
+				repo_id = repo_result.git_repo_id
+
+			except GitRepo.DoesNotExist:
+
+				repo = {'url': json_data['git']['remote'],
+						'author': json_data['git']['author']}
+
+				repo_serializer = GitRepoSerializer(data=repo)
+
+				if repo_serializer.is_valid():
+					repo_valid = repo_serializer.save()
+					repo_id = repo_valid.git_repo_id
+
+				else:
+					msg = 'Git information is invalid.'
+					raise RuntimeError(msg)
+
 
 			os = 'L'
 			os_name = json_data['linux']['os']['release']
@@ -100,8 +119,8 @@ def CreateRunInfo(request, format=None):
 					msg = 'Linux information is invalid.'
 					raise RuntimeError(msg)
 
-			branch = json_data['postgres']['branch']
-			commit = json_data['postgres']['commit']
+			branch = json_data['git']['branch']
+			commit = json_data['git']['commit']
 
 			postgres_hash, postgres_hash_object = GetHash(json_data['postgres_settings'])
 
@@ -198,6 +217,7 @@ def CreateRunInfo(request, format=None):
 				'run_end_time': json_data['run_end_time'],
 				'git_pull_runtime': json_data['git_pull_runtime'],
 				'git_clone_runtime': json_data['git_clone_runtime'],
+				'git_repo': repo_id,
 				'configure_runtime': json_data['configure_runtime'],
 				'build_runtime': json_data['build_runtime'],
 				'install_runtime': json_data['install_runtime'],
