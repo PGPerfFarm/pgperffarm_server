@@ -14,6 +14,9 @@ import simplejson as json
 from utils.logging import log
 from utils.misc import run_cmd
 
+from settings import *
+from settings_local import *
+
 
 class BenchmarkRunner(object):
     'manages runs of all the benchmarks, including cluster restarts etc.'
@@ -34,7 +37,7 @@ class BenchmarkRunner(object):
         # FIXME check if a mapping for the same name already exists
         self._benchmarks.update({benchmark_name: benchmark_class})
 
-    def register_config(self, config_name, benchmark_name, branch, commit,
+    def register_config(self, config_name, benchmark_name, branch, commit, author,
                         postgres_config, **kwargs):
         ''
 
@@ -42,9 +45,10 @@ class BenchmarkRunner(object):
         # FIXME check that the benchmark mapping already exists
         self._configs.update({config_name: {'benchmark': benchmark_name,
                                             'config': kwargs,
-                                            'postgres': postgres_config,
                                             'branch': branch,
-                                            'commit': commit}})
+                                            'commit': commit,
+                                            'author': author,
+                                            'postgres': postgres_config}})
 
     def _check_config(self, config_name):
         ''
@@ -123,31 +127,15 @@ class BenchmarkRunner(object):
                 'uname': uname,
         }
 
-        r['postgres'] = {
+        r['git'] = {
                 'branch': config['branch'],
                 'commit': config['commit'],
-                'settings': config['postgres'],
+                'remote': GIT_URL,
+                'author': config['author']
         }
 
         with open('%s/results.json' % self._output, 'w+') as f:
             f.write(json.dumps(r, indent=4))
-
-
-    '''
-        try:
-            self._upload_results(r)
-        except Exception as e:
-            print (e)
-
-    def _upload_results(self, results):
-
-        postdata = results  
-        post = []  
-        post.append(postdata)
-
-        headers = {'Content-Type': 'application/json; charset=utf-8', 'Authorization': self._secret}
-        r = requests.post(self._url.encode('utf-8'), data=json.dumps(post).encode('utf-8'), headers=headers)
-    '''
 
 
     def run(self):

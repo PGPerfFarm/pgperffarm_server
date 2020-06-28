@@ -6,7 +6,7 @@ import urllib.request
 import requests
 import os
 
-from folders import *
+import folders
 
 def byteify(input):
     if isinstance(input, dict):
@@ -37,7 +37,7 @@ def upload(api_url, results_directory, token):
         load_dict = (json.load(load_f, encoding="UTF-8"))
 
     # extracting logs
-    for file in os.scandir(LOG_PATH):
+    for file in os.scandir(folders.LOG_PATH):
 
         filename = os.path.basename(file)
         name = os.path.splitext(filename)[0]
@@ -57,6 +57,6 @@ def upload(api_url, results_directory, token):
             load_dict.update(temp)
 
 
-    with open(OUTPUT_PATH + '/results_complete.json', 'w+') as results:
+    with open(folders.OUTPUT_PATH + '/results_complete.json', 'w+') as results:
         results.write(json.dumps(load_dict))
         http_post(url, load_dict, token)

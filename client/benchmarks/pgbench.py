@@ -13,7 +13,7 @@ from utils.misc import available_ram, run_cmd
 
 from settings import *
 from settings_local import *
-from folders import *
+import folders
 
 class PgBench(object):
     'a simple wrapper around pgbench, running TPC-B-like workload by default'
@@ -59,14 +59,14 @@ class PgBench(object):
         }
 
         log("recreating '%s' database" % (self._dbname,))
-        run_cmd(['dropdb', '-h', SOCKET_PATH, '--if-exists', self._dbname], env=self._env)
-        run_cmd(['createdb', '-h', SOCKET_PATH, self._dbname], env=self._env)
+        run_cmd(['dropdb', '-h', folders.SOCKET_PATH, '--if-exists', self._dbname], env=self._env)
+        run_cmd(['createdb', '-h', folders.SOCKET_PATH, self._dbname], env=self._env)
 
         log("initializing pgbench '%s' with scale %s" % (self._dbname, scale))
 
-        r = run_cmd(['pgbench', '-i', '-s', str(scale), '-h', SOCKET_PATH, '-p', '5432', self._dbname], env=self._env, cwd=self._outdir)
+        r = run_cmd(['pgbench', '-i', '-s', str(scale), '-h', folders.SOCKET_PATH, '-p', '5432', self._dbname], env=self._env, cwd=self._outdir)
 
-        with open(LOG_PATH + '/pgbench_log.txt', 'w+') as file:
+        with open(folders.LOG_PATH + '/pgbench_log.txt', 'w+') as file:
             file.write("pgbench log: \n")
             file.write(r[1].decode("utf-8"))
 
@@ -79,7 +79,7 @@ class PgBench(object):
 
         data = data.decode('utf-8')
 
-        with open(LOG_PATH + '/pgbench_log.txt', 'a+') as file:
+        with open(folders.LOG_PATH + '/pgbench_log.txt', 'a+') as file:
             file.write(data)
 
         mode = -1
@@ -169,7 +169,7 @@ class PgBench(object):
         os.mkdir(rdir)
 
         # add -r here
-        args = ['pgbench', '-r', '-h', SOCKET_PATH, '-c', str(nclients), '-j', str(njobs), '-T',
+        args = ['pgbench', '-r', '-h', folders.SOCKET_PATH, '-c', str(nclients), '-j', str(njobs), '-T',
                 str(duration)]
 
         # aggregate on per second resolution
@@ -182,7 +182,7 @@ class PgBench(object):
         args.extend([self._dbname])
 
         # do an explicit checkpoint before each run
-        run_cmd(['psql', '-h', SOCKET_PATH, self._dbname, '-c', 'checkpoint'], env=self._env)
+        run_cmd(['psql', '-h', folders.SOCKET_PATH, self._dbname, '-c', 'checkpoint'], env=self._env)
 
         log("pgbench: clients=%d, jobs=%d, aggregate=%s, read-only=%s, "
             "duration=%d" % (nclients, njobs, aggregate, read_only, duration))

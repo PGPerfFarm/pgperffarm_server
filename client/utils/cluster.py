@@ -7,7 +7,7 @@ from subprocess import call, STDOUT
 from tempfile import TemporaryFile
 from utils.logging import log
 
-from folders import *
+import folders
 
 class PgCluster(object):
     'basic manipulation of postgres cluster (init, start, stop, destroy)'
@@ -21,6 +21,7 @@ class PgCluster(object):
         self._env['PATH'] = ':'.join([bin_path, self._env['PATH']])
  
         self._env['PGDATABASE'] = "postgres"
+        self._env["LD_LIBRARY_PATH"] = os.path.join(folders.INSTALL_PATH, 'lib')
 
         self._options = ""
 
@@ -69,7 +70,7 @@ class PgCluster(object):
                 (self._data, self._bin))
 
             cmd = ['pg_ctl', '-D', self._data, '-l',
-                   ''.join([LOG_PATH, '/pg_ctl.log']), '-w']
+                   ''.join([folders.LOG_PATH, '/pg_ctl.log']), '-w']
             if len(self._options) > 0:
                 cmd.extend(['-o', self._options])
             cmd.append('start')
