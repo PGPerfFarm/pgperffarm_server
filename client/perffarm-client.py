@@ -38,7 +38,7 @@ if __name__ == '__main__':
 
 	def run(branch_name, BRANCH_PATH):
 		
-
+		'''
 		if (AUTOMATIC_UPLOAD):
 			upload(API_URL, folders.OUTPUT_PATH, MACHINE_SECRET)
 		'''
@@ -251,7 +251,6 @@ if __name__ == '__main__':
 				log("Run complete, check results in '%s'" % (folders.OUTPUT_PATH, ))
 
 		return
-        '''
 
 	# end of function
 
@@ -273,4 +272,3 @@ if __name__ == '__main__':
 		create_path(BRANCH_PATH)
 
 		run(branch['branch_name'], BRANCH_PATH)
-		
