@@ -11,8 +11,14 @@ from benchmarks.serializers import PgBenchResultSerializer, PgBenchStatementSeri
 
 def ParseLinuxData(json_data):
 
+	if ('brand' in json_data['linux']['cpu']['information']):
+		brand = json_data['linux']['cpu']['information']['brand']
+
+	else:
+		brand = json_data['linux']['cpu']['information']['brand_raw']
+
 	result = {
-		'cpu_brand': json_data['linux']['cpu']['information']['brand'],
+		'cpu_brand': brand,
 		'hz': json_data['linux']['cpu']['information']['hz_actual'],
 		'cpu_cores': json_data['linux']['cpu']['information']['count'],
 		'cpu_times': json_data['linux']['cpu']['times'],
