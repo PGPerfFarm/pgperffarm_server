@@ -7,8 +7,9 @@ import git
 import pathlib
 import shutil
 import psutil
-import pydriller
+import time
 from datetime import datetime
+from dateutil import tz
 
 from benchmarks.pgbench import PgBench
 from benchmarks.runner import BenchmarkRunner
@@ -52,8 +53,10 @@ if __name__ == '__main__':
 			install_runtime = None
 			configure_runtime = None
 
+			timezone = tz.gettz(time.tzname[0])
+
 			# run received time
-			run_received_time = datetime.now()
+			run_received_time = datetime.now(timezone)
 
 			log("Starting client for branch '%s'..." % (branch_name, ))
 
@@ -152,8 +155,6 @@ if __name__ == '__main__':
 			repository = git.Repo(folders.REPOSITORY_PATH)
 			branch = str(repository.active_branch)
 			commit = str(repository.head.commit)
-			author = pydriller.GitRepository(folders.REPOSITORY_PATH).get_commit(commit).author.name
-
 
 			# build and start a postgres cluster
 
@@ -190,7 +191,7 @@ if __name__ == '__main__':
 								   'pgbench',
 								   branch,
 								   commit,
-								   author,
+
 								   dbname=DATABASE_NAME,
 								   bin_path=folders.BIN_PATH,
 								   postgres_config=POSTGRES_CONFIG,
@@ -206,9 +207,9 @@ if __name__ == '__main__':
 						print (k, ':', v)
 			else:
 				# run start time
-				run_start_time = datetime.now()
+				run_start_time = datetime.now(timezone)
 				runner.run()
-				run_end_time = datetime.now()
+				run_end_time = datetime.now(timezone)
 
 			# remove the data directory
 			try:
@@ -226,9 +227,9 @@ if __name__ == '__main__':
 
 
 			runtime = {
-				'run_received_time': run_received_time.strftime("%Y-%m-%dT%H:%M:%S"),
-				'run_start_time': run_start_time.strftime("%Y-%m-%dT%H:%M:%S"), 
-				'run_end_time': run_end_time.strftime("%Y-%m-%dT%H:%M:%S"), 
+				'run_received_time': run_received_time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+				'run_start_time': run_start_time.strftime("%Y-%m-%dT%H:%M:%S%z"), 
+				'run_end_time': run_end_time.strftime("%Y-%m-%dT%H:%M:%S%z"), 
 				'git_clone_runtime': git_clone_runtime,
 				'git_pull_runtime': git_pull_runtime,
 				'configure_runtime': configure_runtime,

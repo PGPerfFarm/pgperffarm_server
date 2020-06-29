@@ -37,7 +37,7 @@ class BenchmarkRunner(object):
         # FIXME check if a mapping for the same name already exists
         self._benchmarks.update({benchmark_name: benchmark_class})
 
-    def register_config(self, config_name, benchmark_name, branch, commit, author,
+    def register_config(self, config_name, benchmark_name, branch, commit,
                         postgres_config, **kwargs):
         ''
 
@@ -47,7 +47,6 @@ class BenchmarkRunner(object):
                                             'config': kwargs,
                                             'branch': branch,
                                             'commit': commit,
-                                            'author': author,
                                             'postgres': postgres_config}})
 
     def _check_config(self, config_name):
@@ -130,8 +129,7 @@ class BenchmarkRunner(object):
         r['git'] = {
                 'branch': config['branch'],
                 'commit': config['commit'],
-                'remote': GIT_URL,
-                'author': config['author']
+                'remote': GIT_URL
         }
 
         with open('%s/results.json' % self._output, 'w+') as f:
