@@ -116,6 +116,7 @@ def CreateRunInfo(request, format=None):
 
 				else:
 					msg = 'Linux information is invalid.'
+					print(linux_info.errors)
 					raise RuntimeError(msg)
 
 			branch = json_data['git']['branch']
