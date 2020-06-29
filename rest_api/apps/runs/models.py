@@ -7,10 +7,12 @@ class GitRepo(models.Model):
 
 	git_repo_id = models.BigAutoField(primary_key=True)
 	url = models.CharField(max_length=100)
-	author = models.CharField(max_length=100)
+	owner = models.CharField(max_length=100, null=True, blank=True)
 
+	'''
 	class Meta:
 		unique_together = ('url', 'author')
+	'''
 
 
 class RunInfo(models.Model):

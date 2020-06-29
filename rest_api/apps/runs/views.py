@@ -79,13 +79,12 @@ def CreateRunInfo(request, format=None):
 					raise RuntimeError(msg)
 
 			try: 
-				repo_result = GitRepo.objects.filter(url=json_data['git']['remote'], author=json_data['git']['author']).get()
+				repo_result = GitRepo.objects.filter(url=json_data['git']['remote']).get()
 				repo_id = repo_result.git_repo_id
 
 			except GitRepo.DoesNotExist:
 
-				repo = {'url': json_data['git']['remote'],
-						'author': json_data['git']['author']}
+				repo = {'url': json_data['git']['remote']}
 
 				repo_serializer = GitRepoSerializer(data=repo)
 
