@@ -135,7 +135,7 @@ if __name__ == '__main__':
 				git_clone_start_time = datetime.now()
 
 				try:
-					a = git.Git(BRANCH_PATH).clone(GIT_URL)
+					a = git.Git(BRANCH_PATH).clone(GIT_URL, branch=branch_name)
 
 					git_clone_end_time = datetime.now()
 					git_clone_runtime = str(git_clone_end_time - git_clone_start_time)
@@ -270,5 +270,9 @@ if __name__ == '__main__':
 
 		# calculate child directories
 		create_path(BRANCH_PATH)
+
+		# override HEAD
+		if (branch['branch_name'] == 'HEAD'):
+			branch['branch_name'] = 'master'
 
 		run(branch['branch_name'], BRANCH_PATH)
