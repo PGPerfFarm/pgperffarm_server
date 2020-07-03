@@ -4,32 +4,31 @@
 
 #### TODO LIST
 
+2) set up the cronjob
+
+6) work on the website!
+
+
+
 * Benchmarks:
   * Script for installing collectd to run further tests;
   * Adding more tests or more options to pgbench, or automated testing (?);
-  * Add list of branches;
   * Portability tests;
-  * Allow logging of build/install/postgres errors even with an empty result;
   * Pull pg_stat_statement data;
-  * Make sure the right libpq is used;
   * check if warmup actually works;
   * add compatibility with windows, mac (linux by default in the API);
+  * fetch branches directly from git;
+  * allow custom branches list;
+  * collectd! 
 * API:
-  * Adding time zones;
-  * Handle credentials;
-  * cronjob: 2h;
   * Speed up the whole thing with more compact information and less requests from the website;
   * collectd tables;
   * we expect that the operating system stays the same for each machine;
-  * check that the same record does not get uploaded twice;
-    * unique constraint on start time for each machine
-  * check pgbenchbenchmark duplicates;
-  * cliens: every client in the array must be a separate configuration row;
-    * uniqueness clients, init, warmup, scale, duration
-  * ask about line_id (currently is zero) -> auto incrementing value;
-  * ask about what should happen if a single insert fails -> rollback completely, dump to file on server;
-  * backups of data
-* Website:
+  * backups of data;
+  * fix uniqueness parameters of linux info;
+* Website
+  * Handling authentication;
+  * Display data within the same branches and maybe also within all branches;
   * Improve displaying of results compatible with the new JSON structure;
   * Add possibility to download further files;
   * Add automatic update of list of branches;
@@ -41,10 +40,15 @@
   * Setting up automatic benchmarks.
 
 + Documentation:
-  + Detailed explanation of JSON fields;
   + Update README and installation procedure;
   + Update requirements (in progress).
   + add bison and flex to requirements;
+  + clients must be an array!
+  + add missing tables to docs;
+  + if anything happens, remove the whole folder;
+  + collectd must be a requirement;
+  + database of client must exist;
+  + add cronjob (user);
 
 
 
