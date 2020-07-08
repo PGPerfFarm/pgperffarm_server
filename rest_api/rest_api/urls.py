@@ -37,6 +37,7 @@ router = routers.DefaultRouter()
 urlpatterns = [
     url('', include(router.urls)),
     url('', include('machines.urls')),
+    url('', include('users.urls')),
     url('', include('runs.urls')),
     url('', include('systems.urls')),
     url('', include('postgres.urls')),

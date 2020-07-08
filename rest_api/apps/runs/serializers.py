@@ -18,3 +18,17 @@ class GitRepoSerializer(serializers.ModelSerializer):
 		model = GitRepo
 		fields = '__all__'
 
+
+class BranchSerializer(serializers.ModelSerializer):
+
+	git_branch = serializers.CharField()
+	results = serializers.IntegerField()
+	#latest = serializers.IntegerField()
+	#commit = serializers.CharField()
+	machines = serializers.IntegerField()
+
+
+	class Meta:
+		model = RunInfo
+		#fields = ['git_branch', 'results', 'latest', 'commit', 'machines']
+		fields = ['git_branch', 'results', 'machines']

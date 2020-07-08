@@ -11,12 +11,13 @@ import hashlib
 
 from rest_framework import permissions, renderers, viewsets, mixins, authentication, serializers, status
 from django.db import IntegrityError
+from django.db.models import Count
 
 from machines.models import Machine
 from postgres.models import PostgresSettingsSet
 from postgres.serializers import PostgresSettingsSetSerializer
 from runs.models import RunInfo, GitRepo
-from runs.serializers import RunInfoSerializer, GitRepoSerializer
+from runs.serializers import RunInfoSerializer, GitRepoSerializer, BranchSerializer
 from systems.serializers import LinuxInfoSerializer, CompilerSerializer
 from systems.models import LinuxInfo, Compiler
 from benchmarks.models import PgBenchBenchmark
@@ -34,6 +35,16 @@ class RunViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.Gene
 	queryset =  RunInfo.objects.all().order_by('add_time')
 	serializer_class = RunInfoSerializer
 	permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly, )
+
+
+class BranchViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
+
+	queryset =  RunInfo.objects.all()
+	serializer_class = BranchSerializer
+
+	def get_queryset(self):
+		return RunInfo.objects.values('git_branch').annotate(results=Count('run_id'), machines=Count('machine_id', distinct=True))
+
 
 
 @api_view(['POST'])

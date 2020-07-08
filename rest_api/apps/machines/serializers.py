@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 class MachineSerializer(serializers.ModelSerializer):
 
 	alias = serializers.CharField()
-	owner_id = serializers.ReadOnlyField()
+	owner_id = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
 	approved = serializers.ReadOnlyField()
 
 	class Meta:
