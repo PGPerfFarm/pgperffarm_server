@@ -6,7 +6,7 @@
 					<v-flex>
     					<v-card flat class="pg-v-card">
         					<v-card-text class="pg-v-card-text-main">
-            					Status page
+            					Branches page
         					</v-card-text>
       					</v-card>
   					</v-flex>
@@ -80,7 +80,7 @@
 	import axios from 'axios';
 
 	export default {
-		name: 'Status',
+		name: 'Branches',
 
 		data: () => ({
 			panel: [true, false, false, false],
@@ -102,9 +102,10 @@
 
       		machines: {
 			'Head': [],
-			'10 stable': [],
-			'9.6 stable': [],
-			'9.5 stable': []
+			'13 stable': [],
+			'12 stable': [],
+			'11 stable': [],
+			'10 stable': []
 			}
 
 		}),
@@ -134,7 +135,7 @@
         		this.panel = [false, false, false, false]
       		},
 
-      		getStatus() {
+      		getBranches() {
 		       	axios.get(this.$store.state.endpoints.status)
 		        .then((response) => {
 
@@ -144,12 +145,11 @@
 
 		        		var machine = {
 		        			alias: response.data.results[i].machine_info.alias,
-              				system: response.data.results[i].machine_info.os_name + ' ' + response.data.results[i].machine_info.os_version,
-		        			trending: {
+		        			/*trending: {
 		        				improvement: response.data.results[i].trend.improved,
 		        				status_quo: response.data.results[i].trend.quo,
 		        				regression: response.data.results[i].trend.regressive
-		        			},	
+		        			},*/
 		        			detail: '/records/' + response.data.results[i].uuid,
 		        			commit: commit_url + response.data.results[i].commit,
 		        			date: response.data.results[i].add_time.substring(0, 10) + ' ' + response.data.results[i].add_time.substring(11, 16)
@@ -160,16 +160,20 @@
 		        			this.machines['Head'].push(machine);
 		        		}
 
+		        		else if (response.data.results[i].branch == 'REL_12_STABLE') {
+		        			this.machines['12 stable'].push(machine);
+		        		}
+
+		        		else if (response.data.results[i].branch == 'REL_11_STABLE') {
+		        			this.machines['11 stable'].push(machine);
+		        		}
+
 		        		else if (response.data.results[i].branch == 'REL_10_STABLE') {
 		        			this.machines['10 stable'].push(machine);
 		        		}
 
-		        		else if (response.data.results[i].branch == 'REL_9_6_STABLE') {
-		        			this.machines['9.6 stable'].push(machine);
-		        		}
-
-		        		else if (response.data.results[i].branch == 'REL_9_5_STABLE') {
-		        			this.machines['9.5 stable'].push(machine);
+		        		else if (response.data.results[i].branch == 'REL_13_STABLE') {
+		        			this.machines['13 stable'].push(machine);
 		        		}
 
 		        		this.loading = false;
@@ -183,7 +187,7 @@
 		},
 
 		mounted() {
-    		this.getStatus();
+    		this.getBranches();
   		}
 
 	}

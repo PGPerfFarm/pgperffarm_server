@@ -14,8 +14,8 @@ const vuexPersist = new VuexPersist({
   storage: localStorage
 })
 
-var baseUrl = 'http://140.211.168.111:8080/'
-//var baseUrl = 'http://127.0.0.1:8000/'
+//var baseUrl = 'http://140.211.168.111:8080/'
+var baseUrl = 'http://127.0.0.1:8000/'
 
 export default new Vuex.Store({
   	state: {
@@ -33,7 +33,7 @@ export default new Vuex.Store({
 		    status: baseUrl + 'records-by-branch/',
 		    machine: baseUrl + 'machine-records-by-branch/',
 		    my_machine: baseUrl + 'my-machines/',
-		    record: baseUrl + 'records/',
+		    record: baseUrl + 'last_runs/',
 		    users: baseUrl + 'users/'
 	    }
   	},
