@@ -17,7 +17,7 @@ from machines.models import Machine
 from postgres.models import PostgresSettingsSet
 from postgres.serializers import PostgresSettingsSetSerializer
 from runs.models import RunInfo, GitRepo
-from runs.serializers import RunInfoSerializer, GitRepoSerializer, BranchSerializer
+from runs.serializers import RunInfoSerializer, GitRepoSerializer, BranchSerializer, LastRunsSerializer
 from systems.serializers import LinuxInfoSerializer, CompilerSerializer
 from systems.models import LinuxInfo, Compiler
 from benchmarks.models import PgBenchBenchmark
@@ -32,8 +32,15 @@ from rest_framework import mixins, status, permissions
 
 class RunViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
 
-	queryset =  RunInfo.objects.all().order_by('add_time')
+	queryset =  RunInfo.objects.values('git_branch').order_by('add_time')[:10]
 	serializer_class = RunInfoSerializer
+	permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly, )
+
+
+class LastRunsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
+
+	queryset =  RunInfo.objects.all().order_by('add_time')
+	serializer_class = LastRunsSerializer
 	permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly, )
 
 

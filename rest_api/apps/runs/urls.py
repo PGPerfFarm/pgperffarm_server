@@ -4,6 +4,7 @@ from runs import views
 
 router = DefaultRouter()
 router.register(r'runs', views.RunViewSet)
+router.register(r'last_runs', views.LastRunsViewSet)
 router.register(r'branches', views.BranchViewSet)
 
 urlpatterns = [
