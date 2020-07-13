@@ -22,6 +22,7 @@ from systems.serializers import LinuxInfoSerializer, CompilerSerializer
 from systems.models import LinuxInfo, Compiler
 from benchmarks.models import PgBenchBenchmark
 from benchmarks.serializers import PgBenchBenchmarkSerializer
+from machines.serializers import MachineRunsSerializer
 
 from runs.parsing_functions import ParseLinuxData, GetHash, AddPostgresSettings, ParsePgBenchOptions, ParsePgBenchResults
 
@@ -32,21 +33,25 @@ from rest_framework import mixins, status, permissions
 
 class RunViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
 
-	queryset =  RunInfo.objects.values('git_branch').order_by('add_time')[:10]
+	queryset = RunInfo.objects.all()
 	serializer_class = RunInfoSerializer
 	permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly, )
 
 
 class LastRunsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
 
-	queryset =  RunInfo.objects.all().order_by('add_time')
-	serializer_class = LastRunsSerializer
+	queryset = Machine.objects.all()
+
+	serializer_class = MachineRunsSerializer
 	permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly, )
+
+	def get_queryset(self):
+		return Machine.objects.filter(machine_id=self.kwargs['pk'])
 
 
 class BranchViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
 
-	queryset =  RunInfo.objects.all()
+	queryset = RunInfo.objects.all()
 	serializer_class = BranchSerializer
 
 	def get_queryset(self):

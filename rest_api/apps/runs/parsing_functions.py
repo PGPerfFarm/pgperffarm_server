@@ -21,9 +21,7 @@ def ParseLinuxData(json_data):
 		'cpu_brand': brand,
 		'hz': ','.join(str(json_data['linux']['cpu']['information']['hz_actual'])),
 		'cpu_cores': json_data['linux']['cpu']['information']['count'],
-		'cpu_times': json_data['linux']['cpu']['times'],
-		'memory': json_data['linux']['memory']['virtual'],
-		'swap': json_data['linux']['memory']['swap'],
+		'total_memory': json_data['linux']['memory']['virtual']['total'],
 		'mounts': json_data['linux']['memory']['mounts'],
 		'io': json_data['linux']['disk']['io'],
 		'sysctl': json_data['sysctl_log']

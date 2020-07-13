@@ -26,7 +26,7 @@ class RunInfo(models.Model):
 
 	run_id = models.BigAutoField(primary_key=True)
 
-	machine_id = models.ForeignKey('machines.Machine', on_delete=models.CASCADE)
+	machine_id = models.ForeignKey('machines.Machine', on_delete=models.CASCADE, related_name='runs')
 
 	add_time = models.DateTimeField(auto_now_add=True)
 

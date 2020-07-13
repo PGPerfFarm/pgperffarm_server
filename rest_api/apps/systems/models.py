@@ -13,17 +13,15 @@ class LinuxInfo(models.Model):
 	cpu_brand = models.CharField(max_length=100, null=True)
 	hz = models.CharField(max_length=100, null=True)
 	cpu_cores = models.IntegerField(null=True)
-	cpu_times = JSONField(null=True)
 
-	memory = JSONField(null=True)
-	swap = JSONField(null=True)
+	total_memory = models.BigIntegerField(null=True)
 	mounts = JSONField(null=True)
 	io = JSONField(null=True)
 
 	sysctl = models.TextField(null=True)
 
 	class Meta:
-		unique_together = ('cpu_brand', 'hz', 'cpu_cores', 'memory', 'swap')
+		unique_together = ('cpu_brand', 'cpu_cores', 'total_memory')
 
 
 class Compiler(models.Model):
