@@ -22,8 +22,7 @@ class PgBench(object):
     #      read-write/read-only tests
     # TODO allow running 'prepared' mode
 
-    def __init__(self, bin_path, dbname, scale, clients, runs, duration, csv=False,
-                 results_dir=None):
+    def __init__(self, bin_path, dbname, scale, clients, runs, duration, read_only, csv=False, results_dir=None):
         '''
         bin_path   - path to PostgreSQL binaries (dropdb, createdb, psql
                      commands)
@@ -41,11 +40,13 @@ class PgBench(object):
         self._runs = runs
         self._scale = scale
         self._clients = clients
+        self._read_only = read_only
 
         self._env = os.environ
         self._env['PATH'] = ':'.join([bin_path, self._env['PATH']])
 
         self._results = {}
+
 
     def _init(self, scale):
         """
@@ -53,11 +54,7 @@ class PgBench(object):
         """
 
         # initialize results for this dataset scale
-        self._results['results'] = {
-            'init': None,
-            'warmup': None,
-        }
-
+        
         log("recreating '%s' database" % (self._dbname,))
         run_cmd(['dropdb', '-h', folders.SOCKET_PATH, '--if-exists', self._dbname], env=self._env)
         run_cmd(['createdb', '-h', folders.SOCKET_PATH, self._dbname], env=self._env)
@@ -71,7 +68,8 @@ class PgBench(object):
             file.write(r[1].decode("utf-8"))
 
         # remember the init duration
-        self._results['results']['init'] = r[2]
+        self._pgbench_init = r[2]
+        
 
     @staticmethod
     def _parse_results(data):
@@ -155,11 +153,11 @@ class PgBench(object):
 
         return issues
 
-    def _run(self, run, scale, duration, nclients=1, njobs=1, read_only=False,
-             aggregate=True, csv_queue=None):
+    def _run(self, run, scale, duration, pgbench_init, read_only, nclients=1, njobs=1, aggregate=True, csv_queue=None):
         'run pgbench on the database (either a warmup or actual benchmark run)'
 
         # Create a separate directory for each pgbench run
+
         if read_only:
             rtag = "ro"
         else:
@@ -192,8 +190,7 @@ class PgBench(object):
         end = time.time()
 
         r = PgBench._parse_results(r[1])
-        r.update({'read_only': read_only})
-
+        r.update({'init': pgbench_init})
         r.update({'start': start, 'end': end})
 
         if csv_queue is not None:
@@ -211,11 +208,13 @@ class PgBench(object):
         # derive configuration for the CPU count / RAM size
 
         configs = []
-        configs.append({'scale': PGBENCH_CONFIG['scale'], 'clients': PGBENCH_CONFIG['clients']})
+        configs.append({'scale': PGBENCH_CONFIG['scale'], 'clients': PGBENCH_CONFIG['clients'], 'read_only': PGBENCH_CONFIG['read_only']})
 
         info = {}
         results = []
         result = {}
+
+        read_only = PGBENCH_CONFIG['read_only']
 
         j = 0
         for config in configs:
@@ -229,29 +228,28 @@ class PgBench(object):
                                cpu_count())
             j += 1
 
-            # read-only & read-write
-            for ro in [True, False]:
-                if ro:
-                    tag = 'ro'
-                else:
-                    tag = 'rw'
+            if read_only:
+                tag = "read-only"
+            else:
+                tag = "read-write"
 
-                for i in range(self._runs):
-                    log("pgbench: %s run=%d" % (tag, i))
+            for i in range(self._runs):
+                log("pgbench: %s run=%d" % (tag, i))
 
-                    for clients in config['clients']:
-                        if clients not in results:
-                            result['clients'] = clients
+                for clients in config['clients']:
+                    if clients not in results:
+                        result['clients'] = clients
 
-                        r = self._run(i, scale, self._duration, clients,
-                                      clients, ro, True, csv_queue)
+                    self._init(scale)
+                    r = self._run(i, scale, self._duration, self._pgbench_init, read_only, clients, clients, True, csv_queue)
 
-                        r.update({'run': i})
-                        results.append(r)
+                    r.update({'run': i})
+                    results.append(r)
 
         info['scale'] = scale
         info['runs'] = results
         info['duration'] = self._duration
+        info['read_only'] = self._read_only
 
         self._results['pgbench'] = info
         return self._results
