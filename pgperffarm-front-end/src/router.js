@@ -34,7 +34,7 @@ const routes = [
 	{path: '/branches', component: Branches, props: true},
 	{path: '/machine/:alias', component: Machine, props: true},
 	//{path: '/records/:id', name: 'Record', component: Results, props: true}
-	{path: '/results', name: 'Results', component: Results, props: true},
+	{path: '/results/:id', name: 'Results', component: Results, props: true},
 	{path: '/result', name: 'Result', component: Result, props: true}
 ]
 

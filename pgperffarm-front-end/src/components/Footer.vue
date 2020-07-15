@@ -5,7 +5,7 @@
 	height="7.5%"
 	>
 	<v-card-text class="pg-v-card-text-footer">
-		Google Summer Of Code 2019 @ Postgres &mdash; Ilaria Battiston
+		Google Summer Of Code 2020 @ Postgres &mdash; Ilaria Battiston
 	</v-card-text>
 </v-footer>
 </template>

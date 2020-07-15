@@ -127,7 +127,7 @@ def CreateRunInfo(request, format=None):
 			linux_data = ParseLinuxData(json_data)
 
 			try: 
-				linux_valid_info = LinuxInfo.objects.filter(cpu_brand=linux_data['cpu_brand'], cpu_cores=linux_data['cpu_cores'], hz=linux_data['hz'], memory=linux_data['memory'], swap=linux_data['swap']).get()
+				linux_valid_info = LinuxInfo.objects.filter(cpu_brand=linux_data['cpu_brand'], cpu_cores=linux_data['cpu_cores'], hz=linux_data['hz'], total_memory=linux_data['total_memory']).get()
 			
 
 			except LinuxInfo.DoesNotExist:
@@ -206,7 +206,7 @@ def CreateRunInfo(request, format=None):
 				if pgbench_info.is_valid():
 
 					try:
-						pgbench_valid = PgBenchBenchmark.objects.filter(clients=pgbench['clients'], init=pgbench['init'], warmup=pgbench['warmup'], scale=pgbench['scale'], duration=pgbench['duration']).get()
+						pgbench_valid = PgBenchBenchmark.objects.filter(clients=pgbench['clients'], init=pgbench['init'], scale=pgbench['scale'], duration=pgbench['duration'], read_only=pgbench['read_only']).get()
 
 					except PgBenchBenchmark.DoesNotExist:
 
@@ -259,7 +259,7 @@ def CreateRunInfo(request, format=None):
 				raise RuntimeError(msg)
 
 			# now continue with benchmarks
-			ParsePgBenchResults(json_data['pgbench']['runs'], run_valid.run_id, pgbench_valid.pgbench_benchmark_id)
+			ParsePgBenchResults(json_data, run_valid.run_id, pgbench_valid.pgbench_benchmark_id)
 			
 
 	except Exception as e:

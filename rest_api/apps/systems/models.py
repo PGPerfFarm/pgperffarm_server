@@ -16,7 +16,6 @@ class LinuxInfo(models.Model):
 
 	total_memory = models.BigIntegerField(null=True)
 	mounts = JSONField(null=True)
-	io = JSONField(null=True)
 
 	sysctl = models.TextField(null=True)
 

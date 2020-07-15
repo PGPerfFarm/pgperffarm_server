@@ -4,7 +4,7 @@
       		<v-card flat class="machine-main-card">
       			<v-toolbar flat class="result-toolbar">
       				<v-toolbar-title class="result-toolbar"> 
-      					Report page: machine alias
+      					Average TPS and latency in milliseconds: {{ alias }} (last 20 runs or less)
       				</v-toolbar-title>
       				<v-spacer></v-spacer>
             		<v-btn class="login-button" v-on:click="downloadJSON()">Download JSON</v-btn>
@@ -15,15 +15,21 @@
             	<v-layout column>
 	                <v-card flat class="profile-left-top" min-width=15>
 	                	<v-card-title>
-		                  	Owner:  <br>
-	                    	Runs:  <br>
+		                  	Owner: {{ owner }} <br>
+	                    	Total runs: {{ number_runs }} <br>
                   	  	</v-card-title> 
 	                </v-card>
 	                <v-card flat class="profile-left-bottom" min-width=15>
 	                	<v-card-text>
-	                    	<v-icon color="rgb(51, 103, 145)">computer</v-icon> OS:  <br>
-	                    	<v-icon color="rgb(51, 103, 145)">border_all</v-icon> Processor:  <br>
-	                    	<v-icon color="rgb(51, 103, 145)">email</v-icon> Email:  <br> <br>
+	                		<p>
+	                    		<v-icon color="rgb(51, 103, 145)">computer</v-icon> OS: {{ os }} <br>
+	                    	</p>
+	                    	<p>
+	                    		<v-icon color="rgb(51, 103, 145)">border_all</v-icon> Compiler: {{ compiler }} <br>
+	                    	</p>
+	                    	<p>
+	                    		<v-icon color="rgb(51, 103, 145)">email</v-icon> Email: {{ email }} <br> <br>
+	                    	</p>
 	                	</v-card-text>
 	                </v-card>
             	</v-layout>
@@ -37,14 +43,17 @@
                     align-with-title
                 >
                     <v-tabs-slider color="white"></v-tabs-slider>
-                    <v-tab v-for="item in branches":key="item"> <span style="color: white"> {{ item }} </span> </v-tab>
+                    <v-tab v-for="item in branches" :key="item"> <span style="color: white"> {{ item }} </span> </v-tab>
                     
                 	<v-tabs-items>
    
-		                <v-tab-item v-for="(item, index) in branches" v-bind:key="item">
-		                    <v-card flat id="plot">
-		                    	
+		                <v-tab-item>
+		                    <v-card flat id="Head">	
+		                    </v-card>
+		                </v-tab-item>
 
+		                <v-tab-item>
+		                    <v-card flat id="13 stable">	
 		                    </v-card>
 		                </v-tab-item>
 
@@ -72,70 +81,137 @@
 
 		data: () => ({
 
-			latencies: [],
-			commits: [],
-			runs: [],
-			branches: ['Head', '10 stable', '9.6 stable', '9.5 stable'],
+			latencies: [[], [], [], [], []],
+			tps: [[], [], [], [], []],
+			commits: [[], [], [], [], []],
+			runs: [0, 0, 0, 0, 0],
+			branches: ['Head', '13 stable', '12 stable', '11 stable', '10 stable'],
+			alias: '',
+			owner: '',
+			number_runs: '',
+			compiler: '',
+			os: '',
+			email: '',
+			
 		}),
 
 		methods: {
 
 			getResult() {
 
-				var url = this.$store.state.endpoints.record;
+				var url = this.$store.state.endpoints.record + this.$route.params.id;
 
 				axios.get(url)
         		.then((response) => {
 
-        			var report = response.data.results;
-        			//this.report = report;
+        			var report = response.data.runs;
 
-        			var n = 1;
+        			this.alias = response.data.alias;
+        			this.owner = response.data.owner.username;
+        			this.email = response.data.owner.email;
+        			this.os = response.data.runs[0].os_version;
+        			this.compiler = response.data.runs[0].compiler.compiler;
+        			this.number_runs = response.data.runs.length
 
-        			for (let run in report) {
+        			var branches_raw = ['master', '	REL_13_stable', 'REL_12_stable', 'REL_11_stable', 'REL_10_stable'];
+
+        			var max_length = 20;
+        			if (max_length > report.length)
+        				max_length = report.length;
+
+        			for (let run = 0; run < max_length; run++) {
+
         				var latency = 0;
-        				this.commits.push(report[run].git_commit.substring(33, 40))
-        				for (let i in report[run].pgbench_result) {
-	        				latency += report[run].pgbench_result[i].latency;
-	        				n++;
+        				var tps = 0;
+
+        				var benchmarks = 0;
+
+        				for (let j = 0; j < 5; j++) {
+        					if (branches_raw[j] == report[run].git_branch) {
+        						this.commits[j].push(report[run].git_commit.substring(33, 40))
+
+        						for (let i in report[run].pgbench_result) {
+	        						latency += report[run].pgbench_result[i].latency;
+	        						tps += report[run].pgbench_result[i].tps;
+	        						benchmarks++;
+        						}
+
+        						this.runs[j]++;
+
+        						this.latencies[j].push(latency / benchmarks);
+        						this.tps[j].push((tps / benchmarks) / 1000);
+        					}
+
         				}
-
-        				this.latencies.push(latency / n);
-
         			}
 
-        			this.runs = Array.from(Array(this.latencies.length).keys())
+        			for (let j = 0; j < 5; j++) {
+        				this.commits[j].reverse();
+        				this.latencies[j].reverse();
+        				this.tps[j].reverse();
+        			}
 
-        			var data = {
-						x: this.runs,
-						y: this.latencies,
-						mode: 'lines+markers+text',
-						text: this.commits,
-						textposition: top,
-						marker: {
-							color: 'rgb(128, 0, 128)',
-							size: 10
-						},
-						line: {
-							color: 'rgb(128, 0, 128)',
-							width: 2
-						}
+        			var data = [[], [], [], [], []];
 
-					};
+        			console.log(this.runs);
+
+        			for (let j = 0; j < 5; j++) {
+
+        				var latency_line = {
+							x: this.runs[j],
+							y: this.latencies[j],
+							mode: 'lines+markers',
+							text: this.commits[j],
+							marker: {
+								color: '#336791',
+								size: 10
+							},
+							line: {
+								color: '#336791',
+								width: 2
+							},
+							name: 'Latency'
+
+						};
+
+						var tps_line = {
+							x: this.runs[j],
+							y: this.tps[j],
+							mode: 'lines+markers+text',
+							text: this.commits[j],
+							textposition: 'top center',
+							marker: {
+								color: '#a6c5e0',
+								size: 10
+							},
+							line: {
+								color: '#a6c5e0',
+								width: 2
+							},
+							name: 'TPS'
+
+						};
         			
+	        			data[j] = [latency_line, tps_line];
+        			}
+
         			var layout = {
-        				title: 'Average latency between PgBench executions',
-        				xaxis: {
-        					title: 'Run'
-        				},
-        				yaxis: {
-        					title: 'Latency'
-        				}
-        			};
+	        			xaxis: {
+	        				title: 'Run'
+	        			},
+	        			yaxis: {
+	       					title: 'Value'
+	       				},
+	       				legend: {
+						    x: 1,
+						    xanchor: 'right',
+						    y: 1
+						},
+	        		};
 
+	        		console.log(data[0])
 
-					Plotly.newPlot(document.getElementById('plot'), [data], layout);
-
+        			Plotly.newPlot(document.getElementById("Head"), data[0], layout, {responsive: true});
 			      
         		})
         		.catch((error) => {

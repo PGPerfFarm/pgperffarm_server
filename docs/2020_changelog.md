@@ -4,28 +4,30 @@
 
 #### TODO LIST
 
-2) set up the cronjob
-
-6) work on the website!
-
 
 
 * Benchmarks:
   * Script for installing collectd to run further tests;
   * Adding more tests or more options to pgbench, or automated testing (?);
   * Portability tests;
+  * remove unnecessary fields;
   * Pull pg_stat_statement data;
-  * check if warmup actually works;
   * add compatibility with windows, mac (linux by default in the API);
   * fetch branches directly from git;
   * allow custom branches list;
   * collectd! 
+  * runs -> iterations;
 * API:
   * Speed up the whole thing with more compact information and less requests from the website;
   * collectd tables;
-  * we expect that the operating system stays the same for each machine;
   * backups of data;
-  * fix uniqueness parameters of linux info;
+  * fix hertz (normalize it);
+  * add total swap;
+  * sysctl: create a table for that info, build two jsonb: one with postgres stuff, one with temporary, postgres stuff must be unique;
+  * mounts;
+  * average of averages;
+  * standard deviation;
+  * install and run tests also on gsoc-1, same benchmark configuration, same everything;
 * Website
   * Handling authentication;
   * Display data within the same branches and maybe also within all branches;
@@ -37,7 +39,6 @@
 * Server:
   * Updating all Python versions, Node, all software being used;
   * Cleaning existing databases with old test data;
-  * Setting up automatic benchmarks.
 
 + Documentation:
   + Update README and installation procedure;

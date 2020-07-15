@@ -7,13 +7,13 @@ class PgBenchBenchmark(models.Model):
 	pgbench_benchmark_id = models.BigAutoField(primary_key=True)
 
 	clients = models.IntegerField()
-	init = models.FloatField()
 	warmup = models.FloatField(null=True, blank=True)
 	scale = models.IntegerField()
 	duration = models.FloatField()
+	read_only = models.BooleanField()
 
 	class Meta:
-		unique_together = ('clients', 'init', 'warmup', 'scale', 'duration')
+		unique_together = ('clients', 'scale', 'duration', 'read_only')
 
 
 class PgBenchResult(models.Model):
@@ -26,12 +26,11 @@ class PgBenchResult(models.Model):
 
 	tps = models.FloatField()
 	mode = models.CharField(max_length=100)
-	threads = models.IntegerField()
 	latency = models.FloatField()
-	read_only = models.BooleanField()
 	start = models.FloatField()
 	end = models.FloatField()
 	run = models.IntegerField()
+	init = models.FloatField()
 
 
 class PgBenchRunStatement(models.Model):

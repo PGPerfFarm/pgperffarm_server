@@ -17,13 +17,18 @@ def ParseLinuxData(json_data):
 	else:
 		brand = json_data['linux']['cpu']['information']['brand_raw']
 
+	if ('hz_actual_friendly' in json_data['linux']['cpu']['information']):
+		hz = json_data['linux']['cpu']['information']['hz_actual_friendly']
+
+	else:
+		hz = json_data['linux']['cpu']['information']['hz_actual']
+
 	result = {
 		'cpu_brand': brand,
-		'hz': ','.join(str(json_data['linux']['cpu']['information']['hz_actual'])),
+		'hz': hz,
 		'cpu_cores': json_data['linux']['cpu']['information']['count'],
 		'total_memory': json_data['linux']['memory']['virtual']['total'],
 		'mounts': json_data['linux']['memory']['mounts'],
-		'io': json_data['linux']['disk']['io'],
 		'sysctl': json_data['sysctl_log']
 	}
 
@@ -78,10 +83,9 @@ def ParsePgBenchOptions(json_file, clients):
 
 	result = {
 		'clients': clients,
-		'init': json_file['results']['init'],
-		'warmup': json_file['results']['warmup'],
 		'scale': json_file['pgbench']['scale'],
 		'duration': json_file['pgbench']['duration'],
+		'read_only': json_file['pgbench']['read_only']
 	}
 
 	return result
@@ -128,7 +132,9 @@ def ParsePgBenchStatementLatencies(statement_latencies, pgbench_result_id):
 
 
 
-def ParsePgBenchResults(json, run_id, benchmark_id):
+def ParsePgBenchResults(json_file, run_id, benchmark_id):
+
+	json = json_data['pgbench']['runs']
 
 	for result in json:
 
@@ -137,9 +143,11 @@ def ParsePgBenchResults(json, run_id, benchmark_id):
 
 		result.pop('statement_latencies')
 		result.pop('clients')
+		result.pop('threads')
 
 		result['run_id'] = run_id
 		result['benchmark_config'] = benchmark_id
+		result['init'] = json_file['pgbench']['init'],
 
 		result_serializer = PgBenchResultSerializer(data=result)
 
