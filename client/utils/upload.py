@@ -57,6 +57,7 @@ def upload(api_url, results_directory, token):
             load_dict.update(temp)
 
 
+    # todo
     with open(folders.OUTPUT_PATH + '/results_complete.json', 'w+') as results:
         results.write(json.dumps(load_dict))
         http_post(url, load_dict, token)

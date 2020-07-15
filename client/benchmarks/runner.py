@@ -19,7 +19,7 @@ from settings_local import *
 
 
 class BenchmarkRunner(object):
-    'manages runs of all the benchmarks, including cluster restarts etc.'
+    'manages iterations of all the benchmarks, including cluster restarts etc.'
 
     def __init__(self, out_dir, url, secret, cluster, collector):
         ''
@@ -31,23 +31,18 @@ class BenchmarkRunner(object):
         self._url = url
         self._secret = secret
 
-    def register_benchmark(self, benchmark_name, benchmark_class):
-        ''
 
-        # FIXME check if a mapping for the same name already exists
+    def register_benchmark(self, benchmark_name, benchmark_class):
+        
+
         self._benchmarks.update({benchmark_name: benchmark_class})
+
 
     def register_config(self, config_name, benchmark_name, branch, commit,
                         postgres_config, **kwargs):
-        ''
+        
+        self._configs.update({config_name: {'benchmark': benchmark_name, 'config': kwargs, 'branch': branch, 'commit': commit, 'postgres': postgres_config}})
 
-        # FIXME check if a mapping for the same name already exists
-        # FIXME check that the benchmark mapping already exists
-        self._configs.update({config_name: {'benchmark': benchmark_name,
-                                            'config': kwargs,
-                                            'branch': branch,
-                                            'commit': commit,
-                                            'postgres': postgres_config}})
 
     def _check_config(self, config_name):
         ''
@@ -64,6 +59,7 @@ class BenchmarkRunner(object):
         # run the tests
         return bench.check_config()
 
+
     def check(self):
         'check configurations for all benchmarks'
 
@@ -75,6 +71,7 @@ class BenchmarkRunner(object):
                 issues[config_name] = t
 
         return issues
+
 
     def _run_config(self, config_name):
 
@@ -132,22 +129,17 @@ class BenchmarkRunner(object):
                 'remote': GIT_URL
         }
 
-        with open('%s/results.json' % self._output, 'w+') as f:
+        with open('%s/%s' % (self._output, 'results.json'), 'w+') as f:
             f.write(json.dumps(r, indent=4))
 
 
     def run(self):
         'run all the configured benchmarks'
-
-        # Removing the existing directory
         
         try:
             os.mkdir(self._output)
         except OSError as e:
             log("Output directory already exists: %s" % self._output)
-            log("Recreating existing folder...")
-            shutil.rmtree(self._output)
-            os.mkdir(self._output)
 
         for config_name in self._configs:
             self._run_config(config_name)

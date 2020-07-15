@@ -15,6 +15,7 @@
   * add compatibility with windows, mac (linux by default in the API);
   * fetch branches directly from git;
   * allow custom branches list;
+  * refactor code and logs;
   * collectd! 
   * runs -> iterations;
 * API:

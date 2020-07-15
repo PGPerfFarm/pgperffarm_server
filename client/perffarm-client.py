@@ -76,6 +76,11 @@ if __name__ == '__main__':
 					shutil.rmtree(folders.LOG_PATH)
 					os.mkdir(folders.LOG_PATH)
 
+				# cleaning output path
+				if (os.path.exists(folders.OUTPUT_PATH)):
+					shutil.rmtree(folders.OUTPUT_PATH)
+					os.mkdir(folders.OUTPUT_PATH)
+
 				log("Existing installation found...")
 
 				branch = (git.Repo(folders.REPOSITORY_PATH)).active_branch
@@ -129,6 +134,10 @@ if __name__ == '__main__':
 				if (os.path.exists(folders.LOG_PATH)):
 					shutil.rmtree(folders.LOG_PATH)
 				os.mkdir(folders.LOG_PATH)
+
+				if (os.path.exists(folders.OUTPUT_PATH)):
+					shutil.rmtree(folders.OUTPUT_PATH)
+					os.mkdir(folders.OUTPUT_PATH)
 
 				# and finally, clone
 				log("Cloning repository...")
@@ -184,18 +193,15 @@ if __name__ == '__main__':
 			runner.register_benchmark('pgbench', PgBench)
 
 			# register one config for each benchmark (should be moved to a config file)
-			PGBENCH_CONFIG['results_dir'] = folders.OUTPUT_PATH
 			POSTGRES_CONFIG['listen_addresses'] = ''
 			POSTGRES_CONFIG['unix_socket_directories'] = folders.SOCKET_PATH
-			runner.register_config('pgbench-basic',
-								   'pgbench',
-								   branch,
-								   commit,
 
-								   dbname=DATABASE_NAME,
-								   bin_path=folders.BIN_PATH,
-								   postgres_config=POSTGRES_CONFIG,
-								   **PGBENCH_CONFIG)
+
+			for config in PGBENCH_CONFIG:
+				config['results_dir'] = folders.OUTPUT_PATH
+
+
+			runner.register_config('pgbench-basic', 'pgbench', branch, commit, dbname=DATABASE_NAME, bin_path=folders.BIN_PATH, postgres_config=POSTGRES_CONFIG, **config)
 
 			# check configuration and report all issues
 			issues = runner.check()

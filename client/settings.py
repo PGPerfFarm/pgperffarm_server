@@ -36,14 +36,23 @@ DATABASE_NAME = 'perf'
 # configuration for PgBench
 # runs - number of repetitions (including test for all client counts)
 # duration - duration (in seconds) of a single benchmark (per client count)
-PGBENCH_CONFIG = {
-    'runs': 3,
-    'duration': 600,
-    'csv': False,
-    'scale': 5,
-    'clients': [1, multiprocessing.cpu_count(), 2 * multiprocessing.cpu_count()],
-     'read_only': False,
-}
+PGBENCH_CONFIG = [
+    {
+        'iterations': 3,
+        'duration': 600,
+        'csv': False,
+        'scale': 5,
+        'clients': [1, multiprocessing.cpu_count(), 2 * multiprocessing.cpu_count()],
+         'read_only': False,
+    },
+    {
+        'iterations': 2,
+        'duration': 600,
+        'csv': False,
+        'scale': 5,
+        'clients': [1, multiprocessing.cpu_count(), 2 * multiprocessing.cpu_count()],
+         'read_only': False,
+    }]
 
 # ignore missing file with local config
 try:
