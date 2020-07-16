@@ -18,8 +18,8 @@ from postgres.models import PostgresSettingsSet
 from postgres.serializers import PostgresSettingsSetSerializer
 from runs.models import RunInfo, GitRepo
 from runs.serializers import RunInfoSerializer, GitRepoSerializer, BranchSerializer, LastRunsSerializer
-from systems.serializers import LinuxInfoSerializer, CompilerSerializer
-from systems.models import LinuxInfo, Compiler
+from systems.serializers import LinuxInfoSerializer, CompilerSerializer, KnownSysctlInfoSerializer
+from systems.models import LinuxInfo, Compiler, KnownSysctlInfo
 from benchmarks.models import PgBenchBenchmark
 from benchmarks.serializers import PgBenchBenchmarkSerializer
 from machines.serializers import MachineRunsSerializer
@@ -119,16 +119,28 @@ def CreateRunInfo(request, format=None):
 					msg = 'Git information is invalid.'
 					raise RuntimeError(msg)
 
-
 			os = 'L'
 			os_name = json_data['linux']['os']['release']
 			os_version = json_data['linux']['os']['version']
 
-			linux_data = ParseLinuxData(json_data)
+			linux_data, sysctl = ParseLinuxData(json_data)
+
+			try:
+				sysctl_valid_info = KnownSysctlInfo.objects.filter(sysctl=sysctl).get()
+
+			except KnownSysctlInfo.DoesNotExist:
+
+				sysctl_info = KnownSysctlInfoSerializer(data=sysctl)
+
+				if sysctl_info.is_valid():
+					sysctl_valid_info = sysctl_info.save()
+
+				else:
+					msg = 'Sysctl information is invalid.'
+					raise RuntimeError(msg)
 
 			try: 
 				linux_valid_info = LinuxInfo.objects.filter(cpu_brand=linux_data['cpu_brand'], cpu_cores=linux_data['cpu_cores'], hz=linux_data['hz'], total_memory=linux_data['total_memory']).get()
-			
 
 			except LinuxInfo.DoesNotExist:
 
@@ -139,7 +151,6 @@ def CreateRunInfo(request, format=None):
 
 				else:
 					msg = 'Linux information is invalid.'
-					print(linux_info.errors)
 					raise RuntimeError(msg)
 
 			branch = json_data['git']['branch']
@@ -149,25 +160,24 @@ def CreateRunInfo(request, format=None):
 
 			postgres_configuration = {'settings_sha256': postgres_hash}
 
-			postgres_info = PostgresSettingsSetSerializer(data=postgres_configuration)
+			try:
+				obj = PostgresSettingsSet.objects.filter(settings_sha256=postgres_hash).get()
+				pg_settings_id = obj.postgres_settings_set_id
 
-			if postgres_info.is_valid():
+			except PostgresSettingsSet.DoesNotExist:
 
-				try:
-					obj = PostgresSettingsSet.objects.filter(settings_sha256=postgres_hash).get()
+					postgres_info = PostgresSettingsSetSerializer(data=postgres_configuration)
 
-					pg_settings_id = obj.postgres_settings_set_id
+					if postgres_info.is_valid():
 
-				except PostgresSettingsSet.DoesNotExist:
+						postgres_valid_info = postgres_info.save()
+						pg_settings_id = postgres_valid_info.postgres_settings_set_id
+						AddPostgresSettings(postgres_hash, postgres_hash_object)
 
-					postgres_valid_info = postgres_info.save()
-					AddPostgresSettings(postgres_hash, postgres_hash_object)
+					else:
+						msg = 'Error hashing Postgres configuration.'
+						raise RuntimeError(msg)
 
-					pg_settings_id = postgres_valid_info.postgres_settings_set_id
-
-			else:
-				msg = 'Error hashing Postgres configuration.'
-				raise RuntimeError(msg)
 
 			if 'git_clone_log' not in json_data:
 				git_clone_log = ''
@@ -198,26 +208,28 @@ def CreateRunInfo(request, format=None):
 			benchmark_log = json_data['pgbench_log']
 
 			# also create the benchmark
-			for client in json_data['pgbench']['clients']:
-				pgbench = ParsePgBenchOptions(json_data, client)
+			for item in json_data['pgbench']:
 
-				pgbench_info = PgBenchBenchmarkSerializer(data=pgbench)
 
-				if pgbench_info.is_valid():
+				for client in item['clients']:
+					pgbench = ParsePgBenchOptions(item, client)
 
 					try:
-						pgbench_valid = PgBenchBenchmark.objects.filter(clients=pgbench['clients'], init=pgbench['init'], scale=pgbench['scale'], duration=pgbench['duration'], read_only=pgbench['read_only']).get()
+						pgbench_valid = PgBenchBenchmark.objects.filter(clients=pgbench['clients'], scale=pgbench['scale'], duration=pgbench['duration'], read_only=pgbench['read_only']).get()
 
 					except PgBenchBenchmark.DoesNotExist:
 
-						pgbench_valid = pgbench_info.save()
+							pgbench_info = PgBenchBenchmarkSerializer(data=pgbench)
 
-				else:
-					msg = 'Error parsing PgBench configuration.'
-					raise RuntimeError(msg)
+							if pgbench_info.is_valid():
+								pgbench_valid = pgbench_info.save()
+
+							else:
+								msg = 'Error parsing PgBench configuration.'
+								raise RuntimeError(msg)
+
 
 			# before doing anything else related to benchmarks, save the run
-
 			run_info = {
 				'machine_id': machine_id,
 				'os_type': os,
@@ -245,7 +257,8 @@ def CreateRunInfo(request, format=None):
 				'build_runtime': json_data['build_runtime'],
 				'install_runtime': json_data['install_runtime'],
 				'benchmark': pgbench_valid.pgbench_benchmark_id,
-				'cleanup_runtime': json_data['cleanup_runtime']
+				'cleanup_runtime': json_data['cleanup_runtime'],
+				'sysctl_info': sysctl_valid_info.sysctl_id
 			}
 
 			run_info_serializer = RunInfoSerializer(data=run_info)
@@ -255,11 +268,10 @@ def CreateRunInfo(request, format=None):
 
 			else:
 				msg = 'Error parsing run configuration.'
-				print (run_info_serializer.errors)
 				raise RuntimeError(msg)
 
 			# now continue with benchmarks
-			ParsePgBenchResults(json_data, run_valid.run_id, pgbench_valid.pgbench_benchmark_id)
+			ParsePgBenchResults(item, run_valid.run_id, pgbench_valid.pgbench_benchmark_id)
 			
 
 	except Exception as e:

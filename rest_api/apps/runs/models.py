@@ -37,6 +37,8 @@ class RunInfo(models.Model):
 	os_version = models.CharField(max_length=100, blank=False)
 
 	os_config_info = models.ForeignKey('systems.LinuxInfo', on_delete=models.CASCADE)
+	
+	sysctl_info = models.ForeignKey('systems.KnownSysctlInfo', on_delete=models.CASCADE)
 
 	compiler = models.ForeignKey('systems.Compiler', on_delete=models.CASCADE)
 

@@ -7,7 +7,6 @@ class PgBenchBenchmark(models.Model):
 	pgbench_benchmark_id = models.BigAutoField(primary_key=True)
 
 	clients = models.IntegerField()
-	warmup = models.FloatField(null=True, blank=True)
 	scale = models.IntegerField()
 	duration = models.FloatField()
 	read_only = models.BooleanField()
@@ -29,7 +28,7 @@ class PgBenchResult(models.Model):
 	latency = models.FloatField()
 	start = models.FloatField()
 	end = models.FloatField()
-	run = models.IntegerField()
+	iteration = models.IntegerField()
 	init = models.FloatField()
 
 
