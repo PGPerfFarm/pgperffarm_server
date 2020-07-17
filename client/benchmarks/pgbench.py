@@ -5,8 +5,6 @@ import re
 import time
 import psutil
 
-from numpy import mean, median, std
-
 from multiprocessing import cpu_count
 from utils.logging import log
 from utils.misc import available_ram, run_cmd
