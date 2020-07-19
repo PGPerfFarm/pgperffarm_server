@@ -2,9 +2,10 @@ from django.db import models
 import shortuuid
 import hashlib
 from django.contrib.postgres.fields.jsonb import JSONField
+from django.contrib.postgres.fields import ArrayField
 
 
-class LinuxInfo(models.Model):
+class HardwareInfo(models.Model):
 
 	# do not insert every time, only check if there are duplicates
 
@@ -18,11 +19,13 @@ class LinuxInfo(models.Model):
 	total_swap = models.BigIntegerField(null=True)
 
 	mounts = JSONField(null=True)
+	mounts_hash = models.CharField(max_length=256, unique=True, null=False)
 
-	sysctl = models.TextField(null=True)
+	sysctl = models.JSONField(null=True)
+	sysctl_hash = models.CharField(max_length=256, unique=True, null=False)
 
 	class Meta:
-		unique_together = ('cpu_brand', 'cpu_cores', 'total_memory')
+		unique_together = ('cpu_brand', 'hz', 'cpu_cores', 'total_memory', 'total_swap', 'mounts_hash', 'sysctl_hash')
 
 
 class Compiler(models.Model):
@@ -39,13 +42,46 @@ class KnownSysctlInfo(models.Model):
 	# vm parameters:
 	# nr_hugepages, nr_hugepages_mempolicy, nr_overcommit_hugepages, overcommit_kbytes, overcommit_memory, overcommit_ratio, swappiness, numa_stat , numa_zonelist_order, dirty_background_bytes, dirty_background_ratio, dirty_bytes, dirty_expire_centisecs, dirty_ratio, dirty_writeback_centisecs, dirtytime_expire_seconds
 
-	os = (
-		('L', 'Linux'), 
-		('M', 'osX'), 
-		('W', 'Windows'), 
-		('B', 'FreeBsd')
-		)
-
 	sysctl_id = models.AutoField(primary_key=True)
-	os = models.CharField(max_length=1, blank=False, choices=os, default='L')
-	sysctl = JSONField(null=True, unique=True)
+	os_kernel_id = models.ForeignKey('systems.Kernel', on_delete=models.CASCADE, related_name='kernel')
+	sysctl = ArrayField(models.CharField(max_length=15, null=True, unique=True))
+
+
+class OsDistributor(models.Model):
+
+	os_distributor_id = models.AutoField(primary_key=True)
+	dist_name = models.CharField(max_length=100, null=False, unique=True)
+
+
+class Kernel(models.Model):
+
+	kernel_id = models.AutoField(primary_key=True)
+	kernel_name = models.CharField(max_length=100, null=False, unique=True)
+
+
+class OsVersion(models.Model):
+
+	os_version_id = models.AutoField(primary_key=True)
+	dist_id = models.ForeignKey('systems.OsDistributor', on_delete=models.CASCADE, related_name='distributor')
+
+	description = models.CharField(max_length=100, null=True)
+	release = models.CharField(max_length=100, null=True)
+	codename = models.CharField(max_length=100, null=True)
+
+	class Meta:
+		unique_together = ('dist_id', 'description', 'release', 'codename')
+
+
+class OsKernelVersion:
+
+	os_kernel_version_id = models.AutoField(primary_key=True)
+	kernel_id = models.ForeignKey('systems.Kernel', on_delete=models.CASCADE, related_name='distributor')
+	kernel_release = models.CharField(max_length=100, null=True)
+	kernel_version = models.CharField(max_length=100, null=True)
+
+	class Meta:
+		unique_together = ('kernel_id', 'kernel_release', 'kernel_version')
+
+
+
+

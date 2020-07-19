@@ -19,6 +19,7 @@ class MachineSerializer(serializers.ModelSerializer):
 		model = Machine
 		fields = ['machine_id','alias', 'add_time', 'approved', 'owner_id']
 
+
 class MyMachineSerializer(serializers.ModelSerializer):
 
 	class Meta:
@@ -33,4 +34,4 @@ class MachineRunsSerializer(serializers.ModelSerializer):
 
 	class Meta:
 	 	model = Machine
-	 	fields = ['machine_id','alias', 'add_time', 'approved', 'owner', 'runs']
+	 	fields = ['machine_id','alias', 'add_time', 'approved', 'owner', 'runs', 'machine_type']

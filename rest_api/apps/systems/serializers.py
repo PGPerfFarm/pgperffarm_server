@@ -2,13 +2,13 @@ import shortuuid
 import json
 from rest_framework import serializers
 
-from systems.models import LinuxInfo, Compiler, KnownSysctlInfo
+from systems.models import HardwareInfo, Compiler, KnownSysctlInfo, OsDistributor, Kernel, OsVersion, OsKernelVersion
 
 
-class LinuxInfoSerializer(serializers.ModelSerializer):
+class HardwareInfoSerializer(serializers.ModelSerializer):
 
 	class Meta:
-		model = LinuxInfo
+		model = HardwareInfo
 		fields = ['cpu_brand', 'hz', 'cpu_cores', 'total_memory', 'total_swap']
 
 	
@@ -23,4 +23,32 @@ class KnownSysctlInfoSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = KnownSysctlInfo
+		fields = '__all__'
+
+
+class OsDistributorSerializer(serializers.ModelSerializer):
+
+	class Meta:
+		model = OsDistributor
+		fields = '__all__'
+
+
+class KernelSerializer(serializers.ModelSerializer):
+
+	class Meta:
+		model = Kernel
+		fields = '__all__'
+
+
+class OsVersionSerializer(serializers.ModelSerializer):
+
+	class Meta:
+		model = OsVersion
+		fields = '__all__'
+
+
+class OsKernelVersionSerializer(serializers.ModelSerializer):
+
+	class Meta:
+		model = OsKernelVersion
 		fields = '__all__'

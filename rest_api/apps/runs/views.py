@@ -18,8 +18,8 @@ from postgres.models import PostgresSettingsSet
 from postgres.serializers import PostgresSettingsSetSerializer
 from runs.models import RunInfo, GitRepo
 from runs.serializers import RunInfoSerializer, GitRepoSerializer, BranchSerializer, LastRunsSerializer
-from systems.serializers import LinuxInfoSerializer, CompilerSerializer, KnownSysctlInfoSerializer
-from systems.models import LinuxInfo, Compiler, KnownSysctlInfo
+from systems.serializers import HardwareInfoSerializer, CompilerSerializer, KnownSysctlInfoSerializer
+from systems.models import HardwareInfo, Compiler, KnownSysctlInfo
 from benchmarks.models import PgBenchBenchmark
 from benchmarks.serializers import PgBenchBenchmarkSerializer
 from machines.serializers import MachineRunsSerializer
@@ -140,11 +140,11 @@ def CreateRunInfo(request, format=None):
 					raise RuntimeError(msg)
 
 			try: 
-				linux_valid_info = LinuxInfo.objects.filter(cpu_brand=linux_data['cpu_brand'], cpu_cores=linux_data['cpu_cores'], hz=linux_data['hz'], total_memory=linux_data['total_memory']).get()
+				linux_valid_info = HardwareInfo.objects.filter(cpu_brand=linux_data['cpu_brand'], cpu_cores=linux_data['cpu_cores'], hz=linux_data['hz'], total_memory=linux_data['total_memory']).get()
 
-			except LinuxInfo.DoesNotExist:
+			except HardwareInfo.DoesNotExist:
 
-				linux_info = LinuxInfoSerializer(data=linux_data)
+				linux_info = HardwareInfoSerializer(data=linux_data)
 
 				if linux_info.is_valid():
 					linux_valid_info = linux_info.save()

@@ -30,15 +30,15 @@ class RunInfo(models.Model):
 
 	add_time = models.DateTimeField(auto_now_add=True)
 
-	os_type = models.CharField(max_length=1, blank=False, choices=os, default='L')
+	os_version_id = models.ForeignKey('systems.OsVersion', on_delete=models.CASCADE, related_name='os_version')
 
-	os_name = models.CharField(max_length=100, blank=False)
+	os_kernel_version_id = models.ForeignKey('systems.OsKernelVersion', on_delete=models.CASCADE, related_name='os_kernel_version')
 
-	os_version = models.CharField(max_length=100, blank=False)
-
-	os_config_info = models.ForeignKey('systems.LinuxInfo', on_delete=models.CASCADE)
+	hardware_info = models.ForeignKey('systems.HardwareInfo', on_delete=models.CASCADE)
 	
 	sysctl_info = models.ForeignKey('systems.KnownSysctlInfo', on_delete=models.CASCADE)
+
+	sysctl_raw = models.JSONField(null=True)
 
 	compiler = models.ForeignKey('systems.Compiler', on_delete=models.CASCADE)
 
