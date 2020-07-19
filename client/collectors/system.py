@@ -43,6 +43,8 @@ class SystemCollector(object):
         with open(folders.LOG_PATH + '/sysctl_log.txt', 'w+') as file:
             file.write(r[1].decode("utf-8"))
 
+    # parse json        
+
     def _collect_system_info(self):
         'collect cpuinfo, meminfo, mounts'
 
