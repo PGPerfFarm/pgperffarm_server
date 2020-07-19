@@ -51,7 +51,7 @@ def build():
     if (a.stderr != '' or b.stderr != '' or c.stderr != ''):
         log("Errors have been found while installing, please check logs in '%s'" % (folders.LOG_PATH,))
 
-        sys.exit()
+        #sys.exit()
 
     return str(configure_runtime), str(build_runtime), str(install_runtime)
 

@@ -76,10 +76,7 @@ class SystemCollector(object):
         system['disk']['io'] = psutil.disk_io_counters(perdisk=False, nowrap=True)
 
         process = psutil.Process()
-        system['process']['io'] = process.io_counters()
-        system['process']['context_switches'] = process.num_ctx_switches()
         system['process']['cpu_times'] = process.cpu_times()
-        system['process']['threads'] = process.num_threads()
         system['process']['cpu_percent'] = process.cpu_percent()
         system['process']['memory'] = process.memory_info()
         system['process']['memory_percent'] = process.memory_percent()

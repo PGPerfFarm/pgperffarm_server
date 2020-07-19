@@ -180,8 +180,7 @@ if __name__ == '__main__':
 			if system == 'Darwin':
 				collectors.register('osx', SystemCollector(folders.OUTPUT_PATH))
 
-			collectors.register('collectd',
-								CollectdCollector(folders.OUTPUT_PATH, DATABASE_NAME, ''))
+			#collectors.register('collectd', CollectdCollector(folders.OUTPUT_PATH, DATABASE_NAME, ''))
 
 			pg_collector = PostgresCollector(folders.OUTPUT_PATH, dbname=DATABASE_NAME, bin_path=('%s/bin' % (folders.BUILD_PATH)))
 
