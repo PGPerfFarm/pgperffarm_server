@@ -48,10 +48,10 @@ class SystemCollector(object):
 
 		for item in sysctl:
 			if uname == 'Linux':
-				key, value = item.decode("utf-8").split('=', 1).rstrip()
+				key, value = item.decode("utf-8").split('=', 1)
 			if uname == 'Darwin':
-				key, value = item.decode("utf-8").split(':', 1).rstrip()
-			sysctl_json.update({key: value})
+				key, value = item.decode("utf-8").split(':', 1)
+			sysctl_json.update({key.rstrip(): value.rstrip().lstrip()})
 
 		with open(folders.LOG_PATH + '/sysctl_log.txt', 'w+') as file:
 			file.write(json.dumps(sysctl_json))
