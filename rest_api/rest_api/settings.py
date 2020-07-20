@@ -51,8 +51,7 @@ INSTALLED_APPS = [
 	'users',
 	'postgres',
 	'runs',
-	'systems'
-]
+	'systems']
 
 
 SITE_ID = 1

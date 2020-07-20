@@ -14,12 +14,13 @@ from django.db import IntegrityError
 from django.db.models import Count
 
 from machines.models import Machine
+from machines.serializers import MachineSerializer
 from postgres.models import PostgresSettingsSet
 from postgres.serializers import PostgresSettingsSetSerializer
 from runs.models import RunInfo, GitRepo
 from runs.serializers import RunInfoSerializer, GitRepoSerializer, BranchSerializer, LastRunsSerializer
-from systems.serializers import HardwareInfoSerializer, CompilerSerializer, KnownSysctlInfoSerializer
-from systems.models import HardwareInfo, Compiler, KnownSysctlInfo
+from systems.serializers import HardwareInfoSerializer, CompilerSerializer, KnownSysctlInfoSerializer, KernelSerializer, OsDistributorSerializer, OsVersionSerializer, OsKernelVersionSerializer
+from systems.models import HardwareInfo, Compiler, KnownSysctlInfo, Kernel, OsDistributor, OsKernelVersion, OsVersion
 from benchmarks.models import PgBenchBenchmark
 from benchmarks.serializers import PgBenchBenchmarkSerializer
 from machines.serializers import MachineRunsSerializer
@@ -78,10 +79,94 @@ def CreateRunInfo(request, format=None):
 			machine = Machine.objects.filter(machine_secret=secret).get()
 			machine_id = machine.machine_id
 
+			os_old = machine.machine_type
+			os_new = json_data['kernel']['uname_m']
+
+			if os_old == '':
+				machine_serializer = MachineSerializer(machine, data={'machine_type': os_new}, partial=True)
+
+				if machine_serializer.is_valid():
+					machine_serializer.save()
+
+				else:
+					msg = 'Machine OS information is invalid.'
+					raise RuntimeError(msg)
+
+			elif os_old != os_new:
+				raise RuntimeError("Machine OS cannot change.")
+
 		except Machine.DoesNotExist:
 			raise RuntimeError("The machine is unavailable.")
 
 		with transaction.atomic():
+
+			try:
+				os_distributor = OsDistributor.objects.filter(dist_name=json_data['os_information']['distributor']).get()
+
+			except OsDistributor.DoesNotExist:
+				distributor = {'dist_name': json_data['os_information']['distributor']}
+
+				distributor_serializer = OsDistributorSerializer(data=distributor)
+
+				if distributor_serializer.is_valid():
+					os_distributor = distributor_serializer.save()
+
+				else:
+					msg = 'Distributor information is invalid.'
+					raise RuntimeError(msg)
+
+			try:
+				os_kernel = Kernel.objects.filter(kernel_name=json_data['kernel']['uname_s']).get()
+
+			except Kernel.DoesNotExist:
+				kernel = {'kernel_name': json_data['kernel']['uname_s']}
+
+				kernel_serializer = KernelSerializer(data=kernel)
+
+				if kernel_serializer.is_valid():
+					os_kernel = kernel_serializer.save()
+
+				else:
+					msg = 'Kernel information is invalid.'
+					raise RuntimeError(msg)
+
+			try:
+				os_version = OsVersion.objects.filter(dist_id=os_distributor.os_distributor_id, release=json_data['os_information']['release'], codename=json_data['os_information']['codename'], description=json_data['os_information']['description']).get()
+
+			except OsVersion.DoesNotExist:
+				os = {
+					'dist_id': os_distributor.os_distributor_id, 
+					'release': json_data['os_information']['release'], 
+					'codename': json_data['os_information']['codename'], 
+					'description': json_data['os_information']['description']}
+
+				os_serializer = OsVersionSerializer(data=os)
+
+				if os_serializer.is_valid():
+					os_version = os_serializer.save()
+
+				else:
+					msg = 'Os version information is invalid.'
+					raise RuntimeError(msg)
+
+			try:
+				os_kernel_version = OsKernelVersion.objects.filter(kernel_id=os_kernel.kernel_id, kernel_release=json_data['kernel']['uname_r'], kernel_version=json_data['kernel']['uname_v']).get()
+
+			except OsKernelVersion.DoesNotExist:
+				kernel_version = {
+					'kernel_id': os_kernel.kernel_id, 
+					'kernel_release': json_data['kernel']['uname_r'], 
+					'kernel_version': json_data['kernel']['uname_v']
+					}
+
+				os_kernel_version_serializer = OsKernelVersionSerializer(data=kernel_version)
+
+				if os_kernel_version_serializer.is_valid():
+					os_kernel_version = os_kernel_version_serializer.save()
+
+				else:
+					msg = 'OS kernel version information is invalid.'
+					raise RuntimeError(msg)
 
 			try: 
 				compiler_result = Compiler.objects.filter(compiler=json_data['compiler']).get()
@@ -119,38 +204,20 @@ def CreateRunInfo(request, format=None):
 					msg = 'Git information is invalid.'
 					raise RuntimeError(msg)
 
-			os = 'L'
-			os_name = json_data['linux']['os']['release']
-			os_version = json_data['linux']['os']['version']
-
-			linux_data, sysctl = ParseLinuxData(json_data)
-
+			hardware_info_new = ParseLinuxData(json_data)
+			
 			try:
-				sysctl_valid_info = KnownSysctlInfo.objects.filter(sysctl=sysctl).get()
-
-			except KnownSysctlInfo.DoesNotExist:
-
-				sysctl_info = KnownSysctlInfoSerializer(data=sysctl)
-
-				if sysctl_info.is_valid():
-					sysctl_valid_info = sysctl_info.save()
-
-				else:
-					msg = 'Sysctl information is invalid.'
-					raise RuntimeError(msg)
-
-			try: 
-				linux_valid_info = HardwareInfo.objects.filter(cpu_brand=linux_data['cpu_brand'], cpu_cores=linux_data['cpu_cores'], hz=linux_data['hz'], total_memory=linux_data['total_memory']).get()
+				hardware_info_valid = HardwareInfo.objects.filter(cpu_brand=hardware_info_new['cpu_brand'], cpu_cores=hardware_info_new['cpu_cores'], hz=hardware_info_new['hz'], total_memory=hardware_info_new['total_memory'], total_swap=hardware_info_new['total_swap'], sysctl_hash=hardware_info_new['sysctl_hash'], mounts_hash=hardware_info_new['mounts_hash']).get()
 
 			except HardwareInfo.DoesNotExist:
 
-				linux_info = HardwareInfoSerializer(data=linux_data)
+				hardware_info = HardwareInfoSerializer(data=hardware_info_new)
 
-				if linux_info.is_valid():
-					linux_valid_info = linux_info.save()
+				if hardware_info.is_valid():
+					hardware_info_valid = hardware_info.save()
 
 				else:
-					msg = 'Linux information is invalid.'
+					msg = 'Hardware information is invalid.'
 					raise RuntimeError(msg)
 
 			branch = json_data['git']['branch']
@@ -232,10 +299,7 @@ def CreateRunInfo(request, format=None):
 			# before doing anything else related to benchmarks, save the run
 			run_info = {
 				'machine_id': machine_id,
-				'os_type': os,
-				'os_name': os_name,
-				'os_version': os_version,
-				'os_config_info': linux_valid_info.linux_info_id,
+				'hardware_info': hardware_info_valid.hardware_info_id,
 				'compiler': compiler_id,
 				'git_branch': branch,
 				'git_commit': commit,
@@ -258,7 +322,9 @@ def CreateRunInfo(request, format=None):
 				'install_runtime': json_data['install_runtime'],
 				'benchmark': pgbench_valid.pgbench_benchmark_id,
 				'cleanup_runtime': json_data['cleanup_runtime'],
-				'sysctl_info': sysctl_valid_info.sysctl_id
+				'os_version_id': os_version.os_version_id,
+				'os_kernel_version_id': os_kernel_version.os_kernel_version_id,
+				'sysctl_raw': json_data['sysctl_log']
 			}
 
 			run_info_serializer = RunInfoSerializer(data=run_info)

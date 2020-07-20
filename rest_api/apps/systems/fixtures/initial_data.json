@@ -1,0 +1,17 @@
+[
+	{
+		"model": "systems.kernel",
+		"kernel_id": 1,
+		"fields": {
+			"kernel_name": "Linux"
+		}
+	},
+	{
+		"model": "systems.KnownSysctlInfo",
+		"sysctl_id": 1,
+		"fields": {
+			"os_kernel_id": 1,
+			"sysctl": ["kernel.shmmax", "kernel.shmmin", "kernel.shmall", "kernel.shmseg", "kernel.shmmni", "kernel.semmni", "kernel.semmns", "kernel.semmsl", "kernel.semmap", "kernel.semvmx", "vm.nr_hugepages", "vm.nr_hugepages_mempolicy", "vm.nr_overcommit_hugepages", "vm.overcommit_kbytes", "vm.overcommit_memory", "vm.overcommit_ratio", "vm.swappiness", "vm.numa_stat", "vm.numa_zonelist_order", "vm.dirty_background_bytes", "vm.dirty_background_ratio", "vm.dirty_bytes", "vm.dirty_expire_centisecs", "vm.dirty_ratio", "vm.dirty_writeback_centisecs", "vm.dirtytime_expire_seconds"]
+		}
+	}
+]

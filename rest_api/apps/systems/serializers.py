@@ -9,7 +9,7 @@ class HardwareInfoSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = HardwareInfo
-		fields = ['cpu_brand', 'hz', 'cpu_cores', 'total_memory', 'total_swap']
+		fields = '__all__'
 
 	
 class CompilerSerializer(serializers.ModelSerializer):

@@ -1,12 +1,12 @@
 from systems.models import HardwareInfo, Compiler
-from systems.serializers import HardwareInfoSerializer, CompilerSerializer
+from systems.serializers import HardwareInfoSerializer, CompilerSerializer, KnownSysctlInfo, Kernel
 
 from rest_framework import permissions, renderers, viewsets, mixins, authentication, serializers, status
 
 
 class SystemViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
 
-	queryset =  HardwareInfo.objects.all().order_by('linux_info_id')
+	queryset =  HardwareInfo.objects.all().order_by('hardware_info_id')
 	serializer_class = HardwareInfoSerializer
 	permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly, )
 
@@ -15,3 +15,19 @@ class CompilerViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets
 
 	queryset =  Compiler.objects.all().order_by('compiler_id')
 	serializer_class = CompilerSerializer
+
+
+class KnownSysctlViewSet(viewsets.ModelViewSet):
+
+	permission_classes = (permissions.IsAuthenticated, )
+	serializer_class = KnownSysctlInfo
+	lookup_field = 'sysctl'
+	queryset =  KnownSysctlInfo.objects.all().order_by('sysctl')
+
+
+class KernelViewSet(viewsets.ModelViewSet):
+
+	permission_classes = (permissions.IsAuthenticated, )
+	serializer_class = Kernel
+	lookup_field = 'kernel_name'
+	queryset =  Kernel.objects.all().order_by('kernel_name')

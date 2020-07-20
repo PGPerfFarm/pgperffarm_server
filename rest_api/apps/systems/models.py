@@ -9,7 +9,7 @@ class HardwareInfo(models.Model):
 
 	# do not insert every time, only check if there are duplicates
 
-	linux_info_id = models.AutoField(primary_key=True)
+	hardware_info_id = models.AutoField(primary_key=True)
 
 	cpu_brand = models.CharField(max_length=100, null=True)
 	hz = models.BigIntegerField(null=True)
@@ -19,10 +19,10 @@ class HardwareInfo(models.Model):
 	total_swap = models.BigIntegerField(null=True)
 
 	mounts = JSONField(null=True)
-	mounts_hash = models.CharField(max_length=256, unique=True, null=False)
+	mounts_hash = models.CharField(max_length=256, null=False)
 
-	sysctl = models.JSONField(null=True)
-	sysctl_hash = models.CharField(max_length=256, unique=True, null=False)
+	sysctl = JSONField(null=True)
+	sysctl_hash = models.CharField(max_length=256, null=False)
 
 	class Meta:
 		unique_together = ('cpu_brand', 'hz', 'cpu_cores', 'total_memory', 'total_swap', 'mounts_hash', 'sysctl_hash')
@@ -44,7 +44,7 @@ class KnownSysctlInfo(models.Model):
 
 	sysctl_id = models.AutoField(primary_key=True)
 	os_kernel_id = models.ForeignKey('systems.Kernel', on_delete=models.CASCADE, related_name='kernel')
-	sysctl = ArrayField(models.CharField(max_length=15, null=True, unique=True))
+	sysctl = ArrayField(models.CharField(max_length=50, null=True, unique=True))
 
 
 class OsDistributor(models.Model):
@@ -59,6 +59,17 @@ class Kernel(models.Model):
 	kernel_name = models.CharField(max_length=100, null=False, unique=True)
 
 
+class OsKernelVersion(models.Model):
+
+	os_kernel_version_id = models.AutoField(primary_key=True)
+	kernel_id = models.ForeignKey('systems.Kernel', on_delete=models.CASCADE, related_name='distributor')
+	kernel_release = models.CharField(max_length=100, null=True)
+	kernel_version = models.CharField(max_length=100, null=True)
+
+	class Meta:
+		unique_together = ('kernel_id', 'kernel_release', 'kernel_version')
+
+
 class OsVersion(models.Model):
 
 	os_version_id = models.AutoField(primary_key=True)
@@ -71,16 +82,6 @@ class OsVersion(models.Model):
 	class Meta:
 		unique_together = ('dist_id', 'description', 'release', 'codename')
 
-
-class OsKernelVersion:
-
-	os_kernel_version_id = models.AutoField(primary_key=True)
-	kernel_id = models.ForeignKey('systems.Kernel', on_delete=models.CASCADE, related_name='distributor')
-	kernel_release = models.CharField(max_length=100, null=True)
-	kernel_version = models.CharField(max_length=100, null=True)
-
-	class Meta:
-		unique_together = ('kernel_id', 'kernel_release', 'kernel_version')
 
 
 

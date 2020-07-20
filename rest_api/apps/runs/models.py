@@ -1,6 +1,7 @@
 from django.db import models
 import shortuuid
 import hashlib
+from django.contrib.postgres.fields.jsonb import JSONField
 
 
 class GitRepo(models.Model):
@@ -36,9 +37,9 @@ class RunInfo(models.Model):
 
 	hardware_info = models.ForeignKey('systems.HardwareInfo', on_delete=models.CASCADE)
 	
-	sysctl_info = models.ForeignKey('systems.KnownSysctlInfo', on_delete=models.CASCADE)
+	#sysctl_info = models.ForeignKey('systems.KnownSysctlInfo', on_delete=models.CASCADE)
 
-	sysctl_raw = models.JSONField(null=True)
+	sysctl_raw = JSONField(null=True)
 
 	compiler = models.ForeignKey('systems.Compiler', on_delete=models.CASCADE)
 

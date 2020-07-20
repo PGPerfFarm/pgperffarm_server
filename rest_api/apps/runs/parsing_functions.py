@@ -8,172 +8,65 @@ import re
 from postgres.models import PostgresSettingsSet
 from postgres.serializers import PostgresSettingsSerializer
 from benchmarks.serializers import PgBenchResultSerializer, PgBenchStatementSerializer, PgBenchRunStatementSerializer
+from systems.models import KnownSysctlInfo
 
 
 def ParseSysctl(data):
 	
 	json = {}
+	found = True
 
-	r = re.search('kernel.shmmax = ([0-9]+)\n', data)
-	if r:
-		json.update({'shmmax': r.group(1)})
-		data.replace(r.group(0), '')
+	known_sysctl = KnownSysctlInfo.objects.filter(sysctl_id=1).get()
 
-	r = re.search('kernel.shmmin = ([0-9]+)\n', data)
-	if r:
-		json.update({'shmmin': r.group(1)})
-		data.replace(r.group(0), '')
+	for parameter in known_sysctl.sysctl:
 
-	r = re.search('kernel.shmall = ([0-9]+)\n', data)
-	if r:
-		json.update({'shmall': r.group(1)})
-		data.replace(r.group(0), '')
+		if parameter in data:
+			json.update({parameter: data['parameter']})
+		else:
+			found = False
 
-	r = re.search('kernel.shmseg = ([0-9]+)\n', data)
-	if r:
-		json.update({'shmseg': r.group(1)})
-		data.replace(r.group(0), '')
+	if found:
+		return json
 
-	r = re.search('kernel.shmmni = ([0-9]+)\n', data)
-	if r:
-		json.update({'shmmni': r.group(1)})
-		data.replace(r.group(0), '')
+	else:
+		return 'known sysctl info not found'
 
-	r = re.search('kernel.semmni = ([0-9]+)\n', data)
-	if r:
-		json.update({'semmni': r.group(1)})
-		data.replace(r.group(0), '')
 
-	r = re.search('kernel.semmns = ([0-9]+)\n', data)
-	if r:
-		json.update({'semmns': r.group(1)})
-		data.replace(r.group(0), '')
+def Hash(json_data):
 
-	r = re.search('kernel.semmsl = ([0-9]+)\n', data)
-	if r:
-		json.update({'semmsl': r.group(1)})
-		data.replace(r.group(0), '')
-
-	r = re.search('kernel.semmap = ([0-9]+)\n', data)
-	if r:
-		json.update({'semmap': r.group(1)})
-		data.replace(r.group(0), '')
-
-	r = re.search('kernel.semvmx = ([0-9]+)\n', data)
-	if r:
-		json.update({'semvmx': r.group(1)})
-		data.replace(r.group(0), '')
-
-	r = re.search('vm.nr_hugepages = ([0-9]+)\n', data)
-	if r:
-		json.update({'nr_hugepages': r.group(1)})
-		data.replace(r.group(0), '')
-
-	r = re.search('vm.nr_hugepages_mempolicy = ([0-9]+)\n', data)
-	if r:
-		json.update({'nr_hugepages_mempolicy': r.group(1)})
-		data.replace(r.group(0), '')
-
-	r = re.search('vm.nr_overcommit_hugepages = ([0-9]+)\n', data)
-	if r:
-		json.update({'nr_overcommit_hugepages': r.group(1)})
-		data.replace(r.group(0), '')
-
-	r = re.search('vm.overcommit_kbytes = ([0-9]+)\n', data)
-	if r:
-		json.update({'overcommit_kbytes': r.group(1)})
-		data.replace(r.group(0), '')
-
-	r = re.search('vm.overcommit_memory = ([0-9]+)\n', data)
-	if r:
-		json.update({'overcommit_memory': r.group(1)})
-		data.replace(r.group(0), '')
-
-	r = re.search('vm.overcommit_ratio = ([0-9]+)\n', data)
-	if r:
-		json.update({'overcommit_ratio': r.group(1)})
-		data.replace(r.group(0), '')
-
-	r = re.search('vm.swappiness = ([0-9]+)\n', data)
-	if r:
-		json.update({'swappiness': r.group(1)})
-		data.replace(r.group(0), '')
-
-	r = re.search('vm.numa_stat = ([0-9]+)\n', data)
-	if r:
-		json.update({'numa_stat': r.group(1)})
-		data.replace(r.group(0), '')
-
-	r = re.search('vm.numa_zonelist_order = ([0-9]+)\n', data)
-	if r:
-		json.update({'numa_zonelist_order': r.group(1)})
-		data.replace(r.group(0), '')
-
-	r = re.search('vm.dirty_background_bytes = ([0-9]+)\n', data)
-	if r:
-		json.update({'dirty_background_bytes': r.group(1)})
-		data.replace(r.group(0), '')
-
-	r = re.search('vm.dirty_background_ratio = ([0-9]+)\n', data)
-	if r:
-		json.update({'dirty_background_ratio': r.group(1)})
-		data.replace(r.group(0), '')
-
-	r = re.search('vm.dirty_bytes = ([0-9]+)\n', data)
-	if r:
-		json.update({'dirty_bytes': r.group(1)})
-		data.replace(r.group(0), '')
-
-	r = re.search('vm.dirty_expire_centisecs = ([0-9]+)\n', data)
-	if r:
-		json.update({'dirty_expire_centisecs': r.group(1)})
-		data.replace(r.group(0), '')
-
-	r = re.search('vm.dirty_ratio = ([0-9]+)\n', data)
-	if r:
-		json.update({'dirty_ratio': r.group(1)})
-		data.replace(r.group(0), '')
-
-	r = re.search('vm.dirty_writeback_centisecs = ([0-9]+)\n', data)
-	if r:
-		json.update({'dirty_writeback_centisecs': r.group(1)})
-		data.replace(r.group(0), '')
-
-	r = re.search('vm.dirtytime_expire_seconds = ([0-9]+)\n', data)
-	if r:
-		json.update({'dirtytime_expire_seconds': r.group(1)})
-		data.replace(r.group(0), '')
-
-	return data, json
+	hash_value = hashlib.sha256(json.dumps(json_data).encode('utf-8'))
+	return hash_value.hexdigest()
 
 
 def ParseLinuxData(json_data):
 
-	if ('brand' in json_data['linux']['cpu']['information']):
-		brand = json_data['linux']['cpu']['information']['brand']
+	if ('brand' in json_data['system']['cpu']['information']):
+		brand = json_data['system']['cpu']['information']['brand']
 
 	else:
-		brand = json_data['linux']['cpu']['information']['brand_raw']
+		brand = json_data['system']['cpu']['information']['brand_raw']
 
-	if ('hz_actual_raw' in json_data['linux']['cpu']['information']):
-		hz = json_data['linux']['cpu']['information']['hz_actual_raw'][0]
+	if ('hz_actual_raw' in json_data['system']['cpu']['information']):
+		hz = json_data['system']['cpu']['information']['hz_actual_raw'][0]
 
 	else:
-		hz = json_data['linux']['cpu']['information']['hz_actual'][0]
+		hz = json_data['system']['cpu']['information']['hz_actual'][0]
 
-	sysctl_log, sysctl_known = ParseSysctl(json_data['sysctl_log'])
+	sysctl = ParseSysctl(json_data['sysctl_log'])
 
 	result = {
 		'cpu_brand': brand,
 		'hz': hz,
-		'cpu_cores': json_data['linux']['cpu']['information']['count'],
-		'total_memory': json_data['linux']['memory']['virtual']['total'],
-		'total_swap': json_data['linux']['memory']['swap']['total'],
-		'mounts': json_data['linux']['memory']['mounts'],
-		'sysctl': sysctl_log
+		'cpu_cores': json_data['system']['cpu']['information']['count'],
+		'total_memory': json_data['system']['memory']['virtual']['total'],
+		'total_swap': json_data['system']['memory']['swap']['total'],
+		'mounts_hash': Hash(json_data['system']['memory']['mounts']),
+		'mounts': json_data['system']['memory']['mounts'],
+		'sysctl': sysctl,
+		'sysctl_hash': Hash(sysctl)
 	}
 
-	return result, sysctl_known
+	return result
 
 
 def GetHash(postgres_settings):
