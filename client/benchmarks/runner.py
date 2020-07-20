@@ -133,7 +133,9 @@ class BenchmarkRunner(object):
 			'uname_v': check_output(['uname', '-v']).rstrip(),
 		}
 
-		if os.popen("uname").readlines()[0].split()[0] == 'Linux':
+		uname = os.popen("uname").readlines()[0].split()[0]
+
+		if uname == 'Linux':
 			r['os_information'] = {
 				'distributor': check_output(['lsb_release', '-i']).rstrip(),
 				'description': check_output(['lsb_release', '-d']).rstrip(),
@@ -141,7 +143,7 @@ class BenchmarkRunner(object):
 				'codename': check_output(['lsb_release', '-c']).rstrip()
 			}
 
-		if os.popen("uname").readlines()[0].split()[0] == 'Darwin':
+		if uname == 'Darwin':
 			r['os_information'] = {
 				'distributor': check_output(['sw_vers', '-productName']).rstrip(),
 				'description': 'not available',

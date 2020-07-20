@@ -44,8 +44,13 @@ class SystemCollector(object):
 		sysctl = r[1].splitlines()
 		sysctl_json = {}
 
+		uname = os.popen("uname").readlines()[0].split()[0]
+
 		for item in sysctl:
-			key, value = item.decode("utf-8").split(':', 1)
+			if uname == 'Linux':
+				key, value = item.decode("utf-8").split('=', 1).rstrip()
+			if uname == 'Darwin':
+				key, value = item.decode("utf-8").split(':', 1).rstrip()
 			sysctl_json.update({key: value})
 
 		with open(folders.LOG_PATH + '/sysctl_log.txt', 'w+') as file:
