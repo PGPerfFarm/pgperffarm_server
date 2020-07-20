@@ -208,7 +208,6 @@ class PgBench(object):
         configs = PGBENCH_CONFIG
         #configs.append({'scale': self._scale, 'clients': self._clients, 'read_only': self._read_only})
 
-        info = {}
         results = []
         result = {}
 
@@ -218,6 +217,8 @@ class PgBench(object):
         
         j = 0
         for config in configs:
+
+            info = {}
 
             info['clients'] = config['clients']
             scale = config['scale']

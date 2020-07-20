@@ -134,11 +134,19 @@ class BenchmarkRunner(object):
 		}
 
 		if os.popen("uname").readlines()[0].split()[0] == 'Linux':
-			r['lsb'] = {
-				'lsb_i': check_output(['lsb_release', '-i']).rstrip(),
-				'lsb_d': check_output(['lsb_release', '-d']).rstrip(),
-				'lsb_r': check_output(['lsb_release', '-r']).rstrip(),
-				'lsb_c': check_output(['lsb_release', '-c']).rstrip()
+			r['os_information'] = {
+				'distributor': check_output(['lsb_release', '-i']).rstrip(),
+				'description': check_output(['lsb_release', '-d']).rstrip(),
+				'release': check_output(['lsb_release', '-r']).rstrip(),
+				'codename': check_output(['lsb_release', '-c']).rstrip()
+			}
+
+		if os.popen("uname").readlines()[0].split()[0] == 'Darwin':
+			r['os_information'] = {
+				'distributor': check_output(['sw_vers', '-productName']).rstrip(),
+				'description': 'not available',
+				'release': check_output(['sw_vers', '-productVersion']).rstrip(),
+				'codename': check_output(['sw_vers', '-buildVersion']).rstrip()
 			}
 
 		with open('%s/%s' % (self._output, 'results.json'), 'w+') as f:

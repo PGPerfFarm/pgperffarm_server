@@ -5,7 +5,6 @@ branches = [
     {
         'branch_name': 'REL_13_STABLE',
     },
-    '''
     {
         'branch_name': 'REL_12_STABLE',
     },
@@ -15,5 +14,4 @@ branches = [
     {
         'branch_name': 'REL_10_STABLE',
     },
-    '''
 ]

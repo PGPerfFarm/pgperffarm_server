@@ -174,11 +174,7 @@ if __name__ == '__main__':
 
 			system = os.popen("uname").readlines()[0].split()[0]
 
-			if system == 'Linux':
-				collectors.register('linux', SystemCollector(folders.OUTPUT_PATH))
-
-			if system == 'Darwin':
-				collectors.register('osx', SystemCollector(folders.OUTPUT_PATH))
+			collectors.register('system', SystemCollector(folders.OUTPUT_PATH))
 
 			#collectors.register('collectd', CollectdCollector(folders.OUTPUT_PATH, DATABASE_NAME, ''))
 
