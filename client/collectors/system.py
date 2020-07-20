@@ -47,7 +47,7 @@ class SystemCollector(object):
 		uname = os.popen("uname").readlines()[0].split()[0]
 
 		for item in sysctl:
-			if "permission denied" not in item:
+			if "permission denied" not in item.decode("utf-8"):
 				if uname == 'Linux':
 					key, value = item.decode("utf-8").split('=', 1)
 				if uname == 'Darwin':
