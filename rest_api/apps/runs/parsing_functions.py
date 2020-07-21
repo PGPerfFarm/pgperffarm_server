@@ -11,22 +11,22 @@ from benchmarks.serializers import PgBenchResultSerializer, PgBenchStatementSeri
 from systems.models import KnownSysctlInfo
 
 
-def ParseSysctl(data):
-	
-	json = {}
-	found = True
+def ParseSysctl(raw_data):
 
+	data = json.loads(raw_data)
+	json_dict = {}
+	found = True
 	known_sysctl = KnownSysctlInfo.objects.filter(sysctl_id=1).get()
 
 	for parameter in known_sysctl.sysctl:
 
 		if parameter in data:
-			json.update({parameter: data['parameter']})
+			json_dict.update({parameter: data[parameter]})
 		else:
 			found = False
 
 	if found:
-		return json
+		return json_dict
 
 	else:
 		return 'known sysctl info not found'

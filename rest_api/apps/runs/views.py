@@ -114,7 +114,6 @@ def CreateRunInfo(request, format=None):
 				else:
 					msg = 'Distributor information is invalid.'
 					raise RuntimeError(msg)
-
 			try:
 				os_kernel = Kernel.objects.filter(kernel_name=json_data['kernel']['uname_s']).get()
 
@@ -205,7 +204,6 @@ def CreateRunInfo(request, format=None):
 					raise RuntimeError(msg)
 
 			hardware_info_new = ParseLinuxData(json_data)
-			
 			try:
 				hardware_info_valid = HardwareInfo.objects.filter(cpu_brand=hardware_info_new['cpu_brand'], cpu_cores=hardware_info_new['cpu_cores'], hz=hardware_info_new['hz'], total_memory=hardware_info_new['total_memory'], total_swap=hardware_info_new['total_swap'], sysctl_hash=hardware_info_new['sysctl_hash'], mounts_hash=hardware_info_new['mounts_hash']).get()
 
