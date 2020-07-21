@@ -15,21 +15,18 @@ def ParseSysctl(raw_data):
 
 	data = json.loads(raw_data)
 	json_dict = {}
-	found = True
 	known_sysctl = KnownSysctlInfo.objects.filter(sysctl_id=1).get()
 
 	for parameter in known_sysctl.sysctl:
 
 		if parameter in data:
 			json_dict.update({parameter: data[parameter]})
-		else:
-			found = False
-
-	if found:
-		return json_dict
+		
+	if json_dict == {}:
+		return 'known sysctl info not found'
 
 	else:
-		return 'known sysctl info not found'
+		return json_dict
 
 
 def Hash(json_data):
