@@ -2,7 +2,7 @@
 <v-footer 
 	fixed 
 	color="rgb(51, 103, 145)"
-	height="7.5%"
+	height="5.5%"
 	>
 	<v-card-text class="pg-v-card-text-footer">
 		Google Summer Of Code 2020 @ Postgres &mdash; Ilaria Battiston

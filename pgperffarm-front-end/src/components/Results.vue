@@ -4,33 +4,41 @@
       		<v-card flat class="machine-main-card">
       			<v-toolbar flat class="result-toolbar">
       				<v-toolbar-title class="result-toolbar"> 
-      					Average TPS and latency in milliseconds: {{ alias }} (last 20 runs or less)
+      					Average TPS and latency in milliseconds: {{ alias }}
       				</v-toolbar-title>
       				<v-spacer></v-spacer>
+      				<v-btn class="login-button" >View OS settings</v-btn>
+      				<v-btn class="login-button" >View Postgres settings</v-btn>
             		<v-btn class="login-button" v-on:click="downloadJSON()">Download JSON</v-btn>
             	</v-toolbar>
      		</v-card>
     	<v-layout>
       		<v-flex d-flex xs12 sm6 md3>
             	<v-layout column>
-	                <v-card flat class="profile-left-top" min-width=15>
+	                <v-card flat class="run-left-top" min-width=15>
 	                	<v-card-title>
 		                  	Owner: {{ owner }} <br>
+		                  	Email: {{ email }} <br>
 	                    	Total runs: {{ number_runs }} <br>
                   	  	</v-card-title> 
 	                </v-card>
-	                <v-card flat class="profile-left-bottom" min-width=15>
+	                <v-card flat class="run-left-bottom" min-width=15>
 	                	<v-card-text>
 	                		<p>
-	                    		<v-icon color="rgb(51, 103, 145)">computer</v-icon> OS: {{ os }} <br>
+								{{ os }} <br>
 	                    	</p>
-	                    	<p>
-	                    		<v-icon color="rgb(51, 103, 145)">border_all</v-icon> Compiler: {{ compiler }} <br>
-	                    	</p>
-	                    	<p>
-	                    		<v-icon color="rgb(51, 103, 145)">email</v-icon> Email: {{ email }} <br> <br>
-	                    	</p>
+	                    		{{ compiler }}
 	                	</v-card-text>
+	                </v-card>
+	                <v-card flat class="run-left-top" min-width=15>
+
+	                	<v-card-text>
+		                  	Clients: <br>
+		                  	Scale: <br>
+		                  	Duration: <br>
+		                  	Read-only: <br> <br>
+		                  	<v-btn icon absolute left> <v-icon color="white">arrow_back_ios</v-icon> </v-btn> <v-btn icon absolute right> <v-icon color="white">arrow_forward_ios</v-icon> </v-btn> <br> <br>
+                  	  	</v-card-text> 
 	                </v-card>
             	</v-layout>
       		</v-flex>
@@ -76,6 +84,11 @@
 	import axios from 'axios'
 	import Plotly from 'plotly.js-dist'
 
+	// same machine, same benchmark configuration, same postgres settings, same os configuration, same git repository
+
+	// machine, benchmark: user defined parameters
+	// results/benchmark/machine
+
 	export default {
 		name: 'Results',
 
@@ -100,6 +113,7 @@
 			getResult() {
 
 				var url = this.$store.state.endpoints.record + this.$route.params.id;
+				console.log(url)
 
 				axios.get(url)
         		.then((response) => {
@@ -109,7 +123,9 @@
         			this.alias = response.data.alias;
         			this.owner = response.data.owner.username;
         			this.email = response.data.owner.email;
-        			this.os = response.data.runs[0].os_version;
+
+        			this.os = response.data.runs[0].os_version.dist.dist_name + ' ' + response.data.runs[0].os_version.release + ' ' + response.data.runs[0].os_version.codename;
+
         			this.compiler = response.data.runs[0].compiler.compiler;
         			this.number_runs = response.data.runs.length
 
@@ -195,7 +211,13 @@
 	        			data[j] = [latency_line, tps_line];
         			}
 
+        			var title = 'Git repository: ' + response.data.runs[0].git_repo.url
+
         			var layout = {
+        				title: {
+        					text: title,
+    						x: 0.05,
+        				},
 	        			xaxis: {
 	        				title: 'Run'
 	        			},
