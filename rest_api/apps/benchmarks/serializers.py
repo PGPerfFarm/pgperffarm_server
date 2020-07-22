@@ -35,8 +35,8 @@ class PgBenchRunStatementSerializer(serializers.ModelSerializer):
 
 class PgBenchAllResultsSerializer(serializers.ModelSerializer):
 
-	#pgbench_run_statement = PgBenchRunStatementSerializer(many=True, read_only=True)
+	benchmark_config = PgBenchBenchmarkSerializer(read_only=True)
 
 	class Meta:
 	 	model = PgBenchResult
-	 	fields = ['tps', 'threads', 'latency', 'read_only', 'benchmark_config']
+	 	fields = ['tps', 'latency', 'benchmark_config']

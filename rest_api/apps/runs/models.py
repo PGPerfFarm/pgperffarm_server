@@ -18,22 +18,15 @@ class GitRepo(models.Model):
 
 class RunInfo(models.Model):
 
-	os = (
-		('L', 'Linux'), 
-		('M', 'osX'), 
-		('W', 'Windows'), 
-		('B', 'FreeBsd')
-		)
-
 	run_id = models.BigAutoField(primary_key=True)
 
 	machine_id = models.ForeignKey('machines.Machine', on_delete=models.CASCADE, related_name='runs')
 
 	add_time = models.DateTimeField(auto_now_add=True)
 
-	os_version_id = models.ForeignKey('systems.OsVersion', on_delete=models.CASCADE, related_name='os_version')
+	os_version_id = models.ForeignKey('systems.OsVersion', on_delete=models.CASCADE)
 
-	os_kernel_version_id = models.ForeignKey('systems.OsKernelVersion', on_delete=models.CASCADE, related_name='os_kernel_version')
+	os_kernel_version_id = models.ForeignKey('systems.OsKernelVersion', on_delete=models.CASCADE)
 
 	hardware_info = models.ForeignKey('systems.HardwareInfo', on_delete=models.CASCADE)
 	

@@ -29,9 +29,14 @@ class MyMachineSerializer(serializers.ModelSerializer):
 
 class MachineRunsSerializer(serializers.ModelSerializer):
 
-	runs = LastRunsSerializer(many=True, read_only=True)
+	runs = serializers.SerializerMethodField()
 	owner = UserSerializer(read_only=True, source='owner_id')
 
 	class Meta:
 	 	model = Machine
 	 	fields = ['machine_id','alias', 'add_time', 'approved', 'owner', 'runs', 'machine_type']
+
+
+	def get_runs(self, instance):
+		runs = instance.runs.all().order_by('-add_time')
+		return LastRunsSerializer(runs, many=True).data

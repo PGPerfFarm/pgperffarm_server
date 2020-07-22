@@ -42,9 +42,11 @@ class KernelSerializer(serializers.ModelSerializer):
 
 class OsVersionSerializer(serializers.ModelSerializer):
 
+	dist = OsDistributorSerializer(read_only=True, source='dist_id')
+
 	class Meta:
 		model = OsVersion
-		fields = '__all__'
+		fields = ['os_version_id', 'dist', 'description', 'release', 'codename']
 
 
 class OsKernelVersionSerializer(serializers.ModelSerializer):

@@ -7,6 +7,7 @@ import pandas
 import io
 import csv
 import hashlib
+import re
 
 
 from rest_framework import permissions, renderers, viewsets, mixins, authentication, serializers, status
@@ -167,13 +168,18 @@ def CreateRunInfo(request, format=None):
 					msg = 'OS kernel version information is invalid.'
 					raise RuntimeError(msg)
 
+			compiler_raw = json_data['compiler']
+			compiler_match = re.search('compiled by (.*),', compiler_raw)
+			if compiler_match:
+				compiler = {'compiler': compiler_match.group(1)}
+			else:
+				compiler = {'compiler': 'impossible to parse compiler'}
+
 			try: 
-				compiler_result = Compiler.objects.filter(compiler=json_data['compiler']).get()
+				compiler_result = Compiler.objects.filter(compiler=compiler).get()
 				compiler_id = compiler_result.compiler_id
 
 			except Compiler.DoesNotExist:
-
-				compiler = {'compiler': json_data['compiler']}
 
 				compiler_serializer = CompilerSerializer(data=compiler)
 
