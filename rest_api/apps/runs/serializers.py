@@ -2,7 +2,7 @@ import shortuuid
 import json
 from rest_framework import serializers
 
-from runs.models import RunInfo, GitRepo
+from runs.models import RunInfo, GitRepo, Branch
 from benchmarks.serializers import PgBenchAllResultsSerializer
 from systems.serializers import CompilerSerializer, OsVersionSerializer
 
@@ -19,6 +19,13 @@ class GitRepoSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = GitRepo
 		fields = '__all__'
+
+
+class BranchSerializer(serializers.ModelSerializer):
+
+	class Meta:
+		model = Branch
+		fields = '__all__'
 		
 
 class LastRunsSerializer(serializers.ModelSerializer):
@@ -33,16 +40,3 @@ class LastRunsSerializer(serializers.ModelSerializer):
 	 	fields = ['run_id', 'add_time', 'git_branch', 'git_commit', 'benchmark', 'os_version', 'os_kernel_version_id', 'compiler', 'git_repo', 'pgbench_result', 'postgres_info']
 
 
-class BranchSerializer(serializers.ModelSerializer):
-
-	git_branch = serializers.CharField()
-	results = serializers.IntegerField()
-	latest = serializers.IntegerField()
-	#commit = serializers.CharField()
-	machines = serializers.IntegerField()
-
-
-	class Meta:
-		model = RunInfo
-		#fields = ['git_branch', 'results', 'latest', 'commit', 'machines']
-		fields = ['git_branch', 'results', 'machines']

@@ -16,6 +16,18 @@ class GitRepo(models.Model):
 	'''
 
 
+class Branch(models.Model):
+
+	branch_id = models.AutoField(primary_key=True)
+	name = models.CharField(max_length=100)
+	default_view = models.BooleanField(default=False)
+	ordering = models.IntegerField()
+	git_repo = models.ForeignKey('runs.GitRepo', on_delete=models.CASCADE)
+
+	class Meta:
+		unique_together = ('name', 'git_repo')
+
+
 class RunInfo(models.Model):
 
 	run_id = models.BigAutoField(primary_key=True)
@@ -36,8 +48,7 @@ class RunInfo(models.Model):
 
 	compiler = models.ForeignKey('systems.Compiler', on_delete=models.CASCADE)
 
-	git_branch = models.CharField(max_length=100, blank=False)
-
+	git_branch = models.ForeignKey('runs.Branch', on_delete=models.CASCADE)
 	git_commit = models.CharField(max_length=100, blank=False)
 
 	run_received_time = models.DateTimeField(null=True, blank=True)
@@ -59,7 +70,7 @@ class RunInfo(models.Model):
 	install_runtime = models.DurationField(null=True, blank=True)
 
 	benchmark_log = models.TextField(null=True, blank=True)
-	benchmark = models.CharField(max_length=100)
+	benchmark = models.CharField(max_length=100, default="pgbench")
 
 	cleanup_log = models.TextField(null=True, blank=True)
 	cleanup_runtime = models.DurationField(null=True, blank=True)

@@ -18,8 +18,8 @@ from machines.models import Machine
 from machines.serializers import MachineSerializer
 from postgres.models import PostgresSettingsSet
 from postgres.serializers import PostgresSettingsSetSerializer
-from runs.models import RunInfo, GitRepo
-from runs.serializers import RunInfoSerializer, GitRepoSerializer, BranchSerializer, LastRunsSerializer
+from runs.models import RunInfo, GitRepo, Branch
+from runs.serializers import RunInfoSerializer, GitRepoSerializer, BranchSerializer, LastRunsSerializer, BranchSerializer
 from systems.serializers import HardwareInfoSerializer, CompilerSerializer, KnownSysctlInfoSerializer, KernelSerializer, OsDistributorSerializer, OsVersionSerializer, OsKernelVersionSerializer
 from systems.models import HardwareInfo, Compiler, KnownSysctlInfo, Kernel, OsDistributor, OsKernelVersion, OsVersion
 from benchmarks.models import PgBenchBenchmark
@@ -49,16 +49,6 @@ class LastRunsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets
 
 	def get_queryset(self):
 		return Machine.objects.filter(machine_id=self.kwargs['pk'])
-
-
-class BranchViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
-
-	queryset = RunInfo.objects.all()
-	serializer_class = BranchSerializer
-
-	def get_queryset(self):
-		return RunInfo.objects.values('git_branch').annotate(results=Count('run_id'), machines=Count('machine_id', distinct=True))
-
 
 
 @api_view(['POST'])
@@ -171,9 +161,9 @@ def CreateRunInfo(request, format=None):
 			compiler_raw = json_data['compiler']
 			compiler_match = re.search('compiled by (.*),', compiler_raw)
 			if compiler_match:
-				compiler = {'compiler': compiler_match.group(1)}
+				compiler = compiler_match.group(1)
 			else:
-				compiler = {'compiler': 'impossible to parse compiler'}
+				compiler = 'impossible to parse compiler'
 
 			try: 
 				compiler_result = Compiler.objects.filter(compiler=compiler).get()
@@ -181,7 +171,7 @@ def CreateRunInfo(request, format=None):
 
 			except Compiler.DoesNotExist:
 
-				compiler_serializer = CompilerSerializer(data=compiler)
+				compiler_serializer = CompilerSerializer(data={'compiler': compiler})
 
 				if compiler_serializer.is_valid():
 					compiler_valid = compiler_serializer.save()
@@ -209,6 +199,25 @@ def CreateRunInfo(request, format=None):
 					msg = 'Git information is invalid.'
 					raise RuntimeError(msg)
 
+			try: 
+				branch_result = GitRepo.objects.filter(nam3=json_data['git']['branch'], git_repo=repo_id).get()
+
+			except Branch.DoesNotExist:
+
+				branch = {
+					'name': json_data['git']['branch'],
+					'git_repo': repo_id
+				}
+
+				branch_serializer = BranchSerializer(data=branch)
+
+				if branch_serializer.is_valid():
+					branch_result = branch_serializer.save()
+				
+				else:
+					msg = 'Branch information is invalid.'
+					raise RuntimeError(msg)
+
 			hardware_info_new = ParseLinuxData(json_data)
 			try:
 				hardware_info_valid = HardwareInfo.objects.filter(cpu_brand=hardware_info_new['cpu_brand'], cpu_cores=hardware_info_new['cpu_cores'], hz=hardware_info_new['hz'], total_memory=hardware_info_new['total_memory'], total_swap=hardware_info_new['total_swap'], sysctl_hash=hardware_info_new['sysctl_hash'], mounts_hash=hardware_info_new['mounts_hash']).get()
@@ -224,7 +233,6 @@ def CreateRunInfo(request, format=None):
 					msg = 'Hardware information is invalid.'
 					raise RuntimeError(msg)
 
-			branch = json_data['git']['branch']
 			commit = json_data['git']['commit']
 
 			postgres_hash, postgres_hash_object = GetHash(json_data['postgres_settings'])
@@ -305,7 +313,7 @@ def CreateRunInfo(request, format=None):
 				'machine_id': machine_id,
 				'hardware_info': hardware_info_valid.hardware_info_id,
 				'compiler': compiler_id,
-				'git_branch': branch,
+				'git_branch': branch_result.branch_id,
 				'git_commit': commit,
 				'git_clone_log': git_clone_log,
 				'configure_log': configure_log,
@@ -324,7 +332,6 @@ def CreateRunInfo(request, format=None):
 				'configure_runtime': json_data['configure_runtime'],
 				'build_runtime': json_data['build_runtime'],
 				'install_runtime': json_data['install_runtime'],
-				'benchmark': pgbench_valid.pgbench_benchmark_id,
 				'cleanup_runtime': json_data['cleanup_runtime'],
 				'os_version_id': os_version.os_version_id,
 				'os_kernel_version_id': os_kernel_version.os_kernel_version_id,
