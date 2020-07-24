@@ -22,10 +22,10 @@ class BenchmarkRunner(object):
 	'manages iterations of all the benchmarks, including cluster restarts etc.'
 
 	def __init__(self, out_dir, url, secret, cluster, collector):
-		''
+		
 		self._output = out_dir  # where to store output files
 		self._benchmarks = {}  # bench name => class implementing the benchmark
-		self._configs = {}  # config name => (bench name, config)
+		self._configs = []  # config name => (bench name, config)
 		self._cluster = cluster
 		self._collector = collector
 		self._url = url
@@ -40,7 +40,7 @@ class BenchmarkRunner(object):
 	def register_config(self, config_name, benchmark_name, branch, commit,
 						postgres_config, **kwargs):
 		
-		self._configs.update({config_name: {'benchmark': benchmark_name, 'config': kwargs, 'branch': branch, 'commit': commit, 'postgres': postgres_config}})
+		self._configs.append({config_name: {'benchmark': benchmark_name, 'config': kwargs, 'branch': branch, 'commit': commit, 'postgres': postgres_config}})
 
 
 	def _check_config(self, config_name):
@@ -49,14 +49,15 @@ class BenchmarkRunner(object):
 		log("Checking benchmark configuration '%s'" % (config_name,))
 
 		# construct the benchmark class for the given config name
-		config = self._configs[config_name]
-		bench = self._benchmarks[config['benchmark']]
+		for c in self._configs:
+			config = c[config_name]
+			bench = self._benchmarks[config['benchmark']]
 
-		# expand the attribute names
-		bench = bench(**config['config'])
+			# expand the attribute names
+			bench = bench(**config['config'])
 
-		# run the tests
-		return bench.check_config()
+			# run the tests
+			bench.check_config()
 
 
 	def check(self):
@@ -64,41 +65,50 @@ class BenchmarkRunner(object):
 
 		issues = {}
 
-		for config_name in self._configs:
-			t = self._check_config(config_name)
-			if t:
-				issues[config_name] = t
+		for config in self._configs:
+			for config_name in config:
+				t = self._check_config(config_name)
+				if t:
+					issues[config_name] = t
 
 		return issues
 
 
 	def _run_config(self, config_name):
 
-		log("Running benchmark configuration '%s'" % (config_name,))
+		#log("Running benchmark configuration '%s'" % (config_name,))
 
-		# construct the benchmark class for the given config name
-		config = self._configs[config_name]
-		bench = self._benchmarks[config['benchmark']]
+		r = {}
+		r['pgbench'] = []
 
-		# expand the attribute names
-		bench = bench(**config['config'])
-
-		self._cluster.start(config=config['postgres'])
+		print(self._configs[0]['pgbench-basic'])
+		self._cluster.start(config=self._configs[0]['pgbench-basic']['postgres'])
 
 		# start collector(s) of additional info
 		self._collector.start()
 
-		# if requested output to CSV, create a queue and collector process
-		csv_queue = None
-		csv_collector = None
-		if 'csv' in config['config'] and config['config']['csv']:
-			csv_queue = Queue()
-			csv_collector = Process(target=csv_collect_results,
-									args=(config_name, csv_queue))
-			csv_collector.start()
+		# construct the benchmark class for the given config name
+		for c in self._configs:
+			config = c[config_name]
+			bench = self._benchmarks[config['benchmark']]
 
-		# run the tests
-		r = bench.run_tests(csv_queue)
+			# expand the attribute names
+			bench = bench(**config['config'])
+
+			# if requested output to CSV, create a queue and collector process
+			csv_queue = None
+			csv_collector = None
+			'''
+			if 'csv' in c['config'] and c['config']['csv']:
+				csv_queue = Queue()
+				csv_collector = Process(target=csv_collect_results,
+										args=(config_name, csv_queue))
+				csv_collector.start()
+			'''
+
+			# run the tests
+			r['pgbench'].append(bench.run_tests(csv_queue))
+			#print(r)
 
 		# notify the result collector to end and wait for it to terminate
 		if csv_queue:
@@ -162,7 +172,7 @@ class BenchmarkRunner(object):
 		except OSError as e:
 			log("Output directory already exists: %s" % self._output)
 
-		for config_name in self._configs:
+		for config_name in self._configs[0]:
 			self._run_config(config_name)
 
 

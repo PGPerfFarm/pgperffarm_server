@@ -201,10 +201,10 @@ class PgBench(object):
         """
         results = []
         result = {}
+        tmp = {}
 
         self._results['pgbench'] = []
 
-      
         j = 0
         info = {}
 
@@ -241,4 +241,4 @@ class PgBench(object):
 
         self._results['pgbench'].append(info)
 
-        return self._results
+        return info
