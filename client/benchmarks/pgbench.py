@@ -43,8 +43,6 @@ class PgBench(object):
         self._env = os.environ
         self._env['PATH'] = ':'.join([bin_path, self._env['PATH']])
 
-        self._results = {}
-
 
     def _init(self, scale):
         """
@@ -203,8 +201,6 @@ class PgBench(object):
         result = {}
         tmp = {}
 
-        self._results['pgbench'] = []
-
         j = 0
         info = {}
 
@@ -238,7 +234,5 @@ class PgBench(object):
         info['iterations'] = results
         info['duration'] = self._duration
         info['read_only'] = self._read_only
-
-        self._results['pgbench'].append(info)
 
         return info

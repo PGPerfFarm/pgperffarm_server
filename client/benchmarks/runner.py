@@ -81,7 +81,6 @@ class BenchmarkRunner(object):
 		r = {}
 		r['pgbench'] = []
 
-		print(self._configs[0]['pgbench-basic'])
 		self._cluster.start(config=self._configs[0]['pgbench-basic']['postgres'])
 
 		# start collector(s) of additional info
@@ -108,7 +107,6 @@ class BenchmarkRunner(object):
 
 			# run the tests
 			r['pgbench'].append(bench.run_tests(csv_queue))
-			#print(r)
 
 		# notify the result collector to end and wait for it to terminate
 		if csv_queue:
