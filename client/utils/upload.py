@@ -36,6 +36,8 @@ def upload(api_url, results_directory, token):
     with open(json_file,'r') as load_f:
         load_dict = (json.load(load_f, encoding="UTF-8"))
 
+    pgbench_logs = []
+
     # extracting logs
     for file in os.scandir(folders.LOG_PATH):
 
@@ -45,8 +47,12 @@ def upload(api_url, results_directory, token):
         if (name == 'runtime_log'):
             with open (file, 'r') as f:
                 runtime_data = json.load(f)
-
                 load_dict.update(runtime_data)
+
+        elif (name.startswith('pgbench-')):
+            with open (file, 'r') as f:
+                log = f.read()
+                pgbench_logs.append({name: log})
 
         else:
 
@@ -56,8 +62,8 @@ def upload(api_url, results_directory, token):
             temp = {name: content}
             load_dict.update(temp)
 
+    load_dict.update({'pgbench_log_aggregate': pgbench_logs})
 
-    # todo
     with open(folders.OUTPUT_PATH + '/results_complete.json', 'w+') as results:
         results.write(json.dumps(load_dict))
         http_post(url, load_dict, token)

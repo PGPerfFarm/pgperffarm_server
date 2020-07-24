@@ -154,23 +154,20 @@ class PgBench(object):
     def _run(self, run, scale, duration, pgbench_init, read_only, nclients=1, njobs=1, aggregate=True, csv_queue=None):
         'run pgbench on the database (either a warmup or actual benchmark run)'
 
-        # Create a separate directory for each pgbench run
+        # add -r here
+        args = ['pgbench', '-r', '-h', folders.SOCKET_PATH, '-c', str(nclients), '-j', str(njobs), '-T',
+                str(duration)]
 
         if read_only:
             rtag = "ro"
         else:
             rtag = "rw"
-        rdir = "%s/pgbench-%s-%d-%d-%s" % (self._outdir, rtag, scale, nclients,
-                                           str(run))
-        os.mkdir(rdir)
 
-        # add -r here
-        args = ['pgbench', '-r', '-h', folders.SOCKET_PATH, '-c', str(nclients), '-j', str(njobs), '-T',
-                str(duration)]
+        prefix = "pgbench-%s-%d-%d-%s" % (rtag, scale, nclients, str(run))
 
         # aggregate on per second resolution
         if aggregate:
-            args.extend(['-l', '--aggregate-interval', '1'])
+            args.extend(['-l', '--aggregate-interval', '1', '--log-prefix', prefix])
 
         if read_only:
             args.extend(['-S'])
@@ -184,7 +181,7 @@ class PgBench(object):
             "duration=%d" % (nclients, njobs, aggregate, read_only, duration))
 
         start = time.time()
-        r = run_cmd(args, env=self._env, cwd=rdir)
+        r = run_cmd(args, env=self._env, cwd=folders.LOG_PATH)
         end = time.time()
 
         r = PgBench._parse_results(r[1])
@@ -202,57 +199,46 @@ class PgBench(object):
         execute the whole benchmark, including initialization, warmup and
         benchmark iterations
         """
-
-        # derive configuration for the CPU count / RAM size
-
-        configs = PGBENCH_CONFIG
-        #configs.append({'scale': self._scale, 'clients': self._clients, 'read_only': self._read_only})
-
         results = []
         result = {}
 
         self._results['pgbench'] = []
 
-        read_only = self._read_only
-        
+      
         j = 0
-        for config in configs:
+        info = {}
 
-            info = {}
+        info['clients'] = self._clients
+        scale = self._scale
 
-            info['clients'] = config['clients']
-            scale = config['scale']
+        # init for the dataset scale and warmup
+        self._init(scale)
 
-            # init for the dataset scale and warmup
-            self._init(scale)
+        #warmup = self._run('w%d' % j, scale, self._duration, self._read_only, cpu_count(), cpu_count())
 
-            warmup = self._run('w%d' % j, scale, self._duration, cpu_count(),
-                               cpu_count())
-            j += 1
+        if self._read_only:
+            tag = "read-only"
+        else:
+            tag = "read-write"
 
-            if read_only:
-                tag = "read-only"
-            else:
-                tag = "read-write"
+        for i in range(0, self._iterations):
+            log("pgbench: %s iteration=%d" % (tag, i))
 
-            for i in range(self._iterations):
-                log("pgbench: %s run=%d" % (tag, i))
+            for clients in self._clients:
+                if clients not in results:
+                    result['clients'] = clients
 
-                for clients in config['clients']:
-                    if clients not in results:
-                        result['clients'] = clients
+                self._init(scale)
+                r = self._run(i, scale, self._duration, self._pgbench_init, self._read_only, clients, clients, True, csv_queue)
 
-                    self._init(scale)
-                    r = self._run(i, scale, self._duration, self._pgbench_init, read_only, clients, clients, True, csv_queue)
+                r.update({'iteration': i})
+                results.append(r)
 
-                    r.update({'iteration': i})
-                    results.append(r)
+        info['scale'] = scale
+        info['iterations'] = results
+        info['duration'] = self._duration
+        info['read_only'] = self._read_only
 
-            info['scale'] = scale
-            info['iterations'] = results
-            info['duration'] = self._duration
-            info['read_only'] = self._read_only
-
-            self._results['pgbench'].append(info)
+        self._results['pgbench'].append(info)
 
         return self._results

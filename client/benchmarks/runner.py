@@ -34,7 +34,6 @@ class BenchmarkRunner(object):
 
 	def register_benchmark(self, benchmark_name, benchmark_class):
 		
-
 		self._benchmarks.update({benchmark_name: benchmark_class})
 
 
@@ -137,10 +136,10 @@ class BenchmarkRunner(object):
 
 		if uname == 'Linux':
 			r['os_information'] = {
-				'distributor': check_output(['lsb_release', '-i']).rstrip(),
-				'description': check_output(['lsb_release', '-d']).rstrip(),
-				'release': check_output(['lsb_release', '-r']).rstrip(),
-				'codename': check_output(['lsb_release', '-c']).rstrip()
+				'distributor': check_output(['lsb_release', '-i']).rstrip().split('\t')[1],
+				'description': check_output(['lsb_release', '-d']).rstrip().split('\t')[1],
+				'release': check_output(['lsb_release', '-r']).rstrip().split('\t')[1],
+				'codename': check_output(['lsb_release', '-c']).rstrip().split('\t')[1]
 			}
 
 		if uname == 'Darwin':

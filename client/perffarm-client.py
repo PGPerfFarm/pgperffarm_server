@@ -179,7 +179,6 @@ if __name__ == '__main__':
 			#collectors.register('collectd', CollectdCollector(folders.OUTPUT_PATH, DATABASE_NAME, ''))
 
 			pg_collector = PostgresCollector(folders.OUTPUT_PATH, dbname=DATABASE_NAME, bin_path=('%s/bin' % (folders.BUILD_PATH)))
-
 			collectors.register('postgres', pg_collector)
 
 			runner = BenchmarkRunner(folders.OUTPUT_PATH, API_URL, MACHINE_SECRET, cluster, collectors)
@@ -191,26 +190,25 @@ if __name__ == '__main__':
 			POSTGRES_CONFIG['listen_addresses'] = ''
 			POSTGRES_CONFIG['unix_socket_directories'] = folders.SOCKET_PATH
 
+			# run start time
+			run_start_time = datetime.now(timezone)
 
 			for config in PGBENCH_CONFIG:
 				config['results_dir'] = folders.OUTPUT_PATH
+				runner.register_config('pgbench-basic', 'pgbench', branch, commit, dbname=DATABASE_NAME, bin_path=folders.BIN_PATH, postgres_config=POSTGRES_CONFIG, **config)
 
+				# check configuration and report all issues
+				issues = runner.check()
 
-			runner.register_config('pgbench-basic', 'pgbench', branch, commit, dbname=DATABASE_NAME, bin_path=folders.BIN_PATH, postgres_config=POSTGRES_CONFIG, **config)
-
-			# check configuration and report all issues
-			issues = runner.check()
-
-			if issues:
-				# print the issues
-				for k in issues:
-					for v in issues[k]:
-						print (k, ':', v)
-			else:
-				# run start time
-				run_start_time = datetime.now(timezone)
-				runner.run()
-				run_end_time = datetime.now(timezone)
+				if issues:
+					# print the issues
+					for k in issues:
+						for v in issues[k]:
+							print (k, ':', v)
+				else:
+					runner.run()
+					
+			run_end_time = datetime.now(timezone)		
 
 			# remove the data directory
 			try:
