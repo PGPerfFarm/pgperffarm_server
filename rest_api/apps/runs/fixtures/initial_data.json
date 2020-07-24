@@ -1,9 +1,60 @@
 [
 	{
+		"model": "runs.GitRepo",
+		"git_repo_id": 1,
+		"fields": {
+			"url": "https://github.com/postgres/postgres.git",
+			"owner": "PGDG"
+		}
+	},
+	{
 		"model": "runs.branch",
 		"branch_id": 1,
 		"fields": {
-			"name": "master"
+			"name": "master",
+			"default_view": true, 
+			"ordering": 1,
+			"git_repo": 1
+		}
+	},
+	{
+		"model": "runs.branch",
+		"branch_id": 2,
+		"fields": {
+			"name": "REL_13_STABLE",
+			"default_view": true, 
+			"ordering": 2,
+			"git_repo": 1
+		}
+	},
+	{
+		"model": "runs.branch",
+		"branch_id": 3,
+		"fields": {
+			"name": "REL_12_STABLE",
+			"default_view": true, 
+			"ordering": 3,
+			"git_repo": 1
+		}
+	},
+	{
+		"model": "runs.branch",
+		"branch_id": 4,
+		"fields": {
+			"name": "REL_11_STABLE",
+			"default_view": true, 
+			"ordering": 4,
+			"git_repo": 1
+		}
+	},
+	{
+		"model": "runs.branch",
+		"branch_id": 5,
+		"fields": {
+			"name": "REL_10_STABLE",
+			"default_view": true, 
+			"ordering": 5,
+			"git_repo": 1
 		}
 	}
 ]

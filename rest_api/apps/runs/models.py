@@ -21,7 +21,7 @@ class Branch(models.Model):
 	branch_id = models.AutoField(primary_key=True)
 	name = models.CharField(max_length=100)
 	default_view = models.BooleanField(default=False)
-	ordering = models.IntegerField()
+	ordering = models.IntegerField(null=True)
 	git_repo = models.ForeignKey('runs.GitRepo', on_delete=models.CASCADE)
 
 	class Meta:
