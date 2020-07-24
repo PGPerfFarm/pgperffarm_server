@@ -200,7 +200,7 @@ def CreateRunInfo(request, format=None):
 					raise RuntimeError(msg)
 
 			try: 
-				branch_result = GitRepo.objects.filter(nam3=json_data['git']['branch'], git_repo=repo_id).get()
+				branch_result = Branch.objects.filter(name=json_data['git']['branch'], git_repo=repo_id).get()
 
 			except Branch.DoesNotExist:
 
