@@ -4,9 +4,11 @@ import json
 import hashlib
 import io
 import re
+import copy
 
 from postgres.models import PostgresSettingsSet
 from postgres.serializers import PostgresSettingsSerializer
+from benchmarks.models import PgBenchBenchmark
 from benchmarks.serializers import PgBenchResultSerializer, PgBenchStatementSerializer, PgBenchRunStatementSerializer
 from systems.models import KnownSysctlInfo
 
@@ -162,30 +164,38 @@ def ParsePgBenchStatementLatencies(statement_latencies, pgbench_result_id):
 
 
 
-def ParsePgBenchResults(item, run_id, benchmark_id):
+def ParsePgBenchResults(item, run_id):
 
 	json = item['iterations']
 
-	for result in json:
+	for client in item['clients']:
 
-		# remove statement latencies
-		statement_latencies = result['statement_latencies']
+		for result in json:
 
-		result.pop('statement_latencies')
-		result.pop('clients')
-		result.pop('threads')
+			if int(result['clients']) == client:
 
-		result['run_id'] = run_id
-		result['benchmark_config'] = benchmark_id
+				data = copy.deepcopy(result)
 
-		result_serializer = PgBenchResultSerializer(data=result)
+				pgbench_config = PgBenchBenchmark.objects.filter(clients=data['clients'], scale=item['scale'], duration=item['duration'], read_only=item['read_only']).get()
 
-		if result_serializer.is_valid():
-				result_valid = result_serializer.save()
+				# remove statement latencies
+				statement_latencies = data['statement_latencies']
 
-				ParsePgBenchStatementLatencies(statement_latencies, result_valid.pgbench_result_id)
+				data.pop('statement_latencies')
+				data.pop('clients')
+				data.pop('threads')
 
-		else:
-			raise RuntimeError('Invalid PgBench data.')
+				data['run_id'] = run_id
+				data['benchmark_config'] = pgbench_config.pgbench_benchmark_id
+
+				result_serializer = PgBenchResultSerializer(data=data)
+
+				if result_serializer.is_valid():
+						result_valid = result_serializer.save()
+
+						ParsePgBenchStatementLatencies(statement_latencies, result_valid.pgbench_result_id)
+
+				else:
+					raise RuntimeError('Invalid PgBench data.')
 
 

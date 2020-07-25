@@ -286,28 +286,6 @@ def CreateRunInfo(request, format=None):
 			postgres_log = json_data['pg_ctl']
 			benchmark_log = json_data['pgbench_log']
 
-			# also create the benchmark
-			for item in json_data['pgbench']:
-
-
-				for client in item['clients']:
-					pgbench = ParsePgBenchOptions(item, client)
-
-					try:
-						pgbench_valid = PgBenchBenchmark.objects.filter(clients=pgbench['clients'], scale=pgbench['scale'], duration=pgbench['duration'], read_only=pgbench['read_only']).get()
-
-					except PgBenchBenchmark.DoesNotExist:
-
-							pgbench_info = PgBenchBenchmarkSerializer(data=pgbench)
-
-							if pgbench_info.is_valid():
-								pgbench_valid = pgbench_info.save()
-
-							else:
-								msg = 'Error parsing PgBench configuration.'
-								raise RuntimeError(msg)
-
-
 			# before doing anything else related to benchmarks, save the run
 			run_info = {
 				'machine_id': machine_id,
@@ -348,7 +326,26 @@ def CreateRunInfo(request, format=None):
 				raise RuntimeError(msg)
 
 			# now continue with benchmarks
-			ParsePgBenchResults(item, run_valid.run_id, pgbench_valid.pgbench_benchmark_id)
+			for item in json_data['pgbench']:
+
+				for client in item['clients']:
+					pgbench = ParsePgBenchOptions(item, client)
+
+					try:
+						pgbench_valid = PgBenchBenchmark.objects.filter(clients=client, scale=pgbench['scale'], duration=pgbench['duration'], read_only=pgbench['read_only']).get()
+
+					except PgBenchBenchmark.DoesNotExist:
+
+							pgbench_info = PgBenchBenchmarkSerializer(data=pgbench)
+
+							if pgbench_info.is_valid():
+								pgbench_valid = pgbench_info.save()
+
+							else:
+								msg = 'Error parsing PgBench configuration.'
+								raise RuntimeError(msg)
+
+				ParsePgBenchResults(item, run_valid.run_id)
 			
 
 	except Exception as e:
