@@ -40,7 +40,6 @@ PGBENCH_CONFIG = [
     {
         'iterations': 3,
         'duration': 600,
-        'csv': False,
         'scale': 5,
         'clients': [1, multiprocessing.cpu_count(), 2 * multiprocessing.cpu_count()],
          'read_only': False,
@@ -48,7 +47,6 @@ PGBENCH_CONFIG = [
     {
         'iterations': 2,
         'duration': 600,
-        'csv': False,
         'scale': 5,
         'clients': [1, multiprocessing.cpu_count(), 2 * multiprocessing.cpu_count()],
          'read_only': False,

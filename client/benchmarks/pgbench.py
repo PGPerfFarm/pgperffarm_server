@@ -20,7 +20,7 @@ class PgBench(object):
     #      read-write/read-only tests
     # TODO allow running 'prepared' mode
 
-    def __init__(self, bin_path, dbname, scale, clients, iterations, duration, read_only, csv=False, results_dir=None):
+    def __init__(self, bin_path, dbname, scale, clients, iterations, duration, read_only, results_dir=None):
         '''
         bin_path   - path to PostgreSQL binaries (dropdb, createdb, psql
                      commands)
@@ -31,7 +31,6 @@ class PgBench(object):
         '''
 
         self._bin = bin_path
-        self._csv = csv
         self._dbname = dbname
         self._duration = duration
         self._outdir = results_dir
@@ -149,7 +148,7 @@ class PgBench(object):
 
         return issues
 
-    def _run(self, run, scale, duration, pgbench_init, read_only, nclients=1, njobs=1, aggregate=True, csv_queue=None):
+    def _run(self, run, scale, duration, pgbench_init, read_only, nclients=1, njobs=1, aggregate=True):
         'run pgbench on the database (either a warmup or actual benchmark run)'
 
         # add -r here
@@ -186,13 +185,9 @@ class PgBench(object):
         r.update({'init': pgbench_init})
         r.update({'start': start, 'end': end})
 
-        if csv_queue is not None:
-            csv_queue.put([start, end, r['scale'], nclients, njobs, mode,
-                           duration, latency, tps])
-
         return r
 
-    def run_tests(self, csv_queue):
+    def run_tests(self):
         """
         execute the whole benchmark, including initialization, warmup and
         benchmark iterations
@@ -210,8 +205,6 @@ class PgBench(object):
         # init for the dataset scale and warmup
         self._init(scale)
 
-        #warmup = self._run('w%d' % j, scale, self._duration, self._read_only, cpu_count(), cpu_count())
-
         if self._read_only:
             tag = "read-only"
         else:
@@ -225,7 +218,7 @@ class PgBench(object):
                     result['clients'] = clients
 
                 self._init(scale)
-                r = self._run(i, scale, self._duration, self._pgbench_init, self._read_only, clients, clients, True, csv_queue)
+                r = self._run(i, scale, self._duration, self._pgbench_init, self._read_only, clients, clients, True)
 
                 r.update({'iteration': i})
                 results.append(r)

@@ -2,7 +2,6 @@ import json
 import os
 import codecs
 import requests
-import csv
 import shutil
 import psutil
 
@@ -76,7 +75,7 @@ class BenchmarkRunner(object):
 
 	def _run_config(self, config_name):
 
-		#log("Running benchmark configuration '%s'" % (config_name,))
+		log("Running benchmark configuration")
 
 		r = {}
 		r['pgbench'] = []
@@ -94,29 +93,8 @@ class BenchmarkRunner(object):
 			# expand the attribute names
 			bench = bench(**config['config'])
 
-			# if requested output to CSV, create a queue and collector process
-			csv_queue = None
-			csv_collector = None
-			'''
-			if 'csv' in c['config'] and c['config']['csv']:
-				csv_queue = Queue()
-				csv_collector = Process(target=csv_collect_results,
-										args=(config_name, csv_queue))
-				csv_collector.start()
-			'''
-
 			# run the tests
-			r['pgbench'].append(bench.run_tests(csv_queue))
-
-		# notify the result collector to end and wait for it to terminate
-		if csv_queue:
-			csv_queue.put("STOP")
-			csv_collector.join()
-
-		# stop the cluster and collector
-		log("terminating collectors")
-		self._collector.stop()
-		self._cluster.stop()
+			r['pgbench'].append(bench.run_tests())
 
 		# merge data from the collectors into the JSON document with results
 		r.update(self._collector.result())
@@ -173,25 +151,3 @@ class BenchmarkRunner(object):
 		for config_name in self._configs[0]:
 			self._run_config(config_name)
 
-
-def csv_collect_results(bench_name, queue):
-	'collect results into a CSV file (through a queue)'
-
-	with open("%s.csv" % (bench_name,), 'w') as results_file:
-
-		# collect data from the queue - once we get a plain string (instead of
-		# a list), it's a sign to terminate the collector
-		while True:
-
-			v = queue.get()
-
-			# if we got a string, it means 'terminate'
-			if isinstance(v, str):
-				log("Terminating CSV result collector...")
-				return
-
-			v = [str(x) for x in v]
-
-			# otherwise we expect the value to be a list, and we just print it
-			results_file.write(bench_name + "\t" + "\t".join(v) + "\n")
-			results_file.flush()
