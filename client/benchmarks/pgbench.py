@@ -160,7 +160,7 @@ class PgBench(object):
         else:
             rtag = "rw"
 
-        prefix = "pgbench-%s-%d-%d-%s" % (rtag, scale, nclients, str(run))
+        prefix = "pgbench-%s-%d-%d-%d-%s-" % (rtag, scale, duration, nclients, str(run))
 
         # aggregate on per second resolution
         if aggregate:

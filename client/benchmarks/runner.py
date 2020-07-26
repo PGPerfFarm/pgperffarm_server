@@ -45,8 +45,6 @@ class BenchmarkRunner(object):
 	def _check_config(self, config_name):
 		''
 
-		log("Checking benchmark configuration '%s'" % (config_name,))
-
 		# construct the benchmark class for the given config name
 		for c in self._configs:
 			config = c[config_name]
@@ -61,6 +59,8 @@ class BenchmarkRunner(object):
 
 	def check(self):
 		'check configurations for all benchmarks'
+
+		log("Checking benchmark configuration...")
 
 		issues = {}
 
