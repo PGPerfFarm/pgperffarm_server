@@ -34,9 +34,10 @@ class LastRunsSerializer(serializers.ModelSerializer):
 	compiler = CompilerSerializer(read_only=True)
 	os_version = OsVersionSerializer(read_only=True, source='os_version_id')
 	git_repo = GitRepoSerializer(read_only=True)
+	git_branch = BranchSerializer(read_only=True)
 
 	class Meta:
 	 	model = RunInfo
-	 	fields = ['run_id', 'add_time', 'git_branch', 'git_commit', 'benchmark', 'os_version', 'os_kernel_version_id', 'compiler', 'git_repo', 'pgbench_result', 'postgres_info']
+	 	fields = ['run_id', 'add_time', 'git_branch', 'git_commit', 'benchmark', 'os_version', 'os_kernel_version_id', 'compiler', 'git_repo', 'git_branch', 'pgbench_result', 'postgres_info']
 
 

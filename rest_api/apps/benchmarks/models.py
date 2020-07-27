@@ -20,7 +20,6 @@ class PgBenchResult(models.Model):
 	pgbench_result_id = models.AutoField(primary_key=True)
 
 	run_id = models.ForeignKey('runs.RunInfo', related_name='pgbench_result', on_delete=models.CASCADE)
-
 	benchmark_config = models.ForeignKey('benchmarks.PgBenchBenchmark', on_delete=models.CASCADE)
 
 	tps = models.FloatField()
@@ -45,5 +44,18 @@ class PgBenchRunStatement(models.Model):
 class PgBenchStatement(models.Model):
 
 	pgbench_statement_id = models.AutoField(primary_key=True)
-
 	statement = models.TextField(null=True)
+
+
+class PgBenchLog(models.Model):
+
+	pgbench_log_id = models.AutoField(primary_key=True)
+	pgbench_result_id = models.ForeignKey('benchmarks.PgBenchResult', on_delete=models.CASCADE)
+
+	interval_start = models.DateTimeField(null=True)
+	num_transactions = models.IntegerField(null=True)
+	sum_latency = models.BigIntegerField(null=True)
+	sum_latency_2 = models.BigIntegerField(null=True)
+	min_latency = models.IntegerField(null=True)
+	max_latency= models.IntegerField(null=True)
+

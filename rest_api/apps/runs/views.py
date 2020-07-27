@@ -325,6 +325,7 @@ def CreateRunInfo(request, format=None):
 				msg = 'Error parsing run configuration.'
 				raise RuntimeError(msg)
 
+
 			# now continue with benchmarks
 			for item in json_data['pgbench']:
 
@@ -345,7 +346,8 @@ def CreateRunInfo(request, format=None):
 								msg = 'Error parsing PgBench configuration.'
 								raise RuntimeError(msg)
 
-				ParsePgBenchResults(item, run_valid.run_id)
+				ParsePgBenchResults(item, run_valid.run_id, json_data['pgbench_log_aggregate'])
+
 			
 
 	except Exception as e:

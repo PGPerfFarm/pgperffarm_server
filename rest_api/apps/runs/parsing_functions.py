@@ -5,11 +5,12 @@ import hashlib
 import io
 import re
 import copy
+from datetime import datetime
 
 from postgres.models import PostgresSettingsSet
 from postgres.serializers import PostgresSettingsSerializer
-from benchmarks.models import PgBenchBenchmark
-from benchmarks.serializers import PgBenchResultSerializer, PgBenchStatementSerializer, PgBenchRunStatementSerializer
+from benchmarks.models import PgBenchBenchmark, PgBenchResult
+from benchmarks.serializers import PgBenchResultSerializer, PgBenchStatementSerializer, PgBenchRunStatementSerializer, PgBenchLogSerializer
 from systems.models import KnownSysctlInfo
 
 
@@ -163,10 +164,68 @@ def ParsePgBenchStatementLatencies(statement_latencies, pgbench_result_id):
 			raise RuntimeError('Invalid PgBench statement data.')
 
 
+def ParsePgBenchLogValues(result, values):
 
-def ParsePgBenchResults(item, run_id):
+	lines = values.splitlines()
+	for line in lines:
+		results = line.split()
+
+		date = datetime.utcfromtimestamp(int(results[0])).strftime("%Y-%m-%dT%H:%M:%S%z")
+
+		log = {
+			'pgbench_result_id': result.pgbench_result_id,
+			'interval_start': date,
+			'num_transactions': results[1],
+			'sum_latency': results[2],
+			'sum_latency_2': results[3],
+			'min_latency': results[4],
+			'max_latency': results[5],
+		}
+
+		log_serializer = PgBenchLogSerializer(data=log)
+
+		if log_serializer.is_valid():
+			log_serializer.save()
+
+		else:
+			print (log_serializer.errors)
+			raise RuntimeError('Invalid PgBench log statement.')
+
+
+def ParsePgBenchLogs(result, log_array, iteration):
+
+	found = False
+
+	for log in log_array:
+
+		for key, value in log.items():
+
+			# tag-scale-duration-clients-iteration
+			configs = key.split('-')
+
+			if configs[1] == 'ro':
+				read_only = True
+			else:
+				read_only = False
+
+			# first of all, check that the config of each benchmark actually exists
+			pgbench_config = PgBenchBenchmark.objects.filter(clients=configs[4], scale=configs[2], duration=configs[3], read_only=read_only).get()
+
+			# then, check if it is the same as the test result
+			if pgbench_config.pgbench_benchmark_id == result.benchmark_config.pgbench_benchmark_id:
+				if int(configs[5]) == iteration:
+					ParsePgBenchLogValues(result, value)
+					found = True
+
+	# if no match has been found, return error
+	if not found:
+		raise RuntimeError('Invalid PgBench logs.')
+
+
+def ParsePgBenchResults(item, run_id, pgbench_log):
 
 	json = item['iterations']
+	iterations = 0
 
 	for client in item['clients']:
 
@@ -177,6 +236,15 @@ def ParsePgBenchResults(item, run_id):
 				data = copy.deepcopy(result)
 
 				pgbench_config = PgBenchBenchmark.objects.filter(clients=data['clients'], scale=item['scale'], duration=item['duration'], read_only=item['read_only']).get()
+
+				pgbench_result_last = PgBenchResult.objects.order_by('-pgbench_result_id').first()
+
+				# assuming results get added in order
+				if (pgbench_result_last.benchmark_config.pgbench_benchmark_id == pgbench_config.pgbench_benchmark_id):
+					iterations += 1
+
+				else:
+					iterations = 0
 
 				# remove statement latencies
 				statement_latencies = data['statement_latencies']
@@ -193,9 +261,16 @@ def ParsePgBenchResults(item, run_id):
 				if result_serializer.is_valid():
 						result_valid = result_serializer.save()
 
+						ParsePgBenchLogs(result_valid, pgbench_log, iterations)
 						ParsePgBenchStatementLatencies(statement_latencies, result_valid.pgbench_result_id)
 
 				else:
 					raise RuntimeError('Invalid PgBench data.')
+
+
+
+
+
+
 
 

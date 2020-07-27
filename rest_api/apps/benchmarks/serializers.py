@@ -2,7 +2,7 @@ import shortuuid
 import json
 from rest_framework import serializers
 
-from benchmarks.models import PgBenchBenchmark, PgBenchResult, PgBenchStatement, PgBenchRunStatement
+from benchmarks.models import PgBenchBenchmark, PgBenchResult, PgBenchStatement, PgBenchRunStatement, PgBenchLog
 
 
 class PgBenchBenchmarkSerializer(serializers.ModelSerializer):
@@ -30,6 +30,13 @@ class PgBenchRunStatementSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = PgBenchRunStatement
+		fields = '__all__'
+
+
+class PgBenchLogSerializer(serializers.ModelSerializer):
+
+	class Meta:
+		model = PgBenchLog
 		fields = '__all__'
 
 
