@@ -15,16 +15,15 @@ from django.db import IntegrityError
 from django.db.models import Count
 
 from machines.models import Machine
-from machines.serializers import MachineSerializer
+from machines.serializers import MachineSerializer, MachineRunsSerializer
 from postgres.models import PostgresSettingsSet
 from postgres.serializers import PostgresSettingsSetSerializer
 from runs.models import RunInfo, GitRepo, Branch
-from runs.serializers import RunInfoSerializer, GitRepoSerializer, BranchSerializer, LastRunsSerializer, BranchSerializer
+from runs.serializers import RunInfoSerializer, GitRepoSerializer, BranchSerializer
 from systems.serializers import HardwareInfoSerializer, CompilerSerializer, KnownSysctlInfoSerializer, KernelSerializer, OsDistributorSerializer, OsVersionSerializer, OsKernelVersionSerializer
 from systems.models import HardwareInfo, Compiler, KnownSysctlInfo, Kernel, OsDistributor, OsKernelVersion, OsVersion
 from benchmarks.models import PgBenchBenchmark
-from benchmarks.serializers import PgBenchBenchmarkSerializer
-from machines.serializers import MachineRunsSerializer
+from benchmarks.serializers import PgBenchBenchmarkSerializer, RunMachineSerializer, LastRunsSerializer
 
 from runs.parsing_functions import ParseLinuxData, GetHash, AddPostgresSettings, ParsePgBenchOptions, ParsePgBenchResults
 

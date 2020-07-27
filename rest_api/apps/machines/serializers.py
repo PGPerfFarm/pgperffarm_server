@@ -3,7 +3,6 @@ from django.db.models import Count
 from machines.models import Machine
 from django.contrib.auth.models import User
 
-from runs.serializers import LastRunsSerializer
 from users.serializers import UserSerializer
 
 # an automatically determined set of fields
@@ -12,12 +11,18 @@ from users.serializers import UserSerializer
 class MachineSerializer(serializers.ModelSerializer):
 
 	alias = serializers.CharField()
-	owner_id = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+	owner = UserSerializer(read_only=True, source='owner_id')
 	approved = serializers.ReadOnlyField()
+
+	def update(self, instance, validated_data):
+		instance.alias = validated_data.get('alias', instance.alias)
+		instance.machine_type = validated_data.get('machine_type', instance.machine_type)
+		instance.approved = validated_data.get('approved', instance.approved)
+		return instance
 
 	class Meta:
 		model = Machine
-		fields = ['machine_id','alias', 'add_time', 'approved', 'owner_id']
+		fields = ['machine_id','alias', 'add_time', 'approved', 'owner', 'machine_type']
 
 
 class MyMachineSerializer(serializers.ModelSerializer):

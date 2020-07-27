@@ -1,14 +1,20 @@
 from benchmarks.models import PgBenchBenchmark, PgBenchResult, PgBenchStatement, PgBenchRunStatement
-from benchmarks.serializers import PgBenchResultSerializer, PgBenchBenchmarkSerializer, PgBenchRunStatementSerializer, PgBenchStatementSerializer
+from benchmarks.serializers import PgBenchResultSerializer, PgBenchBenchmarkSerializer, PgBenchRunStatementSerializer, PgBenchStatementSerializer, PgBenchBenchmarkMachineSerializer
 
 from rest_framework import permissions, renderers, viewsets, mixins, authentication, serializers, status
-
 
 
 class PgBenchBenchmarkViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
 
 	queryset =  PgBenchBenchmark.objects.all().order_by('pgbench_benchmark_id')
 	serializer_class = PgBenchBenchmarkSerializer
+	permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly, )
+
+
+class PgBenchBenchmarkMachinesViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
+
+	queryset =  PgBenchBenchmark.objects.all().order_by('-pgbench_benchmark_id')
+	serializer_class = PgBenchBenchmarkMachineSerializer
 	permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly, )
 
 
