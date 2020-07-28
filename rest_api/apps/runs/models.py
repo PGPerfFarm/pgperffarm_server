@@ -37,9 +37,7 @@ class RunInfo(models.Model):
 	add_time = models.DateTimeField(auto_now_add=True)
 
 	os_version_id = models.ForeignKey('systems.OsVersion', on_delete=models.CASCADE)
-
 	os_kernel_version_id = models.ForeignKey('systems.OsKernelVersion', on_delete=models.CASCADE)
-
 	hardware_info = models.ForeignKey('systems.HardwareInfo', on_delete=models.CASCADE)
 	
 	#sysctl_info = models.ForeignKey('systems.KnownSysctlInfo', on_delete=models.CASCADE)

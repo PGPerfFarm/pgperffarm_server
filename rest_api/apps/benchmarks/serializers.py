@@ -9,6 +9,21 @@ from systems.serializers import CompilerSerializer, OsVersionSerializer
 from machines.serializers import MachineSerializer
 
 
+class PgBenchConfigMachineSerializer(serializers.Serializer):
+
+	pgbench_benchmark_id = serializers.IntegerField()
+	scale = serializers.IntegerField()
+	duration = serializers.IntegerField()
+	read_only = serializers.BooleanField()
+	clients = serializers.IntegerField()
+	machine_id = serializers.IntegerField()
+	alias = serializers.CharField()
+	add_time = serializers.DateTimeField()
+	machine_type = serializers.CharField()
+	username = serializers.CharField()
+	count = serializers.IntegerField()
+
+
 class RunMachineSerializer(serializers.ModelSerializer):
 
 	machine = MachineSerializer(read_only=True, source='machine_id')
