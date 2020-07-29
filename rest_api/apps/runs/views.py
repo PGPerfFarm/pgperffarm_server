@@ -15,7 +15,7 @@ from django.db import IntegrityError
 from django.db.models import Count
 
 from machines.models import Machine
-from machines.serializers import MachineSerializer, MachineRunsSerializer
+from machines.serializers import MachineSerializer
 from postgres.models import PostgresSettingsSet
 from postgres.serializers import PostgresSettingsSetSerializer
 from runs.models import RunInfo, GitRepo, Branch
@@ -23,7 +23,7 @@ from runs.serializers import RunInfoSerializer, GitRepoSerializer, BranchSeriali
 from systems.serializers import HardwareInfoSerializer, CompilerSerializer, KnownSysctlInfoSerializer, KernelSerializer, OsDistributorSerializer, OsVersionSerializer, OsKernelVersionSerializer
 from systems.models import HardwareInfo, Compiler, KnownSysctlInfo, Kernel, OsDistributor, OsKernelVersion, OsVersion
 from benchmarks.models import PgBenchBenchmark
-from benchmarks.serializers import PgBenchBenchmarkSerializer, RunMachineSerializer, LastRunsSerializer
+from benchmarks.serializers import PgBenchBenchmarkSerializer, MachineRunsSerializer, SingleRunSerializer
 
 from runs.parsing_functions import ParseLinuxData, GetHash, AddPostgresSettings, ParsePgBenchOptions, ParsePgBenchResults
 
@@ -48,6 +48,17 @@ class LastRunsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets
 
 	def get_queryset(self):
 		return Machine.objects.filter(machine_id=self.kwargs['pk'])
+
+
+class SingleRunViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
+
+	queryset = RunInfo.objects.all()
+
+	serializer_class = SingleRunSerializer
+	permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly, )
+
+	def get_queryset(self):
+		return RunInfo.objects.filter(run_id=self.kwargs['pk'])
 
 
 @api_view(['POST'])

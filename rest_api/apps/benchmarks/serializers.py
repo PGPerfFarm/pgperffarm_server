@@ -7,6 +7,10 @@ from runs.models import RunInfo
 from runs.serializers import GitRepoSerializer, BranchSerializer
 from systems.serializers import CompilerSerializer, OsVersionSerializer
 from machines.serializers import MachineSerializer
+from machines.models import Machine
+from users.serializers import UserSerializer
+from systems.serializers import OsKernelVersionSerializer, HardwareInfoSerializer
+from postgres.serializers import PostgresSettingsSetSerializer
 
 
 class PgBenchConfigMachineSerializer(serializers.Serializer):
@@ -24,38 +28,11 @@ class PgBenchConfigMachineSerializer(serializers.Serializer):
 	count = serializers.IntegerField()
 
 
-class RunMachineSerializer(serializers.ModelSerializer):
-
-	machine = MachineSerializer(read_only=True, source='machine_id')
-
-	class Meta:
-		model = RunInfo
-		fields = ['machine']
-
-
 class PgBenchBenchmarkSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = PgBenchBenchmark
 		fields = '__all__'
-
-
-class PgBenchResultIdSerializer(serializers.ModelSerializer):
-
-	run_id = RunMachineSerializer(read_only=True)
-
-	class Meta:
-		model = PgBenchResult
-		fields = ['run_id']
-
-
-class PgBenchBenchmarkMachineSerializer(serializers.ModelSerializer):
-
-	results = PgBenchResultIdSerializer(read_only=True, many=True)
-
-	class Meta:
-		model = PgBenchBenchmark
-		fields = ['pgbench_benchmark_id', 'scale', 'duration', 'read_only', 'clients', 'results']
 
 
 class PgBenchResultSerializer(serializers.ModelSerializer):
@@ -107,5 +84,36 @@ class LastRunsSerializer(serializers.ModelSerializer):
 	 	model = RunInfo
 	 	fields = ['run_id', 'add_time', 'git_branch', 'git_commit', 'benchmark', 'os_version', 'os_kernel_version_id', 'compiler', 'git_repo', 'git_branch', 'pgbench_result', 'postgres_info']
 
+
+class MachineRunsSerializer(serializers.ModelSerializer):
+
+	runs = serializers.SerializerMethodField()
+	owner = UserSerializer(read_only=True, source='owner_id')
+
+	class Meta:
+	 	model = Machine
+	 	fields = ['machine_id','alias', 'add_time', 'approved', 'owner', 'runs', 'machine_type']
+
+
+	def get_runs(self, instance):
+		runs = instance.runs.all().order_by('-add_time')
+		return LastRunsSerializer(runs, many=True).data
+
+
+class SingleRunSerializer(serializers.ModelSerializer):
+
+	pgbench_result = PgBenchAllResultsSerializer(many=True, read_only=True)
+	compiler = CompilerSerializer(read_only=True)
+	os_version = OsVersionSerializer(read_only=True, source='os_version_id')
+	git_repo = GitRepoSerializer(read_only=True)
+	git_branch = BranchSerializer(read_only=True)
+	machine = MachineSerializer(source='machine_id', read_only=True)
+	os_kernel = OsKernelVersionSerializer(source="os_kernel_version_id", read_only=True)
+	hardware_info = HardwareInfoSerializer(read_only=True)
+	postgres_info = PostgresSettingsSetSerializer(read_only=True)
+
+	class Meta:
+	 	model = RunInfo
+	 	fields = ['run_id', 'add_time', 'git_branch', 'git_commit', 'os_version', 'os_kernel', 'compiler', 'git_repo', 'git_branch', 'pgbench_result', 'postgres_info', 'machine', 'hardware_info']
 
 

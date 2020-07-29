@@ -4,6 +4,8 @@ from machines.models import Machine
 from django.contrib.auth.models import User
 
 from users.serializers import UserSerializer
+from runs.models import RunInfo
+from runs.serializers import RunInfoLatestSerializer
 
 # an automatically determined set of fields
 # simple default implementations for the create() and update() methods
@@ -13,6 +15,7 @@ class MachineSerializer(serializers.ModelSerializer):
 	alias = serializers.CharField()
 	owner = UserSerializer(read_only=True, source='owner_id')
 	approved = serializers.ReadOnlyField()
+	latest = serializers.SerializerMethodField()
 
 	def update(self, instance, validated_data):
 		instance.alias = validated_data.get('alias', instance.alias)
@@ -20,9 +23,14 @@ class MachineSerializer(serializers.ModelSerializer):
 		instance.approved = validated_data.get('approved', instance.approved)
 		return instance
 
+	def get_latest(self, obj):
+		run_info = RunInfo.objects.filter(machine_id=obj.machine_id).order_by('-add_time').first()
+		serializer = RunInfoLatestSerializer(run_info)
+		return serializer.data
+
 	class Meta:
 		model = Machine
-		fields = ['machine_id','alias', 'add_time', 'approved', 'owner', 'machine_type']
+		fields = ['machine_id','alias', 'add_time', 'approved', 'owner', 'machine_type', 'latest']
 
 
 class MyMachineSerializer(serializers.ModelSerializer):
@@ -30,18 +38,3 @@ class MyMachineSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Machine
 		fields = '__all__'
-
-
-class MachineRunsSerializer(serializers.ModelSerializer):
-
-	runs = serializers.SerializerMethodField()
-	owner = UserSerializer(read_only=True, source='owner_id')
-
-	class Meta:
-	 	model = Machine
-	 	fields = ['machine_id','alias', 'add_time', 'approved', 'owner', 'runs', 'machine_type']
-
-
-	def get_runs(self, instance):
-		runs = instance.runs.all().order_by('-add_time')
-		return LastRunsSerializer(runs, many=True).data

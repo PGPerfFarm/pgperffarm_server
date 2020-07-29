@@ -12,6 +12,13 @@ class RunInfoSerializer(serializers.ModelSerializer):
 		fields = '__all__'
 
 
+class RunInfoLatestSerializer(serializers.ModelSerializer):
+
+	class Meta:
+		model = RunInfo
+		fields = ['run_id']
+
+
 class GitRepoSerializer(serializers.ModelSerializer):
 
 	class Meta:

@@ -51,6 +51,8 @@ class OsVersionSerializer(serializers.ModelSerializer):
 
 class OsKernelVersionSerializer(serializers.ModelSerializer):
 
+	kernel = KernelSerializer(read_only=True, source='kernel_id')
+
 	class Meta:
 		model = OsKernelVersion
-		fields = '__all__'
+		fields = ['os_kernel_version_id', 'kernel_id', 'kernel_release', 'kernel_version', 'kernel']
