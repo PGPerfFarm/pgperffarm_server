@@ -8,6 +8,7 @@ router.register(r'pgbench_results', views.PgBenchResultViewSet)
 router.register(r'pgbench_statements', views.PgBenchStatementViewSet)
 router.register(r'pgbench_run_statements', views.PgBenchRunStatementViewSet)
 router.register(r'benchmarks_machines', views.PgBenchBenchmarkMachinesViewSet)
+router.register(r'pgbench_results_complete', views.PgBenchResultCompleteViewSet)
 
 
 urlpatterns = [

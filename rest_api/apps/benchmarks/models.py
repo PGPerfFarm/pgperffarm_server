@@ -50,7 +50,7 @@ class PgBenchStatement(models.Model):
 class PgBenchLog(models.Model):
 
 	pgbench_log_id = models.AutoField(primary_key=True)
-	pgbench_result_id = models.ForeignKey('benchmarks.PgBenchResult', on_delete=models.CASCADE)
+	pgbench_result_id = models.ForeignKey('benchmarks.PgBenchResult', on_delete=models.CASCADE, related_name='pgbench_log')
 
 	interval_start = models.DateTimeField(null=True)
 	num_transactions = models.IntegerField(null=True)

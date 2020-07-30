@@ -4,7 +4,7 @@ from rest_framework import serializers
 
 from benchmarks.models import PgBenchBenchmark, PgBenchResult, PgBenchStatement, PgBenchRunStatement, PgBenchLog
 from runs.models import RunInfo
-from runs.serializers import GitRepoSerializer, BranchSerializer
+from runs.serializers import GitRepoSerializer, BranchSerializer, RunInfoSerializer
 from systems.serializers import CompilerSerializer, OsVersionSerializer
 from machines.serializers import MachineSerializer
 from machines.models import Machine
@@ -51,9 +51,11 @@ class PgBenchStatementSerializer(serializers.ModelSerializer):
 
 class PgBenchRunStatementSerializer(serializers.ModelSerializer):
 
+	statements = PgBenchStatementSerializer(read_only=True, source="result_id")
+
 	class Meta:
 		model = PgBenchRunStatement
-		fields = '__all__'
+		fields = ['line_id', 'latency', 'statements']
 
 
 class PgBenchLogSerializer(serializers.ModelSerializer):
@@ -69,7 +71,7 @@ class PgBenchAllResultsSerializer(serializers.ModelSerializer):
 
 	class Meta:
 	 	model = PgBenchResult
-	 	fields = ['tps', 'latency', 'benchmark_config']
+	 	fields = ['pgbench_result_id', 'tps', 'latency', 'benchmark_config']
 
 
 class LastRunsSerializer(serializers.ModelSerializer):
@@ -115,5 +117,37 @@ class SingleRunSerializer(serializers.ModelSerializer):
 	class Meta:
 	 	model = RunInfo
 	 	fields = ['run_id', 'add_time', 'git_branch', 'git_commit', 'os_version', 'os_kernel', 'compiler', 'git_repo', 'git_branch', 'pgbench_result', 'postgres_info', 'machine', 'hardware_info']
+
+
+class RunSerializer(serializers.ModelSerializer):
+
+	compiler = CompilerSerializer(read_only=True)
+	os_version = OsVersionSerializer(read_only=True, source='os_version_id')
+	git_repo = GitRepoSerializer(read_only=True)
+	git_branch = BranchSerializer(read_only=True)
+	machine = MachineSerializer(source='machine_id', read_only=True)
+	os_kernel = OsKernelVersionSerializer(source="os_kernel_version_id", read_only=True)
+
+	class Meta:
+	 	model = RunInfo
+	 	fields = ['run_id', 'add_time', 'git_branch', 'git_commit', 'os_version', 'os_kernel', 'compiler', 'git_repo', 'git_branch', 'machine']
+
+
+class PgBenchResultCompleteSerializer(serializers.ModelSerializer):
+
+	benchmark_config = PgBenchBenchmarkSerializer(read_only=True)
+	pgbench_run_statement = PgBenchRunStatementSerializer(read_only=True, many=True)
+	pgbench_log = PgBenchLogSerializer(read_only=True, many=True)
+	run = RunSerializer(read_only=True, source='run_id')
+
+
+	class Meta:
+	 	model = PgBenchResult
+	 	fields = ['pgbench_result_id', 'tps', 'latency', 'mode', 'start', 'end', 'iteration', 'init', 'benchmark_config', 'pgbench_run_statement', 'pgbench_log', 'run']
+	 	
+
+
+
+
 
 
