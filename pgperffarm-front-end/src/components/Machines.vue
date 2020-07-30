@@ -38,10 +38,12 @@
                 <template v-slot:items="props">
                   <tr>
                     <td class="profile-td"> <router-link :to="{path: '/machine/'+ props.item.alias }"> {{ props.item.alias }} </router-link></td>
+                    <td class="profile-td">{{ props.item.system }}</td>
                     <td class="profile-td">{{ props.item.approved }}</td>
                     <td class="profile-td">{{ props.item.owner }}
                   </td>
                     <td class="profile-td">{{ props.item.addDate }}</td>
+                    <td class="profile-td"> <u> <router-link :to="{path: '/run/'+ props.item.latest }"> {{ props.item.latest }} </router-link> </u></td>
                   </tr>
                 </template>
               </v-data-table>
@@ -67,11 +69,11 @@ export default {
 
       headers: [
         { text: 'Alias', align: 'center', value: 'alias' },
-        //{ text: 'System', align: 'center', value: 'system' },
+        { text: 'System', align: 'center', value: 'system' },
         { text: 'Approved', align: 'center', value: 'approved' },
-        //{ text: 'Latest', align: 'center', value: 'latest' },
         { text: 'Owner', align: 'center', value: 'owner' },
         { text: 'Add date', align: 'center', value: 'addDate' },
+        { text: 'Latest run', align: 'center', value: 'latest' },
       ],
 
       machines: [],
@@ -88,27 +90,12 @@ export default {
 
           for(var i = 0; i < response.data.count; i++) {
 
-            var approved = false;
-            var uuid = '';
-
-            if (response.data.results[i].approved) {
-              approved = true;
-            }
-
-            /*
-            if (response.data.results[i].lastest.length > 0) {
-              lastest = response.data.results[i].lastest[0].branch;
-              uuid = '/records/' + response.data.results[i].lastest[0].uuid;
-            }
-            */
-
             var machine = {
               alias: response.data.results[i].alias,
-              //system: response.data.results[i].os_name + ' ' + response.data.results[i].os_version + ' ' + response.data.results[i].comp_name + ' ' + response.data.results[i].comp_version,
-              approved: approved,
-              //latest: lastest,
-              uuid: uuid,
-              owner: response.data.results[i].owner_id,
+              system: response.data.results[i].machine_type,
+              approved: response.data.results[i].approved,
+              latest: response.data.results[i].latest.run_id,
+              owner: response.data.results[i].owner.username,
               addDate: response.data.results[i].add_time.substring(0, 10)
             };
 

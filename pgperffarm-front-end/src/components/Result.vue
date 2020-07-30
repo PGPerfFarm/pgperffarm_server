@@ -4,7 +4,7 @@
       		<v-card flat class="machine-main-card">
       			<v-toolbar flat class="result-toolbar">
       				<v-toolbar-title class="result-toolbar"> 
-      					Report page: {{this.$route.params.id}}
+      					Benchmark result page: {{this.$route.params.id}}
       				</v-toolbar-title>
       				<v-spacer></v-spacer>
             		<v-btn class="login-button" v-on:click="downloadJSON()">Download JSON</v-btn>
@@ -13,44 +13,58 @@
         	<v-flex>
         	<v-card flat>
 		        <v-card-text class="machine-main-text">
-		          Farmer: {{alias}} <br>
-		          Report number: {{reports}}
+		          Farmer: {{ alias }} <br>
+		          Run: {{ run }}
 		        </v-card-text>
 		    </v-card>
 		</v-flex>
 		<v-flex>
 		    <v-card flat>
 		        <v-card-text class="machine-main-text">
-		          Branch: {{branch}} <br>
-		          Commit: <a :href=commit target="_blank"> <u>{{ commit.substring(63, 70) }} </u></a>
+		          Branch: {{ branch }} <br>
+		          Commit: <u> <a> {{ commit.substring(63, 70) }} </a> </u>
 		        </v-card-text>
 		    </v-card>
 		</v-flex>
 		<v-flex>
 		    <v-card flat>
 		        <v-card-text class="machine-main-text">
-		          Date: {{date}} <br>
-		          Previous: <a :href="$router.resolve(previous).href"> <u> {{previous.substring(9, 16)}} </u> </a>
+		          OS: {{ os }} <br>
+		          Kernel: {{ kernel }}
 		        </v-card-text>
 		    </v-card>
 		</v-flex>
          </v-layout>
+     
      </v-card>
     <v-layout>
       <v-flex d-flex xs12 sm6 md3>
               	<v-layout column>
 	                <v-card flat class="profile-left-top" min-width=15>
 	                  <v-card-title>
-	                  	Owner: {{owner.username}} <br>
-                    	Reports: {{reports}} <br>
+                    	Benchmark configuration: {{config}}  <br>
                   	  </v-card-title> 
 	                </v-card>
 	                <v-card flat class="profile-left-bottom" min-width=15>
 	                	<v-card-text>
-	                      <v-icon color="rgb(51, 103, 145)">computer</v-icon> OS: {{os}} <br>
-	                      <v-icon color="rgb(51, 103, 145)">border_all</v-icon> Processor: {{compiler}} <br>
-	                      <v-icon color="rgb(51, 103, 145)">email</v-icon> Email: {{ owner.email }} <br> <br>
+	                		Clients: {{ clients }} <br>
+		                  	Scale: {{ scale }} <br>
+		                  	Duration: {{ duration }} <br>
+		                  	Read-only: {{ read_only }} <br> <br>
+	                      
 	                	</v-card-text>
+	                </v-card>
+	                <v-card flat class="run-left-top" min-width=15>
+
+	                	<v-card-text>
+	                	  Iteration: {{ iteration }} <br>
+		                  TPS: {{ tps }} <br>
+	                      Latency: {{ latency }} <br>
+	                      Mode: {{ mode }} <br> 
+	                      Init: {{ init }} <br> 
+	                      Start: {{ start }} <br> 
+	                      End: {{ end }} <br> <br>
+                  	  	</v-card-text> 
 	                </v-card>
             	</v-layout>
       </v-flex>
@@ -63,99 +77,60 @@
                     align-with-title
                 >
                     <v-tabs-slider color="white"></v-tabs-slider>
-                    <v-tab> <span style="color: white"> Progress </span> </v-tab>
-                    <v-tab> <span style="color: white"> Meta information </span> </v-tab>
-                    <v-tab> <span style="color: white"> Settings </span> </v-tab>
-                    <v-tab> <span style="color: white"> Hardware </span> </v-tab>
-					<v-tab> <span style="color: white"> Operating system </span> </v-tab>
-
+                    <v-tab> <span style="color: white"> Statement latencies </span> </v-tab>
+                    <v-tab> <span style="color: white"> Log </span> </v-tab>
+                   
                 	<v-tabs-items>
 
-	                 	<!-- progress -->
 	                  	<v-tab-item>
 	                    	<v-card flat>
-	                      		<v-card-title class="results-card-title"> Progress for each test, showing read-only and read-write. </v-card-title>
-	                      		<v-container class="results-container">
-		                      		<v-layout row v-bind="binding">
-		                      			<v-container>
-				                      		<v-layout column>
-				                      			<v-card-title class="results-title"> Read only </v-card-title>
-				                      			<v-flex v-for="(object, index) in this.ro" v-bind:key="index">
-				                      				<v-card flat>
-				                      					<results-table v-bind:data="ro[index]"></results-table>
-				                      				</v-card>
-				                      			</v-flex>
-				                      		</v-layout>
-			                      		</v-container>
-			                      		<v-container>
-				                      		<v-layout column>
-				                      			<v-card-title class="results-title"> Read/write </v-card-title>
-				                      			<v-flex v-for="(object, index) in this.rw" v-bind:key="index">
-				                      				<v-card flat>
-				                      					<results-table v-bind:data="rw[index]"></results-table>
-				                      				</v-card>
-				                      			</v-flex>
-				                      		</v-layout>
-			                      		</v-container>
-		                      		</v-layout>
-	                      	</v-container>
+	                      		<v-card-title class="results-card-title"> Statement latencies for each line. </v-card-title>
+	                      		<v-card-text>
+		                    		<table class="mounts">
+		                    			<tr class="mounts-r">
+										    		<th class="mounts-h"> <b> Line </b> </th>
+										    		<th class="mounts-h"> <b> Latency </b> </th>
+										    		<th class="mounts-h"> <b> Statement </b> </th>
+										  </tr>
+										  		<tr v-for="(item, i) in results" :key="i" class="mounts-r">
+													<td class="mounts-d"> {{item.line}} </td>
+													<td class="mounts-d"> {{item.latency}} </td>
+													<td class="mounts-d"> {{item.statement}} </td>
+												    
+										  		</tr>
+
+		                    	</table>
+		                    	</v-card-text>
 	                    	</v-card>
 	                  	</v-tab-item>
+	                  	<v-tab-item>
+	                    	<v-card flat>
+	                      		<v-card-title class="results-card-title"> Log produced with aggregate intervals of 1 second. </v-card-title>
+	                      		<v-card-text>
+		                    		<table class="mounts">
+		                    			<tr class="mounts-r">
+										    		<th class="mounts-h"> <b> Start </b> </th>
+										    		<th class="mounts-h"> <b> Transactions </b> </th>
+										    		<th class="mounts-h"> <b> Sum latency </b> </th>
+										    		<th class="mounts-h"> <b> Sum latency 2</b> </th>
+										    		<th class="mounts-h"> <b> Min latency </b> </th>
+										    		<th class="mounts-h"> <b> Max latency </b> </th>
+										  </tr>
+										  		<tr v-for="(item, i) in log" :key="i" class="mounts-r">
+													<td class="mounts-d"> {{item.interval_start}} </td>
+													<td class="mounts-d"> {{item.num_transactions}} </td>
+													<td class="mounts-d"> {{item.sum_latency}} </td>
+													<td class="mounts-d"> {{item.sum_latency_2}} </td>
+													<td class="mounts-d"> {{item.min_latency}} </td>
+													<td class="mounts-d"> {{item.max_latency}} </td>
+												    
+										  		</tr>
 
-		                <!-- meta information -->
-		                <v-tab-item>
-		                    <v-card flat>
-		                    	<v-card-title class="results-card-title">
-		                    		Displayed below is detail about the testing meta information.
-		                    	</v-card-title>
-		                    	<v-card-text v-for="(item, index) in meta_info_keys" v-bind:key="item" class="results-text">
-		                    		<b>{{ meta_info_keys[index] }}</b>: {{ meta_info_data[item] }}
+		                    	</table>
 		                    	</v-card-text>
-
-		                    </v-card>
-		                </v-tab-item>
-
-		                <!-- settings -->
-		                <v-tab-item>
-		                    <v-card flat>
-		                    	<v-card-title class="results-card-title">
-		                    		Displayed below is information about the testing operating settings.
-		                    	</v-card-title>
-		                    	<v-card-text v-for="(item, index) in pg_info_keys" v-bind:key="item" class="results-text">
-		                    		<b>{{ pg_info_keys[index] }}</b>: {{ pg_info_data[item] }}
-		                    	</v-card-text>
-
-		                    </v-card>
-		                </v-tab-item>
-
-		                <!-- hardware -->
-		                <v-tab-item>
-		                    <v-card flat>
-		                    	<v-card-title class="results-card-title">
-		                    		Displayed below is information about the testing hardware.
-		                    	</v-card-title>
-		                    	<template>
-		                    		<pre>
-		  								<v-treeview :items="hardware"></v-treeview>
-		  							</pre>
-								</template>
-		                    </v-card>
-		                 </v-tab-item>
-
-		                  <!-- os -->
-		                <v-tab-item>
-		                    <v-card flat>
-		                    	<v-card-title class="results-card-title">
-		                    		Displayed below is information about the testing operating system.
-		                    	</v-card-title>
-		                    	<template>
-		                    		<pre>
-		  								<v-treeview :items="os_info"></v-treeview>
-		  							</pre>
-								</template>
-		                    </v-card>
-                  		</v-tab-item>
-
+	                    	</v-card>
+	                  	</v-tab-item>
+		                
                 	</v-tabs-items>
               	</v-tabs>
           	</v-card>
@@ -179,57 +154,27 @@
 
 		data: () => ({
 
-			latencies: [],
-
-			report: '',
-
-			hardware: [
-				{
-		         	id: 1,
-		          	name: 'CPU',
-		          	children: [{id: 2, name: ''}]
-		        },
-	          	{
-	          		id: 3,
-		          	name: 'Memory',
-		          	children: [{id: 4, name: ''}],
-	          	}
-	          ],
-
-	        os_info: [
-				{
-		         	id: 1,
-		          	name: 'Mounts',
-		          	children: [{id: 2, name: ''}]
-		        },
-	          	{
-	          		id: 3,
-		          	name: 'sysctl',
-		          	children: [{id: 4, name: ''}],
-	          	}
-	        ],
-
-	        pg_info_data: '',
-	        pg_info_keys: '',
-
-	        meta_info_data: '',
-	        meta_info_keys: '',
-
-	        alias: '',
+			alias: '',
 	        os: '',
-	        compiler: '',
-	        owner: {
-	        	username: '',
-	        	email: ''
-	        },
-	        reports: '',
 	        branch: '',
-	        date: '',
 	        commit: '',
-	        previous: '',
+	        kernel: '',
+	        run: '',
 
-	        ro: [],
-	        rw: [],
+			tps: '',
+			latency: '',
+			mode: '',
+			init: '',
+			start: '',
+			end: '',
+			config: '',
+			iteration: '',
+			clients: '',
+			scale: '',
+			duration: '',
+			read_only: '',
+			results: {},
+			log: {},
 
 		}),
 
@@ -238,89 +183,55 @@
 			getResult() {
 
 				var id = this.$route.params.id;
-				var url = this.$store.state.endpoints.record;
+				var url = this.$store.state.endpoints.results + id;
 
 				axios.get(url)
         		.then((response) => {
 
-        			var report = response.data.results;
-        			//this.report = report;
+        			this.clients = response.data.benchmark_config.clients;
+        			this.scale = response.data.benchmark_config.scale;
+        			this.duration = response.data.benchmark_config.duration;
+        			this.read_only = response.data.benchmark_config.read_only;
+        			this.config = response.data.benchmark_config.pgbench_benchmark_id;
 
-        			var n = 1;
+        			this.tps = response.data.tps;
+        			this.latency = response.data.latency;
+        			this.init = response.data.init;
+        			this.start = response.data.start;
+        			this.end = response.data.end;
+        			this.mode = response.data.mode;
+        			this.iteration = response.data.iteration;
 
-        			for (let run in report) {
-        				var latency = 0;
-        				for (let i in report[run].pgbench_result) {
-	        				latency += report[run].pgbench_result[i].latency;
-	        				n++;
-        				}
+        			this.alias = response.data.run.machine.alias;
+        			this.os = response.data.run.os_version.dist.dist_name + ' ' + response.data.run.os_version.release;
+        			this.branch = response.data.run.git_branch.name;
+        			this.kernel = response.data.run.os_kernel.kernel.kernel_name + ' ' + response.data.run.os_kernel.kernel_release;
+        			this.run = response.data.run.run_id;
+        			this.commit = 'https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=' + response.data.run.git_commit;
 
-        				this.latencies.push(latency / n);
+        			for (let i = 0; i < response.data.pgbench_run_statement.length; i++) {
+        				var result = {
+        					"line": response.data.pgbench_run_statement[i].line_id,
+        					"latency": response.data.pgbench_run_statement[i].latency,
+        					"statement": response.data.pgbench_run_statement[i].statements.statement
+        				};
 
+        				this.results[response.data.pgbench_run_statement[i].line_id] = result;
         			}
-        			console.log(this.latencies);
 
-        			this.hardware[0].children[0].name = report.hardware_info.cpuinfo.replace(/: /g, '');
-        			this.hardware[1].children[0].name = report.hardware_info.meminfo.replace(/: /g, '');
+        			for (let i = 0; i < response.data.pgbench_log.length; i++) {
+        				var result = {
+        					"interval_start": response.data.pgbench_log[i].interval_start,
+        					"num_transactions": response.data.pgbench_log[i].num_transactions,
+        					"sum_latency": response.data.pgbench_log[i].sum_latency,
+        					"sum_latency_2": response.data.pgbench_log[i].sum_latency_2,
+        					"min_latency": response.data.pgbench_log[i].min_latency,
+        					"max_latency": response.data.pgbench_log[i].max_latency,
+        				};
 
-        			this.os_info[0].children[0].name = report.linux_info.mounts.replace(/: /g, '');
-        			this.os_info[1].children[0].name = report.linux_info.sysctl.replace(/: /g, '');
+        				this.log[response.data.pgbench_log[i].pgbench_log_id] = result;
+        			}
 
-        			this.pg_info_data = report.pg_info;
-        			this.pg_info_keys = Object.keys(this.pg_info_data);
-
-        			this.meta_info_data = report.meta_info;
-        			this.meta_info_keys = Object.keys(this.meta_info_data);
-
-        			this.alias = report.test_machine.alias;
-	        		this.os = report.test_machine.os_name + ' ' + report.test_machine.os_version;
-	        		this.compiler = report.test_machine.comp_name + ' ' + report.test_machine.comp_version;
-
-	        		//this.owner.username = report.test_machine.owner_username;
-	        		var email = report.test_machine.owner_email;
-                  	email = email.replace('@', '<at>');
-                  	this.owner.email = email;
-                  	
-			        this.reports = report.test_machine.reports;
-			        this.branch = report.branch;
-			        this.date = report.meta_time.substring(0, 10) + ' ' + report.meta_time.substring(11, 16);
-			        this.commit = 'https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=' + report.commit;
-
-			        if (report.prev != undefined)
-			        	this.previous = '/records/' + report.prev;
-			      
-			        for (let number in report.dataset_info.ro)
-			        	for (let result in report.dataset_info.ro[number]) {
-
-			        		let data = {};
-
-			        		data.latency = report.dataset_info.ro[number][result][0]["results"][0].latency;
-			        		data.mode = report.dataset_info.ro[number][result][0]["results"][0].mode;
-			        		data.clients = report.dataset_info.ro[number][result][0].clients;
-			       			data.median = report.dataset_info.ro[number][result][0].median;
-			       			data.run = report.dataset_info.ro[number][result][0]["results"][0].run;
-			       			data.tps = report.dataset_info.ro[number][result][0]["results"][0].tps;
-			       			data.percentage = report.dataset_info.ro[number][result][0].percentage;
-
-			        		this.ro.push(data);
-			        	}
-
-			        for (let number in report.dataset_info.rw) 
-			        	for (let result in report.dataset_info.rw[number]) {
-
-			        		let data = {};
-
-			        		data.latency = report.dataset_info.rw[number][result][0]["results"][0].latency;
-			        		data.mode = report.dataset_info.rw[number][result][0]["results"][0].mode;
-			        		data.clients = report.dataset_info.rw[number][result][0].clients;
-			       			data.median = report.dataset_info.rw[number][result][0].median;
-			       			data.run = report.dataset_info.rw[number][result][0]["results"][0].run;
-			       			data.tps = report.dataset_info.rw[number][result][0]["results"][0].tps;
-			       			data.percentage = report.dataset_info.rw[number][result][0].percentage;
-
-			        		this.rw.push(data);
-
-			        	}
 			      
         		})
         		.catch((error) => {
@@ -333,7 +244,7 @@
 				const url = window.URL.createObjectURL(new Blob([JSON.stringify(this.report, null, 2)], {type: 'application/json'}));
 			    const link = document.createElement('a');
 			    link.href = url;
-			    link.setAttribute('download', 'report.json');
+			    link.setAttribute('download', 'result.json');
 			    document.body.appendChild(link);
 			    link.click();
     		},

@@ -61,12 +61,24 @@
 		                </v-tab-item>
 
 		                <v-tab-item>
-		                    <v-card flat id="13 stable">	
+		                    <v-card flat id="13_stable">	
 		                    </v-card>
 		                </v-tab-item>
 
-		                
-		                
+		                <v-tab-item>
+		                    <v-card flat id="12_table">	
+		                    </v-card>
+		                </v-tab-item>
+
+		                <v-tab-item>
+		                    <v-card flat id="11_stable">	
+		                    </v-card>
+		                </v-tab-item>
+
+		                <v-tab-item>
+		                    <v-card flat id="10_stable">	
+		                    </v-card>
+		                </v-tab-item>
 
                 	</v-tabs-items>
               	</v-tabs>
@@ -90,7 +102,7 @@
 	// results/benchmark/machine
 
 	export default {
-		name: 'Results',
+		name: 'Trend',
 
 		data: () => ({
 
@@ -110,7 +122,7 @@
 
 		methods: {
 
-			getResult() {
+			getTrend() {
 
 				var url = this.$store.state.endpoints.record + this.$route.params.id;
 				console.log(url)
@@ -129,9 +141,9 @@
         			this.compiler = response.data.runs[0].compiler.compiler;
         			this.number_runs = response.data.runs.length
 
-        			var branches_raw = ['master', '	REL_13_stable', 'REL_12_stable', 'REL_11_stable', 'REL_10_stable'];
+        			var branches_raw = ['master', 'REL_13_STABLE', 'REL_12_STABLE', 'REL_11_STABLE', 'REL_10_STABLE'];
 
-        			var max_length = 20;
+        			var max_length = 30;
         			if (max_length > report.length)
         				max_length = report.length;
 
@@ -143,20 +155,24 @@
         				var benchmarks = 0;
 
         				for (let j = 0; j < 5; j++) {
-        					if (branches_raw[j] == report[run].git_branch) {
-        						this.commits[j].push(report[run].git_commit.substring(33, 40))
+        					if (branches_raw[j] == report[run].git_branch.name) {
 
-        						for (let i in report[run].pgbench_result) {
-	        						latency += report[run].pgbench_result[i].latency;
-	        						tps += report[run].pgbench_result[i].tps;
-	        						benchmarks++;
-        						}
+        						//if this.commits[j].includes(report[run].git_commit) {
 
-        						this.runs[j]++;
+	        						this.commits[j].push(report[run].git_commit.substring(33, 40));
 
-        						this.latencies[j].push(latency / benchmarks);
-        						this.tps[j].push((tps / benchmarks) / 1000);
-        					}
+	        						for (let i in report[run].pgbench_result) {
+		        						latency += report[run].pgbench_result[i].latency;
+		        						tps += report[run].pgbench_result[i].tps;
+		        						benchmarks++;
+	        						}
+
+	        						this.runs[j]++;
+
+	        						this.latencies[j].push(latency / benchmarks);
+	        						this.tps[j].push((tps / benchmarks) / 1000);
+	        					}
+        					//}
 
         				}
         			}
@@ -193,6 +209,7 @@
 						var tps_line = {
 							x: this.runs[j],
 							y: this.tps[j],
+							yaxis: 'y2',
 							mode: 'lines+markers+text',
 							text: this.commits[j],
 							textposition: 'top center',
@@ -222,18 +239,29 @@
 	        				title: 'Run'
 	        			},
 	        			yaxis: {
-	       					title: 'Value'
+	       					title: 'Latency'
+	       				},
+	       				yaxis2: {
+	       					title: 'TPS',
+	       					showgrid: false,
+	       					overlaying: 'y',
+    						side: 'right'
 	       				},
 	       				legend: {
 						    x: 1,
 						    xanchor: 'right',
-						    y: 1
+						    y: 1.25,
+						    orientation: "h"
 						},
 	        		};
 
 	        		console.log(data[0])
 
         			Plotly.newPlot(document.getElementById("Head"), data[0], layout, {responsive: true});
+        			Plotly.newPlot(document.getElementById("13_stable"), data[1], layout, {responsive: true});
+        			Plotly.newPlot(document.getElementById("12_table"), data[2], layout, {responsive: true});
+        			Plotly.newPlot(document.getElementById("11_stable"), data[3], layout, {responsive: true});
+        			Plotly.newPlot(document.getElementById("10_stable"), data[4], layout, {responsive: true});
 			      
         		})
         		.catch((error) => {
@@ -254,7 +282,7 @@
 		},
 
 		mounted() {
-			this.getResult();
+			this.getTrend();
 		},
 
 		computed: {
@@ -265,7 +293,7 @@
         			binding.column = true;
 
         	return binding
-      }
+      	}
     }
 	}
 

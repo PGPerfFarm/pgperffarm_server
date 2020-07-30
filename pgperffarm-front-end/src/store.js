@@ -34,7 +34,10 @@ export default new Vuex.Store({
 		    machine: baseUrl + 'machine-records-by-branch/',
 		    my_machine: baseUrl + 'my-machines/',
 		    record: baseUrl + 'last_runs/',
-		    users: baseUrl + 'users/'
+		    run: baseUrl + 'run/',
+		    users: baseUrl + 'users/',
+		    benchmarks: baseUrl + 'benchmarks_machines/',
+		    results: baseUrl + 'pgbench_results_complete/',
 	    }
   	},
 

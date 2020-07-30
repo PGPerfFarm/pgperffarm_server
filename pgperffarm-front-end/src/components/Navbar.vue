@@ -14,9 +14,9 @@
 		     	 &nbsp; Machines
 		      </v-btn>
 
-		    <v-btn flat class="v-btn-navbar" href="/branches">
+		    <v-btn flat class="v-btn-navbar" href="/benchmarks">
 		    	<v-icon color="rgb(51, 103, 145)">list</v-icon>
-		     	 &nbsp; Branches
+		     	 &nbsp; Benchmarks
 		     </v-btn>
 
 		     <v-menu open-on-hover bottom offset-y>
