@@ -13,6 +13,26 @@ from systems.serializers import OsKernelVersionSerializer, HardwareInfoSerialize
 from postgres.serializers import PostgresSettingsSetSerializer
 
 
+class PgBenchTrendSerializer(serializers.Serializer):
+
+	avgtps = serializers.FloatField()
+	avglat = serializers.FloatField()
+	stdtps = serializers.FloatField()
+	stdlat = serializers.FloatField()
+	git_commit = serializers.CharField()
+	pgbench_benchmark_id = serializers.IntegerField()
+	name = serializers.CharField()
+	scale = serializers.IntegerField()
+	duration = serializers.IntegerField()
+	read_only = serializers.BooleanField()
+	clients = serializers.IntegerField()
+	machine_id = serializers.IntegerField()
+	alias = serializers.CharField()
+	machine_type = serializers.CharField()
+	username = serializers.CharField()
+	url = serializers.CharField()
+
+
 class PgBenchConfigMachineSerializer(serializers.Serializer):
 
 	pgbench_benchmark_id = serializers.IntegerField()
