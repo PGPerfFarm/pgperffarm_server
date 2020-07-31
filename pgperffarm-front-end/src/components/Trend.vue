@@ -7,8 +7,7 @@
       					Average TPS and latency in milliseconds: {{ alias }}
       				</v-toolbar-title>
       				<v-spacer></v-spacer>
-      				<v-btn class="login-button" >View OS settings</v-btn>
-      				<v-btn class="login-button" >View Postgres settings</v-btn>
+      				<v-btn class="login-button" >View history</v-btn>
             		<v-btn class="login-button" v-on:click="downloadJSON()">Download JSON</v-btn>
             	</v-toolbar>
      		</v-card>
@@ -33,10 +32,10 @@
 	                <v-card flat class="run-left-top" min-width=15>
 
 	                	<v-card-text>
-		                  	Clients: <br>
-		                  	Scale: <br>
-		                  	Duration: <br>
-		                  	Read-only: <br> <br>
+		                  	Clients: {{ clients }} <br>
+		                  	Scale: {{ scale }} <br>
+		                  	Duration: {{ duration }} <br>
+		                  	Read-only: {{ read_only }} <br> <br>
 		                  	<v-btn icon absolute left> <v-icon color="white">arrow_back_ios</v-icon> </v-btn> <v-btn icon absolute right> <v-icon color="white">arrow_forward_ios</v-icon> </v-btn> <br> <br>
                   	  	</v-card-text> 
 	                </v-card>
@@ -106,10 +105,12 @@
 
 		data: () => ({
 
-			latencies: [[], [], [], [], []],
-			tps: [[], [], [], [], []],
+			avg_latencies: [[], [], [], [], []],
+			avg_tps: [[], [], [], [], []],
+			std_latencies: [[], [], [], [], []],
+			std_tps: [[], [], [], [], []],
 			commits: [[], [], [], [], []],
-			runs: [0, 0, 0, 0, 0],
+
 			branches: ['Head', '13 stable', '12 stable', '11 stable', '10 stable'],
 			alias: '',
 			owner: '',
@@ -117,6 +118,11 @@
 			compiler: '',
 			os: '',
 			email: '',
+
+			clients: '',
+			duration: '',
+			scale: '',
+			read_only: '',
 			
 		}),
 
@@ -124,117 +130,138 @@
 
 			getTrend() {
 
-				var url = this.$store.state.endpoints.record + this.$route.params.id;
-				console.log(url)
-
+				var url = this.$store.state.endpoints.trends + this.$route.params.id + '/10';
+				console.log(url);
+				
 				axios.get(url)
         		.then((response) => {
 
-        			var report = response.data.runs;
+        			console.log(response);
 
-        			this.alias = response.data.alias;
-        			this.owner = response.data.owner.username;
-        			this.email = response.data.owner.email;
+        			var main = response.data.results[0];
 
-        			this.os = response.data.runs[0].os_version.dist.dist_name + ' ' + response.data.runs[0].os_version.release + ' ' + response.data.runs[0].os_version.codename;
+        			this.alias = main.alias;
+        			this.owner = main.username;
+        			this.email = main.email;
 
-        			this.compiler = response.data.runs[0].compiler.compiler;
-        			this.number_runs = response.data.runs.length
+        			this.clients = main.clients;
+        			this.duration = main.duration;
+        			this.scale = main.scale;
+        			this.read_only = main.read_only;
+
+        			this.os = "todo";
+
+        			this.compiler = "todo";
+        			this.number_runs = response.data.count;
 
         			var branches_raw = ['master', 'REL_13_STABLE', 'REL_12_STABLE', 'REL_11_STABLE', 'REL_10_STABLE'];
+        			var max_length = 20;
 
-        			var max_length = 30;
-        			if (max_length > report.length)
-        				max_length = report.length;
+        			for (let run = 0; run < response.data.results.length; run++) {
 
-        			for (let run = 0; run < max_length; run++) {
+        				for (let i = 0; i < 5; i++) {
 
-        				var latency = 0;
-        				var tps = 0;
+        					if (branches_raw[i] == response.data.results[run].name) {
 
-        				var benchmarks = 0;
+        						if (this.commits[i].length < max_length) {
 
-        				for (let j = 0; j < 5; j++) {
-        					if (branches_raw[j] == report[run].git_branch.name) {
+	        						this.avg_latencies[i].push(response.data.results[run].avglat);
+	        						this.std_latencies[i].push(response.data.results[run].stdlat);
+	        						this.avg_tps[i].push(response.data.results[run].avgtps);
+	        						this.std_tps[i].push(response.data.results[run].stdtps);
+	        						this.commits[i].push(response.data.results[run].git_commit.substring(33, 40));
 
-        						//if this.commits[j].includes(report[run].git_commit) {
-
-	        						this.commits[j].push(report[run].git_commit.substring(33, 40));
-
-	        						for (let i in report[run].pgbench_result) {
-		        						latency += report[run].pgbench_result[i].latency;
-		        						tps += report[run].pgbench_result[i].tps;
-		        						benchmarks++;
-	        						}
-
-	        						this.runs[j]++;
-
-	        						this.latencies[j].push(latency / benchmarks);
-	        						this.tps[j].push((tps / benchmarks) / 1000);
-	        					}
-        					//}
-
+        						}
+        					}
         				}
         			}
 
         			for (let j = 0; j < 5; j++) {
         				this.commits[j].reverse();
-        				this.latencies[j].reverse();
-        				this.tps[j].reverse();
+        				this.avg_latencies[j].reverse();
+        				this.avg_tps[j].reverse();
+        				this.std_latencies[j].reverse();
+        				this.std_tps[j].reverse();
         			}
 
         			var data = [[], [], [], [], []];
 
-        			console.log(this.runs);
-
         			for (let j = 0; j < 5; j++) {
 
-        				var latency_line = {
-							x: this.runs[j],
-							y: this.latencies[j],
-							mode: 'lines+markers',
+        				var avg_latency_line = {
+							x: this.commits[j].length,
+							y: this.avg_latencies[j],
+							mode: 'lines+markers+text',
 							text: this.commits[j],
 							marker: {
-								color: '#336791',
+								color: '#12BA9E',
 								size: 10
 							},
 							line: {
-								color: '#336791',
+								color: '#12BA9E',
 								width: 2
 							},
-							name: 'Latency'
+							name: 'Average latency'
 
 						};
 
-						var tps_line = {
-							x: this.runs[j],
-							y: this.tps[j],
+						var avg_tps_line = {
+							x: this.commits[j].length,
+							y: this.avg_tps[j],
 							yaxis: 'y2',
-							mode: 'lines+markers+text',
+							mode: 'lines+markers',
+							textposition: 'top center',
+							marker: {
+								color: '#89A6FB',
+								size: 10
+							},
+							line: {
+								color: '#89A6FB',
+								width: 2
+							},
+							name: 'Average TPS'
+
+						};
+
+						var std_latency_line = {
+							x: this.commits[j].length,
+							y: this.std_latencies[j],
+							mode: 'lines+markers',
+							marker: {
+								color: '#A3D9FF',
+								size: 10
+							},
+							line: {
+								color: '#A3D9FF',
+								width: 2
+							},
+							name: 'Standard deviation latency'
+
+						};
+
+						var std_tps_line = {
+							x: this.commits[j].length,
+							y: this.std_tps[j],
+							yaxis: 'y2',
+							mode: 'lines+markers',
 							text: this.commits[j],
 							textposition: 'top center',
 							marker: {
-								color: '#a6c5e0',
+								color: '#96E6B3',
 								size: 10
 							},
 							line: {
-								color: '#a6c5e0',
+								color: '#96E6B3',
 								width: 2
 							},
-							name: 'TPS'
+							name: 'Standard deviation TPS'
 
 						};
         			
-	        			data[j] = [latency_line, tps_line];
+	        			data[j] = [avg_latency_line, avg_tps_line, std_latency_line, std_tps_line];
         			}
 
-        			var title = 'Git repository: ' + response.data.runs[0].git_repo.url
-
         			var layout = {
-        				title: {
-        					text: title,
-    						x: 0.05,
-        				},
 	        			xaxis: {
 	        				title: 'Run'
 	        			},

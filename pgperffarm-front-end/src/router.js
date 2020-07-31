@@ -35,7 +35,7 @@ const routes = [
 	{path: '/benchmarks', component: Benchmarks, props: true},
 	{path: '/machine/:alias', component: Machine, props: true},
 	{path: '/run/:id', name: 'Run', component: Run, props: true},
-	{path: '/trend/:id', name: 'Trend', component: Trend, props: true},
+	{path: '/trend/:id/:config', name: 'Trend', component: Trend, props: true},
 	{path: '/result/:id', name: 'Result', component: Result, props: true},
 ]
 

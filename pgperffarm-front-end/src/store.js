@@ -38,6 +38,7 @@ export default new Vuex.Store({
 		    users: baseUrl + 'users/',
 		    benchmarks: baseUrl + 'benchmarks_machines/',
 		    results: baseUrl + 'pgbench_results_complete/',
+		    trends: baseUrl + 'pgbench_trends/',
 	    }
   	},
 
