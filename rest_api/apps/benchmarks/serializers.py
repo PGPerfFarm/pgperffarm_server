@@ -30,7 +30,12 @@ class PgBenchTrendSerializer(serializers.Serializer):
 	alias = serializers.CharField()
 	machine_type = serializers.CharField()
 	username = serializers.CharField()
+	email = serializers.CharField()
 	url = serializers.CharField()
+	count = serializers.IntegerField()
+	dist_name = serializers.CharField()
+	kernel_name = serializers.CharField()
+	compiler = serializers.CharField()
 
 
 class PgBenchConfigMachineSerializer(serializers.Serializer):
