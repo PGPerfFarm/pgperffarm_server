@@ -15,6 +15,8 @@ import Apply from './components/Apply.vue'
 import Run from './components/Run.vue'
 import Trend from './components/Trend.vue'
 import Result from './components/Result.vue'
+import BenchmarkList from './components/BenchmarkList.vue'
+import Plots from './components/Plots.vue'
 
 Vue.use(Router)
 
@@ -35,7 +37,12 @@ const routes = [
 	{path: '/benchmarks', component: Benchmarks, props: true},
 	{path: '/machine/:alias', component: Machine, props: true},
 	{path: '/run/:id', name: 'Run', component: Run, props: true},
-	{path: '/trend/:id/:config', name: 'Trend', component: Trend, props: true},
+	{path: '/trend/:id/:config', component: Trend, props: true,
+		children: [
+		{path: '/benchmarks', component: BenchmarkList},
+		{path: '', name: 'Plots', component: Plots}
+		]
+	},
 	{path: '/result/:id', name: 'Result', component: Result, props: true},
 ]
 

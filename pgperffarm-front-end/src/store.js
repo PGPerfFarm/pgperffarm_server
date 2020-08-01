@@ -26,6 +26,7 @@ export default new Vuex.Store({
 	    reports: '',
 	    machines: '',
 	    branches: '',
+	    pgbench_results: [],
 
 	    endpoints: {
 		    obtainJWT: baseUrl + 'login_token/',
@@ -73,6 +74,11 @@ export default new Vuex.Store({
 	    	state.machines = info.machines;
 	    	state.branches = info.branches;
 	    	//state.email = info.email;
+	    },
+
+	    setPgBenchResults(state, obj) {
+	    	localStorage.setItem('pgbench_results', obj);
+	    	state.pgbench_results = obj;
 	    }
 
 	},
@@ -85,6 +91,7 @@ export default new Vuex.Store({
     	reports: state => state.reports,
     	branches: state => state.branches,
     	machines: state => state.machines,
+    	pgbench_results: state => state.pgbench_results,
   	},
 
   	actions: {
