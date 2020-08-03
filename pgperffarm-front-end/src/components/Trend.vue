@@ -54,7 +54,6 @@
 
 <script>
 	import axios from 'axios'
-	import Plotly from 'plotly.js-dist'
 
 	// same machine, same benchmark configuration, same postgres settings, same os configuration, same git repository
 
@@ -65,7 +64,6 @@
 		name: 'Trend',
 
 		data: () => ({
-
 			
 			alias: '',
 			owner: '',
@@ -84,7 +82,6 @@
 
 			getTrend() {
 
-
         			var main = this.$store.getters.pgbench_results;
         			
         			this.alias = main.alias;
@@ -98,10 +95,7 @@
 
         			this.os = main.kernel_name + ' ' + main.dist_name + ' ' + main.machine_type;
         			this.compiler = main.compiler;
-
-			      
-        		
-
+			     
 			},
 
 			downloadJSON() {

@@ -52,6 +52,7 @@
 										                    <td class="profile-td">{{ props.item.type }}</td>
 										                    <td class="profile-td">{{ props.item.owner }}</td>
 										                    <td class="profile-td">{{ props.item.count }}</td>
+										                    <td class="profile-td"> <u> <router-link :to="{path: '/trend/'+ props.item.id + '/' + props.item.config_id}"> link </router-link> </u> </td>
 							                  			</tr>
 							                		</template>
 							              		</v-data-table>
@@ -88,6 +89,7 @@
 		        { text: 'Type', align: 'center', value: 'type'},
 		        { text: 'Owner', align: 'center', value: 'owner'},
 		        { text: 'Count', align: 'center', value: 'count'},
+		        { text: 'Trend', align: 'center', value: 'trend'},
       		],
 		}),
 
@@ -136,6 +138,7 @@
 		        			owner: response.data.results[i].username,
 		        			count: response.data.results[i].count,
 		        			config_id: response.data.results[i].pgbench_benchmark_id,
+		        			id: response.data.results[i].machine_id,
 		        		};
 
 		        		if (!this.machines.hasOwnProperty(benchmark)) {

@@ -13,27 +13,28 @@
                 	<v-tabs-items>
    
 		                <v-tab-item>
-		                    <v-card flat id="Head">	
+		                    <v-card flat id="Head" class="branch">	
+		                    	<a href="/benchmarks" 
 		                    </v-card>
 		                </v-tab-item>
 
 		                <v-tab-item>
-		                    <v-card flat id="13_stable">	
+		                    <v-card flat id="13_stable" class="branch">	
 		                    </v-card>
 		                </v-tab-item>
 
 		                <v-tab-item>
-		                    <v-card flat id="12_table">	
+		                    <v-card flat id="12_table" class="branch">	
 		                    </v-card>
 		                </v-tab-item>
 
 		                <v-tab-item>
-		                    <v-card flat id="11_stable">	
+		                    <v-card flat id="11_stable" class="branch">	
 		                    </v-card>
 		                </v-tab-item>
 
 		                <v-tab-item>
-		                    <v-card flat id="10_stable">	
+		                    <v-card flat id="10_stable" class="branch">	
 		                    </v-card>
 		                </v-tab-item>
 
@@ -71,14 +72,16 @@
 
 			getPlots() {
 
-				var url = this.$store.state.endpoints.trends + this.$route.params.id + '/10';
-				console.log(url);
-				
+				var url = this.$store.state.endpoints.trends + this.$route.params.id + '/' + this.$route.params.config;
+
 				axios.get(url)
         		.then((response) => {
 
         			var main = response.data.results[0];
         			this.$store.commit('setPgBenchResults', main);
+
+        			var machine_id = response.data.results[0].machine_id;
+        			var config_id = response.data.results[0].pgbench_benchmark_id;
 
         			var branches_raw = ['master', 'REL_13_STABLE', 'REL_12_STABLE', 'REL_11_STABLE', 'REL_10_STABLE'];
         			var max_length = 20;
@@ -95,7 +98,7 @@
 	        						this.std_latencies[i].push(response.data.results[run].stdlat);
 	        						this.avg_tps[i].push(response.data.results[run].avgtps);
 	        						this.std_tps[i].push(response.data.results[run].stdtps);
-	        						this.commits[i].push(response.data.results[run].git_commit.substring(33, 40));
+	        						this.commits[i].push(response.data.results[run].git_commit.substring(30, 40));
 
         						}
         					}
@@ -208,7 +211,6 @@
 						},
 	        		};
 
-	        		
 
         			Plotly.newPlot(document.getElementById("Head"), data[0], layout, {responsive: true});
         			Plotly.newPlot(document.getElementById("13_stable"), data[1], layout, {responsive: true});
@@ -216,8 +218,71 @@
         			Plotly.newPlot(document.getElementById("11_stable"), data[3], layout, {responsive: true});
         			Plotly.newPlot(document.getElementById("10_stable"), data[4], layout, {responsive: true});
 
+        			var router = this.$router;
+
         			document.getElementById("Head").on('plotly_click', function(data) {
-					    this.$router.push("/benchmarks");
+
+        				var commit = '';
+        			
+					    for (let i = 0; i < data.points.length; i++) {
+					    	commit = data.points[i].text;
+					    }
+
+					    var detail = config_id + '/detail/' + commit + '/' + machine_id + '/' + config_id;
+					    router.push(detail);
+					    
+					});
+
+					document.getElementById("13_STABLE").on('plotly_click', function(data) {
+
+        				var commit = '';
+        			
+					    for (let i = 0; i < data.points.length; i++) {
+					    	commit = data.points[i].text;
+					    }
+
+					    var detail = config_id + '/detail/' + commit + '/' + machine_id + '/' + config_id;
+					    router.push(detail);
+					    
+					});
+
+					document.getElementById("12_STABLE").on('plotly_click', function(data) {
+
+        				var commit = '';
+        			
+					    for (let i = 0; i < data.points.length; i++) {
+					    	commit = data.points[i].text;
+					    }
+
+					    var detail = config_id + '/detail/' + commit + '/' + machine_id + '/' + config_id;
+					    router.push(detail);
+					    
+					});
+
+					document.getElementById("11_STABLE").on('plotly_click', function(data) {
+
+        				var commit = '';
+        			
+					    for (let i = 0; i < data.points.length; i++) {
+					    	commit = data.points[i].text;
+					    }
+
+					    var detail = config_id + '/detail/' + commit + '/' + machine_id + '/' + config_id;
+					    router.push(detail);
+					    
+					});
+
+					document.getElementsById("10_STABLE").on('plotly_click', function(data) {
+
+        				var commit = '';
+        			
+					    for (let i = 0; i < data.points.length; i++) {
+					    	commit = data.points[i].text;
+					    }
+
+					    var detail = config_id + '/detail/' + commit + '/' + machine_id + '/' + config_id;
+					    router.push(detail);
+					    
 					});
 			      
         })

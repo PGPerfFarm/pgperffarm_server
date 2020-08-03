@@ -40,6 +40,7 @@ export default new Vuex.Store({
 		    benchmarks: baseUrl + 'benchmarks_machines/',
 		    results: baseUrl + 'pgbench_results_complete/',
 		    trends: baseUrl + 'pgbench_trends/',
+		    trends_benchmarks: baseUrl + 'pgbench_results_commit/',
 	    }
   	},
 
