@@ -13,6 +13,13 @@ from systems.serializers import OsKernelVersionSerializer, HardwareInfoSerialize
 from postgres.serializers import PostgresSettingsSetSerializer
 
 
+class PgBenchRunsSerializer(serializers.Serializer):
+
+	run_id = serializers.IntegerField()
+	pgbench_result_id = serializers.IntegerField()
+	add_time = serializers.DateTimeField()
+
+
 class PgBenchTrendSerializer(serializers.Serializer):
 
 	avgtps = serializers.FloatField()

@@ -1,5 +1,6 @@
 from benchmarks.models import PgBenchBenchmark, PgBenchResult, PgBenchStatement, PgBenchRunStatement
-from benchmarks.serializers import PgBenchResultSerializer, PgBenchBenchmarkSerializer, PgBenchRunStatementSerializer, PgBenchStatementSerializer, PgBenchConfigMachineSerializer, PgBenchResultCompleteSerializer, PgBenchTrendSerializer
+from benchmarks.serializers import PgBenchResultSerializer, PgBenchBenchmarkSerializer, PgBenchRunStatementSerializer, PgBenchStatementSerializer, PgBenchConfigMachineSerializer, PgBenchResultCompleteSerializer, PgBenchTrendSerializer, PgBenchRunsSerializer
+from runs.models import RunInfo
 
 from rest_framework import permissions, renderers, viewsets, mixins, authentication, serializers, status, pagination, generics
 
@@ -28,6 +29,23 @@ class PgBenchBenchmarkMachinesViewSet(mixins.RetrieveModelMixin, mixins.ListMode
 
 	serializer_class = PgBenchConfigMachineSerializer
 	permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly, )
+
+
+class PgBenchRunsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
+
+	serializer_class = PgBenchRunsSerializer
+	permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly, )
+	pagination_class = TrendPagination
+
+	def get_queryset(self):
+
+		machine = int(self.kwargs['machine'])
+		config = int(self.kwargs['config'])
+		commit = '%' + str(self.kwargs['commit'])
+ 
+		queryset = RunInfo.objects.raw("select runs_runinfo.run_id, pgbench_result_id, runs_runinfo.add_time from benchmarks_pgbenchbenchmark, benchmarks_pgbenchresult, runs_runinfo where benchmarks_pgbenchbenchmark.pgbench_benchmark_id = benchmarks_pgbenchresult.benchmark_config_id and benchmarks_pgbenchresult.run_id_id = runs_runinfo.run_id and git_commit like %s and machine_id_id = %s and benchmark_config_id = %s and runs_runinfo.git_repo_id = 9 order by add_time;", [commit, machine, config])
+
+		return queryset
 
 
 class PgBenchBenchmarkTrendViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
