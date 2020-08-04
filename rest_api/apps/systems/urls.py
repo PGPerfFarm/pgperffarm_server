@@ -5,7 +5,6 @@ from systems import views
 router = DefaultRouter()
 router.register(r'systems', views.SystemViewSet)
 router.register(r'os_kernels', views.KernelViewSet)
-router.register(r'known_sysctl', views.KnownSysctlViewSet)
  
 urlpatterns = [
 	url(r'^', include(router.urls)),

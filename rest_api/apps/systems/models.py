@@ -1,5 +1,4 @@
 from django.db import models
-import shortuuid
 import hashlib
 from django.contrib.postgres.fields.jsonb import JSONField
 from django.contrib.postgres.fields import ArrayField
@@ -34,19 +33,6 @@ class Compiler(models.Model):
 	compiler = models.CharField(max_length=200, null=False, unique=True)
 
 
-class KnownSysctlInfo(models.Model):
-
-	# kernel parameters:
-	# shmmax, shmmin, shmall, shmseg, shmmni, semmni, semmns, semmsl, semmap, semvmx
-
-	# vm parameters:
-	# nr_hugepages, nr_hugepages_mempolicy, nr_overcommit_hugepages, overcommit_kbytes, overcommit_memory, overcommit_ratio, swappiness, numa_stat , numa_zonelist_order, dirty_background_bytes, dirty_background_ratio, dirty_bytes, dirty_expire_centisecs, dirty_ratio, dirty_writeback_centisecs, dirtytime_expire_seconds
-
-	sysctl_id = models.AutoField(primary_key=True)
-	os_kernel_id = models.ForeignKey('systems.Kernel', on_delete=models.CASCADE, related_name='kernel')
-	sysctl = ArrayField(models.CharField(max_length=50, null=True, unique=True))
-
-
 class OsDistributor(models.Model):
 
 	os_distributor_id = models.AutoField(primary_key=True)
@@ -57,6 +43,10 @@ class Kernel(models.Model):
 
 	kernel_id = models.AutoField(primary_key=True)
 	kernel_name = models.CharField(max_length=100, null=False, unique=True)
+	sysctl = ArrayField(models.CharField(max_length=50, null=True, unique=True))
+
+	class Meta:
+		unique_together = ('kernel_name', 'sysctl')
 
 
 class OsKernelVersion(models.Model):

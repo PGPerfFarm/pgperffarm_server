@@ -45,7 +45,6 @@ INSTALLED_APPS = [
 	'django.contrib.sites',
 	'rest_framework',
 	'rest_framework.authtoken',
-	'corsheaders',
 	'machines',
 	'benchmarks',
 	'users',
@@ -63,7 +62,6 @@ REST_FRAMEWORK = {
 		'rest_framework.permissions.IsAuthenticated',
 	),
 	'DEFAULT_AUTHENTICATION_CLASSES': (
-		'rest_framework_simplejwt.authentication.JWTAuthentication',
 		'rest_framework.authentication.SessionAuthentication',
 		'rest_framework.authentication.BasicAuthentication',
 		'rest_framework.authentication.TokenAuthentication',
@@ -77,7 +75,6 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 
 MIDDLEWARE = [
-	'corsheaders.middleware.CorsMiddleware',
 	'django.middleware.security.SecurityMiddleware',
 	'django.contrib.sessions.middleware.SessionMiddleware',
 	'django.middleware.common.CommonMiddleware',
@@ -86,15 +83,6 @@ MIDDLEWARE = [
 	'django.contrib.messages.middleware.MessageMiddleware',
 	'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
-
-CORS_ORIGIN_ALLOW_ALL = True  # set to True to test the website locally while connecting remotely
-CORS_ALLOW_CREDENTIALS = True
-CORS_ORIGIN_WHITELIST = (
-	'http://127.0.0.1:8080',
-	'http://127.0.0.1:8000',
-)
-
 
 ROOT_URLCONF = 'rest_api.urls'
 REST_USE_JWT = True

@@ -1,5 +1,5 @@
 from systems.models import HardwareInfo, Compiler
-from systems.serializers import HardwareInfoSerializer, CompilerSerializer, KnownSysctlInfo, Kernel
+from systems.serializers import HardwareInfoSerializer, CompilerSerializer, Kernel
 
 from rest_framework import permissions, renderers, viewsets, mixins, authentication, serializers, status
 
@@ -15,14 +15,6 @@ class CompilerViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets
 
 	queryset =  Compiler.objects.all().order_by('compiler_id')
 	serializer_class = CompilerSerializer
-
-
-class KnownSysctlViewSet(viewsets.ModelViewSet):
-
-	permission_classes = (permissions.IsAuthenticated, )
-	serializer_class = KnownSysctlInfo
-	lookup_field = 'sysctl'
-	queryset =  KnownSysctlInfo.objects.all().order_by('sysctl')
 
 
 class KernelViewSet(viewsets.ModelViewSet):

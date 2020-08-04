@@ -21,7 +21,6 @@ from django.contrib import admin
 from rest_framework import routers
 from rest_framework.documentation import include_docs_urls
 from rest_framework.schemas import get_schema_view
-from rest_framework_simplejwt import views as jwt_views
 
 
 # $ curl -X POST -H "Content-Type: application/json" -d '{"username":"<your_username>","password":"<your_password>"}' http://<your_domain_and_port>/auth/
@@ -43,8 +42,6 @@ urlpatterns = [
     url('', include('postgres.urls')),
     url('', include('benchmarks.urls')),
     url(r'^admin/', admin.site.urls),
-    url('login_token/', jwt_views.TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    url('refresh_token/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
     url(r'^docs/', include_docs_urls(title=API_TITLE, description=API_DESCRIPTION)),
     url(r'^schema/$', schema_view),
 ]

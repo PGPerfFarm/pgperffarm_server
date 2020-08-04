@@ -6,7 +6,6 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
 from django.contrib.auth.models import User
-import shortuuid
 import hashlib
 from django.contrib.auth.hashers import make_password
 

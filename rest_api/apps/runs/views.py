@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-import shortuuid
 import json
 import pandas
 import io
@@ -20,8 +19,8 @@ from postgres.models import PostgresSettingsSet
 from postgres.serializers import PostgresSettingsSetSerializer
 from runs.models import RunInfo, GitRepo, Branch
 from runs.serializers import RunInfoSerializer, GitRepoSerializer, BranchSerializer
-from systems.serializers import HardwareInfoSerializer, CompilerSerializer, KnownSysctlInfoSerializer, KernelSerializer, OsDistributorSerializer, OsVersionSerializer, OsKernelVersionSerializer
-from systems.models import HardwareInfo, Compiler, KnownSysctlInfo, Kernel, OsDistributor, OsKernelVersion, OsVersion
+from systems.serializers import HardwareInfoSerializer, CompilerSerializer, KernelSerializer, OsDistributorSerializer, OsVersionSerializer, OsKernelVersionSerializer
+from systems.models import HardwareInfo, Compiler, Kernel, OsDistributor, OsKernelVersion, OsVersion
 from benchmarks.models import PgBenchBenchmark
 from benchmarks.serializers import PgBenchBenchmarkSerializer, MachineRunsSerializer, SingleRunSerializer
 
@@ -90,8 +89,8 @@ def CreateRunInfo(request, format=None):
 					machine_serializer.save()
 
 				else:
-					msg = 'Machine OS information is invalid.'
-					raise RuntimeError(msg)
+					error = machine.serializer.errors
+					raise RuntimeError(error)
 
 			elif os_old != os_new:
 				raise RuntimeError("Machine OS cannot change.")
@@ -113,8 +112,8 @@ def CreateRunInfo(request, format=None):
 					os_distributor = distributor_serializer.save()
 
 				else:
-					msg = 'Distributor information is invalid.'
-					raise RuntimeError(msg)
+					error = distributor_serializer.errors
+					raise RuntimeError(error)
 			try:
 				os_kernel = Kernel.objects.filter(kernel_name=json_data['kernel']['uname_s']).get()
 
@@ -127,8 +126,8 @@ def CreateRunInfo(request, format=None):
 					os_kernel = kernel_serializer.save()
 
 				else:
-					msg = 'Kernel information is invalid.'
-					raise RuntimeError(msg)
+					error = kernel_serializer.errors
+					raise RuntimeError(error)
 
 			try:
 				os_version = OsVersion.objects.filter(dist_id=os_distributor.os_distributor_id, release=json_data['os_information']['release'], codename=json_data['os_information']['codename'], description=json_data['os_information']['description']).get()
@@ -146,8 +145,8 @@ def CreateRunInfo(request, format=None):
 					os_version = os_serializer.save()
 
 				else:
-					msg = 'Os version information is invalid.'
-					raise RuntimeError(msg)
+					error = os_serializer.errors
+					raise RuntimeError(error)
 
 			try:
 				os_kernel_version = OsKernelVersion.objects.filter(kernel_id=os_kernel.kernel_id, kernel_release=json_data['kernel']['uname_r'], kernel_version=json_data['kernel']['uname_v']).get()
@@ -165,8 +164,8 @@ def CreateRunInfo(request, format=None):
 					os_kernel_version = os_kernel_version_serializer.save()
 
 				else:
-					msg = 'OS kernel version information is invalid.'
-					raise RuntimeError(msg)
+					error = os_kernel_version_serializer.errors
+					raise RuntimeError(error)
 
 			compiler_raw = json_data['compiler']
 			compiler_match = re.search('compiled by (.*),', compiler_raw)
@@ -188,8 +187,8 @@ def CreateRunInfo(request, format=None):
 					compiler_id = compiler_valid.compiler_id
 
 				else:
-					msg = 'Compiler information is invalid.'
-					raise RuntimeError(msg)
+					error = compiler_serializer.errors
+					raise RuntimeError(error)
 
 			try: 
 				repo_result = GitRepo.objects.filter(url=json_data['git']['remote']).get()
@@ -206,8 +205,8 @@ def CreateRunInfo(request, format=None):
 					repo_id = repo_valid.git_repo_id
 
 				else:
-					msg = 'Git information is invalid.'
-					raise RuntimeError(msg)
+					error = repo_serializer.errors
+					raise RuntimeError(error)
 
 			try: 
 				branch_result = Branch.objects.filter(name=json_data['git']['branch'], git_repo=repo_id).get()
@@ -225,8 +224,8 @@ def CreateRunInfo(request, format=None):
 					branch_result = branch_serializer.save()
 				
 				else:
-					msg = 'Branch information is invalid.'
-					raise RuntimeError(msg)
+					error = branch_serializer.errors
+					raise RuntimeError(error)
 
 			hardware_info_new = ParseLinuxData(json_data)
 			try:
@@ -240,8 +239,8 @@ def CreateRunInfo(request, format=None):
 					hardware_info_valid = hardware_info.save()
 
 				else:
-					msg = 'Hardware information is invalid.'
-					raise RuntimeError(msg)
+					error = hardware_info.errors
+					raise RuntimeError(error)
 
 			commit = json_data['git']['commit']
 
@@ -264,8 +263,8 @@ def CreateRunInfo(request, format=None):
 						AddPostgresSettings(postgres_hash, postgres_hash_object)
 
 					else:
-						msg = 'Error hashing Postgres configuration.'
-						raise RuntimeError(msg)
+						error = postgres_info.errors
+						raise RuntimeError(error)
 
 
 			if 'git_clone_log' not in json_data:
@@ -332,8 +331,8 @@ def CreateRunInfo(request, format=None):
 				run_valid = run_info_serializer.save()
 
 			else:
-				msg = 'Error parsing run configuration.'
-				raise RuntimeError(msg)
+				error = run_info_serializer.errors
+				raise RuntimeError(error)
 
 
 			# now continue with benchmarks
@@ -353,12 +352,11 @@ def CreateRunInfo(request, format=None):
 								pgbench_valid = pgbench_info.save()
 
 							else:
-								msg = 'Error parsing PgBench configuration.'
-								raise RuntimeError(msg)
+								error = pgbench_info.errors
+								raise RuntimeError(error)
 
 				ParsePgBenchResults(item, run_valid.run_id, json_data['pgbench_log_aggregate'])
 
-			
 
 	except Exception as e:
 		msg = 'Upload error: ' + e.__str__()

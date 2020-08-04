@@ -1,5 +1,4 @@
 from django.db import models
-import shortuuid
 import hashlib
 from django.contrib.postgres.fields.jsonb import JSONField
 
@@ -39,8 +38,6 @@ class RunInfo(models.Model):
 	os_version_id = models.ForeignKey('systems.OsVersion', on_delete=models.CASCADE)
 	os_kernel_version_id = models.ForeignKey('systems.OsKernelVersion', on_delete=models.CASCADE)
 	hardware_info = models.ForeignKey('systems.HardwareInfo', on_delete=models.CASCADE)
-	
-	#sysctl_info = models.ForeignKey('systems.KnownSysctlInfo', on_delete=models.CASCADE)
 
 	sysctl_raw = JSONField(null=True)
 
@@ -56,7 +53,6 @@ class RunInfo(models.Model):
 	git_clone_log = models.TextField(null=True, blank=True)
 	git_clone_runtime = models.DurationField(null=True, blank=True)
 	git_pull_runtime = models.DurationField(null=True, blank=True)
-	git_repo = models.ForeignKey('runs.GitRepo', on_delete=models.CASCADE)
 
 	configure_log = models.TextField(null=True, blank=True)
 	configure_runtime = models.DurationField(null=True, blank=True)

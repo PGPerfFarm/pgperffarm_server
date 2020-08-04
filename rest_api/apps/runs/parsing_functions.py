@@ -11,7 +11,7 @@ from postgres.models import PostgresSettingsSet
 from postgres.serializers import PostgresSettingsSerializer
 from benchmarks.models import PgBenchBenchmark, PgBenchResult
 from benchmarks.serializers import PgBenchResultSerializer, PgBenchStatementSerializer, PgBenchRunStatementSerializer, PgBenchLogSerializer
-from systems.models import KnownSysctlInfo
+from systems.models import Kernel
 
 
 def ParseSysctl(raw_data):
@@ -19,14 +19,14 @@ def ParseSysctl(raw_data):
 	data = json.loads(raw_data)
 	json_dict = {}
 
-	known_sysctl_linux = KnownSysctlInfo.objects.filter(sysctl_id=1).get()
+	known_sysctl_linux = Kernel.objects.filter(kernel_id=1).get()
 
 	for parameter in known_sysctl_linux.sysctl:
 
 		if parameter in data:
 			json_dict.update({parameter: data[parameter]})
 
-	known_sysctl_mac = KnownSysctlInfo.objects.filter(sysctl_id=2).get()
+	known_sysctl_mac = Kernel.objects.filter(kernel_id=2).get()
 
 	for parameter in known_sysctl_linux.mac:
 
@@ -118,7 +118,8 @@ def AddPostgresSettings(hash_value, settings):
 				serializer.save()
 
 		else:
-			raise RuntimeError('Invalid Postgres settings.')
+			error = serializer.errors
+			raise RuntimeError(error)
 
 
 def ParsePgBenchOptions(item, clients):
@@ -166,10 +167,12 @@ def ParsePgBenchStatementLatencies(statement_latencies, pgbench_result_id):
 					line_id += 1
 
 				else:
-					raise RuntimeError('Invalid PgBench run statement data.')
+					error = run_statement_serializer.errors
+					raise RuntimeError(error)
 
 		else:
-			raise RuntimeError('Invalid PgBench statement data.')
+			error = statement_serializer.errors
+			raise RuntimeError(error)
 
 
 def ParsePgBenchLogValues(result, values):
@@ -196,8 +199,8 @@ def ParsePgBenchLogValues(result, values):
 			log_serializer.save()
 
 		else:
-			print (log_serializer.errors)
-			raise RuntimeError('Invalid PgBench log statement.')
+			error = log_serializer.errors
+			raise RuntimeError(error)
 
 
 def ParsePgBenchLogs(result, log_array, iteration):
@@ -273,7 +276,8 @@ def ParsePgBenchResults(item, run_id, pgbench_log):
 						ParsePgBenchStatementLatencies(statement_latencies, result_valid.pgbench_result_id)
 
 				else:
-					raise RuntimeError('Invalid PgBench data.')
+					error = result_serializer.errors
+					raise RuntimeError(error)
 
 
 

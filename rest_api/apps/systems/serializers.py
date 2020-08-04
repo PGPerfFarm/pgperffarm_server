@@ -1,8 +1,7 @@
-import shortuuid
 import json
 from rest_framework import serializers
 
-from systems.models import HardwareInfo, Compiler, KnownSysctlInfo, OsDistributor, Kernel, OsVersion, OsKernelVersion
+from systems.models import HardwareInfo, Compiler, OsDistributor, Kernel, OsVersion, OsKernelVersion
 
 
 class HardwareInfoSerializer(serializers.ModelSerializer):
@@ -16,13 +15,6 @@ class CompilerSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = Compiler
-		fields = '__all__'
-
-
-class KnownSysctlInfoSerializer(serializers.ModelSerializer):
-
-	class Meta:
-		model = KnownSysctlInfo
 		fields = '__all__'
 
 
