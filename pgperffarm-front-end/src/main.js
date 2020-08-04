@@ -10,9 +10,6 @@ import store  from  './store'
 
 import Vuetify from 'vuetify'
 import App from './App'
-import VueSession from 'vue-session'
-//import VueAuthenticate from 'vue-authenticate'
-//import VueResource from 'vue-resource'
 
 // Vue.prototype.$axios = axios;
 Vue.config.productionTip = false
@@ -21,8 +18,6 @@ Vue.config.productionTip = false
 import 'vuetify/dist/vuetify.min.css'
 Vue.use(Vuetify)
 import './stylus/main.styl' 
-
-Vue.use(VueSession)
 
 // adding Axios to Vue instance
 Vue.prototype.$http = Axios;
