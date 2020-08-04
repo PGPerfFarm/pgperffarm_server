@@ -8,6 +8,22 @@
 		}
 	},
 	{
+		"model": "runs.GitRepo",
+		"git_repo_id": 2,
+		"fields": {
+			"url": "http://git.postgresql.org/git/postgresql.git",
+			"owner": "PGDG"
+		}
+	},
+	{
+		"model": "runs.GitRepo",
+		"git_repo_id": 3,
+		"fields": {
+			"url": "git://git.postgresql.org/git/postgresql.git",
+			"owner": "PGDG"
+		}
+	},
+	{
 		"model": "runs.branch",
 		"branch_id": 1,
 		"fields": {
