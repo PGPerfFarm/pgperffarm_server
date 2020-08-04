@@ -60,6 +60,12 @@ class PostgresCollector(object):
             with open(folders.LOG_PATH + '/pg_settings_log.txt', 'a+') as file:
                     file.write(str(e))
                     log("Error while extracting Postgres configuration, check logs.")
+                    log("Removing data directory, please try again running the script.")
+
+                    # remove datadir
+                    if os.path.exists(folders.DATADIR_PATH):
+                        shutil.rmtree(folders.DATADIR_PATH)
+                        
                     sys.exit()
 
     def stop(self):

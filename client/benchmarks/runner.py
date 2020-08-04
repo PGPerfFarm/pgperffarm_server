@@ -43,7 +43,11 @@ class BenchmarkRunner(object):
 
 
 	def _check_config(self, config_name):
-		''
+
+		if not isinstance(self._configs, list):
+			raise Exception("Configurations in settings_local.py must be a list.")
+
+		issues = []
 
 		# construct the benchmark class for the given config name
 		for c in self._configs:
@@ -54,7 +58,11 @@ class BenchmarkRunner(object):
 			bench = bench(**config['config'])
 
 			# run the tests
-			bench.check_config()
+			issue = bench.check_config()
+			if issue != []:
+				issues.append(issue)
+
+		return issues
 
 
 	def check(self):
@@ -68,7 +76,7 @@ class BenchmarkRunner(object):
 			for config_name in config:
 				t = self._check_config(config_name)
 				if t:
-					issues[config_name] = t
+					issues.update({config_name: t}) 
 
 		return issues
 

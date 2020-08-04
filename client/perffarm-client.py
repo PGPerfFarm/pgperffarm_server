@@ -35,14 +35,7 @@ from path import create_path
 
 if __name__ == '__main__':
 
-
 	def run(branch_name, BRANCH_PATH):
-		
-		'''
-		if (AUTOMATIC_UPLOAD):
-			upload(API_URL, folders.OUTPUT_PATH, MACHINE_SECRET)
-		'''
-
 		
 		with FileLock('.lock') as lock:
 
@@ -52,6 +45,9 @@ if __name__ == '__main__':
 			build_runtime = None
 			install_runtime = None
 			configure_runtime = None
+
+			run_start_time = None
+			run_end_time = None
 
 			timezone = tz.gettz(time.tzname[0])
 
@@ -144,7 +140,7 @@ if __name__ == '__main__':
 				git_clone_start_time = datetime.now()
 
 				try:
-					a = git.Git(BRANCH_PATH).clone(GIT_URL, branch=branch_name)
+					a = git.Git(BRANCH_PATH).clone(GIT_URL, ['postgresql'], branch=branch_name)
 
 					git_clone_end_time = datetime.now()
 					git_clone_runtime = str(git_clone_end_time - git_clone_start_time)
@@ -167,47 +163,59 @@ if __name__ == '__main__':
 
 			# build and start a postgres cluster
 
-			cluster = PgCluster(folders.OUTPUT_PATH, bin_path=folders.BIN_PATH, data_path=folders.DATADIR_PATH)
+			try:
+				cluster = PgCluster(folders.OUTPUT_PATH, bin_path=folders.BIN_PATH, data_path=folders.DATADIR_PATH)
 
-			# create collectors
-			collectors = MultiCollector()
+				# create collectors
+				collectors = MultiCollector()
 
-			system = os.popen("uname").readlines()[0].split()[0]
+				system = os.popen("uname").readlines()[0].split()[0]
 
-			collectors.register('system', SystemCollector(folders.OUTPUT_PATH))
+				collectors.register('system', SystemCollector(folders.OUTPUT_PATH))
 
-			#collectors.register('collectd', CollectdCollector(folders.OUTPUT_PATH, DATABASE_NAME, ''))
+				#collectors.register('collectd', CollectdCollector(folders.OUTPUT_PATH, DATABASE_NAME, ''))
 
-			pg_collector = PostgresCollector(folders.OUTPUT_PATH, dbname=DATABASE_NAME, bin_path=('%s/bin' % (folders.BUILD_PATH)))
-			collectors.register('postgres', pg_collector)
+				pg_collector = PostgresCollector(folders.OUTPUT_PATH, dbname=DATABASE_NAME, bin_path=('%s/bin' % (folders.BUILD_PATH)))
+				collectors.register('postgres', pg_collector)
 
-			runner = BenchmarkRunner(folders.OUTPUT_PATH, API_URL, MACHINE_SECRET, cluster, collectors)
+				runner = BenchmarkRunner(folders.OUTPUT_PATH, API_URL, MACHINE_SECRET, cluster, collectors)
 
-			# register the three tests we currently have
-			runner.register_benchmark('pgbench', PgBench)
+				# register the three tests we currently have
+				runner.register_benchmark('pgbench', PgBench)
 
-			# register one config for each benchmark (should be moved to a config file)
-			POSTGRES_CONFIG['listen_addresses'] = ''
-			POSTGRES_CONFIG['unix_socket_directories'] = folders.SOCKET_PATH
+				# register one config for each benchmark (should be moved to a config file)
+				POSTGRES_CONFIG['listen_addresses'] = ''
+				POSTGRES_CONFIG['unix_socket_directories'] = folders.SOCKET_PATH
 
-			for config in PGBENCH_CONFIG:
-				config['results_dir'] = folders.OUTPUT_PATH
-			
-				runner.register_config('pgbench-basic', 'pgbench', branch, commit, dbname=DATABASE_NAME, bin_path=folders.BIN_PATH, postgres_config=POSTGRES_CONFIG, **config)
+				for config in PGBENCH_CONFIG:
+					config['results_dir'] = folders.OUTPUT_PATH
 				
+					runner.register_config('pgbench-basic', 'pgbench', branch, commit, dbname=DATABASE_NAME, bin_path=folders.BIN_PATH, postgres_config=POSTGRES_CONFIG, **config)
+					
 
-			# check configuration and report all issues
-			issues = runner.check()
+				# check configuration and report all issues
+				issues = runner.check()
 
-			if issues:
-				# print the issues
-				for k in issues:
-					for v in issues[k]:
-						print (k, ':', v)
-			else:
-				run_start_time = datetime.now(timezone)
-				runner.run()
-				run_end_time = datetime.now(timezone)
+				if issues != {}:
+					# print the issues
+					for k in issues:
+						for v in issues[k]:
+							for i in v:
+								print (k, ':', i)
+					raise Exception("Issues in configuration have been found.")
+
+				else:
+					run_start_time = datetime.now(timezone)
+					runner.run()
+					run_end_time = datetime.now(timezone)
+
+			except Exception as e:
+				log(e)
+				log("An exception occurred. You might find additional details in log files.")
+
+				if os.path.exists(folders.DATADIR_PATH):
+					shutil.rmtree(folders.DATADIR_PATH)
+				sys.exit(1)
 					
 	
 			# remove the data directory

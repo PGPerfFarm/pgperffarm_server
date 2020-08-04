@@ -49,9 +49,7 @@ def build():
         file.write(c.stderr)
 
     if (a.stderr != '' or b.stderr != '' or c.stderr != ''):
-        log("Errors have been found while installing, please check logs in '%s'" % (folders.LOG_PATH,))
-
-        #sys.exit()
+        log("Anomalies have been found while installing, please check logs in '%s'" % (folders.LOG_PATH,))
 
     return str(configure_runtime), str(build_runtime), str(install_runtime)
 

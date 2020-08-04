@@ -15,7 +15,7 @@ GIT_URL = 'https://github.com/postgres/postgres.git'
 BASE_PATH = '/tmp/perffarm' 
 
 API_URL = 'http://140.211.168.111:8080/'
-MACHINE_SECRET = '026c621685b994e6683e09b147b8d3ef'
+MACHINE_SECRET = 'changeme'
 
 POSTGRES_CONFIG = {
     'shared_buffers': '1GB',
@@ -34,22 +34,22 @@ POSTGRES_CONFIG = {
 DATABASE_NAME = 'perf'
 
 # configuration for PgBench
-# runs - number of repetitions (including test for all client counts)
+# iterations - number of repetitions (including test for all client counts)
 # duration - duration (in seconds) of a single benchmark (per client count)
 PGBENCH_CONFIG = [
     {
-        'iterations': 3,
+        'iterations': 2,
         'duration': 600,
-        'scale': 5,
+        'scale': 3,
         'clients': [1, multiprocessing.cpu_count(), 2 * multiprocessing.cpu_count()],
-         'read_only': False,
+        'read_only': False,
     },
     {
         'iterations': 2,
         'duration': 600,
         'scale': 5,
         'clients': [1, multiprocessing.cpu_count(), 2 * multiprocessing.cpu_count()],
-         'read_only': False,
+        'read_only': False,
     }]
 
 # ignore missing file with local config

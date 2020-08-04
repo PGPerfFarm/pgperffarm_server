@@ -136,8 +136,7 @@ class PgBench(object):
             issues.append("psql not found in bin_dir='%s'" % (self._bin,))
 
         if type(self._duration) is not int:
-            issues.append("duration (%s) needs to be an integer" %
-                          self._duration)
+            issues.append("duration (%s) needs to be an integer" % self._duration)
         elif not self._duration >= 1:
             issues.append("duration (%s) needs to be >= 1" % (self._duration,))
 
@@ -145,6 +144,13 @@ class PgBench(object):
             issues.append("iterations (%s) needs to be an integer" % self._duration)
         elif not self._iterations >= 1:
             issues.append("iterations (%s) needs to be >= 1" % (self._iterations,))
+
+        if type(self._clients) is not list:
+            issues.append("clients (%s) needs to be an array" % self._clients)
+        else:
+            for client in self._clients:
+                if not client >= 1:
+                    issues.append("client (%s) needs to be >= 1" % (client))
 
         return issues
 
