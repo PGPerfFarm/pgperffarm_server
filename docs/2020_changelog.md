@@ -4,95 +4,34 @@
 
 #### TODO LIST
 
-
-
 * Benchmarks:
-  * Script for installing collectd to run further tests;
-  * Adding more tests or more options to pgbench, or automated testing (?);
-  * Portability tests;
-  * remove unnecessary fields;
+  * Fix the collectd part (script for installing collectd to run further tests);
+  * Remove unnecessary fields from JSON;
   * Pull pg_stat_statement data;
-  * add compatibility with windows, mac (linux by default in the API);
-  * fetch branches directly from git;
-  * allow custom branches list;
-  * refactor code and logs;
-  * collectd! 
-  * runs -> iterations;
+  * Allow logging of build/install even with an empty result;
 * API:
-  * Speed up the whole thing with more compact information and less requests from the website;
-  * collectd tables;
-  * backups of data;
-  * fix hertz (normalize it);
-  * add total swap;
-  * sysctl: create a table for that info, build two jsonb: one with postgres stuff, one with temporary, postgres stuff must be unique;
-  * mounts;
-  * average of averages;
-  * standard deviation;
-  * install and run tests also on gsoc-1, same benchmark configuration, same everything;
-* Website
-  * Handling authentication;
+  * Collectd tables when that is implemented;
+  * Table log_logentry (id int, timestamp timestamptz, machine, level, logmessage, acknowledged);
+  * Email the user if a machine changes kernel;
+  * os_kernl_id_id in systems_knownsysctlinfo should be defined as UNIQUE (move that list into systems_kernel and get rid of the knownsysctlinfo table);
+* Website:
+  * Use authentication from https://git.postgresql.org/gitweb/?p=pglister.git;a=blob;f=web/pglister/auth.py;h=87ffb0b2adbcd45d956b7f625dc9ae29c7807bfa;hb=HEAD;
   * Display data within the same branches and maybe also within all branches;
-  * Improve displaying of results compatible with the new JSON structure;
   * Add possibility to download further files;
   * Add automatic update of list of branches;
-  * Fix login and permissions (compatible with Postgres web infrastructure);
-  * Style changes, general bug fixes;
-* Server:
-  * Updating all Python versions, Node, all software being used;
-  * Cleaning existing databases with old test data;
+  * Pages to fix:
+    * Single machine: still to do;
+    * Benchmarks: check if ordering works
+    * Add machine: temporarily disabled;
+    * Login: temporarily disabled;
+    * My machines: temporarily disabled;
+    * Homepage: to revamp;
+    * User profile: temporarily disabled.
 
 + Documentation:
-  + Update README and installation procedure;
-  + Update requirements (in progress).
-  + add bison and flex to requirements;
-  + clients must be an array!
   + add missing tables to docs;
-  + if anything happens, remove the whole folder;
-  + collectd must be a requirement;
   + database of client must exist;
   + add cronjob (user);
-
-
-
-##### Week 1
-
-Key points: the code is not supposed to be run using an existing personal Postgres installation. There is also a list of important branches, and the script should clone and run benchmarks on each one separately. 
-
-- System cannot find directory BIN_PATH, that being BUILD_PATH + 'bin'.
-  BUILD_PATH is set by default as '/tmp/bin-postgres', for some reason the OS cannot create two directories at the same time, an additional mkdir is imposed to first create bin-postgres and then bin.
-- Found another bug: the directory gets somehow cancelled during the process, and not after it is over.
-- The whole cloning and installing system is a mess, I plan to make a gradual switch to another Python module of git and let it handle everything.
-- Call is being replaced with run within subprocess module, since it works better on later versions of Python.
-- Found additional requirements for make: bison, flex (Debian).
-- Error during make should be logged, but otherwise the git cloning and installing works.
-- Killing processes is now embedded into a try-catch statement, so that if the postmaster.pid file is not found, the program does not break.
-
-* After defining a deterministic workflow for cloning, pulling and building the repository, the process is complete.
-* The git custom written functions have been completely replaced by gitpython.
-* Still missing a bit of refactoring, especially within the part of killing processes and deleting folders.
-* Now next goal is trying to improve JSON output results, so that they can be parsed and displayed better. First thing to focus on is "linux", next is understanding why "collectd" is always empty;
-* Then it is time to find out where Linux specifics are generated:
-  * Part of it is in misc.py, launching a "free -m" command;
-  * Mostly in linux.py, which is composed by "sysctl", "meminfo" etc.
-
-* Continuing the process of removing walls of text in the output and gradually switching them with JSON parameters, trying to replace as much as possible;
-* Integration with 3 Python modules able to collect statistics in a much more portable and readable way;
-* Redefining the whole JSON structure;
-
-
-
-##### Week 2
-
-* Added log messages and files for git operations;
-* Removed unnecessary nesting of JSON, adding "mode" and "scale" parameters as values specific to the result;
-* Added all times to build, clone, install etc;
-* Patched pgbench and cluster scripts to be able to execute in different environments without conflicting with existing processes;
-* Code refactoring;
-* Added a better folder structure;
-* Fixed a bug in logging where the regular expression could not match because of a semicolon;
-* Added logging of statement latencies;
-* Pgbench output has again been refactored;
-* Upload has been rewritten to also include logs;
-
+  + Add script to load data;
 
 
