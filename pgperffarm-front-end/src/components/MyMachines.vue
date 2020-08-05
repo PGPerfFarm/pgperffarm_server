@@ -134,8 +134,6 @@
 
 <script>
 
-  import axios from 'axios';
-
   export default {
   name: 'MyMachines',
   data: () => ({
@@ -170,6 +168,8 @@
 	},
 
   methods: {
+
+  	/*
 
 	editMachine (machine) {
 		this.editedIndex = this.machines.indexOf(machine)
@@ -306,7 +306,7 @@
 		.catch((error) => {
 		  console.log(error);
 		})
-	}
+	} */
   },
 
   mounted() {

@@ -1,13 +1,8 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import axios from 'axios'
 import VuexPersist from 'vuex-persist'
 
 Vue.use(Vuex)
-
-// Make Axios play nice with Django CSRF
-axios.defaults.xsrfCookieName = 'csrftoken'
-axios.defaults.xsrfHeaderName = 'X-CSRFToken'
 
 const vuexPersist = new VuexPersist({
   key: 'my-app',

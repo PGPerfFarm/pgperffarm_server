@@ -143,14 +143,9 @@
 </template>
 
 <script>
-	import axios from 'axios';
-	import ResultsTable from './ResultsTable.vue'
 
 	export default {
 		name: 'Result',
-		components: {
-			ResultsTable
-		},
 
 		data: () => ({
 
@@ -185,59 +180,66 @@
 				var id = this.$route.params.id;
 				var url = this.$store.state.endpoints.results + id;
 
-				axios.get(url)
-        		.then((response) => {
+				const httpRequest = new XMLHttpRequest();
+				httpRequest.open("GET", url);
+				httpRequest.send();
 
-        			this.clients = response.data.benchmark_config.clients;
-        			this.scale = response.data.benchmark_config.scale;
-        			this.duration = response.data.benchmark_config.duration;
-        			this.read_only = response.data.benchmark_config.read_only;
-        			this.config = response.data.benchmark_config.pgbench_benchmark_id;
+				httpRequest.onreadystatechange = () => {
 
-        			this.tps = response.data.tps;
-        			this.latency = response.data.latency;
-        			this.init = response.data.init;
-        			this.start = response.data.start;
-        			this.end = response.data.end;
-        			this.mode = response.data.mode;
-        			this.iteration = response.data.iteration;
+					if (httpRequest.readyState === XMLHttpRequest.DONE) {
 
-        			this.alias = response.data.run.machine.alias;
-        			this.os = response.data.run.os_version.dist.dist_name + ' ' + response.data.run.os_version.release;
-        			this.branch = response.data.run.git_branch.name;
-        			this.kernel = response.data.run.os_kernel.kernel.kernel_name + ' ' + response.data.run.os_kernel.kernel_release;
-        			this.run = response.data.run.run_id;
-        			this.commit = 'https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=' + response.data.run.git_commit;
+						if (httpRequest.status === 200) {
+							var response = JSON.parse(httpRequest.response);
 
-        			for (let i = 0; i < response.data.pgbench_run_statement.length; i++) {
-        				var result = {
-        					"line": response.data.pgbench_run_statement[i].line_id,
-        					"latency": response.data.pgbench_run_statement[i].latency,
-        					"statement": response.data.pgbench_run_statement[i].statements.statement
-        				};
+		        			this.clients = response.benchmark_config.clients;
+		        			this.scale = response.benchmark_config.scale;
+		        			this.duration = response.benchmark_config.duration;
+		        			this.read_only = response.benchmark_config.read_only;
+		        			this.config = response.benchmark_config.pgbench_benchmark_id;
 
-        				this.results[response.data.pgbench_run_statement[i].line_id] = result;
-        			}
+		        			this.tps = response.tps;
+		        			this.latency = response.latency;
+		        			this.init = response.init;
+		        			this.start = response.start;
+		        			this.end = response.end;
+		        			this.mode = response.mode;
+		        			this.iteration = response.iteration;
 
-        			for (let i = 0; i < response.data.pgbench_log.length; i++) {
-        				var result = {
-        					"interval_start": response.data.pgbench_log[i].interval_start,
-        					"num_transactions": response.data.pgbench_log[i].num_transactions,
-        					"sum_latency": response.data.pgbench_log[i].sum_latency,
-        					"sum_latency_2": response.data.pgbench_log[i].sum_latency_2,
-        					"min_latency": response.data.pgbench_log[i].min_latency,
-        					"max_latency": response.data.pgbench_log[i].max_latency,
-        				};
+		        			this.alias = response.run.machine.alias;
+		        			this.os = response.run.os_version.dist.dist_name + ' ' + response.run.os_version.release;
+		        			this.branch = response.run.git_branch.name;
+		        			this.kernel = response.run.os_kernel.kernel.kernel_name + ' ' + response.run.os_kernel.kernel_release;
+		        			this.run = response.run.run_id;
+		        			this.commit = 'https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=' + response.run.git_commit;
 
-        				this.log[response.data.pgbench_log[i].pgbench_log_id] = result;
-        			}
+		        			for (let i = 0; i < response.pgbench_run_statement.length; i++) {
+		        				var result = {
+		        					"line": response.pgbench_run_statement[i].line_id,
+		        					"latency": response.pgbench_run_statement[i].latency,
+		        					"statement": response.pgbench_run_statement[i].statements.statement
+		        				};
 
-			      
-        		})
-        		.catch((error) => {
-          			console.log(error);
-        		})
+		        				this.results[response.pgbench_run_statement[i].line_id] = result;
+		        			}
 
+		        			for (let i = 0; i < response.pgbench_log.length; i++) {
+		        				var single_result = {
+		        					"interval_start": response.pgbench_log[i].interval_start,
+		        					"num_transactions": response.pgbench_log[i].num_transactions,
+		        					"sum_latency": response.pgbench_log[i].sum_latency,
+		        					"sum_latency_2": response.pgbench_log[i].sum_latency_2,
+		        					"min_latency": response.pgbench_log[i].min_latency,
+		        					"max_latency": response.pgbench_log[i].max_latency,
+		        				};
+
+		        				this.log[response.pgbench_log[i].pgbench_log_id] = single_result;
+		        			}
+		        		}
+		        		else {
+							console.log(httpRequest.status);
+						}
+					}
+				}
 			},
 
 			downloadJSON() {

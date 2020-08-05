@@ -7,10 +7,8 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
-    "axios": "^0.19.2",
+    "@vue/cli-plugin-eslint": "^4.4.6",
     "plotly.js-dist": "^1.54.7",
-    "stylus": "^0.54.8",
-    "stylus-loader": "^3.0.2",
     "vue": "^2.6.10",
     "vue-router": "^3.3.4",
     "vuetify": "^1.5.24",

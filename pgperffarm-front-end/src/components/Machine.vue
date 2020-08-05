@@ -92,7 +92,6 @@
 </template>
 
 <script>
-  import axios from 'axios';
 
   export default {
     name: 'Machine',
@@ -133,6 +132,7 @@
     methods: {
 
           getMachine() {
+            /*
             var machine_name = this.$route.params.alias;
 
             axios.get(this.$store.state.endpoints.machine)
@@ -217,7 +217,9 @@
             .catch((error) => {
                 console.log(error);
             })
+            */
       }
+
     },
 
     mounted() {

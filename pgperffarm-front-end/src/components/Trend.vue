@@ -53,12 +53,6 @@
 </template>
 
 <script>
-	import axios from 'axios'
-
-	// same machine, same benchmark configuration, same postgres settings, same os configuration, same git repository
-
-	// machine, benchmark: user defined parameters
-	// results/benchmark/machine
 
 	export default {
 		name: 'Trend',

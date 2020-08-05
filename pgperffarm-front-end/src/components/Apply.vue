@@ -58,7 +58,6 @@
 </template>
 
 <script>
-	import axios from 'axios';
 
 	export default {
   		name: 'Apply',
@@ -77,6 +76,7 @@
 		methods: {
 			addMachine() {
 
+                /*
 				axios.defaults.headers.common["Authorization"] = 'Bearer ' + this.$store.getters.token;
 
       			axios.post(this.$store.state.endpoints.my_machine, this.machine)
@@ -88,7 +88,7 @@
 		        .catch((error) => {
                 console.log(error);
             	})
-
+            */
 
 			}
 		}

@@ -180,14 +180,9 @@
 </template>
 
 <script>
-	import axios from 'axios';
-	import ResultsTable from './ResultsTable.vue'
 
 	export default {
 		name: 'Run',
-		components: {
-			ResultsTable
-		},
 
 		data: () => ({
 
@@ -220,47 +215,54 @@
 				var id = this.$route.params.id;
 				var url = this.$store.state.endpoints.run + id;
 
-				axios.get(url)
-        		.then((response) => {
+				const httpRequest = new XMLHttpRequest();
+				httpRequest.open("GET", url);
+				httpRequest.send();
 
-        			this.branch = response.data.git_branch.name;
-        			this.commit = 'https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=' + response.data.git_commit;
-        			this.date = response.data.add_time;
-        			this.owner = response.data.machine.owner.username;
-        			this.alias = response.data.machine.alias;
-        			this.email = response.data.machine.owner.email;
-        			this.git_repo = response.data.git_repo.url;
-        			this.farmer = response.data.machine.alias;
+				httpRequest.onreadystatechange = () => {
 
-        			this.kernel = response.data.os_kernel.kernel.kernel_name + ' ' + response.data.os_kernel.kernel_release;
-        			this.os = response.data.os_version.dist.dist_name + ' ' + response.data.os_version.release;
-        			this.compiler = response.data.compiler.compiler;
-        			this.type = response.data.machine.machine_type;
+					if (httpRequest.readyState === XMLHttpRequest.DONE) {
 
-        			this.memory = response.data.hardware_info.total_memory;
-        			this.swap = response.data.hardware_info.total_swap;
-        			this.cpu = response.data.hardware_info.cpu_brand + ', ' + response.data.hardware_info.cpu_cores + ' cores';
+						if (httpRequest.status === 200) {
+							var response = JSON.parse(httpRequest.response);
 
-        			this.mounts = response.data.hardware_info.mounts;
-        			this.sysctl = response.data.hardware_info.sysctl;
-        			this.postgres_settings = response.data.postgres_info.settings;
+		        			this.branch = response.git_branch.name;
+		        			this.commit = 'https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=' + response.git_commit;
+		        			this.date = response.add_time;
+		        			this.owner = response.machine.owner.username;
+		        			this.alias = response.machine.alias;
+		        			this.email = response.machine.owner.email;
+		        			this.git_repo = response.git_repo.url;
+		        			this.farmer = response.machine.alias;
 
-        			for (let i = 0; i < response.data.pgbench_result.length; i++) {
-        				var config = 'Scale ' + response.data.pgbench_result[i].benchmark_config.scale + ', duration ' + response.data.pgbench_result[i].benchmark_config.duration + ', clients ' + response.data.pgbench_result[i].benchmark_config.clients + ', read-only ' + response.data.pgbench_result[i].benchmark_config.read_only;
+		        			this.kernel = response.os_kernel.kernel.kernel_name + ' ' + response.os_kernel.kernel_release;
+		        			this.os = response.os_version.dist.dist_name + ' ' + response.os_version.release;
+		        			this.compiler = response.compiler.compiler;
+		        			this.type = response.machine.machine_type;
 
-        				var json = {
-        					"config": config,
-        					"id": response.data.pgbench_result[i].pgbench_result_id
-        				}
-        				this.benchmarks.push(json);
-        			}
+		        			this.memory = response.hardware_info.total_memory;
+		        			this.swap = response.hardware_info.total_swap;
+		        			this.cpu = response.hardware_info.cpu_brand + ', ' + response.hardware_info.cpu_cores + ' cores';
 
-			      
-        		})
-        		.catch((error) => {
-          			console.log(error);
-        		})
+		        			this.mounts = response.hardware_info.mounts;
+		        			this.sysctl = response.hardware_info.sysctl;
+		        			this.postgres_settings = response.postgres_info.settings;
 
+		        			for (let i = 0; i < response.pgbench_result.length; i++) {
+		        				var config = 'Scale ' + response.pgbench_result[i].benchmark_config.scale + ', duration ' + response.pgbench_result[i].benchmark_config.duration + ', clients ' + response.pgbench_result[i].benchmark_config.clients + ', read-only ' + response.pgbench_result[i].benchmark_config.read_only;
+
+		        				var json = {
+		        					"config": config,
+		        					"id": response.pgbench_result[i].pgbench_result_id
+		        				}
+		        				this.benchmarks.push(json);
+		        			}
+		        		}
+		        		else {
+							console.log(httpRequest.status);
+						}
+					}
+				}
 			},
 
 			downloadJSON() {

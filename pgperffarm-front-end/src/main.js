@@ -3,28 +3,20 @@
 
 // token: 6810f83b3fdf48c80d7fea8087180e3dc95e9ebd 
 
+import './assets/main.css'
+
 import Vue from 'vue'
 import router from './router'
-import Axios from 'axios'
 import store  from  './store'
 
 import Vuetify from 'vuetify'
 import App from './App'
 
-// Vue.prototype.$axios = axios;
 Vue.config.productionTip = false
 
 // setting up Vuetify
 import 'vuetify/dist/vuetify.min.css'
 Vue.use(Vuetify)
-import './stylus/main.styl' 
-
-// adding Axios to Vue instance
-Vue.prototype.$http = Axios;
-const token = localStorage.getItem('token')
-if (token) {
-    Vue.prototype.$http.defaults.headers.common['Authorization'] = token
-}
 
 /* eslint-disable no-new */
 new Vue({

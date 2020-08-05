@@ -1,5 +1,5 @@
 body {
-  font-family = 'Open Sans', sans-serif;
+  font-family: 'Open Sans', sans-serif;
 }
 
 /*
@@ -303,5 +303,3 @@ pre {
   background-color: #d3e1ed;
   font-weight: bold;
 }
-
-@import '~vuetify/src/stylus/main'

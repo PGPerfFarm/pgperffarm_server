@@ -56,9 +56,6 @@
 </template>
 
 <script>
-  import axios from 'axios';
-
-  // curl -d '{"username":"test", "password":"password"}' -H "Content-Type: application/json" -X POST http://localhost:8000/login/
 
   export default {
     name: 'Login',
@@ -87,6 +84,7 @@
 
     methods: {
       login() {
+        /*
           // checking if the input is valid
             if (this.$refs.form.validate()) {
               this.loading = true;
@@ -118,6 +116,7 @@
                     console.log(error);
                   });
             }
+            */
         },
 
     }
