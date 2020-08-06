@@ -113,6 +113,7 @@ class BenchmarkRunner(object):
 			'name': config_name,
 		}
 
+
 		r['git'] = {
 				'branch': config['branch'],
 				'commit': config['commit'],
@@ -128,13 +129,15 @@ class BenchmarkRunner(object):
 
 		uname = os.popen("uname").readlines()[0].split()[0]
 
+
 		if uname == 'Linux':
 			r['os_information'] = {
-				'distributor': check_output(['lsb_release', '-i']).rstrip().split('\t')[1],
-				'description': check_output(['lsb_release', '-d']).rstrip().split('\t')[1],
-				'release': check_output(['lsb_release', '-r']).rstrip().split('\t')[1],
-				'codename': check_output(['lsb_release', '-c']).rstrip().split('\t')[1]
+				'distributor': check_output(['lsb_release', '-i']).rstrip().decode().split('\t')[1],
+				'description': check_output(['lsb_release', '-d']).rstrip().decode().split('\t')[1],
+				'release': check_output(['lsb_release', '-r']).rstrip().decode().split('\t')[1],
+				'codename': check_output(['lsb_release', '-c']).rstrip().decode().split('\t')[1]
 			}
+
 
 		if uname == 'Darwin':
 			r['os_information'] = {
