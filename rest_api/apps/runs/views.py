@@ -7,6 +7,8 @@ import io
 import csv
 import hashlib
 import re
+import sys
+from datetime import datetime
 
 
 from rest_framework import permissions, renderers, viewsets, mixins, authentication, serializers, status
@@ -18,7 +20,7 @@ from machines.serializers import MachineSerializer
 from postgres.models import PostgresSettingsSet
 from postgres.serializers import PostgresSettingsSetSerializer
 from runs.models import RunInfo, GitRepo, Branch
-from runs.serializers import RunInfoSerializer, GitRepoSerializer, BranchSerializer
+from runs.serializers import RunInfoSerializer, GitRepoSerializer, BranchSerializer, RunLogSerializer
 from systems.serializers import HardwareInfoSerializer, CompilerSerializer, KernelSerializer, OsDistributorSerializer, OsVersionSerializer, OsKernelVersionSerializer
 from systems.models import HardwareInfo, Compiler, Kernel, OsDistributor, OsKernelVersion, OsVersion
 from benchmarks.models import PgBenchBenchmark
@@ -71,6 +73,8 @@ def CreateRunInfo(request, format=None):
 
 	from django.db import transaction
 
+	error = ''
+
 	# check if machine exists
 	try:
 		secret = request.META.get("HTTP_AUTHORIZATION")
@@ -93,10 +97,13 @@ def CreateRunInfo(request, format=None):
 					raise RuntimeError(error)
 
 			elif os_old != os_new:
-				raise RuntimeError("Machine OS cannot change.")
+				error = 'Machine OS cannot change'
+				raise RuntimeError(error)
 
 		except Machine.DoesNotExist:
-			raise RuntimeError("The machine is unavailable.")
+			machine_id = 0
+			error = "The machine is unavailable"
+			raise RuntimeError(error)
 
 		with transaction.atomic():
 
@@ -133,13 +140,13 @@ def CreateRunInfo(request, format=None):
 				os_version = OsVersion.objects.filter(dist_id=os_distributor.os_distributor_id, release=json_data['os_information']['release'], codename=json_data['os_information']['codename'], description=json_data['os_information']['description']).get()
 
 			except OsVersion.DoesNotExist:
-				os = {
+				os_info = {
 					'dist_id': os_distributor.os_distributor_id, 
 					'release': json_data['os_information']['release'], 
 					'codename': json_data['os_information']['codename'], 
 					'description': json_data['os_information']['description']}
 
-				os_serializer = OsVersionSerializer(data=os)
+				os_serializer = OsVersionSerializer(data=os_info)
 
 				if os_serializer.is_valid():
 					os_version = os_serializer.save()
@@ -355,13 +362,28 @@ def CreateRunInfo(request, format=None):
 								error = pgbench_info.errors
 								raise RuntimeError(error)
 
+			for item in json_data['pgbench']:
 				ParsePgBenchResults(item, run_valid.run_id, json_data['pgbench_log_aggregate'])
 
 
 	except Exception as e:
-		msg = 'Upload error: ' + e.__str__()
-		print(msg)
-		return Response(msg, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+		if error == '':
+			error = e
+
+		error_serializer = RunLogSerializer(data={'machine': machine_id, 'logmessage': str(error)})
+		error_string = str(datetime.now()) + ' ' + str(error)
+
+		if error_serializer.is_valid():
+			error_serializer.save()
+			print(error_string)
+
+		else:
+
+			with open(os.path.join(sys.path[0], "log.txt"), "a+") as f:
+				f.write(error_string)
+		
+		return Response(str(error), status=status.HTTP_406_NOT_ACCEPTABLE)
 
 	print('Upload successful!')
 	return Response(status=status.HTTP_201_CREATED)

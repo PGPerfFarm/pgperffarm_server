@@ -1,7 +1,6 @@
-coreapi==2.3.3
 django==2.2.13
+django-cors-headers=2.2.1
 djangorestframework==3.9.1
-requests==2.20.0
+requests==2.21
 urllib3==1.24.2
-pandas==1.0.5
 psycopg2==2.8.2

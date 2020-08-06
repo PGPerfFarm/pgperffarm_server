@@ -45,6 +45,7 @@ INSTALLED_APPS = [
 	'django.contrib.sites',
 	'rest_framework',
 	'rest_framework.authtoken',
+	'corsheaders',
 	'machines',
 	'benchmarks',
 	'users',
@@ -72,9 +73,11 @@ REST_FRAMEWORK = {
 
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+CORS_ORIGIN_ALLOW_ALL = True
 
 
 MIDDLEWARE = [
+	'corsheaders.middleware.CorsMiddleware',
 	'django.middleware.security.SecurityMiddleware',
 	'django.contrib.sessions.middleware.SessionMiddleware',
 	'django.middleware.common.CommonMiddleware',
@@ -129,31 +132,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=30),
-    'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=1),
-    'ROTATE_REFRESH_TOKENS': False,
-    'BLACKLIST_AFTER_ROTATION': True,
-
-    'ALGORITHM': 'HS256',
-    'SIGNING_KEY': SECRET_KEY,
-    'VERIFYING_KEY': None,
-
-    'AUTH_HEADER_TYPES': ('Bearer',),
-    'USER_ID_FIELD': 'id',
-    'USER_ID_CLAIM': 'user_id',
-
-    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
-    'TOKEN_TYPE_CLAIM': 'token_type',
-
-    'JTI_CLAIM': 'jti',
-
-    'SLIDING_TOKEN_REFRESH_EXP_CLAIM': 'refresh_exp',
-    'SLIDING_TOKEN_LIFETIME': datetime.timedelta(minutes=5),
-    'SLIDING_TOKEN_REFRESH_LIFETIME': datetime.timedelta(days=1),
-}
-
-
 CORS_ALLOW_METHODS = (
 	'DELETE',
 	'GET',
@@ -178,30 +156,6 @@ CORS_ALLOW_HEADERS = (
 	'x-requested-with',
 	'Pragma',
 )
-
-
-DB_ENUM = {
-	"general_switch": {
-		"on": 1,
-		"off": 2
-	},
-	"mode": {
-		"simple": 1,
-		"other": 2,
-		-1: -1,
-	},
-	"machine_state": {
-		"prohibited": -1,
-		"pending": 0,
-		"active": 1,
-	},
-	"status": {
-		"none": -1,
-		"improved": 1,
-		"quo": 2,
-		"regressive": 3
-	}
-}
 
 
 # Internationalization

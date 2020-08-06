@@ -1,4 +1,3 @@
-import pandas
 import csv
 import json
 import hashlib
@@ -10,7 +9,7 @@ from datetime import datetime
 from postgres.models import PostgresSettingsSet
 from postgres.serializers import PostgresSettingsSerializer
 from benchmarks.models import PgBenchBenchmark, PgBenchResult
-from benchmarks.serializers import PgBenchResultSerializer, PgBenchStatementSerializer, PgBenchRunStatementSerializer, PgBenchLogSerializer
+from benchmarks.serializers import PgBenchResultSerializer, PgBenchStatementSerializer, PgBenchRunSingleStatementSerializer, PgBenchLogSerializer
 from systems.models import Kernel
 
 
@@ -28,7 +27,7 @@ def ParseSysctl(raw_data):
 
 	known_sysctl_mac = Kernel.objects.filter(kernel_id=2).get()
 
-	for parameter in known_sysctl_linux.mac:
+	for parameter in known_sysctl_mac.sysctl:
 
 		if parameter in data:
 			json_dict.update({parameter: data[parameter]})
@@ -80,17 +79,17 @@ def ParseLinuxData(json_data):
 def GetHash(postgres_settings):
 
 	reader = csv.DictReader(io.StringIO(postgres_settings))
-	postgres_settings_json = json.dumps(list(reader))
+	postgres_settings_json = json.loads(json.dumps(list(reader)))
 
-	data_frame = pandas.read_json(postgres_settings_json)
+	hash_json = []
 
-	data_frame.query('source != "default" and source != "client"', inplace = True)
+	for setting in postgres_settings_json:
+		if setting['source'] != "default" and setting['source'] != "client":
+			hash_json.append(setting)
 
-	hash_string = str(data_frame.values.flatten())
+	hash_string = Hash(hash_json)
 
-	hash_value = hashlib.sha256((hash_string.encode('utf-8')))
-
-	return hash_value.hexdigest(), data_frame
+	return hash_string, hash_json
 
 
 def AddPostgresSettings(hash_value, settings):
@@ -100,7 +99,7 @@ def AddPostgresSettings(hash_value, settings):
 	settings_set_id = settings_set.postgres_settings_set_id
 
 	# now parsing all settings
-	for index, row in settings.iterrows():
+	for row in settings:
 		name = row['name']
 		unit = row['source']
 		value = row['setting']
@@ -160,7 +159,7 @@ def ParsePgBenchStatementLatencies(statement_latencies, pgbench_result_id):
 					'result_id': statement_valid.pgbench_statement_id
 					}
 
-				run_statement_serializer = PgBenchRunStatementSerializer(data=data)
+				run_statement_serializer = PgBenchRunSingleStatementSerializer(data=data)
 
 				if run_statement_serializer.is_valid():
 					run_statement_serializer.save()
@@ -250,8 +249,11 @@ def ParsePgBenchResults(item, run_id, pgbench_log):
 
 				pgbench_result_last = PgBenchResult.objects.order_by('-pgbench_result_id').first()
 
+				if pgbench_result_last is None:
+					iterations = 0
+
 				# assuming results get added in order
-				if (pgbench_result_last.benchmark_config.pgbench_benchmark_id == pgbench_config.pgbench_benchmark_id):
+				elif (pgbench_result_last.benchmark_config.pgbench_benchmark_id == pgbench_config.pgbench_benchmark_id):
 					iterations += 1
 
 				else:

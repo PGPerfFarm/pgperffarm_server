@@ -4,7 +4,7 @@ from rest_framework import serializers
 from benchmarks.models import PgBenchBenchmark, PgBenchResult, PgBenchStatement, PgBenchRunStatement, PgBenchLog
 from runs.models import RunInfo
 from runs.serializers import GitRepoSerializer, BranchSerializer, RunInfoSerializer
-from systems.serializers import CompilerSerializer, OsVersionSerializer
+from systems.serializers import CompilerSerializer, OsDistVersionSerializer
 from machines.serializers import MachineSerializer
 from machines.models import Machine
 from users.serializers import UserSerializer
@@ -80,6 +80,13 @@ class PgBenchStatementSerializer(serializers.ModelSerializer):
 		fields = '__all__'
 
 
+class PgBenchRunSingleStatementSerializer(serializers.ModelSerializer):
+
+	class Meta:
+		model = PgBenchRunStatement
+		fields = '__all__'
+
+
 class PgBenchRunStatementSerializer(serializers.ModelSerializer):
 
 	statements = PgBenchStatementSerializer(read_only=True, source="result_id")
@@ -109,7 +116,7 @@ class LastRunsSerializer(serializers.ModelSerializer):
 
 	pgbench_result = PgBenchAllResultsSerializer(many=True, read_only=True)
 	compiler = CompilerSerializer(read_only=True)
-	os_version = OsVersionSerializer(read_only=True, source='os_version_id')
+	os_version = OsDistVersionSerializer(read_only=True, source='os_version_id')
 	git_repo = GitRepoSerializer(read_only=True)
 	git_branch = BranchSerializer(read_only=True)
 
@@ -137,7 +144,7 @@ class SingleRunSerializer(serializers.ModelSerializer):
 
 	pgbench_result = PgBenchAllResultsSerializer(many=True, read_only=True)
 	compiler = CompilerSerializer(read_only=True)
-	os_version = OsVersionSerializer(read_only=True, source='os_version_id')
+	os_version = OsDistVersionSerializer(read_only=True, source='os_version_id')
 	git_repo = GitRepoSerializer(read_only=True)
 	git_branch = BranchSerializer(read_only=True)
 	machine = MachineSerializer(source='machine_id', read_only=True)
@@ -153,7 +160,7 @@ class SingleRunSerializer(serializers.ModelSerializer):
 class RunSerializer(serializers.ModelSerializer):
 
 	compiler = CompilerSerializer(read_only=True)
-	os_version = OsVersionSerializer(read_only=True, source='os_version_id')
+	os_version = OsDistVersionSerializer(read_only=True, source='os_version_id')
 	git_repo = GitRepoSerializer(read_only=True)
 	git_branch = BranchSerializer(read_only=True)
 	machine = MachineSerializer(source='machine_id', read_only=True)

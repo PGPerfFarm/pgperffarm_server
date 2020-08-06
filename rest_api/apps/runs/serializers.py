@@ -1,13 +1,20 @@
 import json
 from rest_framework import serializers
 
-from runs.models import RunInfo, GitRepo, Branch
+from runs.models import RunInfo, GitRepo, Branch, RunLog
 
 
 class RunInfoSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = RunInfo
+		fields = '__all__'
+
+
+class RunLogSerializer(serializers.ModelSerializer):
+
+	class Meta:
+		model = RunLog
 		fields = '__all__'
 
 

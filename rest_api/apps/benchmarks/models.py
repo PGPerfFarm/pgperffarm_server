@@ -8,7 +8,7 @@ class PgBenchBenchmark(models.Model):
 
 	clients = models.IntegerField()
 	scale = models.IntegerField()
-	duration = models.FloatField()
+	duration = models.IntegerField()
 	read_only = models.BooleanField()
 
 	class Meta:

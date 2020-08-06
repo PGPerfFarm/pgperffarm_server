@@ -34,6 +34,13 @@ class KernelSerializer(serializers.ModelSerializer):
 
 class OsVersionSerializer(serializers.ModelSerializer):
 
+	class Meta:
+		model = OsVersion
+		fields = '__all__'
+
+
+class OsDistVersionSerializer(serializers.ModelSerializer):
+
 	dist = OsDistributorSerializer(read_only=True, source='dist_id')
 
 	class Meta:
