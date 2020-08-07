@@ -1,6 +1,7 @@
 from benchmarks.models import PgBenchBenchmark, PgBenchResult, PgBenchStatement, PgBenchRunStatement
-from benchmarks.serializers import PgBenchResultSerializer, PgBenchBenchmarkSerializer, PgBenchRunStatementSerializer, PgBenchStatementSerializer, PgBenchConfigMachineSerializer, PgBenchResultCompleteSerializer, PgBenchTrendSerializer, PgBenchRunsSerializer
+from benchmarks.serializers import PgBenchResultSerializer, PgBenchBenchmarkSerializer, PgBenchRunStatementSerializer, PgBenchStatementSerializer, PgBenchConfigMachineSerializer, PgBenchResultCompleteSerializer, PgBenchTrendSerializer, PgBenchRunsSerializer, MachineHistorySerializer
 from runs.models import RunInfo
+from machines.models import Machine
 
 from rest_framework import permissions, renderers, viewsets, mixins, authentication, serializers, status, pagination, generics
 
@@ -31,6 +32,21 @@ class PgBenchBenchmarkMachinesViewSet(mixins.RetrieveModelMixin, mixins.ListMode
 	permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly, )
 
 
+class MachineHistoryViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
+
+	serializer_class = MachineHistorySerializer
+	permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly, )
+	pagination_class = TrendPagination
+
+	def get_queryset(self):
+
+		machine = int(self.kwargs['machine'])
+
+		queryset = Machine.objects.raw("select machine_id, alias, machine_type, username, email, url, dist_name, kernel_name, compiler, name, url, min(run_id) as run_id, postgres_info_id, mounts, systems_hardwareinfo.sysctl, runs_runinfo.hardware_info_id from runs_gitrepo, runs_runinfo, runs_branch, machines_machine, auth_user, systems_compiler, systems_oskernelversion, systems_kernel, systems_osdistributor, systems_osversion, systems_hardwareinfo where runs_branch.git_repo_id = runs_gitrepo.git_repo_id and runs_runinfo.git_branch_id = runs_branch.branch_id and systems_hardwareinfo.hardware_info_id = runs_runinfo.hardware_info_id and runs_runinfo.machine_id_id = machines_machine.machine_id and runs_runinfo.compiler_id = systems_compiler.compiler_id and machines_machine.owner_id_id = auth_user.id and runs_runinfo.os_version_id_id = systems_osversion.os_version_id and runs_runinfo.os_kernel_version_id_id = systems_oskernelversion.os_kernel_version_id and systems_oskernelversion.kernel_id_id = systems_kernel.kernel_id and systems_osversion.dist_id_id = systems_osdistributor.os_distributor_id and machine_id_id = %s group by url, dist_name, kernel_name, mounts, systems_hardwareinfo.sysctl, compiler, name, postgres_info_id, runs_runinfo.hardware_info_id, machine_id, alias, machine_type, username, email;", [machine])
+
+		return queryset
+
+
 class PgBenchRunsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
 
 	serializer_class = PgBenchRunsSerializer
@@ -43,7 +59,7 @@ class PgBenchRunsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, views
 		config = int(self.kwargs['config'])
 		commit = '%' + str(self.kwargs['commit'])
  
-		queryset = RunInfo.objects.raw("select runs_runinfo.run_id, pgbench_result_id, runs_runinfo.add_time from benchmarks_pgbenchbenchmark, benchmarks_pgbenchresult, runs_runinfo, runs_branch where runs_runinfo.git_branch_id = runs_branch.branch_id and benchmarks_pgbenchbenchmark.pgbench_benchmark_id = benchmarks_pgbenchresult.benchmark_config_id and benchmarks_pgbenchresult.run_id_id = runs_runinfo.run_id and git_commit like %s and machine_id_id = %s and benchmark_config_id = %s and runs_branch.git_repo_id < 4 order by add_time;", [commit, machine, config])
+		queryset = RunInfo.objects.raw("select runs_runinfo.run_id, pgbench_result_id, runs_runinfo.add_time from benchmarks_pgbenchbenchmark, benchmarks_pgbenchresult, runs_runinfo, runs_branch where runs_runinfo.git_branch_id = runs_branch.branch_id and benchmarks_pgbenchbenchmark.pgbench_benchmark_id = benchmarks_pgbenchresult.benchmark_config_id and benchmarks_pgbenchresult.run_id_id = runs_runinfo.run_id and git_commit like %s and machine_id_id = %s and benchmark_config_id = %s and runs_branch.git_repo_id < 5 order by add_time;", [commit, machine, config])
 
 		return queryset
 

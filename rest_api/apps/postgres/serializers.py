@@ -1,5 +1,4 @@
 import json
-import pandas
 import hashlib
 from rest_framework import serializers
 

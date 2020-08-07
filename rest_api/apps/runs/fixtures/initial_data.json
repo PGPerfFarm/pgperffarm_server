@@ -24,6 +24,14 @@
 		}
 	},
 	{
+		"model": "runs.GitRepo",
+		"git_repo_id": 4,
+		"fields": {
+			"url": "https://github.com/postgres/postgres",
+			"owner": "PGDG"
+		}
+	},
+	{
 		"model": "runs.branch",
 		"branch_id": 1,
 		"fields": {

@@ -19,6 +19,25 @@ class PgBenchRunsSerializer(serializers.Serializer):
 	add_time = serializers.DateTimeField()
 
 
+class MachineHistorySerializer(serializers.Serializer):
+	
+	name = serializers.CharField()
+	machine_id = serializers.IntegerField()
+	alias = serializers.CharField()
+	machine_type = serializers.CharField()
+	username = serializers.CharField()
+	email = serializers.CharField()
+	url = serializers.CharField()
+	dist_name = serializers.CharField()
+	kernel_name = serializers.CharField()
+	compiler = serializers.CharField()
+	run_id = serializers.IntegerField()
+	postgres_info_id = serializers.IntegerField()
+	mounts = serializers.JSONField()
+	sysctl = serializers.JSONField()
+	hardware_info_id = serializers.IntegerField()
+
+
 class PgBenchTrendSerializer(serializers.Serializer):
 
 	avgtps = serializers.FloatField()

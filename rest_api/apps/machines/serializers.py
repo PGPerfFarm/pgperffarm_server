@@ -17,12 +17,6 @@ class MachineSerializer(serializers.ModelSerializer):
 	approved = serializers.ReadOnlyField()
 	latest = serializers.SerializerMethodField()
 
-	def update(self, instance, validated_data):
-		instance.alias = validated_data.get('alias', instance.alias)
-		instance.machine_type = validated_data.get('machine_type', instance.machine_type)
-		instance.approved = validated_data.get('approved', instance.approved)
-		return instance
-
 	def get_latest(self, obj):
 		run_info = RunInfo.objects.filter(machine_id=obj.machine_id).order_by('-add_time').first()
 		serializer = RunInfoLatestSerializer(run_info)
