@@ -78,6 +78,15 @@ class PgBenchConfigMachineSerializer(serializers.Serializer):
 	count = serializers.IntegerField()
 
 
+class RunBranchSerializer(serializers.ModelSerializer):
+
+	git_repo = GitRepoSerializer(read_only=True)
+
+	class Meta:
+		model = Branch
+		fields = ['branch_id', 'name', 'git_repo']
+		
+
 class PgBenchBenchmarkSerializer(serializers.ModelSerializer):
 
 	class Meta:
@@ -156,15 +165,6 @@ class MachineRunsSerializer(serializers.ModelSerializer):
 	def get_runs(self, instance):
 		runs = instance.runs.all().order_by('-add_time')
 		return LastRunsSerializer(runs, many=True).data
-
-
-class RunBranchSerializer(serializers.ModelSerializer):
-
-	git_repo = GitRepoSerializer(read_only=True)
-
-	class Meta:
-		model = Branch
-		fields = ['branch_id', 'name', 'git_repo']
 
 
 class SingleRunSerializer(serializers.ModelSerializer):
