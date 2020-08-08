@@ -2,7 +2,7 @@ import json
 from rest_framework import serializers
 
 from benchmarks.models import PgBenchBenchmark, PgBenchResult, PgBenchStatement, PgBenchRunStatement, PgBenchLog
-from runs.models import RunInfo
+from runs.models import RunInfo, Branch
 from runs.serializers import GitRepoSerializer, BranchSerializer, RunInfoSerializer
 from systems.serializers import CompilerSerializer, OsDistVersionSerializer
 from machines.serializers import MachineSerializer
@@ -159,13 +159,21 @@ class MachineRunsSerializer(serializers.ModelSerializer):
 		return LastRunsSerializer(runs, many=True).data
 
 
+class RunBranchSerializer(serializers.ModelSerializer):
+
+	git_repo = GitRepoSerializer(read_only=True)
+
+	class Meta:
+		model = Branch
+		fields = ['branch_id', 'name', 'git_repo']
+
+
 class SingleRunSerializer(serializers.ModelSerializer):
 
 	pgbench_result = PgBenchAllResultsSerializer(many=True, read_only=True)
 	compiler = CompilerSerializer(read_only=True)
 	os_version = OsDistVersionSerializer(read_only=True, source='os_version_id')
-	git_repo = GitRepoSerializer(read_only=True)
-	git_branch = BranchSerializer(read_only=True)
+	git_branch = RunBranchSerializer(read_only=True)
 	machine = MachineSerializer(source='machine_id', read_only=True)
 	os_kernel = OsKernelVersionSerializer(source="os_kernel_version_id", read_only=True)
 	hardware_info = HardwareInfoSerializer(read_only=True)
