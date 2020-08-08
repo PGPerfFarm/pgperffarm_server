@@ -15,6 +15,7 @@ class PgBenchBenchmarkViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, 
 	queryset =  PgBenchBenchmark.objects.all().order_by('pgbench_benchmark_id')
 	serializer_class = PgBenchBenchmarkSerializer
 	permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly, )
+	pagination_class = TrendPagination
 
 
 class PgBenchResultCompleteViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -22,6 +23,7 @@ class PgBenchResultCompleteViewSet(mixins.RetrieveModelMixin, mixins.ListModelMi
 	queryset =  PgBenchResult.objects.all().order_by('-pgbench_result_id')
 	serializer_class = PgBenchResultCompleteSerializer
 	permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly, )
+	pagination_class = TrendPagination
 
 
 class PgBenchBenchmarkMachinesViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -30,6 +32,7 @@ class PgBenchBenchmarkMachinesViewSet(mixins.RetrieveModelMixin, mixins.ListMode
 
 	serializer_class = PgBenchConfigMachineSerializer
 	permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly, )
+	pagination_class = TrendPagination
 
 
 class MachineHistoryViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -85,6 +88,7 @@ class PgBenchResultViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, vie
 	queryset =  PgBenchResult.objects.all().order_by('pgbench_result_id')
 	serializer_class = PgBenchResultSerializer
 	permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly, )
+	pagination_class = TrendPagination
 
 
 class PgBenchStatementViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -92,6 +96,7 @@ class PgBenchStatementViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, 
 	queryset =  PgBenchStatement.objects.all().order_by('pgbench_statement_id')
 	serializer_class = PgBenchStatementSerializer
 	permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly, )
+	pagination_class = TrendPagination
 
 
 class PgBenchRunStatementViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -99,3 +104,4 @@ class PgBenchRunStatementViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixi
 	queryset =  PgBenchRunStatement.objects.all().order_by('pgbench_run_statement_id')
 	serializer_class = PgBenchRunStatementSerializer
 	permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly, )
+	pagination_class = TrendPagination
