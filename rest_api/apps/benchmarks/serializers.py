@@ -136,8 +136,7 @@ class LastRunsSerializer(serializers.ModelSerializer):
 	pgbench_result = PgBenchAllResultsSerializer(many=True, read_only=True)
 	compiler = CompilerSerializer(read_only=True)
 	os_version = OsDistVersionSerializer(read_only=True, source='os_version_id')
-	git_repo = GitRepoSerializer(read_only=True)
-	git_branch = BranchSerializer(read_only=True)
+	git_branch = RunBranchSerializer(read_only=True)
 
 	class Meta:
 	 	model = RunInfo
@@ -188,8 +187,7 @@ class RunSerializer(serializers.ModelSerializer):
 
 	compiler = CompilerSerializer(read_only=True)
 	os_version = OsDistVersionSerializer(read_only=True, source='os_version_id')
-	git_repo = GitRepoSerializer(read_only=True)
-	git_branch = BranchSerializer(read_only=True)
+	git_branch = RunBranchSerializer(read_only=True)
 	machine = MachineSerializer(source='machine_id', read_only=True)
 	os_kernel = OsKernelVersionSerializer(source="os_kernel_version_id", read_only=True)
 
