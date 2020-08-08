@@ -85,7 +85,7 @@ class RunBranchSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Branch
 		fields = ['branch_id', 'name', 'git_repo']
-		
+
 
 class PgBenchBenchmarkSerializer(serializers.ModelSerializer):
 
@@ -149,7 +149,7 @@ class LastRunsSerializer(serializers.ModelSerializer):
 
 	class Meta:
 	 	model = RunInfo
-	 	fields = ['run_id', 'add_time', 'git_branch', 'git_commit', 'benchmark', 'os_version', 'os_kernel_version_id', 'compiler', 'git_repo', 'git_branch', 'pgbench_result', 'postgres_info']
+	 	fields = ['run_id', 'add_time', 'git_branch', 'git_commit', 'benchmark', 'os_version', 'os_kernel_version_id', 'compiler', 'git_branch', 'pgbench_result', 'postgres_info']
 
 
 class MachineRunsSerializer(serializers.ModelSerializer):
@@ -180,7 +180,7 @@ class SingleRunSerializer(serializers.ModelSerializer):
 
 	class Meta:
 	 	model = RunInfo
-	 	fields = ['run_id', 'add_time', 'git_branch', 'git_commit', 'os_version', 'os_kernel', 'compiler', 'git_repo', 'git_branch', 'pgbench_result', 'postgres_info', 'machine', 'hardware_info']
+	 	fields = ['run_id', 'add_time', 'git_branch', 'git_commit', 'os_version', 'os_kernel', 'compiler', 'git_branch', 'pgbench_result', 'postgres_info', 'machine', 'hardware_info']
 
 
 class RunSerializer(serializers.ModelSerializer):
@@ -193,7 +193,7 @@ class RunSerializer(serializers.ModelSerializer):
 
 	class Meta:
 	 	model = RunInfo
-	 	fields = ['run_id', 'add_time', 'git_branch', 'git_commit', 'os_version', 'os_kernel', 'compiler', 'git_repo', 'git_branch', 'machine']
+	 	fields = ['run_id', 'add_time', 'git_branch', 'git_commit', 'os_version', 'os_kernel', 'compiler', 'git_branch', 'machine']
 
 
 class PgBenchResultCompleteSerializer(serializers.ModelSerializer):
