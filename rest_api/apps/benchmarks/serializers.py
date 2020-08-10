@@ -23,6 +23,7 @@ class MachineHistorySerializer(serializers.Serializer):
 	
 	name = serializers.CharField()
 	machine_id = serializers.IntegerField()
+	count = serializers.IntegerField()
 	alias = serializers.CharField()
 	add_time = serializers.DateTimeField()
 	machine_type = serializers.CharField()
