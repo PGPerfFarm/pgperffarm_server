@@ -14,7 +14,7 @@
         	<v-card flat>
 		        <v-card-text class="machine-main-text">
 		          Farmer: {{ alias }} <br>
-		          Run: {{ run }}
+		          Run: <u> <router-link :to="{path: '/run/'+ run }"> {{ run }} </router-link> </u> 
 		        </v-card-text>
 		    </v-card>
 		</v-flex>
@@ -47,11 +47,10 @@
 	                </v-card>
 	                <v-card flat class="profile-left-bottom" min-width=15>
 	                	<v-card-text>
-	                		Clients: {{ clients }} <br>
-		                  	Scale: {{ scale }} <br>
-		                  	Duration: {{ duration }} <br>
-		                  	Read-only: {{ read_only }} <br> <br>
-	                      
+	                		<v-icon color="rgb(51, 103, 145)">account_tree</v-icon> Clients: {{ clients }} <br>
+		                  	<v-icon color="rgb(51, 103, 145)">linear_scale</v-icon> Scale: {{ scale }} <br>
+		                  	<v-icon color="rgb(51, 103, 145)">timelapse</v-icon> Duration: {{ duration }} <br>
+		                  	<v-icon color="rgb(51, 103, 145)">edit</v-icon> Read-only: {{ read_only }} <br> <br>
 	                	</v-card-text>
 	                </v-card>
 	                <v-card flat class="run-left-top" min-width=15>
@@ -171,6 +170,8 @@
 			results: {},
 			log: {},
 
+			result: '',
+
 		}),
 
 		methods: {
@@ -191,6 +192,8 @@
 						if (httpRequest.status === 200) {
 							var response = JSON.parse(httpRequest.response);
 
+							this.result = response;
+
 		        			this.clients = response.benchmark_config.clients;
 		        			this.scale = response.benchmark_config.scale;
 		        			this.duration = response.benchmark_config.duration;
@@ -200,8 +203,8 @@
 		        			this.tps = response.tps;
 		        			this.latency = response.latency;
 		        			this.init = response.init;
-		        			this.start = response.start;
-		        			this.end = response.end;
+		        			this.start = new Date(response.start).toLocaleTimeString();
+		        			this.end = new Date(response.end).toLocaleTimeString();
 		        			this.mode = response.mode;
 		        			this.iteration = response.iteration;
 
@@ -224,7 +227,7 @@
 
 		        			for (let i = 0; i < response.pgbench_log.length; i++) {
 		        				var single_result = {
-		        					"interval_start": response.pgbench_log[i].interval_start,
+		        					"interval_start": new Date(response.pgbench_log[i].interval_start).toLocaleTimeString(),
 		        					"num_transactions": response.pgbench_log[i].num_transactions,
 		        					"sum_latency": response.pgbench_log[i].sum_latency,
 		        					"sum_latency_2": response.pgbench_log[i].sum_latency_2,
@@ -243,7 +246,7 @@
 			},
 
 			downloadJSON() {
-				const url = window.URL.createObjectURL(new Blob([JSON.stringify(this.report, null, 2)], {type: 'application/json'}));
+				const url = window.URL.createObjectURL(new Blob([JSON.stringify(this.result, null, 2)], {type: 'application/json'}));
 			    const link = document.createElement('a');
 			    link.href = url;
 			    link.setAttribute('download', 'result.json');

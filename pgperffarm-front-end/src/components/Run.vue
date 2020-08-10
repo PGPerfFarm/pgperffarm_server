@@ -49,8 +49,8 @@
 	                      <v-icon color="rgb(51, 103, 145)">computer</v-icon> OS: {{os}} <br>
 	                      <v-icon color="rgb(51, 103, 145)">border_all</v-icon> Compiler: {{compiler}} <br>
 	                      <v-icon color="rgb(51, 103, 145)">dvr</v-icon> Kernel: {{ kernel }} <br> 
-	                      <v-icon color="rgb(51, 103, 145)">memory</v-icon> Memory: {{ memory }} <br> 
-	                      <v-icon color="rgb(51, 103, 145)">swap_horiz</v-icon> Swap: {{ swap }} <br> 
+	                      <v-icon color="rgb(51, 103, 145)">memory</v-icon> Memory: {{ memory.toFixed(2) }} GB <br> 
+	                      <v-icon color="rgb(51, 103, 145)">swap_horiz</v-icon> Swap: {{ swap.toFixed(2) }} GB <br> 
 	                      <v-icon color="rgb(51, 103, 145)">developer_board</v-icon> CPU: {{ cpu }} <br> <br>
 	                	</v-card-text>
 	                </v-card>
@@ -226,13 +226,15 @@
 						if (httpRequest.status === 200) {
 							var response = JSON.parse(httpRequest.response);
 
+							this.run = response;
+
 		        			this.branch = response.git_branch.name;
 		        			this.commit = 'https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=' + response.git_commit;
-		        			this.date = response.add_time;
+		        			this.date = new Date(response.add_time);
 		        			this.owner = response.machine.owner.username;
 		        			this.alias = response.machine.alias;
 		        			this.email = response.machine.owner.email;
-		        			this.git_repo = response.git_repo.url;
+		        			this.git_repo = response.git_branch.git_repo.url;
 		        			this.farmer = response.machine.alias;
 
 		        			this.kernel = response.os_kernel.kernel.kernel_name + ' ' + response.os_kernel.kernel_release;
@@ -240,8 +242,8 @@
 		        			this.compiler = response.compiler.compiler;
 		        			this.type = response.machine.machine_type;
 
-		        			this.memory = response.hardware_info.total_memory;
-		        			this.swap = response.hardware_info.total_swap;
+		        			this.memory = response.hardware_info.total_memory / 1073741824;
+		        			this.swap = response.hardware_info.total_swap / 1073741824;
 		        			this.cpu = response.hardware_info.cpu_brand + ', ' + response.hardware_info.cpu_cores + ' cores';
 
 		        			this.mounts = response.hardware_info.mounts;
@@ -266,10 +268,10 @@
 			},
 
 			downloadJSON() {
-				const url = window.URL.createObjectURL(new Blob([JSON.stringify(this.report, null, 2)], {type: 'application/json'}));
+				const url = window.URL.createObjectURL(new Blob([JSON.stringify(this.run, null, 2)], {type: 'application/json'}));
 			    const link = document.createElement('a');
 			    link.href = url;
-			    link.setAttribute('download', 'report.json');
+			    link.setAttribute('download', 'run.json');
 			    document.body.appendChild(link);
 			    link.click();
     		},

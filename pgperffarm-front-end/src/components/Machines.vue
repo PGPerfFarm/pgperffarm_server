@@ -22,7 +22,7 @@
 			
 									<template v-slot:items="props">
 										<tr>
-											<td class="profile-td"> <router-link :to="{path: '/machine/'+ props.item.alias }"> {{ props.item.alias }} </router-link></td>
+											<td class="profile-td"> <router-link :to="{path: '/machine/'+ props.item.id }"> {{ props.item.alias }} </router-link></td>
 											<td class="profile-td">{{ props.item.system }}</td>
 											<td class="profile-td">{{ props.item.approved }}</td>
 											<td class="profile-td">{{ props.item.owner }}</td>
@@ -81,6 +81,7 @@
 
 								var machine = {
 									alias: response.results[i].alias,
+									id: response.results[i].machine_id,
 									system: response.results[i].machine_type,
 									approved: response.results[i].approved,
 									latest: response.results[i].latest.run_id,

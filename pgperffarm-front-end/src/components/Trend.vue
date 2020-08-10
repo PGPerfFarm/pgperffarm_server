@@ -7,7 +7,7 @@
       					Average TPS and latency in milliseconds: {{ alias }}
       				</v-toolbar-title>
       				<v-spacer></v-spacer>
-      				<v-btn class="login-button" >View history</v-btn>
+      				<v-btn class="login-button" :href="'/machine/'+ id"> View history </v-btn>
             		<v-btn class="login-button" v-on:click="downloadJSON()">Download JSON</v-btn>
             	</v-toolbar>
      		</v-card>
@@ -17,27 +17,24 @@
 	                <v-card flat class="run-left-top" min-width=15>
 	                	<v-card-title>
 		                  	Owner: {{ owner }} <br>
-		                  	Email: {{ email }} <br> <br>
+		                  	{{ email }} <br> <br>
                   	  	</v-card-title> 
 	                </v-card>
 	                <v-card flat class="run-left-bottom" min-width=15>
 	                	<v-card-text>
 	                		<p>
-								{{ os }} <br>
+								<v-icon color="rgb(51, 103, 145)">computer</v-icon> {{ os }} <br>
 	                    	</p>
-	                    		{{ compiler }}
+	                    		<v-icon color="rgb(51, 103, 145)">border_all</v-icon> {{ compiler }}
 	                	</v-card-text>
 	                </v-card>
 	                <v-card flat class="run-left-top" min-width=15>
 
 	                	<v-card-text>
-		                  	Clients: {{ clients }} <br>
-		                  	Scale: {{ scale }} <br>
-		                  	Duration: {{ duration }} <br>
-		                  	Read-only: {{ read_only }} <br> <br>
-		                  	<!--
-		                  	<v-btn icon absolute left> <v-icon color="white">arrow_back_ios</v-icon> </v-btn> <v-btn icon absolute right> <v-icon color="white">arrow_forward_ios</v-icon> </v-btn> <br> <br>
-		                  -->
+		                  	<v-icon color="white">account_tree</v-icon> Clients: {{ clients }} <br>
+		                  	<v-icon color="white">linear_scale</v-icon> Scale: {{ scale }} <br>
+		                  	<v-icon color="white">timelapse</v-icon> Duration: {{ duration }} <br>
+		                  	<v-icon color="white">edit</v-icon> Read-only: {{ read_only }} <br> <br>
                   	  	</v-card-text> 
 	                </v-card>
             	</v-layout>
@@ -64,11 +61,14 @@
 			compiler: '',
 			os: '',
 			email: '',
+			id: '',
 
 			clients: '',
 			duration: '',
 			scale: '',
 			read_only: '',
+
+			json_data: '',
 			
 		}),
 
@@ -76,27 +76,45 @@
 
 			getTrend() {
 
-        			var main = this.$store.getters.pgbench_results;
-        			
-        			this.alias = main.alias;
-        			this.owner = main.username;
-        			this.email = main.email;
+				var url = this.$store.state.endpoints.trends + this.$route.params.id + '/' + this.$route.params.config;
 
-        			this.clients = main.clients;
-        			this.duration = main.duration;
-        			this.scale = main.scale;
-        			this.read_only = main.read_only;
+				const httpRequest = new XMLHttpRequest();
+				httpRequest.open("GET", url);
+				httpRequest.send();
 
-        			this.os = main.kernel_name + ' ' + main.dist_name + ' ' + main.machine_type;
-        			this.compiler = main.compiler;
-			     
+				httpRequest.onreadystatechange = () => {
+
+					if (httpRequest.readyState === XMLHttpRequest.DONE) {
+
+						if (httpRequest.status === 200) {
+							var response = JSON.parse(httpRequest.response);
+
+							this.json_data = response;
+
+			        		var main = response.results[0];
+
+			        		this.alias = main.alias;
+			        		this.owner = main.username;
+			        		this.email = main.email;
+			        		this.id = main.machine_id;
+
+			        		this.clients = main.clients;
+			        		this.duration = main.duration;
+			        		this.scale = main.scale;
+			        		this.read_only = main.read_only;
+
+			        		this.os = main.kernel_name + ' ' + main.dist_name + ' ' + main.machine_type;
+			        		this.compiler = main.compiler;
+			        	}
+			        }
+			    }
 			},
 
 			downloadJSON() {
-				const url = window.URL.createObjectURL(new Blob([JSON.stringify(this.report, null, 2)], {type: 'application/json'}));
+				const url = window.URL.createObjectURL(new Blob([JSON.stringify(this.json_data, null, 2)], {type: 'application/json'}));
 			    const link = document.createElement('a');
 			    link.href = url;
-			    link.setAttribute('download', 'report.json');
+			    link.setAttribute('download', 'trend.json');
 			    document.body.appendChild(link);
 			    link.click();
     		},

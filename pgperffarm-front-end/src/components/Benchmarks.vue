@@ -46,12 +46,12 @@
 												>
 													<template v-slot:items="props">
 														<tr>
-															<td class="profile-td">{{ props.item.alias }}</td>
+															<td class="profile-td"><u> <router-link :to="{path: '/machine/' + props.item.id}"> {{ props.item.alias }} </router-link> </u></td>
 															<td class="profile-td">{{ props.item.add_time }}</td>
 															<td class="profile-td">{{ props.item.type }}</td>
 															<td class="profile-td">{{ props.item.owner }}</td>
 															<td class="profile-td">{{ props.item.count }}</td>
-															<td class="profile-td"> <u> <router-link :to="{path: '/trend/'+ props.item.id + '/' + props.item.config_id}"> link </router-link> </u> </td>
+															<td class="profile-td"> <u> <router-link :to="{path: '/trend/' + props.item.id + '/' + props.item.config_id}"> link </router-link> </u> </td>
 														</tr>
 													</template>
 												</v-data-table>
@@ -123,7 +123,6 @@
 
 			getBenchmarks() {
 
-
 	  			const httpRequest = new XMLHttpRequest();
 				httpRequest.open("GET", this.$store.state.endpoints.benchmarks);
 				httpRequest.send();
@@ -142,7 +141,7 @@
 
 								var machine = {
 									alias: response.results[i].alias,
-									add_time: response.results[i].add_time,
+									add_time: response.results[i].add_time.substring(0, 10),
 									type: response.results[i].machine_type,
 									owner: response.results[i].username,
 									count: response.results[i].count,
@@ -158,8 +157,8 @@
 
 							}
 
-							this.panel.push(true);
 							this.loading = false;
+							this.panel.push(true);
 						}
 
 						else {

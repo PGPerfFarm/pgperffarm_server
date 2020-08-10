@@ -56,7 +56,7 @@
 								var result = {
 									run_id: response.results[i].run_id,
 									pgbench_result_id: response.results[i].pgbench_result_id,
-									add_time: response.results[i].add_time,
+									add_time: new Date(response.results[i].add_time),
 								};
 
 								this.results.push(result);

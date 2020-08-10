@@ -13,27 +13,27 @@
 					<v-tabs-items>
    
 						<v-tab-item>
-							<v-card flat id="Head" class="branch">	
+							<v-card flat id="Head" class="branch" :key="1">	
 							</v-card>
 						</v-tab-item>
 
 						<v-tab-item>
-							<v-card flat id="13_stable" class="branch">	
+							<v-card flat id="13_stable" class="branch" :key="2">	
 							</v-card>
 						</v-tab-item>
 
 						<v-tab-item>
-							<v-card flat id="12_table" class="branch">	
+							<v-card flat id="12_stable" class="branch" :key="3">	
 							</v-card>
 						</v-tab-item>
 
 						<v-tab-item>
-							<v-card flat id="11_stable" class="branch">	
+							<v-card flat id="11_stable" class="branch" :key="4">	
 							</v-card>
 						</v-tab-item>
 
 						<v-tab-item>
-							<v-card flat id="10_stable" class="branch">	
+							<v-card flat id="10_stable" class="branch" :key="5">	
 							</v-card>
 						</v-tab-item>
 
@@ -197,6 +197,7 @@
 							}
 
 							var layout = {
+
 								xaxis: {
 									title: 'Run'
 								},
@@ -220,7 +221,7 @@
 
 							Plotly.newPlot(document.getElementById("Head"), data[0], layout, {responsive: true});
 							Plotly.newPlot(document.getElementById("13_stable"), data[1], layout, {responsive: true});
-							Plotly.newPlot(document.getElementById("12_table"), data[2], layout, {responsive: true});
+							Plotly.newPlot(document.getElementById("12_stable"), data[2], layout, {responsive: true});
 							Plotly.newPlot(document.getElementById("11_stable"), data[3], layout, {responsive: true});
 							Plotly.newPlot(document.getElementById("10_stable"), data[4], layout, {responsive: true});
 
@@ -239,7 +240,7 @@
 								
 							});
 
-							document.getElementById("13_STABLE").on('plotly_click', function(data) {
+							document.getElementById("13_stable").on('plotly_click', function(data) {
 
 								var commit = '';
 							
@@ -252,7 +253,7 @@
 								
 							});
 
-							document.getElementById("12_STABLE").on('plotly_click', function(data) {
+							document.getElementById("12_stable").on('plotly_click', function(data) {
 
 								var commit = '';
 							
@@ -265,7 +266,7 @@
 								
 							});
 
-							document.getElementById("11_STABLE").on('plotly_click', function(data) {
+							document.getElementById("11_stable").on('plotly_click', function(data) {
 
 								var commit = '';
 							
@@ -278,7 +279,7 @@
 								
 							});
 
-							document.getElementsById("10_STABLE").on('plotly_click', function(data) {
+							document.getElementById("10_stable").on('plotly_click', function(data) {
 
 								var commit = '';
 							
@@ -296,7 +297,6 @@
 						}
 					}
 				}
-
 			},
 
 		},
