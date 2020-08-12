@@ -94,7 +94,7 @@ REST_USE_JWT = True
 TEMPLATES = [
 	{
 		'BACKEND': 'django.template.backends.django.DjangoTemplates',
-		'DIRS': [],
+		'DIRS': [os.path.join(BASE_DIR, 'templates'), ],
 		'APP_DIRS': True,
 		'OPTIONS': {
 			'context_processors': [
@@ -107,10 +107,10 @@ TEMPLATES = [
 	},
 ]
 
-'''
+
 AUTHENTICATION_BACKENDS = (
     'users.auth.AuthBackend',
-)'''
+)
 
 
 WSGI_APPLICATION = 'rest_api.wsgi.application'

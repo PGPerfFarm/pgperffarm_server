@@ -1,5 +1,5 @@
 from machines.models import Machine
-from machines.serializers import MachineSerializer, MyMachineSerializer
+from machines.serializers import MachineSerializer, MyMachineSerializer, MachineUserSerializer
 
 from rest_framework import permissions, renderers, viewsets, mixins, authentication, serializers, status
 from rest_framework.response import Response
@@ -59,3 +59,14 @@ class MyMachineViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewset
 	
 	def get_queryset(self):
 		return Machine.objects.filter(owner_id=self.request.user.id).order_by('add_time')
+
+
+class MachineUserViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+	"""
+	API endpoint that allows users to be viewed or edited.
+	"""
+
+	serializer_class = MachineUserSerializer
+	queryset = User.objects.all().order_by('email')
+	lookup_field = ('username')
+	permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly, )

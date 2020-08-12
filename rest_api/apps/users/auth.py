@@ -24,17 +24,15 @@ from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth import login as django_login
 from django.contrib.auth import logout as django_logout
 from django.conf import settings
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework import permissions
 
 import base64
 import json
 import socket
 from urllib.parse import urlparse, urlencode, parse_qs
 import requests
-from Crypto.Cipher import AES
-from Crypto.Hash import SHA
-from Crypto import Random
+from Cryptodome.Cipher import AES
+from Cryptodome.Hash import SHA
+from Cryptodome import Random
 import time
 
 
@@ -50,8 +48,6 @@ class AuthBackend(ModelBackend):
 ####
 
 # Handle login requests by sending them off to the main site
-@api_view(['GET', 'POST'])
-@permission_classes((permissions.AllowAny,))
 def login(request):
     if 'next' in request.GET:
         # Put together an url-encoded dict of parameters we're getting back,
@@ -62,7 +58,7 @@ def login(request):
         r = Random.new()
         iv = r.read(16)
         encryptor = AES.new(SHA.new(settings.SECRET_KEY.encode('ascii')).digest()[:16], AES.MODE_CBC, iv)
-        cipher = encryptor.encrypt(s + ' ' * (16 - (len(s) % 16)))  # pad to 16 bytes
+        cipher = encryptor.encrypt(s.encode('ascii') + b' ' * (16 - (len(s) % 16)))  # pad to 16 bytes
 
         return HttpResponseRedirect("%s?d=%s$%s" % (
             settings.PGAUTH_REDIRECT,
@@ -75,18 +71,14 @@ def login(request):
 
 # Handle logout requests by logging out of this site and then
 # redirecting to log out from the main site as well.
-@api_view(['GET', 'POST'])
-@permission_classes((permissions.AllowAny,))
 def logout(request):
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         django_logout(request)
     return HttpResponseRedirect("%slogout/" % settings.PGAUTH_REDIRECT)
 
 
 # Receive an authentication response from the main website and try
 # to log the user in.
-@api_view()
-@permission_classes((permissions.AllowAny,))
 def auth_receive(request):
     if 's' in request.GET and request.GET['s'] == "logout":
         # This was a logout request
@@ -141,12 +133,24 @@ def auth_receive(request):
 a different username than %s.
 
 This is almost certainly caused by some legacy data in our database.
-Please send an email to webmaster@postgresql.eu, indicating the username
+Please send an email to webmaster@postgresql.org, indicating the username
 and email address from above, and we'll manually merge the two accounts
 for you.
 
 We apologize for the inconvenience.
 """ % (data['e'][0], data['u'][0]), content_type='text/plain')
+
+        if getattr(settings, 'PGAUTH_CREATEUSER_CALLBACK', None):
+            res = getattr(settings, 'PGAUTH_CREATEUSER_CALLBACK')(
+                data['u'][0],
+                data['e'][0],
+                ['f'][0],
+                data['l'][0],
+            )
+            # If anything is returned, we'll return that as our result.
+            # If None is returned, it means go ahead and create the user.
+            if res:
+                return res
 
         user = User(username=data['u'][0],
                     first_name=data['f'][0],
@@ -178,8 +182,9 @@ We apologize for the inconvenience.
             # Redirect address
             return HttpResponseRedirect(rdata['r'][0])
     # No redirect specified, see if we have it in our settings
+    redirect_string = settings.PGAUTH_REDIRECT_SUCCESS + user.username
     if hasattr(settings, 'PGAUTH_REDIRECT_SUCCESS'):
-        return HttpResponseRedirect(settings.PGAUTH_REDIRECT_SUCCESS)
+        return HttpResponseRedirect(redirect_string)
     return HttpResponse("Authentication successful, but don't know where to redirect!", status=500)
 
 
