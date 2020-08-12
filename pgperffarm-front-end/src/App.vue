@@ -1,23 +1,3 @@
-# root component
-# outer HTML and router view
-
-# run with yarn serve
-
-# todo after website is complete
-# fix tabs and spaces
-# https?
-# responsiveness on mobile
-# status in the last 30 days?
-
-# todo wip
-# fixed homepage and menu nav
-# too much recursion error
-# fix scrolling (everywhere)
-# profile buttons center
-# fix pre text
- 
-# note: rest api works with python3.7
-
 <template>
 	<v-app>
 		<pg-toolbar></pg-toolbar>
@@ -35,7 +15,6 @@
 	  components: {
 	  	PgNavbar,
 	  	PgToolbar,
-	  	//Login
 	  }
 	}
 

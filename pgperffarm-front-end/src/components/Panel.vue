@@ -15,9 +15,10 @@
             </p>
             <p>
 				      This website enables registered users to upload, browse and download test results for all machines.
-			       <p>
+			       </p>
+             <!--<p>
 				      Visit the <router-link to="/help">Help</router-link> page for additional information!
-            </p>
+            </p>-->
 			     </v-card-text>
       </v-card>
     </v-flex>

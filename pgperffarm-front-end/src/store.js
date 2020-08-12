@@ -30,11 +30,12 @@ export default new Vuex.Store({
 		    my_machine: baseUrl + 'my-machines/',
 		    record: baseUrl + 'last_runs/',
 		    run: baseUrl + 'run/',
-		    users: baseUrl + 'users/',
+		    user: baseUrl + 'machine_user/',
 		    benchmarks: baseUrl + 'benchmarks_machines/',
 		    results: baseUrl + 'pgbench_results_complete/',
 		    trends: baseUrl + 'pgbench_trends/',
 		    trends_benchmarks: baseUrl + 'pgbench_results_commit/',
+		    login: baseUrl + 'community_login/',
 	    }
   	},
 

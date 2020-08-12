@@ -52,7 +52,7 @@
 
 			<!--
 			<v-toolbar-items v-if="!$store.getters.authenticated">
-				   <v-btn flat class="v-btn-navbar" href="/login">
+				   <v-btn flat class="v-btn-navbar" :href="$store.state.endpoints.login">
 				   		<v-icon color="rgb(51, 103, 145)">input</v-icon> Login
 					</v-btn>
 	    	</v-toolbar-items>
