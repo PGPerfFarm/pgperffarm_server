@@ -182,9 +182,8 @@ We apologize for the inconvenience.
             # Redirect address
             return HttpResponseRedirect(rdata['r'][0])
     # No redirect specified, see if we have it in our settings
-    redirect_string = settings.PGAUTH_REDIRECT_SUCCESS + user.username
     if hasattr(settings, 'PGAUTH_REDIRECT_SUCCESS'):
-        return HttpResponseRedirect(redirect_string)
+        return HttpResponseRedirect(settings.PGAUTH_REDIRECT_SUCCESS)
     return HttpResponse("Authentication successful, but don't know where to redirect!", status=500)
 
 
