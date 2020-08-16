@@ -44,7 +44,7 @@ class PgBenchRunStatement(models.Model):
 class PgBenchStatement(models.Model):
 
 	pgbench_statement_id = models.AutoField(primary_key=True)
-	statement = models.TextField(null=True)
+	statement = models.TextField(null=True, unique=True)
 
 
 class PgBenchLog(models.Model):

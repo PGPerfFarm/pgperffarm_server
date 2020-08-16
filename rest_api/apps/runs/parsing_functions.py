@@ -144,33 +144,37 @@ def ParsePgBenchStatementLatencies(statement_latencies, pgbench_result_id):
 	for statement in statements:
 		latency = re.findall('\d+\.\d+', statement)[0]
 		text = (statement.split(latency)[1]).strip()
-		
-		pgbench_statement = {'statement': text}
 
-		statement_serializer = PgBenchStatementSerializer(data=pgbench_statement)
+		try:
+			statement_valid = PgBenchStatement.objects.filter(statement=text).get()
 
-		if statement_serializer.is_valid():
+		except PgBenchStatement.DoesNotExist:
+
+			pgbench_statement = {'statement': text}
+			statement_serializer = PgBenchStatementSerializer(data=pgbench_statement)
+
+			if statement_serializer.is_valid():
 				statement_valid = statement_serializer.save()
 
-				data = {
-					'latency': latency,
-					'line_id': line_id,
-					'pgbench_result_id': pgbench_result_id,
-					'result_id': statement_valid.pgbench_statement_id
-					}
+			else:
+				error = statement_serializer.errors
+				raise RuntimeError(error)
 
-				run_statement_serializer = PgBenchRunSingleStatementSerializer(data=data)
+		data = {
+				'latency': latency,
+				'line_id': line_id,
+				'pgbench_result_id': pgbench_result_id,
+				'result_id': statement_valid.pgbench_statement_id
+				}
 
-				if run_statement_serializer.is_valid():
-					run_statement_serializer.save()
-					line_id += 1
+		run_statement_serializer = PgBenchRunSingleStatementSerializer(data=data)
 
-				else:
-					error = run_statement_serializer.errors
-					raise RuntimeError(error)
+		if run_statement_serializer.is_valid():
+			run_statement_serializer.save()
+			line_id += 1
 
 		else:
-			error = statement_serializer.errors
+			error = run_statement_serializer.errors
 			raise RuntimeError(error)
 
 
