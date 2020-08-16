@@ -124,10 +124,9 @@
 							for (let j = 0; j < 5; j++) {
 
 								var avg_latency_line = {
-									x: this.commits[j].length,
+									x: this.commits[j],
 									y: this.avg_latencies[j],
-									mode: 'lines+markers+text',
-									text: this.commits[j],
+									mode: 'lines+markers',
 									marker: {
 										color: '#12BA9E',
 										size: 10
@@ -141,7 +140,7 @@
 								};
 
 								var avg_tps_line = {
-									x: this.commits[j].length,
+									x: this.commits[j],
 									y: this.avg_tps[j],
 									yaxis: 'y2',
 									mode: 'lines+markers',
@@ -159,7 +158,7 @@
 								};
 
 								var std_latency_line = {
-									x: this.commits[j].length,
+									x: this.commits[j],
 									y: this.std_latencies[j],
 									mode: 'lines+markers',
 									marker: {
@@ -175,11 +174,10 @@
 								};
 
 								var std_tps_line = {
-									x: this.commits[j].length,
+									x: this.commits[j],
 									y: this.std_tps[j],
 									yaxis: 'y2',
 									mode: 'lines+markers',
-									text: this.commits[j],
 									textposition: 'top center',
 									marker: {
 										color: '#96E6B3',
@@ -199,7 +197,7 @@
 							var layout = {
 
 								xaxis: {
-									title: 'Run'
+									title: 'Commit'
 								},
 								yaxis: {
 									title: 'Latency'

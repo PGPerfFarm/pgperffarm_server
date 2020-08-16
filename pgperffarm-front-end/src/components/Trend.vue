@@ -89,6 +89,8 @@
 						if (httpRequest.status === 200) {
 							var response = JSON.parse(httpRequest.response);
 
+							console.log(response);
+
 							this.json_data = response;
 
 			        		var main = response.results[0];
