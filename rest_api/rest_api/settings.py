@@ -110,6 +110,7 @@ TEMPLATES = [
 
 AUTHENTICATION_BACKENDS = (
     'users.auth.AuthBackend',
+    'django.contrib.auth.backends.ModelBackend',
 )
 
 
