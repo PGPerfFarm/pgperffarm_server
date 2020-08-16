@@ -24,6 +24,7 @@ class MachineHistorySerializer(serializers.Serializer):
 	name = serializers.CharField()
 	machine_id = serializers.IntegerField()
 	count = serializers.IntegerField()
+	description = serializers.CharField()
 	alias = serializers.CharField()
 	add_time = serializers.DateTimeField()
 	machine_type = serializers.CharField()
@@ -60,6 +61,7 @@ class PgBenchTrendSerializer(serializers.Serializer):
 	machine_id = serializers.IntegerField()
 	alias = serializers.CharField()
 	machine_type = serializers.CharField()
+	description = serializers.CharField()
 	username = serializers.CharField()
 	email = serializers.CharField()
 	url = serializers.CharField()
@@ -82,6 +84,7 @@ class PgBenchConfigMachineSerializer(serializers.Serializer):
 	machine_type = serializers.CharField()
 	username = serializers.CharField()
 	count = serializers.IntegerField()
+	description = serializers.CharField()
 
 
 class RunBranchSerializer(serializers.ModelSerializer):

@@ -25,7 +25,7 @@ class MachineSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = Machine
-		fields = ['machine_id','alias', 'add_time', 'approved', 'owner', 'machine_type', 'latest']
+		fields = ['machine_id', 'alias', 'description', 'add_time', 'approved', 'owner', 'machine_type', 'latest']
 
 
 class MyMachineSerializer(serializers.ModelSerializer):
@@ -43,7 +43,7 @@ class MyMachineSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = Machine
-		fields = ['machine_id','alias', 'machine_secret', 'add_time', 'approved', 'machine_type', 'latest', 'count']
+		fields = ['machine_id', 'alias', 'description', 'machine_secret', 'add_time', 'approved', 'machine_type', 'latest', 'count']
 
 
 class MachineUserSerializer(serializers.ModelSerializer):

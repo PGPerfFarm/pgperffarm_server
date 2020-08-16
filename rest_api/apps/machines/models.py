@@ -10,6 +10,8 @@ class Machine(models.Model):
 
 	alias = models.CharField(max_length=100, blank=False, default='', unique=True)
 
+	description = models.CharField(max_length=200, blank=True, default='', unique=False)
+
 	machine_secret = models.CharField(max_length=128, blank=False, default='', unique=True)
 
 	approved = models.BooleanField(default=False)
