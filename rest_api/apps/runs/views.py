@@ -95,6 +95,10 @@ def CreateRunInfo(request, format=None):
 					error = machine.serializer.errors
 					raise RuntimeError(error)
 
+			if machine.approved == False:
+				error = 'The machine is not approved.'
+				raise RuntimeError(error)
+
 			elif os_old != os_new:
 				error = 'Machine OS cannot change'
 				raise RuntimeError(error)

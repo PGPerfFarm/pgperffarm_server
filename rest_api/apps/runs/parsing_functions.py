@@ -8,8 +8,8 @@ from datetime import datetime
 
 from postgres.models import PostgresSettingsSet
 from postgres.serializers import PostgresSettingsSerializer
-from benchmarks.models import PgBenchBenchmark, PgBenchResult
-from benchmarks.serializers import PgBenchResultSerializer, PgBenchStatementSerializer, PgBenchStatement, PgBenchRunSingleStatementSerializer, PgBenchLogSerializer
+from benchmarks.models import PgBenchBenchmark, PgBenchResult, PgBenchStatement
+from benchmarks.serializers import PgBenchResultSerializer, PgBenchStatementSerializer, PgBenchRunSingleStatementSerializer, PgBenchLogSerializer
 from systems.models import Kernel
 
 
