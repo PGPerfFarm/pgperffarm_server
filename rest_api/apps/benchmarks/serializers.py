@@ -146,7 +146,7 @@ class PgBenchAllResultsSerializer(serializers.ModelSerializer):
 
 	class Meta:
 	 	model = PgBenchResult
-	 	fields = ['pgbench_result_id', 'tps', 'latency', 'benchmark_config']
+	 	fields = ['pgbench_result_id', 'tps', 'latency', 'start', 'benchmark_config']
 
 
 class LastRunsSerializer(serializers.ModelSerializer):
