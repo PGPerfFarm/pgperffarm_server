@@ -36,7 +36,9 @@
 	                </v-card>
 	                <v-card flat class="run-left-bottom" min-width=15>
 	                	<v-card-text class="run-left-bottom-monospace" id="command-line">
+	                		<p>
 	                		pgbench -i -s {{ scale }} -p 5432 && pgbench -r -c {{ clients }} -j {{ clients }} -T {{ duration }} -l --aggregate-interval 1 {{ read_only_command }}
+	                		</p>
 	                	</v-card-text>
 	                	<v-card-actions>
 	                		<v-btn block class="profile-button" v-on:click="copy()"> COPY </v-btn>

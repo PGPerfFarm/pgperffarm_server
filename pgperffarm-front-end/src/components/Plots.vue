@@ -58,7 +58,6 @@
 										    		<th class="mounts-h"> <b> Min TPS </b> </th>
 										    		<th class="mounts-h"> <b> Max TPS </b> </th>
 										    		<th class="mounts-h"> <b> Commit </b> </th>
-										    		<th class="mounts-h"> <b> Commit </b> </th>
 										  </tr>
 										  		<tr v-for="i in rel_13_length" :key="i" class="mounts-r">
 													<td class="mounts-d"> {{ avg_latencies[1][i].toFixed(2) }} </td>
@@ -89,7 +88,6 @@
 										    		<th class="mounts-h"> <b> Max latency </b> </th>
 										    		<th class="mounts-h"> <b> Min TPS </b> </th>
 										    		<th class="mounts-h"> <b> Max TPS </b> </th>
-										    		<th class="mounts-h"> <b> Commit </b> </th>
 										    		<th class="mounts-h"> <b> Commit </b> </th>
 										  </tr>
 										  		<tr v-for="i in rel_12_length" :key="i" class="mounts-r">
@@ -153,7 +151,6 @@
 										    		<th class="mounts-h"> <b> Max latency </b> </th>
 										    		<th class="mounts-h"> <b> Min TPS </b> </th>
 										    		<th class="mounts-h"> <b> Max TPS </b> </th>
-										    		<th class="mounts-h"> <b> Commit </b> </th>
 										    		<th class="mounts-h"> <b> Commit </b> </th>
 										  </tr>
 										  		<tr v-for="i in rel_10_length" :key="i" class="mounts-r">
