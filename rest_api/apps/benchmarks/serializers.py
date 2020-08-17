@@ -43,6 +43,11 @@ class MachineHistorySerializer(serializers.Serializer):
 	mounts = serializers.JSONField()
 	sysctl = serializers.JSONField()
 	hardware_info_id = serializers.IntegerField()
+	pgbench_benchmark_id = serializers.IntegerField()
+	scale = serializers.IntegerField()
+	duration = serializers.IntegerField()
+	read_only = serializers.BooleanField()
+	clients = serializers.IntegerField()
 
 
 class PgBenchTrendSerializer(serializers.Serializer):
