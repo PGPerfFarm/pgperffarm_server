@@ -7,20 +7,29 @@
 		</v-card-title>
 	  </v-card>
 	<v-layout>
-	  <v-flex d-flex xs12 sm6 md3>
+	  <v-flex d-flex sm7 md4>
 				<v-layout column>
-					<v-card flat class="profile-left-top">
-					  <v-card-title>
-					  	Type: {{ type }}  <br>
-						Reports: {{ reports }} <br>
-					 	{{ branches.length }} branch(es) involved
-				  </v-card-title> 
+					<v-card flat class="profile-left-top" min-width=15>
+						<v-card-title>
+						  	Type: {{ type }}  <br>
+							Reports: {{ reports }} <br>
+						 	{{ branches.length }} branch(es) involved
+				  		</v-card-title> 
 					</v-card>
-					<v-card class="profile-left-bottom">
+					<v-card class="profile-left-bottom" min-width=15>
 						<v-card-text>
-					  <v-icon color="rgb(51, 103, 145)">account_circle</v-icon> {{ owner }} <br>
-					  <v-icon color="rgb(51, 103, 145)">email</v-icon> {{ email }} <br>
-					  <v-icon color="rgb(51, 103, 145)">schedule</v-icon> {{ add_time }} <br>
+					  <v-icon color="rgb(51, 103, 145)">account_circle</v-icon> Owner: {{ owner }} <br>
+					  <v-icon color="rgb(51, 103, 145)">schedule</v-icon> Add time: {{ add_time }} <br>
+						</v-card-text>
+					</v-card>
+					<v-card flat class="profile-left-top" min-width=15>
+						<v-card-title>
+						 	Available configurations
+				  		</v-card-title> 
+					</v-card>
+					<v-card class="profile-left-bottom" min-width=15>
+						<v-card-text v-for="(value, name) in benchmarks" :key="name">
+						<u> <router-link :to="{path: '/trend/'+ id + '/' + name }"> {{ value }} </router-link> </u>
 						</v-card-text>
 					</v-card>
 				</v-layout>
@@ -140,17 +149,18 @@
 	 		loading: true,
 
 	 		owner: '',
-	 		email: '',
 	 		reports: 0,
 	 		type: '',
 	 		alias: '',
 	 		add_time: '',
+	 		id: '',
 
 	 		compiler_data: [],
 	 		os_data: [],
 	 		branches: [],
 	 		sysctl_data: [],
 	 		postgres_data: [],
+	 		benchmarks: {},
 
 		}),
 
@@ -173,8 +183,8 @@
 
 				  			this.owner = response.results[0].username;
 				  			this.alias = response.results[0].alias;
+				  			this.id = response.results[0].machine_id;
 				  			this.add_time = new Date(response.results[0].add_time);
-				  			this.email = response.results[0].email;
 				  			this.type = response.results[0].machine_type;
 
 				  			for (let i = 0; i < response.count; i++) {
@@ -189,6 +199,20 @@
 				  						this.compiler_data.push({'compiler': response.results[i].compiler, 'run_id': response.results[i].run_id});
 				  					}
 				  				}
+
+				  				var read_only = '';
+
+				  				if (response.results[i].read_only == true) {
+									read_only = "read-only";
+								}
+
+								else {
+									read_only = "read-write";
+								}
+
+								var benchmark = 'Scale ' + response.results[i].scale + ', duration ' + response.results[i].duration + ', clients ' + response.results[i].clients + ', ' + read_only;
+				  			
+				  				this.benchmarks[response.results[i].pgbench_benchmark_id] = benchmark;
 
 				  				var os_string = response.results[i].kernel_name + ' ' + response.results[i].dist_name + ' ' + response.results[i].release + ' (' + response.results[i].codename + ') ' + response.results[i].kernel_release + ' ' + response.results[i].kernel_version;
 

@@ -13,7 +13,7 @@
         	<v-flex>
         	<v-card flat>
 		        <v-card-text class="machine-main-text">
-		          Farmer: {{alias}} <br>
+		          Farmer: <u> <router-link :to="{path: '/machine/'+ id }"> {{ alias }} </router-link> </u> <br>
 		          Owner: {{owner}} 
 		        </v-card-text>
 		    </v-card>
@@ -29,7 +29,7 @@
 		<v-flex>
 		    <v-card flat>
 		        <v-card-text class="machine-main-text">
-		          Date: {{date}} <br>
+		          Uploaded: {{date}} <br>
 		          Repository: {{git_repo}} 
 		        </v-card-text>
 		    </v-card>
@@ -80,13 +80,14 @@
 		                    		<table class="mounts">
 		                    			<tr class="mounts-r">
 										    		<th class="mounts-h"> <b> Configuration </b> </th>
+										    		<th class="mounts-h"> <b> Start time </b> </th>
 										    		<th class="mounts-h"> <b> Link </b> </th>
 										  </tr>
 										  		<tr v-for="(item, i) in benchmarks" :key="i" class="mounts-r">
 													<td class="mounts-d"> {{item.config}} </td>
+													<td class="mounts-d"> {{item.start}} </td>
 												    <td class="mounts-d"> <u> <router-link :to="{path: '/result/'+ item.id }"> {{ item.id }} </router-link> </u> </td>
 										  		</tr>
-
 		                    	</table>
 		                    	</v-card-text>
 	                    	</v-card>
@@ -107,8 +108,7 @@
 													<td class="mounts-d"> {{name}} </td>
 												    <td class="mounts-d"> {{value}} </td>
 										  		</tr>
-
-		                    	</table>
+		                    		</table>
 		                    	</v-card-text>
 
 		                    </v-card>
@@ -188,9 +188,9 @@
 
 	        alias: '',
 	        os: '',
+	        id: '',
 	        compiler: '',
 	        owner: '',
-	        email: '',
 	        branch: '',
 	        date: '',
 	        commit: '',
@@ -233,7 +233,7 @@
 		        			this.date = new Date(response.add_time);
 		        			this.owner = response.machine.owner.username;
 		        			this.alias = response.machine.alias;
-		        			this.email = response.machine.owner.email;
+		        			this.alias = response.machine.machine_id;
 		        			this.git_repo = response.git_branch.git_repo.url;
 		        			this.farmer = response.machine.alias;
 
@@ -251,11 +251,25 @@
 		        			this.postgres_settings = response.postgres_info.settings;
 
 		        			for (let i = 0; i < response.pgbench_result.length; i++) {
-		        				var config = 'Scale ' + response.pgbench_result[i].benchmark_config.scale + ', duration ' + response.pgbench_result[i].benchmark_config.duration + ', clients ' + response.pgbench_result[i].benchmark_config.clients + ', read-only ' + response.pgbench_result[i].benchmark_config.read_only;
+
+		        				var read_only = '';
+
+								if (response.pgbench_result[i].benchmark_config.read_only == true) {
+									read_only = "read-only test";
+								}
+
+								else {
+									read_only = "read-write test";
+								}
+
+		        				var config = 'Scale ' + response.pgbench_result[i].benchmark_config.scale + ', duration ' + response.pgbench_result[i].benchmark_config.duration + ', clients ' + response.pgbench_result[i].benchmark_config.clients + ', ' + read_only;
+
+		        				var date = new Date(response.pgbench_result[i].start * 1000).toLocaleString();
 
 		        				var json = {
 		        					"config": config,
-		        					"id": response.pgbench_result[i].pgbench_result_id
+		        					"id": response.pgbench_result[i].pgbench_result_id,
+		        					"start": date,
 		        				}
 		        				this.benchmarks.push(json);
 		        			}

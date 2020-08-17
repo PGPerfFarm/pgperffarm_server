@@ -13,7 +13,7 @@
         	<v-flex>
         	<v-card flat>
 		        <v-card-text class="machine-main-text">
-		          Farmer: {{ alias }} <br>
+		          Farmer: <u> <router-link :to="{path: '/machine/'+ id }"> {{ alias }} </router-link> </u> <br>
 		          Run: <u> <router-link :to="{path: '/run/'+ run }"> {{ run }} </router-link> </u> 
 		        </v-card-text>
 		    </v-card>
@@ -50,7 +50,7 @@
 	                		<v-icon color="rgb(51, 103, 145)">account_tree</v-icon> Clients: {{ clients }} <br>
 		                  	<v-icon color="rgb(51, 103, 145)">linear_scale</v-icon> Scale: {{ scale }} <br>
 		                  	<v-icon color="rgb(51, 103, 145)">timelapse</v-icon> Duration: {{ duration }} <br>
-		                  	<v-icon color="rgb(51, 103, 145)">edit</v-icon> Read-only: {{ read_only }} <br> <br>
+		                  	<v-icon color="rgb(51, 103, 145)">edit</v-icon> {{ read_only }} <br> <br>
 	                	</v-card-text>
 	                </v-card>
 	                <v-card flat class="run-left-top" min-width=15>
@@ -149,6 +149,7 @@
 		data: () => ({
 
 			alias: '',
+			id: '',
 	        os: '',
 	        branch: '',
 	        commit: '',
@@ -197,18 +198,27 @@
 		        			this.clients = response.benchmark_config.clients;
 		        			this.scale = response.benchmark_config.scale;
 		        			this.duration = response.benchmark_config.duration;
-		        			this.read_only = response.benchmark_config.read_only;
+
+		        			if (response.benchmark_config.read_only == true) {
+								this.read_only = "Read-only test";
+							}
+
+							else {
+								this.read_only = "Read-write test";
+							}
+
 		        			this.config = response.benchmark_config.pgbench_benchmark_id;
 
 		        			this.tps = response.tps;
 		        			this.latency = response.latency;
 		        			this.init = response.init;
-		        			this.start = new Date(response.start).toLocaleTimeString();
-		        			this.end = new Date(response.end).toLocaleTimeString();
+		        			this.start = new Date(response.start * 1000).toLocaleTimeString();
+		        			this.end = new Date(response.end * 1000).toLocaleTimeString();
 		        			this.mode = response.mode;
 		        			this.iteration = response.iteration;
 
 		        			this.alias = response.run.machine.alias;
+		        			this.id = response.run.machine.machine_id;
 		        			this.os = response.run.os_version.dist.dist_name + ' ' + response.run.os_version.release;
 		        			this.branch = response.run.git_branch.name;
 		        			this.kernel = response.run.os_kernel.kernel.kernel_name + ' ' + response.run.os_kernel.kernel_release;

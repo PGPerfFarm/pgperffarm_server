@@ -117,15 +117,18 @@ a {
   padding: 0% 0% 0% 0%;
 }
 
+.run-left-bottom-monospace {
+  color: #336791 !important;
+  font-size: 15px;
+  margin: 0% 5% 0% 5%;
+  font-family: "Lucida Console", Courier, monospace !important;
+  padding: 0% 0% 0% 0%;
+}
+
 .profile-button {
   color: #336791 !important;
   text-transform: none !important;
   font-size: 18px !important;
-}
-
-.profile-button__content {
-  color: red !important;
-  text-align: left !important;
 }
 
 .profile-left-bottom {
@@ -283,7 +286,13 @@ pre {
   margin-bottom: -5%;
 }
 
-.mounts, .mounts-h, .mounts-d {
+.mounts-center {
+  width: 92.5%;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.mounts, .mounts-h, .mounts-d, .mounts-center {
   font-size: 18px !important;
   border: 1px solid #336791;
   border-collapse: collapse;

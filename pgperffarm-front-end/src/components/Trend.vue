@@ -9,6 +9,7 @@
       				<v-spacer></v-spacer>
       				<v-btn class="login-button" :href="'/machine/'+ id"> View history </v-btn>
             		<v-btn class="login-button" v-on:click="downloadJSON()">Download JSON</v-btn>
+            		<v-btn class="login-button" v-on:click="downloadCSV()">Download CSV</v-btn>
             	</v-toolbar>
      		</v-card>
     	<v-layout>
@@ -16,8 +17,7 @@
             	<v-layout column>
 	                <v-card flat class="run-left-top" min-width=15>
 	                	<v-card-title>
-		                  	Owner: {{ owner }} <br>
-		                  	{{ email }} <br> <br>
+		                  	Owner: {{ owner }} <br> <br>
                   	  	</v-card-title> 
 	                </v-card>
 	                <v-card flat class="run-left-bottom" min-width=15>
@@ -28,19 +28,35 @@
 	                    		<v-icon color="rgb(51, 103, 145)">border_all</v-icon> {{ compiler }}
 	                	</v-card-text>
 	                </v-card>
-	                <v-card flat class="run-left-top" min-width=15>
 
+	                <v-card flat class="run-left-top" min-width=15>
+	                	<v-card-title>
+		                  	Command line <br> <br>
+                  	  	</v-card-title> 
+	                </v-card>
+	                <v-card flat class="run-left-bottom" min-width=15>
+	                	<v-card-text class="run-left-bottom-monospace" id="command-line">
+	                		pgbench -i -s {{ scale }} -p 5432 && pgbench -r -c {{ clients }} -j {{ clients }} -T {{ duration }} -l --aggregate-interval 1 {{ read_only_command }}
+	                	</v-card-text>
+	                	<v-card-actions>
+	                		<v-btn block class="profile-button" v-on:click="copy()"> COPY </v-btn>
+	                	</v-card-actions>
+	                </v-card>
+
+	                <v-card flat class="run-left-top" min-width=15>
 	                	<v-card-text>
+	                		Benchmark configuration: <br>
 		                  	<v-icon color="white">account_tree</v-icon> Clients: {{ clients }} <br>
 		                  	<v-icon color="white">linear_scale</v-icon> Scale: {{ scale }} <br>
 		                  	<v-icon color="white">timelapse</v-icon> Duration: {{ duration }} <br>
-		                  	<v-icon color="white">edit</v-icon> Read-only: {{ read_only }} <br> <br>
+		                  	<v-icon color="white">edit</v-icon> {{ read_only }} <br> <br>
                   	  	</v-card-text> 
 	                </v-card>
+
             	</v-layout>
       		</v-flex>
       		<v-flex d-flex fluid>
-          		<router-view></router-view>
+          		<router-view ref="plots"></router-view>
       	</v-flex>
     </v-layout>
   </v-layout>
@@ -60,13 +76,13 @@
 			owner: '',
 			compiler: '',
 			os: '',
-			email: '',
 			id: '',
 
 			clients: '',
 			duration: '',
 			scale: '',
 			read_only: '',
+			read_only_command: '',
 
 			json_data: '',
 			
@@ -97,13 +113,20 @@
 
 			        		this.alias = main.alias;
 			        		this.owner = main.username;
-			        		this.email = main.email;
 			        		this.id = main.machine_id;
 
 			        		this.clients = main.clients;
 			        		this.duration = main.duration;
 			        		this.scale = main.scale;
-			        		this.read_only = main.read_only;
+
+							if (main.read_only == true) {
+								this.read_only = "Read-only test";
+								this.read_only_command = '-S';
+							}
+
+							else {
+								this.read_only = "Read-write test";
+							}
 
 			        		this.os = main.kernel_name + ' ' + main.dist_name + ' ' + main.machine_type;
 			        		this.compiler = main.compiler;
@@ -119,6 +142,21 @@
 			    link.setAttribute('download', 'trend.json');
 			    document.body.appendChild(link);
 			    link.click();
+    		},
+
+    		downloadCSV() {
+    			this.$refs.plots.downloadCSV();
+    		},
+
+    		copy() {
+				var text = document.getElementById("command-line");
+				var str = text.firstChild.data;
+				const el = document.createElement('textarea');
+				el.value = str;
+				document.body.appendChild(el);
+				el.select();
+				document.execCommand('copy');
+				document.body.removeChild(el);
     		},
 
 		},

@@ -137,7 +137,17 @@
 
 							for (let i = 0; i < response.count; i++) {
 
-								var benchmark = 'Scale ' + response.results[i].scale + ', duration ' + response.results[i].duration + ', clients ' + response.results[i].clients + ', read-only ' + response.results[i].read_only;
+								var read_only = '';
+
+								if (response.results[i].read_only == true) {
+									read_only = "read-only test";
+								}
+
+								else {
+									read_only = "read-write test";
+								}
+
+								var benchmark = 'Scale ' + response.results[i].scale + ', duration ' + response.results[i].duration + ', clients ' + response.results[i].clients + ', ' + read_only;
 
 								var machine = {
 									alias: response.results[i].alias,
@@ -156,7 +166,7 @@
 								this.machines[benchmark].push(machine);
 
 							}
-
+						
 							this.loading = false;
 							this.panel.push(true);
 						}
