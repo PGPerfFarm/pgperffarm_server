@@ -19,6 +19,25 @@ class PgBenchRunsSerializer(serializers.Serializer):
 	add_time = serializers.DateTimeField()
 
 
+class PostgresHistorySerializer(serializers.Serializer):
+
+	min = serializers.IntegerField()
+	settings1 = serializers.IntegerField()
+	settings2 = serializers.IntegerField() 
+	setting_name = serializers.CharField()
+	unit1 = serializers.CharField()
+	unit2 = serializers.CharField()
+	value1 = serializers.CharField()
+	value2 = serializers.CharField()
+	machine_id = serializers.IntegerField()
+	name = serializers.CharField()
+	machine_type = serializers.CharField() 
+	username = serializers.CharField()
+	kernel_name = serializers.CharField()
+	first_run = serializers.IntegerField()
+	last_run = serializers.IntegerField()
+
+
 class MachineHistorySerializer(serializers.Serializer):
 	
 	name = serializers.CharField()

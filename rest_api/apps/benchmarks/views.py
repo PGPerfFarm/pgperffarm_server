@@ -1,5 +1,5 @@
 from benchmarks.models import PgBenchBenchmark, PgBenchResult, PgBenchStatement, PgBenchRunStatement
-from benchmarks.serializers import PgBenchResultSerializer, PgBenchBenchmarkSerializer, PgBenchRunStatementSerializer, PgBenchStatementSerializer, PgBenchConfigMachineSerializer, PgBenchResultCompleteSerializer, PgBenchTrendSerializer, PgBenchRunsSerializer, MachineHistorySerializer
+from benchmarks.serializers import PgBenchResultSerializer, PgBenchBenchmarkSerializer, PgBenchRunStatementSerializer, PgBenchStatementSerializer, PgBenchConfigMachineSerializer, PgBenchResultCompleteSerializer, PgBenchTrendSerializer, PgBenchRunsSerializer, MachineHistorySerializer, PostgresHistorySerializer
 from runs.models import RunInfo
 from machines.models import Machine
 
@@ -24,6 +24,21 @@ class PgBenchResultCompleteViewSet(mixins.RetrieveModelMixin, mixins.ListModelMi
 	serializer_class = PgBenchResultCompleteSerializer
 	permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly, )
 	pagination_class = TrendPagination
+
+
+class PostgresHistoryViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
+
+	serializer_class = PostgresHistorySerializer
+	permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly, )
+	pagination_class = TrendPagination
+
+	def get_queryset(self):
+
+		machine = int(self.kwargs['machine'])
+
+		queryset = Machine.objects.raw("with a as (select p1.machine_id_id, p1.name, p1.db_settings_id_id settings1, p2.db_settings_id_id settings2, p1.setting_name, p1.setting_value value1, p1.setting_unit unit1, p2.setting_value value2, p2.setting_unit unit2 from (select * from postgres_postgressettings, runs_runinfo, runs_branch, machines_machine where postgres_postgressettings.db_settings_id_id = runs_runinfo.postgres_info_id and runs_branch.branch_id = runs_runinfo.git_branch_id and machines_machine.machine_id = runs_runinfo.machine_id_id and machine_id_id = %s) p1, (select * from postgres_postgressettings, runs_runinfo, runs_branch, machines_machine where postgres_postgressettings.db_settings_id_id = runs_runinfo.postgres_info_id and runs_branch.branch_id = runs_runinfo.git_branch_id and machines_machine.machine_id = runs_runinfo.machine_id_id and machine_id_id = %s) p2 where p1.db_settings_id_id < p2.db_settings_id_id and p1.setting_name = p2.setting_name and p1.name = p2.name and (p1.setting_value <> p2.setting_value or p1.setting_unit <> p2.setting_unit)), b as (select machine_id, machine_type, username, kernel_name, name, min(run_id), postgres_info_id from machines_machine, runs_runinfo, runs_branch, auth_user, systems_oskernelversion, systems_kernel where runs_runinfo.machine_id_id = machines_machine.machine_id and runs_runinfo.git_branch_id = runs_branch.branch_id and machines_machine.owner_id_id = auth_user.id and runs_runinfo.os_kernel_version_id_id = systems_oskernelversion.os_kernel_version_id and systems_oskernelversion.kernel_id_id = systems_kernel.kernel_id and machine_id = %s group by name, postgres_info_id, machine_id, machine_type, username, kernel_name order by name, min), c as (select postgres_info_id prev, lead(postgres_info_id) over(partition by name) as next from b) select distinct min, settings1, settings2, setting_name, unit1, unit2, value1, value2, b.machine_id, a.name, machine_type, username, kernel_name, first_run, last_run from a, b, c, (select max(run_id) last_run from runs_runinfo where machine_id_id = %s) d, (select min(run_id) first_run from runs_runinfo where machine_id_id = %s) e where a.settings1 = c.prev and a.settings2 = c.next and a.settings2 = b.postgres_info_id;", [machine, machine, machine, machine, machine])
+
+		return queryset
 
 
 class PgBenchBenchmarkMachinesViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
