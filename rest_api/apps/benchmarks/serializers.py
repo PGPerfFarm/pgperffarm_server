@@ -30,6 +30,7 @@ class PostgresHistorySerializer(serializers.Serializer):
 	value1 = serializers.CharField()
 	value2 = serializers.CharField()
 	machine_id = serializers.IntegerField()
+	add_time = serializers.DateTimeField()
 	name = serializers.CharField()
 	machine_type = serializers.CharField() 
 	username = serializers.CharField()
