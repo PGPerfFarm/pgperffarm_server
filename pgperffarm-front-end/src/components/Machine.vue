@@ -4,7 +4,9 @@
 	  <v-card class="machine-main-card">
 		<v-card-title class="machine-main-title">
 		  Machine page: {{ alias }}
-		</v-card-title>
+		<v-spacer></v-spacer>
+        <v-btn class="login-button" :href="'/postgres/'+ id"> View Postgres history </v-btn>
+        </v-card-title>
 	  </v-card>
 	<v-layout>
 	  <v-flex d-flex sm7 md4>
@@ -108,26 +110,6 @@
 		                    	</v-card-text>
 	                    	</v-card>
 	                  	</v-tab-item>
-	                  	<v-tab-item>
-	                    	<v-card flat>
-	                      		<v-card-title class="results-card-title"> Postgres settings history (an entry in the table represents the first run with new settings of interest). Since Postgres settings are hashed, it is only possible to check them in the run information page. </v-card-title>
-	                      		<v-card-text>
-		                    		<table class="mounts">
-		                    			<tr class="mounts-r">
-										    		<th class="mounts-h"> <b> ID </b> </th>
-										    		<th class="mounts-h"> <b> Branch </b> </th>
-										    		<th class="mounts-h"> <b> First run </b> </th>
-										  </tr>
-										  		<tr v-for="(item, i) in postgres_data" :key="i" class="mounts-r">
-													<td class="mounts-d"> {{ item.id }} </td>
-													<td class="mounts-d"> {{ item.branch }} </td>
-												    <td class="mounts-d"> <u> <router-link :to="{path: '/run/'+ item.run_id }"> {{ item.run_id }} </router-link> </u> </td>
-										  		</tr>
-
-		                    	</table>
-		                    	</v-card-text>
-	                    	</v-card>
-	                  	</v-tab-item>
 				</v-tabs-items>
 		  </v-card>
 	  </v-flex>
@@ -143,7 +125,7 @@
 
 		data: () => ({
 	  		tab: null,
-	  		settings: ['OS', 'Compiler', 'Sysctl', 'Postgres settings'],
+	  		settings: ['OS', 'Compiler', 'Sysctl'],
 
 			search: '',
 	 		loading: true,
@@ -159,7 +141,6 @@
 	 		os_data: [],
 	 		branches: [],
 	 		sysctl_data: [],
-	 		postgres_data: [],
 	 		benchmarks: {},
 
 		}),
@@ -245,21 +226,7 @@
 				  					}
 				  				}
 
-				  				if (this.postgres_data == '') {
-				  					this.postgres_data.push({'id': response.results[i].postgres_info_id, 'run_id': response.results[i].run_id, 'branch': response.results[i].name});
-				  				}
-				  				else {
-				  					if (!this.postgres_data.some(item => item.id === response.results[i].postgres_info_id)) {
-				  						this.postgres_data.push({'id': response.results[i].postgres_info_id, 'run_id': response.results[i].run_id, 'branch': response.results[i].name});
-				  					}
-				  				}
-				  				
-
 				  			}
-
-				  			console.log(response);
-
-
 				  		}
 				  	}
 				  	else {

@@ -36,6 +36,7 @@ export default new Vuex.Store({
 		    trends: baseUrl + 'pgbench_trends/',
 		    trends_benchmarks: baseUrl + 'pgbench_results_commit/',
 		    login: baseUrl + 'community_login/',
+		    postgres: baseUrl + 'postgres/',
 	    }
   	},
 

@@ -14,6 +14,7 @@ import Trend from './components/Trend.vue'
 import Result from './components/Result.vue'
 import BenchmarkList from './components/BenchmarkList.vue'
 import Plots from './components/Plots.vue'
+import Postgres from './components/Postgres.vue'
 
 Vue.use(Router)
 
@@ -35,6 +36,7 @@ const routes = [
 		]
 	},
 	{path: '/result/:id', name: 'Result', component: Result, props: true},
+	{path: '/postgres/:id', name: 'Postgres', component: Postgres, props: true},
 ]
 
 export default new Router({
