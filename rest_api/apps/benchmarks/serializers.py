@@ -33,7 +33,6 @@ class PostgresHistorySerializer(serializers.Serializer):
 	add_time = serializers.DateTimeField()
 	name = serializers.CharField()
 	machine_type = serializers.CharField() 
-	username = serializers.CharField()
 	kernel_name = serializers.CharField()
 	first_run = serializers.IntegerField()
 	last_run = serializers.IntegerField()
