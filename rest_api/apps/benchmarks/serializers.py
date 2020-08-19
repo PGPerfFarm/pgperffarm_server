@@ -37,6 +37,8 @@ class PostgresHistorySerializer(serializers.Serializer):
 	kernel_name = serializers.CharField()
 	first_run = serializers.IntegerField()
 	last_run = serializers.IntegerField()
+	min_add_time = serializers.DateTimeField()
+	max_add_time = serializers.DateTimeField()
 
 
 class MachineHistorySerializer(serializers.Serializer):
