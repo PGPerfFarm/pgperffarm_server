@@ -12,6 +12,27 @@ from systems.serializers import OsKernelVersionSerializer, HardwareInfoSerialize
 from postgres.serializers import PostgresSettingsSetSerializer
 
 
+class OverviewSerializer(serializers.Serializer):
+
+	last_run = serializers.IntegerField()
+	last_run_time = serializers.DateTimeField()
+	runs = serializers.IntegerField()
+	os_count = serializers.IntegerField()
+	results_count = serializers.IntegerField()
+	machines_count = serializers.IntegerField()
+	users = serializers.IntegerField()
+	recent_runs = serializers.IntegerField()
+	last_machine_id = serializers.IntegerField()
+	last_machine_alias = serializers.CharField()
+	machine_id_id = serializers.IntegerField()
+	pgbench_benchmark_id = serializers.IntegerField()
+	count = serializers.IntegerField()
+	scale = serializers.IntegerField()
+	clients = serializers.IntegerField()
+	duration = serializers.IntegerField()
+	read_only = serializers.BooleanField()
+
+
 class PgBenchRunsSerializer(serializers.Serializer):
 
 	run_id = serializers.IntegerField()

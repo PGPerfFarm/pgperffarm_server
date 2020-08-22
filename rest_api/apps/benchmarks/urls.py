@@ -13,6 +13,7 @@ router.register(r'pgbench_trends/(?P<machine>.+)/(?P<config>.+)', views.PgBenchB
 router.register(r'pgbench_results_commit/(?P<commit>.+)/(?P<machine>.+)/(?P<config>.+)', views.PgBenchRunsViewSet, basename="pgbench_trends-commit")
 router.register(r'history/(?P<machine>.+)', views.MachineHistoryViewSet, basename="machine-history")
 router.register(r'postgres/(?P<machine>.+)', views.PostgresHistoryViewSet, basename="postgres-history")
+router.register(r'overview', views.OverviewViewSet, basename="overview")
 
 
 urlpatterns = [
