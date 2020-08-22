@@ -1,49 +1,61 @@
 {
-  "name": "pgperffarm-front-end",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build"
-  },
-  "dependencies": {
-    "@vue/cli-plugin-eslint": "^4.4.6",
-    "cjs-loader": "^0.1.0",
-    "core-js": "^3",
-    "plotly.js-dist": "^1.54.7",
-    "vue": "^2.6.10",
-    "vue-router": "^3.3.4",
-    "vuetify": "^1.5.24",
-    "vuex": "^3.5.1",
-    "vuex-persist": "^2.2.0"
-  },
-  "devDependencies": {
-    "@vue/cli-service": "^4.5.1",
-    "eslint": "^5.16.0",
-    "eslint-plugin-vue": "^5.0.0",
-    "vue-template-compiler": "^2.6.11"
-  },
-  "eslintConfig": {
-    "root": true,
-    "env": {
-      "node": true
-    },
-    "extends": [
-      "plugin:vue/essential",
-      "eslint:recommended"
-    ],
-    "rules": {},
-    "parserOptions": {
-      "parser": "babel-eslint"
-    }
-  },
-  "postcss": {
-    "plugins": {
-      "autoprefixer": {}
-    }
-  },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions"
-  ]
+	"name": "pgperffarm-front-end",
+	"version": "1.0.0",
+	"description": "",
+	"main": "main.js",
+	"scripts": {
+		"serve": "webpack-dev-server --mode development"
+	},
+	"author": "Ilaria Battiston",
+	"devDependencies": {
+		"@babel/core": "^7.1.6",
+		"@babel/preset-env": "^7.1.6",
+		"babel-loader": "^8.0.4",
+		"css-loader": "^1.0.1",
+		"html-webpack-plugin": "^3.2.0",
+		"rimraf": "^2.6.2",
+		"vue": "^2.5.17",
+		"vue-loader": "^15.4.2",
+		"vue-style-loader": "^4.1.2",
+		"webpack": "^4.26.0",
+		"webpack-cli": "^3.1.2",
+		"webpack-dev-server": "^3.1.10",
+		"@vue/cli-service": "^4.5.1",
+		"eslint": "^5.16.0",
+		"eslint-plugin-vue": "^5.0.0",
+		"vue-template-compiler": "^2.6.11"
+	},
+	"dependencies": {
+		"@vue/cli-plugin-eslint": "^4.4.6",
+		"cjs-loader": "^0.1.0",
+		"core-js": "^3",
+		"plotly.js-dist": "^1.54.7",
+		"vue": "^2.6.10",
+		"vue-router": "^3.3.4",
+		"vuetify": "^1.5.24",
+		"vuex": "^3.5.1"
+	},
+	"eslintConfig": {
+		"root": true,
+		"env": {
+			"node": true
+		},
+		"extends": [
+			"plugin:vue/essential",
+			"eslint:recommended"
+		],
+		"rules": {},
+		"parserOptions": {
+			"parser": "babel-eslint"
+		}
+	},
+	"postcss": {
+		"plugins": {
+			"autoprefixer": {}
+		}
+	},
+	"browserslist": [
+		"> 1%",
+		"last 2 versions"
+	]
 }

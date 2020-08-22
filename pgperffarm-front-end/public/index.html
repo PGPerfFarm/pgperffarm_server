@@ -1,20 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <link rel="icon" href="<%= BASE_URL %>favicon.ico">
-    <title>Postgres Performance Farm</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Material+Icons">
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap" rel="stylesheet"> 
-  </head>
-  <body>
-    <noscript>
-      <strong>We're sorry but pgperffarm-front-end doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
-    </noscript>
-    <div id="app"></div>
-    <!-- built files will be auto injected -->
-    <%= htmlWebpackPlugin.options.serviceWorkerLoader %>
-  </body>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width,initial-scale=1.0">
+		<meta name="keywords" content="Postgres, performance, pgbench, commit, open">
+		<link rel="icon" href="<%= BASE_URL %>favicon.ico">
+		<link rel="dns-prefetch" href="http://140.211.168.111:8080/">
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Material+Icons">
+		<link href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap" rel="stylesheet"> 
+		<title>Postgres Performance Farm</title>
+	</head>
+ 	<body>
+		<noscript>
+	  		<strong>We're sorry but the Performance Farm doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
+		</noscript>
+		<div id="app"></div>
+		<!-- built files will be auto injected -->
+		<%= htmlWebpackPlugin.options.serviceWorkerLoader %>
+  	</body>
 </html>

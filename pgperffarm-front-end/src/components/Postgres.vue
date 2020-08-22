@@ -37,10 +37,10 @@
          </v-layout>
      
      </v-card>
-    <v-layout>
+    
       
-      <v-flex d-flex fluid>
-          	<v-card flat class="profile-card-title">
+      <v-flex>
+          	<v-card flat class="profile-card-title-postgres">
           		<v-tabs
 					dark
 					height=70
@@ -82,7 +82,7 @@
 
           	</v-card>
       	</v-flex>
-    </v-layout>
+    
   </v-layout>
   </v-container>
 	

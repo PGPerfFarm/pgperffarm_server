@@ -1,4 +1,4 @@
-<template>
+<template functional>
   <v-app>
     <main>
       <v-content>

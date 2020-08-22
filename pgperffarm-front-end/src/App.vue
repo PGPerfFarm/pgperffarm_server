@@ -7,14 +7,13 @@
 </template>
 
 <script>
-	import PgNavbar from './components/Navbar.vue'
-    import PgToolbar from './components/Toolbar.vue'
 
 	export default {
 	  name: 'App',
 	  components: {
-	  	PgNavbar,
-	  	PgToolbar,
+	  	PgNavbar: () => import("./components/Navbar.vue"),
+	  	PgToolbar: () => import("./components/Toolbar.vue"),
+	  	Home: () => import("./components/Home.vue"),
 	  }
 	}
 

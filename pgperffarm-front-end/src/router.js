@@ -2,7 +2,6 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 import Home from './components/Home.vue'
-import Help from './components/Help.vue'
 import PrivacyPolicy from './components/PrivacyPolicy.vue'
 import License from './components/License.vue'
 import Profile from './components/Profile.vue'
@@ -21,7 +20,6 @@ Vue.use(Router)
 const routes = [
 	{path: '/', name: 'Home', component: Home},
 	// {path: '*', redirect: '/'},
-	{path: '/help', component: Help},
 	{path: '/privacypolicy', component: PrivacyPolicy},
 	{path: '/license', component: License},
 	{path: '/profile/:username', component: Profile, props: true},

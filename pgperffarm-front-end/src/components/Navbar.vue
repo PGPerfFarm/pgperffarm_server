@@ -1,4 +1,4 @@
-<template>
+<template functional>
 	<v-toolbar 
 	class="main-navbar"
 	flat

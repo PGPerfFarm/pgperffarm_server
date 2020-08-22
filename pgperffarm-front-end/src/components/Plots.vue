@@ -13,7 +13,7 @@
 					<v-tabs-items>
    
 						<v-tab-item>
-							<v-card flat>	
+							<v-card flat>	 
 								<div id="Head"> </div>
 								<v-card-text>
 		                    		<table class="mounts-center">
@@ -54,6 +54,7 @@
 										    		<th class="mounts-h"> <b> STD latency </b> </th>
 										    		<th class="mounts-h"> <b> Average TPS </b> </th>
 										    		<th class="mounts-h"> <b> STD TPS </b> </th>
+										    		<th class="mounts-h"> <b> Min latency </b> </th>
 										    		<th class="mounts-h"> <b> Max latency </b> </th>
 										    		<th class="mounts-h"> <b> Min TPS </b> </th>
 										    		<th class="mounts-h"> <b> Max TPS </b> </th>
@@ -85,6 +86,7 @@
 										    		<th class="mounts-h"> <b> STD latency </b> </th>
 										    		<th class="mounts-h"> <b> Average TPS </b> </th>
 										    		<th class="mounts-h"> <b> STD TPS </b> </th>
+										    		<th class="mounts-h"> <b> Min latency </b> </th>
 										    		<th class="mounts-h"> <b> Max latency </b> </th>
 										    		<th class="mounts-h"> <b> Min TPS </b> </th>
 										    		<th class="mounts-h"> <b> Max TPS </b> </th>
@@ -148,6 +150,7 @@
 										    		<th class="mounts-h"> <b> STD latency </b> </th>
 										    		<th class="mounts-h"> <b> Average TPS </b> </th>
 										    		<th class="mounts-h"> <b> STD TPS </b> </th>
+										    		<th class="mounts-h"> <b> Min latency </b> </th>
 										    		<th class="mounts-h"> <b> Max latency </b> </th>
 										    		<th class="mounts-h"> <b> Min TPS </b> </th>
 										    		<th class="mounts-h"> <b> Max TPS </b> </th>
@@ -275,9 +278,9 @@
 
 							this.master_length = this.commits[0].length - 1;
 							this.rel_13_length = this.commits[1].length - 1;
-							this.rel_12_length = this.commits[1].length - 1;
-							this.rel_11_length = this.commits[1].length - 1;
-							this.rel_10_length = this.commits[1].length - 1;
+							this.rel_12_length = this.commits[2].length - 1;
+							this.rel_11_length = this.commits[3].length - 1;
+							this.rel_10_length = this.commits[4].length - 1;
 
 							for (let j = 0; j < 5; j++) {
 								this.commits[j].reverse();
@@ -368,7 +371,6 @@
 								},
 							};
 
-
 							Plotly.newPlot(document.getElementById("Head"), data[0], layout, {responsive: true});
 							Plotly.newPlot(document.getElementById("13_stable"), data[1], layout, {responsive: true});
 							Plotly.newPlot(document.getElementById("12_stable"), data[2], layout, {responsive: true});
@@ -441,6 +443,7 @@
 								router.push(detail);
 								
 							});
+
 						}
 						else {
 							console.log(httpRequest.status);
