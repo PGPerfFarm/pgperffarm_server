@@ -4,9 +4,9 @@ from machines import views
 
 router = DefaultRouter()
 router.register(r'machines', views.MachineViewSet)
-router.register(r'my_machines', views.MyMachineViewSet, base_name="my_machines")
+router.register(r'machine_user', views.MyMachineViewSet, base_name="my_machines")
 router.register(r'add_machine', views.AddMachineViewSet, base_name="add_machine")
-router.register(r'machine_user', views.MachineUserViewSet, base_name="user_machines")
+router.register(r'edit_machine', views.EditMachineViewSet, base_name="edit")
 
  
 urlpatterns = [

@@ -1,5 +1,5 @@
 from machines.models import Machine
-from machines.serializers import MachineSerializer, MyMachineSerializer, MachineUserSerializer
+from machines.serializers import MachineSerializer, MyMachineSerializer, MachineUserSerializer, AddMachineSerializer, EditMachineSerializer
 
 from rest_framework import permissions, renderers, viewsets, mixins, authentication, serializers, status
 from rest_framework.response import Response
@@ -10,17 +10,24 @@ import hashlib
 from django.contrib.auth.hashers import make_password
 
 
+class EditMachineViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
+
+	permission_classes = (permissions.IsAuthenticated, )
+	serializer_class = EditMachineSerializer
+	lookup_field = 'machine_id'
+	queryset =  Machine.objects.all().order_by('add_time')
+
+
 class AddMachineViewSet(viewsets.ModelViewSet):
 
 	permission_classes = (permissions.IsAuthenticated, )
-	serializer_class = MachineSerializer
+	serializer_class = AddMachineSerializer
 	lookup_field = 'alias'
 	queryset =  Machine.objects.all().order_by('add_time')
 
 
 	def post(self, request, *args, **kwargs):
 		return self.create(request, *args, **kwargs)
-
 
 	def create(self, request, *args, **kwargs):
 
@@ -53,20 +60,10 @@ class MachineViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.
 class MyMachineViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
 
 	permission_classes = (permissions.IsAuthenticated, )
-	serializer_class = MyMachineSerializer
+	serializer_class = MachineUserSerializer
 	lookup_field = 'alias'
-
 	
 	def get_queryset(self):
-		return Machine.objects.filter(owner_id=self.request.user.id).order_by('add_time')
+		return User.objects.filter(username=self.request.user.username)
 
 
-class MachineUserViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
-	"""
-	API endpoint that allows users to be viewed or edited.
-	"""
-
-	serializer_class = MachineUserSerializer
-	queryset = User.objects.all().order_by('email')
-	lookup_field = ('username')
-	permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly, )

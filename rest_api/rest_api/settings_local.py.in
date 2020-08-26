@@ -4,7 +4,7 @@ DATABASES = {
         'default': {
                 'ENGINE': 'django.db.backends.postgresql_psycopg2',
                 'NAME': 'pgperffarm',
-                'USER': 'ila',
+                'USER': 'user',
                 'PASSWORD': 'password',
                 'HOST': '/var/run/postgresql',
                 #'HOST': '/tmp',
@@ -12,12 +12,10 @@ DATABASES = {
                 }
         }
 
-PGAUTH_REDIRECT = ''
-PGAUTH_KEY = ''
-
 PROJECT_PATH = '/var/www/rest_api/'
-PGAUTH_REDIRECT = ''
 PGAUTH_KEY = ''
+PGAUTH_REDIRECT = ''
+PGAUTH_REDIRECT_SUCCESS = ''
 
 EMAIL_HOST_USER = ''
 EMAIL_HOST_PASSWORD = ''  # individual smtp password

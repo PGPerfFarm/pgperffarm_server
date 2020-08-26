@@ -28,6 +28,38 @@ class MachineSerializer(serializers.ModelSerializer):
 		fields = ['machine_id', 'alias', 'description', 'add_time', 'approved', 'owner', 'machine_type', 'latest']
 
 
+class AddMachineSerializer(serializers.ModelSerializer):
+
+	alias = serializers.CharField()
+	owner = UserSerializer(read_only=True, source='owner_id')
+	approved = serializers.ReadOnlyField()
+	latest = serializers.SerializerMethodField()
+	machine_type = serializers.ReadOnlyField()
+	description = serializers.CharField()
+
+	def get_latest(self, obj):
+		run_info = RunInfo.objects.filter(machine_id=obj.machine_id).order_by('-add_time').first()
+		serializer = RunInfoLatestSerializer(run_info)
+		return serializer.data
+
+	class Meta:
+		model = Machine
+		fields = ['machine_id', 'alias', 'description', 'add_time', 'approved', 'owner', 'machine_type', 'latest']
+
+
+class EditMachineSerializer(serializers.ModelSerializer):
+
+	alias = serializers.ReadOnlyField()
+	owner = UserSerializer(read_only=True, source='owner_id')
+	approved = serializers.ReadOnlyField()
+	machine_type = serializers.ReadOnlyField()
+	description = serializers.CharField()
+
+	class Meta:
+		model = Machine
+		fields = ['machine_id', 'alias', 'description', 'add_time', 'approved', 'owner', 'machine_type']
+
+
 class MyMachineSerializer(serializers.ModelSerializer):
 
 	latest = serializers.SerializerMethodField()
