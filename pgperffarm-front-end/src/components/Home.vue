@@ -14,21 +14,21 @@
 	 				<v-flex md7>
 						<v-layout column>
 							<v-card flat class="home-card-left" min-width=15>
-								<v-card-text>
+								<v-card-text class="home-card-text">
 									{{ machines }} machines belonging to {{ users }} users <br>
 									of which {{ last_month }} reported in the last month
 								</v-card-text> 
 							</v-card>
 					
 							<v-card flat class="home-card-left" min-width=15>
-								<v-card-text>
+								<v-card-text class="home-card-text">
 									{{ branches }} reporting branches <br>
 									from {{ repos }} different Postgres repositories
 								</v-card-text> 
 							</v-card>
 					
 							<v-card flat class="home-card-left" min-width=15>
-								<v-card-text>
+								<v-card-text class="home-card-text">
 									{{ configs }} different PgBench configurations <br>
 									{{ os }} different operating systems
 								</v-card-text> 
@@ -39,21 +39,21 @@
 	  				<v-flex md7>
 						<v-layout column>
 							<v-card flat class="home-card-right" min-width=15>
-								<v-card-text>
+								<v-card-text class="home-card-text">
 									{{ runs }} total runs <br>
 									{{ benchmarks }} total benchmarks
 								</v-card-text> 
 							</v-card>
 					
 							<v-card flat class="home-card-right" min-width=15>
-								<v-card-text>
+								<v-card-text class="home-card-text">
 									Last run: <u> <a :href="'/run/'+ last_run"> {{ last_run }}</a> </u> on {{ last_run_time }} <br>
 									Reported by machine {{ last_run_machine }}
 								</v-card-text> 
 							</v-card>
 					
 							<v-card flat class="home-card-right" min-width=15>
-								<v-card-text>
+								<v-card-text class="home-card-text">
 									<u> <router-link :to="{path: '/trend/' + benchmark_machine + '/' + benchmark}"> Last run trends </router-link> </u> <br>
 									Scale {{ scale }}, duration {{ duration }}, clients {{ clients }}, {{ read_only }}
 								</v-card-text> 
@@ -88,7 +88,6 @@
 			branches: '',
 			repos: '',
 
-
 			benchmark: '',
 			scale: '',
 			clients: '',
@@ -100,7 +99,7 @@
 
 		methods: {
 
-			getMachines() {
+			getHome() {
 
 				const httpRequest = new XMLHttpRequest();
 				httpRequest.open("GET", this.$store.state.endpoints.home);
@@ -144,8 +143,6 @@
 
 							this.benchmark_machine = response.results[0].machine_id_id;
 
-
-
 						} 
 						else {
 							console.log(httpRequest.status);
@@ -156,7 +153,7 @@
 		},
 
 		mounted() {
-			this.getMachines();
+			this.getHome();
 		}
 	}
 

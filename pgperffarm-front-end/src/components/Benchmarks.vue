@@ -1,7 +1,5 @@
 <template>
-	<v-app>
-		<main>
-			<v-content>
+
 				<v-layout justify-center column my-4>
 					<v-flex>
 						<v-card flat class="pg-v-card">
@@ -11,61 +9,48 @@
 						</v-card>
 					</v-flex>
 					<v-flex>
-						<v-layout row class="status-layout">
+						<v-layout column class="status-layout">
 							<v-card flat>
 								<v-card-title class="table-title">
 									Shown here is the list of different benchmark configurations as well as all machines which reported a run using them. Use the machine link for history of that member on the relevant configuration.
 								</v-card-title>
 							</v-card>
 							<v-card flat>
-								<v-btn @click="all">All</v-btn>
-								<v-btn @click="none">None</v-btn>
+								<v-col class="text-right">
+								<v-btn class="login-button" @click="all">All</v-btn>
+								<v-btn class="login-button" @click="none">None</v-btn>
+							</v-col>
 							</v-card>
 						</v-layout>
 						<v-card flat class="pg-v-card">
-							<template>
-								<v-expansion-panel
-								  expand
-								  v-model="panel">
-									<v-expansion-panel-content 
-									 class="status-content"
-									 v-for="(value, name) in machines"
-									 :key="name">
-										<template v-slot:header>
-											<div class="panel-div"> {{ name }} </div>
-										</template>
-										<v-card>
-											<template>
-												<v-data-table
-												 v-bind:headers="headers"
-												:items="machines[name]"
-												hide-actions
-												:loading="loading"
-												item-key="alias"
-												class="elevation-1"
-												>
-													<template v-slot:items="props">
-														<tr>
-															<td class="profile-td"><u> <router-link :to="{path: '/machine/' + props.item.id}"> {{ props.item.alias }} </router-link> </u></td>
-															<td class="profile-td">{{ props.item.add_time }}</td>
-															<td class="profile-td">{{ props.item.type }}</td>
-															<td class="profile-td">{{ props.item.owner }}</td>
-															<td class="profile-td">{{ props.item.count }}</td>
-															<td class="profile-td"> <u> <router-link :to="{path: '/trend/' + props.item.id + '/' + props.item.config_id}"> link </router-link> </u> </td>
-														</tr>
-													</template>
-												</v-data-table>
-											</template>
-										</v-card>
-									</v-expansion-panel-content>
-								</v-expansion-panel>
-							</template>
+					
+								<v-expansion-panels v-model="panel" multiple>
+									<v-expansion-panel v-for="(value, name) in machines" :key="name">
+										<v-expansion-panel-header class="panel-div"> {{ name }} </v-expansion-panel-header>
+										<v-expansion-panel-content class="status-content">
+											<v-card>
+												<template>
+													<v-data-table
+													 v-bind:headers="headers"
+													:items="machines[name]"
+													hide-default-footer
+													:loading="loading"
+													item-key="alias"
+													class="elevation-1"
+													>
+														<template #item.alias="{ item }"> <router-link :to="{path: '/machine/' + item.id }"> {{ item.alias }} </router-link> </template>
+														<template #item.config_id="{ item }"> <router-link :to="{path: '/trend/' + item.id + '/' + item.config_id }"> link </router-link> </template>
+													</v-data-table>
+												</template>
+											</v-card>
+										</v-expansion-panel-content>
+									</v-expansion-panel>
+								</v-expansion-panels>
+						
 						</v-card>
 					</v-flex>
 				</v-layout>
-			</v-content>
-		</main>
-	</v-app>
+
 </template>
 
 
@@ -87,38 +72,21 @@
 				{ text: 'Type', align: 'center', value: 'type'},
 				{ text: 'Owner', align: 'center', value: 'owner'},
 				{ text: 'Count', align: 'center', value: 'count'},
-				{ text: 'Trend', align: 'center', value: 'trend'},
+				{ text: 'Trend', align: 'center', value: 'config_id'},
 			],
+			benchmarks: 0,
 		}),
 
 		methods: {
 
-			toggleAll() {
-				if (this.selected.length) this.selected = []
-				else this.selected = this.machines.slice()
-			  },
-
-			changeSort(column) {
-				if (this.pagination.sortBy === column) {
-				  this.pagination.descending = !this.pagination.descending
-				} 
-				else {
-				  this.pagination.sortBy = column
-				  this.pagination.descending = false
-				}
-			},
-
 			all () {
-
-				for (var i = 0; i < Object.keys(this.machines).length; i++) {
-					this.panel.push(true)
+				for (let i = 0; i < this.benchmarks; i++) {
+					this.panel.push(i);
 				}
-				
 			},
 	 
 			none () {
 				this.panel = []
-
 			},
 
 			getBenchmarks() {
@@ -161,6 +129,7 @@
 
 								if (!this.machines.hasOwnProperty(benchmark)) {
 									this.machines[benchmark] = [];
+									this.benchmarks++;
 								}
 
 								this.machines[benchmark].push(machine);
@@ -168,7 +137,7 @@
 							}
 						
 							this.loading = false;
-							this.panel.push(true);
+							this.panel.push(0);
 						}
 
 						else {

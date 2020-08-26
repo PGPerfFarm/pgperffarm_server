@@ -1,6 +1,6 @@
 <template>
 	<v-container fluid grid-list-md>
-    <v-layout column>
+    	<v-layout column>
       		<v-card flat class="machine-main-card">
       			<v-toolbar flat class="result-toolbar">
       				<v-toolbar-title class="result-toolbar"> 
@@ -34,10 +34,10 @@
 		        </v-card-text>
 		    </v-card>
 		</v-flex>
-         </v-layout>
-     </v-card>
+    </v-layout>
+    </v-card>
     <v-layout>
-      <v-flex d-flex xs12 sm6 md3>
+      <v-flex d-flex sm7 md4>
               	<v-layout column>
 	                <v-card flat class="profile-left-top" min-width=15>
 	                  <v-card-title>
@@ -45,32 +45,35 @@
                   	  </v-card-title> 
 	                </v-card>
 	                <v-card flat class="profile-left-bottom" min-width=15>
-	                	<v-card-text>
+	                	<v-card-text class="profile-left-text">
 	                      <v-icon color="rgb(51, 103, 145)">computer</v-icon> OS: {{os}} <br>
 	                      <v-icon color="rgb(51, 103, 145)">border_all</v-icon> Compiler: {{compiler}} <br>
 	                      <v-icon color="rgb(51, 103, 145)">dvr</v-icon> Kernel: {{ kernel }} <br> 
-	                      <v-icon color="rgb(51, 103, 145)">memory</v-icon> Memory: {{ memory.toFixed(2) }} GB <br> 
-	                      <v-icon color="rgb(51, 103, 145)">swap_horiz</v-icon> Swap: {{ swap.toFixed(2) }} GB <br> 
+	                      <v-icon color="rgb(51, 103, 145)">memory</v-icon> Memory: {{ parseFloat(memory).toFixed(2) }} GB <br> 
+	                      <v-icon color="rgb(51, 103, 145)">swap_horiz</v-icon> Swap: {{ parseFloat(swap).toFixed(2) }} GB <br> 
 	                      <v-icon color="rgb(51, 103, 145)">developer_board</v-icon> CPU: {{ cpu }} <br> <br>
 	                	</v-card-text>
 	                </v-card>
             	</v-layout>
       </v-flex>
-      <v-flex d-flex fluid>
+      <v-flex fluid>
           	<v-card flat class="profile-card-title">
-                
-            	<v-tabs
-            		dark
-            		height=70
-                    align-with-title
-                >
-                    <v-tabs-slider color="white"></v-tabs-slider>
-                    <v-tab> <span style="color: white"> Results </span> </v-tab>
-                    <v-tab> <span style="color: white"> Sysctl </span> </v-tab>
-                    <v-tab> <span style="color: white"> Postgres </span> </v-tab>
-                    <v-tab> <span style="color: white"> Mounts </span> </v-tab>
+		
+				<template class="tabs">
+					<v-tabs
+					  v-model="tab"
+					  class="tabs"
+					>
+					  <v-tabs-slider color="white"></v-tabs-slider>
 
-                	<v-tabs-items>
+					  <v-tab v-for="item in settings" :key="item">
+						{{ item }}
+					  </v-tab>
+
+					</v-tabs>
+				</template>
+				
+                	<v-tabs-items v-model="tab" class="tabs-div">
 
 	                 	<!-- results -->
 	                  	<v-tab-item>
@@ -104,7 +107,7 @@
 										    		<th class="mounts-h"> <b> Parameter </b> </th>
 										    		<th class="mounts-h"> <b> Value </b> </th>
 										  </tr>
-										  		<tr v-for="(value, name) in sysctl" :key="value" class="mounts-r">
+										  		<tr v-for="(value, name) in sysctl" :key="name" class="mounts-r">
 													<td class="mounts-d"> {{name}} </td>
 												    <td class="mounts-d"> {{value}} </td>
 										  		</tr>
@@ -163,20 +166,16 @@
 												    <td class="mounts-d"> {{mount.mountpoint}} </td>
 										  		</tr>
 
-		                    	</table>
-		                    	</v-card-text>
-		                    </v-card>
-                  		</v-tab-item>
-
-                	</v-tabs-items>
-              	</v-tabs>
-          	</v-card>
-      	</v-flex>
-    </v-layout>
-  </v-layout>
-  </v-container>
-	
-
+		                    			</table>
+		                    		</v-card-text>
+		                    	</v-card>
+                  			</v-tab-item>
+                		</v-tabs-items>
+          			</v-card>
+      			</v-flex>
+    		</v-layout>
+		</v-layout>
+	</v-container>
 </template>
 
 <script>
@@ -185,6 +184,10 @@
 		name: 'Run',
 
 		data: () => ({
+
+			tab: null,
+
+			settings: ['Results', 'Sysctl', 'Postgres', 'Mounts'],
 
 	        alias: '',
 	        os: '',
@@ -236,6 +239,7 @@
 		        			this.alias = response.machine.machine_id;
 		        			this.git_repo = response.git_branch.git_repo.url;
 		        			this.farmer = response.machine.alias;
+		        			this.id = response.machine.machine_id;
 
 		        			this.kernel = response.os_kernel.kernel.kernel_name + ' ' + response.os_kernel.kernel_release;
 		        			this.os = response.os_version.dist.dist_name + ' ' + response.os_version.release;

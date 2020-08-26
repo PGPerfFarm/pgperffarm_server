@@ -1,6 +1,11 @@
-import Vue from 'vue'
-import Vuetify from 'vuetify/lib'
+// src/plugins/vuetify.js
 
-Vue.use(Vuetify, {
-  iconfont: 'md',
-})
+import Vue from 'vue'
+import Vuetify from 'vuetify'
+import 'vuetify/dist/vuetify.min.css'
+
+Vue.use(Vuetify)
+
+const opts = {}
+
+export default new Vuetify(opts)

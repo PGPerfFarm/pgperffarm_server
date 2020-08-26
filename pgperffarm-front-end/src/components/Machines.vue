@@ -1,43 +1,29 @@
 <template>
-	<v-app>
-		<main>
-			<v-content>
-				<v-layout justify-center column my-4>
-					<v-flex>
-						<v-card flat class="pg-v-card">
-							<v-card-text class="pg-v-card-text-main">
-								Machines list
-							</v-card-text>
-						</v-card>
-					</v-flex>
-					<v-flex>
-						<v-card flat class="pg-v-card-bottom">
-							<v-card-title class="table-title">Shown here is the machine list, along with a summary of relevant information.
-								<v-spacer></v-spacer>
-								<v-text-field v-model="search" append-icon="search" label="Search" single-line hide-details></v-text-field>
-							</v-card-title>
 
-							<template>
-								<v-data-table v-bind:headers="headers" :items="machines" hide-actions :search="search" :loading="loading" item-key="alias" class="elevation-1">
-			
-									<template v-slot:items="props">
-										<tr>
-											<td class="profile-td"> <router-link :to="{path: '/machine/'+ props.item.id }"> {{ props.item.alias }} </router-link></td>
-											<td class="profile-td">{{ props.item.system }}</td>
-											<td class="profile-td">{{ props.item.approved }}</td>
-											<td class="profile-td">{{ props.item.owner }}</td>
-											<td class="profile-td">{{ props.item.addDate }}</td>
-											<td class="profile-td"> <u> <router-link :to="{path: '/run/'+ props.item.latest }"> {{ props.item.latest }} </router-link> </u></td>
-										</tr>
-									</template>
-								</v-data-table>
-							</template>
-						</v-card>
-					</v-flex>
-				</v-layout>
-			</v-content>
-		</main>
-	</v-app>
+		<v-layout justify-center column my-4>
+			<v-flex>
+				<v-card flat class="pg-v-card">
+					<v-card-text class="pg-v-card-text-main">
+						Machines list
+					</v-card-text>
+				</v-card>
+			</v-flex>
+			<v-flex>
+				<v-card flat class="pg-v-card-bottom">
+					<v-card-title class="table-title">Shown here is the machine list, along with a summary of relevant information.
+						<v-spacer></v-spacer>
+						<v-text-field v-model="search" append-icon="search" label="Search" single-line hide-details></v-text-field>
+					</v-card-title>
+					<template>
+						<v-data-table :headers="headers" :items="machines" hide-default-footer :search="search" :loading="loading" item-key="alias" class="elevation-1" sort-by="addDate">
+							<template #item.alias="{ item }"> <router-link :to="{path: '/machine/'+ item.id }"> {{ item.alias }} </router-link> </template>
+							<template #item.latest="{ item }"> <router-link :to="{path: '/runs/'+ item.latest }"> {{ item.latest }} </router-link> </template>
+						</v-data-table>
+					</template>
+				</v-card>
+			</v-flex>
+		</v-layout>
+
 </template>
 
 <script>

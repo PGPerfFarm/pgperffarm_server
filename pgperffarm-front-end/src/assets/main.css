@@ -1,15 +1,29 @@
-body {
+@font-face {
   font-family: 'Open Sans', sans-serif;
   font-display: swap;
 }
 
-/*
-.main-navbar {
-  margin-top: 80px !important;
+#app {
+  font-family: 'Open Sans', sans-serif !important;
+  background-color: #edf3f7 !important;
+  font-display: swap !important;
 }
-*/
+
+.v-card {
+  border-radius: 1% !important;
+}
+
+.pg-toolbar {
+  color: white;
+  font-size: 38px !important;
+}
 
 .v-btn-navbar {
+  color: #336791 !important;
+  font-size: 16px !important;
+}
+
+.v-tile-navbar {
   color: #336791 !important;
   font-size: 16px !important;
 }
@@ -26,8 +40,8 @@ a {
 
 .pg-v-card {
   color: #336791 !important;
-  margin: 1% 10% 1% 10%;
-  padding: 1%;
+  margin: 3% 10% 1% 10% !important;
+  padding: 1% !important;
 }
 
 .pg-home-card {
@@ -37,47 +51,28 @@ a {
 }
 
 .pg-v-card-bottom {
-  color: #336791 !important;
   margin: 2% 10% 10% 10%;
   padding: 1%;
 }
 
 .pg-v-card-text-main {
-  font-size: 25px;
-  font-weight: bold;
+  font-size: 25px !important;
+  font-weight: bold !important;
+  color: #336791 !important;
 }
 
 .pg-v-card-text {
-  font-size: 20px;
+  font-size: 20px !important;
 }
 
 .pg-v-card-text-small {
-  font-size: 20px;
+  font-size: 20px !important;
+  color: #336791 !important; 
 }
 
 .pg-v-card-text-footer {
   font-size: 18px;
   color: white;
-}
-
-.login-v-card {
-  background-color: white;
-  margin-left: 25%;
-  margin-right: 25%;
-}
-
-.login-v-card-upper {
-  background-color: transparent !important;
-  text-align: center;
-  margin: 5% 5% 3% 5%;
-}
-
-.login-v-card-upper-toolbar {
-  background-color: transparent;
-}
-
-.login-v-card-upper-toolbar-title {
-  color: #336791;
 }
 
 .login-button {
@@ -92,8 +87,9 @@ a {
 }
 
 .profile-card-title {
-  background-color: transparent !important;
-  margin-right: 1.2%;
+  background-color: white !important;
+  margin-right: 2.5% !important;
+  margin-top: 0.7% !important;
 }
 
 .profile-card-title-postgres {
@@ -103,54 +99,63 @@ a {
 
 .profile-card-title-text {
   color: #336791 !important;
-  font-size: 25px;
-  font-weight: bold;
+  font-size: 25px !important;
+  font-weight: bold !important;
 }
 
 .profile-left-top {
   background-color: #336791 !important;
   color: white !important;
-  font-size: 20px;
-  font-weight: bold;
-  margin: 2% 5% 0% 5%;
+  font-size: 20px !important;
+  font-weight: bold !important;
+  margin: 2% 5% 0% 5% !important;
 }
 
 .home-card-left {
-  margin: 2% 8% 2% 15%;
+  margin: 2% 7% 2% 19% !important;
 }
 
 .home-card-right {
-  margin: 2% 15% 2% 8%;
+  margin: 2% 19% 2% 7% !important;
 }
 
 .home-card-left, .home-card-right {
   background-color: white !important;
-  color: #336791 !important;
-  font-size: 20px;
-  font-weight: bold;
   border-top: 12px solid #336791 !important;
   border-bottom: 12px solid #336791 !important;
 }
 
+.home-card-text {
+  color: #336791 !important;
+  font-size: 18px !important;
+  font-weight: bold !important;
+}
+
 .run-left-top {
   background-color: #336791 !important;
+  margin: 2% 5% 0% 5% !important;
+  font-weight: bold !important;
   color: white !important;
-  font-size: 18px;
-  font-weight: bold;
-  margin: 2% 5% 0% 5%;
+}
+
+.run-left-text {
+  background-color: #336791 !important;
+  color: white !important;
+  font-size: 18px !important;
+  font-weight: bold !important;
 }
 
 .run-left-bottom {
   color: #336791 !important;
-  font-size: 18px;
+  font-size: 18px !important;
   margin: 0% 5% 0% 5%;
   padding: 0% 0% 0% 0%;
 }
 
 .run-left-bottom-monospace {
   color: #336791 !important;
-  font-size: 15px;
-  margin: 0% 5% 0% 5%;
+  font-size: 15px !important;
+  margin: 0% 5% 0% 5% !important;
   font-family: "Lucida Console", Courier, monospace !important;
   padding: 0% 0% 0% 0%;
 }
@@ -162,16 +167,19 @@ a {
 }
 
 .profile-left-bottom {
+  margin: 0% 5% 2% 5% !important;
+}
+
+.profile-left-text {
   color: #336791 !important;
-  font-size: 18px;
-  margin: 0% 5% 2% 5%;
+  font-size: 18px !important;
 }
 
 .table-title {
   font-size: 20px;
 }
 
-.profile-td, .text-xs-center {
+td {
   font-size: 18px !important;
   text-align: center !important; 
 }
@@ -183,25 +191,22 @@ a {
   font-weight: bold !important;
 }
 
-v-datatable__actions__select {
-  font-size: 18px !important;
-}
-
 .status-layout {
   background-color: white !important;
-  margin: 2% 10% -2% 10%;
+  margin: 2% 10% -2% 10% !important;
   padding: 1%;
   color: #336791;
 }
 
 .panel-div {
-  color: #336791;
-  font-size: 20px;
+  color: #336791 !important;
+  font-size: 20px !important;
   font-weight: bold;
+  padding: 2% !important;
 }
 
 .status-content {
-  padding: 1%;
+  padding: 1% !important;
 }
 
 .machine-main-card {
@@ -213,89 +218,32 @@ v-datatable__actions__select {
   color: #336791;
   font-size: 24px !important;
   font-weight: bold;
-
-}
-
-v-alert {
-  color: #336791 !important;
 }
 
 .machine-main-text {
   color: #336791;
   font-size: 20px !important;
-
 }
 
 .machine-form {
   padding: 2%;
 }
 
- .results, .results-h, .results-d {
-  font-size: 18px !important;
-  border: 1px solid #336791;
-  border-collapse: collapse;
-  color: #336791;
-}
-
-.results-d, .results-h {
-  padding-top: 3%;
-  padding-bottom: 3%;
-  padding-left: 3%;
-}
-
-.results {
-  width: 90%;
-  margin-top: 5%;
-  margin-bottom: 5%;
-}
-
-.results-h {
-  background-color: #d3e1ed;
-  font-weight: bold;
-}
-
-.results-card-title {
-   font-size: 20px !important;
-   color: #336791;
-}
-
-.results-text {
-   font-size: 17px !important;
-   color: #336791;
-   margin-bottom: -2%;
-}
-
-.results-container {
-  margin-top: -3% !important;
-}
-
-pre {
-  font-family: inherit !important;
-  font-size: 17px !important;
-  color: #336791 !important;
-}
-
-.v-tabs__wrapper {
+.v-slide-group__wrapper, .v-tab {
   background-color: #336791 !important;
-}
-
-.v-tabs__item {
   color: white !important;
+  padding: 0% 2% 0% 2% !important;
   font-size: 16px !important;
-
 }
 
-.v-tabs__item--active {
+.v-tab--active {
   font-weight: bold !important;
-}
-
-.tabs-div {
-  margin: 2%;
 }
 
 .machine-card {
   background-color: #336791 !important;
   margin-right: 1.2%;
+  margin-top: 0.4% !important;
 }
 
 .result-toolbar {

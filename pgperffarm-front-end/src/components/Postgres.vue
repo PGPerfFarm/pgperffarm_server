@@ -42,14 +42,14 @@
       <v-flex>
           	<v-card flat class="profile-card-title-postgres">
           		<v-tabs
-					dark
-					height=70
-					align-with-title
+					v-model="tab"
+					  class="tabs"
 				>
 					<v-tabs-slider color="white"></v-tabs-slider>
 					<v-tab v-for="(value, name) in postgres_history" :key="name"> <span style="color: white"> {{ name }} </span> </v-tab>
+				</v-tabs>
 					
-					<v-tabs-items>
+					<v-tabs-items v-model="tab" class="tabs-div">
 						<v-tab-item v-for="(value, name) in postgres_history" :key="name">
 							<v-card flat>	
 								<v-card-text>
@@ -78,7 +78,6 @@
 							</v-card>
 						</v-tab-item>
 					</v-tabs-items>
-				</v-tabs>
 
           	</v-card>
       	</v-flex>
@@ -95,6 +94,8 @@
 		name: 'Postgres',
 
 		data: () => ({
+
+			tab: null,
 	  		
 	  		alias: '',
 	  		id: '',

@@ -1,7 +1,4 @@
 <template>
-  
-	 <v-app>
-		<main>
 			<v-content>
 				<v-layout justify-center column my-4>
 					<v-flex>
@@ -31,8 +28,6 @@
 					</v-flex>
 			 	</v-layout>
 		  	</v-content>
-		</main>
-	</v-app>
 </template>
 
 <script>

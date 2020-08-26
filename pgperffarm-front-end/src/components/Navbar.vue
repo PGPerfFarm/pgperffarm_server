@@ -1,87 +1,112 @@
-<template functional>
+<template>
+	<v-card flat>
 	<v-toolbar 
-	class="main-navbar"
-	flat
+	text
 	>
 		<v-toolbar-items>		      
-			<v-btn flat class="v-btn-navbar" href="/">
-		     	<v-icon color="rgb(51, 103, 145)">home</v-icon> Home
+			<v-btn text class="v-btn-navbar" href="/">
+		     	<v-icon color="rgb(51, 103, 145)">home</v-icon> &nbsp; Home
 		    </v-btn>
 
-		    <v-btn flat class="v-btn-navbar" href="/machines">
-		     	<v-icon color="rgb(51, 103, 145)">dns</v-icon> Machines
+		    <v-btn text class="v-btn-navbar" href="/machines">
+		     	<v-icon color="rgb(51, 103, 145)">dns</v-icon> &nbsp; Machines
 		      </v-btn>
 
-		    <v-btn flat class="v-btn-navbar" href="/benchmarks">
-		    	<v-icon color="rgb(51, 103, 145)">list</v-icon> Benchmarks
+		    <v-btn text class="v-btn-navbar" href="/benchmarks">
+		    	<v-icon color="rgb(51, 103, 145)">list</v-icon> &nbsp; Benchmarks
 		     </v-btn>
 
 		     <v-menu open-on-hover bottom offset-y>
 		      	<template v-slot:activator="{ on }">
-			    	<v-btn flat v-on="on" class="v-btn-navbar">
-			    		<v-icon color="rgb(51, 103, 145)">feedback</v-icon> About
+			    	<v-btn text v-on="on" class="v-btn-navbar">
+			    		<v-icon color="rgb(51, 103, 145)">feedback</v-icon> &nbsp; About
 			        </v-btn>
 			      </template>
 
 			      <v-list>
-			        <v-list-tile href="https://github.com/PGPerfFarm/pgperffarm" class="v-btn-navbar" target="_blank">
+			        <v-list-item href="https://github.com/PGPerfFarm/pgperffarm" class="v-btn-navbar" target="_blank">
 			        	<v-icon color="rgb(51, 103, 145)">code</v-icon>
-			          <v-list-tile-title> GitHub</v-list-tile-title>
-			        </v-list-tile>
+			          <v-list-item-title class="v-tile-navbar"> &nbsp; GitHub</v-list-item-title>
+			        </v-list-item>
 
-			        <!--
-			        <v-list-tile class="v-btn-navbar" href="/help">
-			        	<v-icon color="rgb(51, 103, 145)">help</v-icon>
-			          	<v-list-tile-title> Help</v-list-tile-title>
-			        </v-list-tile>
-			    -->
-
-			        <v-list-tile class="v-btn-navbar" href="/privacypolicy">
+			        <v-list-item class="v-btn-navbar" href="/privacypolicy">
 			        	<v-icon color="rgb(51, 103, 145)">security</v-icon> &nbsp;
-			          	<v-list-tile-title> Privacy Policy</v-list-tile-title>
-			        </v-list-tile>
+			          	<v-list-item-title class="v-tile-navbar"> &nbsp; Privacy Policy</v-list-item-title>
+			        </v-list-item>
 
-			        <v-list-tile class="v-btn-navbar" href="/license">
+			        <v-list-item class="v-btn-navbar" href="/license">
 			        	<v-icon color="rgb(51, 103, 145)">copyright</v-icon>
-			          	<v-list-tile-title> License</v-list-tile-title>
-			        </v-list-tile>
+			          	<v-list-item-title class="v-tile-navbar"> &nbsp; License</v-list-item-title>
+			        </v-list-item>
 			      </v-list>
 			    </v-menu>
 			</v-toolbar-items>
 			<v-spacer></v-spacer>
 
-			<!--
-			<v-toolbar-items v-if="!$store.getters.authenticated">
-				   <v-btn flat class="v-btn-navbar" :href="$store.state.endpoints.login">
-				   		<v-icon color="rgb(51, 103, 145)">input</v-icon> Login
+			<v-toolbar-items v-if="cookie == null">
+				   <v-btn text class="v-btn-navbar" :href="$store.state.endpoints.login">
+				   		<v-icon color="rgb(51, 103, 145)">input</v-icon> &nbsp; Login
 					</v-btn>
 	    	</v-toolbar-items>
 
 	    	<v-toolbar-items v-else>
-	    		<v-btn flat class="v-btn-navbar" href="/profile">
+	    		<v-btn text class="v-btn-navbar" href="/profile">
 				   	<v-icon color="rgb(51, 103, 145)">person</v-icon>
-				   		&nbsp; {{ $store.getters.username }} 
+				   		&nbsp; {{ $store.state.username }} 
 				</v-btn>
 
-				<v-btn flat class="v-btn-navbar" v-on:click="logout()">
+				<v-btn text class="v-btn-navbar" v-on:click="logout()">
 					<v-icon color="rgb(51, 103, 145)">highlight_off</v-icon>
 					   	&nbsp; Logout
 				</v-btn>
 	    	</v-toolbar-items>
-	    -->
 	</v-toolbar>
+</v-card>
 </template>
 
 <script>
-	// import router from '../router'
 
 	export default {
 		name: 'PgNavbar',
 
+		data: () => ({
+			cookie: null,
+		}),
+
 		methods: {
+
+			getCookie() {
+				var name = 'csrftoken';
+				const value = `; ${document.cookie}`;
+				const parts = value.split(`; ${name}=`);
+				if (parts.length === 2) return parts.pop().split(';').shift();
+			},
+
 		    logout() {
-		    	this.$store.commit('removeToken', this.$store.state);
-		    	this.$router.push("/");
+
+		    	var url = this.$store.state.endpoints.logout;
+				const httpRequest = new XMLHttpRequest();
+				httpRequest.open("GET", url);
+				httpRequest.withCredentials = true;
+				httpRequest.setRequestHeader("Content-Type", "application/json");
+				httpRequest.send();
+
+				httpRequest.onreadystatechange = () => {
+
+					if (httpRequest.readyState === XMLHttpRequest.DONE) {
+
+						if (httpRequest.status === 200) {
+
+							this.$store.commit('removeUsername');
+		    				this.$router.push("/");
+							
+						}
+					}
+					else {
+							console.log(httpRequest.status);
+					}
+				}
+		    	
 		    }
 		}
 	}

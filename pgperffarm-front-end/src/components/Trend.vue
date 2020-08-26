@@ -21,7 +21,7 @@
                   	  	</v-card-title> 
 	                </v-card>
 	                <v-card flat class="run-left-bottom" min-width=15>
-	                	<v-card-text>
+	                	<v-card-text class="profile-left-text">
 	                		<p>
 								<v-icon color="rgb(51, 103, 145)">computer</v-icon> {{ os }} <br>
 	                    	</p>
@@ -46,7 +46,7 @@
 	                </v-card>
 
 	                <v-card flat class="run-left-top" min-width=15>
-	                	<v-card-text>
+	                	<v-card-text class="run-left-text">
 	                		Benchmark configuration: <br>
 		                  	<v-icon color="white">account_tree</v-icon> Clients: {{ clients }} <br>
 		                  	<v-icon color="white">linear_scale</v-icon> Scale: {{ scale }} <br>

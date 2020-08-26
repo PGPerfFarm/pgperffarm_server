@@ -19,7 +19,7 @@
 				  		</v-card-title> 
 					</v-card>
 					<v-card class="profile-left-bottom" min-width=15>
-						<v-card-text>
+						<v-card-text class="profile-left-text">
 					  <v-icon color="rgb(51, 103, 145)">account_circle</v-icon> Owner: {{ owner }} <br>
 					  <v-icon color="rgb(51, 103, 145)">schedule</v-icon> Add time: {{ add_time }} <br>
 						</v-card-text>
@@ -29,8 +29,8 @@
 						 	Available configurations
 				  		</v-card-title> 
 					</v-card>
-					<v-card class="profile-left-bottom" min-width=15>
-						<v-card-text v-for="(value, name) in benchmarks" :key="name">
+					<v-card min-width=15 class="profile-left-bottom">
+						<v-card-text class="profile-left-text" v-for="(value, name) in benchmarks" :key="name">
 						<u> <router-link :to="{path: '/trend/'+ id + '/' + name }"> {{ value }} </router-link> </u>
 						</v-card-text>
 					</v-card>

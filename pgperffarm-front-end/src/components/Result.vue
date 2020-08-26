@@ -46,7 +46,7 @@
                   	  </v-card-title> 
 	                </v-card>
 	                <v-card flat class="profile-left-bottom" min-width=15>
-	                	<v-card-text>
+	                	<v-card-text class="profile-left-text">
 	                		<v-icon color="rgb(51, 103, 145)">account_tree</v-icon> Clients: {{ clients }} <br>
 		                  	<v-icon color="rgb(51, 103, 145)">linear_scale</v-icon> Scale: {{ scale }} <br>
 		                  	<v-icon color="rgb(51, 103, 145)">timelapse</v-icon> Duration: {{ duration }} <br>
@@ -54,8 +54,7 @@
 	                	</v-card-text>
 	                </v-card>
 	                <v-card flat class="run-left-top" min-width=15>
-
-	                	<v-card-text>
+	                	<v-card-text class="run-left-text">
 	                	  Iteration: {{ iteration }} <br>
 		                  TPS: {{ tps }} <br>
 	                      Latency: {{ latency }} <br>
@@ -67,19 +66,22 @@
 	                </v-card>
             	</v-layout>
       </v-flex>
-      <v-flex d-flex fluid>
+      <v-flex fluid>
           	<v-card flat class="profile-card-title">
                 
-            	<v-tabs
-            		dark
-            		height=70
-                    align-with-title
-                >
-                    <v-tabs-slider color="white"></v-tabs-slider>
-                    <v-tab> <span style="color: white"> Statement latencies </span> </v-tab>
-                    <v-tab> <span style="color: white"> Log </span> </v-tab>
+            	<template class="tabs">
+					<v-tabs
+					  v-model="tab"
+					  class="tabs"
+					>
+						<v-tabs-slider color="white"></v-tabs-slider>
+	                    <v-tab> Statement latencies </v-tab>
+	                    <v-tab> Log </v-tab>
+
+                    </v-tabs>
+				</template>
                    
-                	<v-tabs-items>
+                	<v-tabs-items v-model="tab" class="tabs-div">
 
 	                  	<v-tab-item>
 	                    	<v-card flat>
@@ -147,6 +149,8 @@
 		name: 'Result',
 
 		data: () => ({
+
+			tab: null,
 
 			alias: '',
 			id: '',

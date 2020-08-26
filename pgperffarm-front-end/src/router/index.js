@@ -1,19 +1,19 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-import Home from './components/Home.vue'
-import PrivacyPolicy from './components/PrivacyPolicy.vue'
-import License from './components/License.vue'
-import Profile from './components/Profile.vue'
-import Benchmarks from './components/Benchmarks.vue'
-import Machines from './components/Machines.vue'
-import Machine from './components/Machine.vue'
-import Run from './components/Run.vue'
-import Trend from './components/Trend.vue'
-import Result from './components/Result.vue'
-import BenchmarkList from './components/BenchmarkList.vue'
-import Plots from './components/Plots.vue'
-import Postgres from './components/Postgres.vue'
+const Home = () => import('@/components/Home')
+const PrivacyPolicy = () => import('@/components/PrivacyPolicy')
+const License = () => import('@/components/License')
+const Profile = () => import('@/components/Profile')
+const Benchmarks = () => import('@/components/Benchmarks')
+const Machines = () => import('@/components/Machines')
+const Machine = () => import('@/components/Machine')
+const Run = () => import('@/components/Run')
+const Trend = () => import('@/components/Trend')
+const Result = () => import('@/components/Result')
+const BenchmarkList = () => import('@/components/BenchmarkList')
+const Plots = () => import('@/components/Plots')
+const Postgres = () => import('@/components/Postgres')
 
 Vue.use(Router)
 
@@ -22,7 +22,7 @@ const routes = [
 	// {path: '*', redirect: '/'},
 	{path: '/privacypolicy', component: PrivacyPolicy},
 	{path: '/license', component: License},
-	{path: '/profile/:username', component: Profile, props: true},
+	{path: '/profile/', component: Profile, props: true},
 	{path: '/machines', component: Machines, props: true},
 	{path: '/benchmarks', component: Benchmarks, props: true},
 	{path: '/machine/:id', component: Machine, props: true},

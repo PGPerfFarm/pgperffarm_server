@@ -2,14 +2,14 @@
   <v-container fluid grid-list-md>
 	  <v-layout row wrap>
 	  <v-flex d-flex xs12 sm6 md3>
-			<v-layout row v-bind="binding">
-			  <v-flex d-flex xs12>
+			<v-layout column>
+			  <v-flex d-flex md5>
 				<v-layout column>
-					<v-card flat class="profile-left-top" min-witdh=25>
+					<v-card flat class="profile-left-top" min-witdh=15>
 					  <v-card-title><v-icon color="white">person</v-icon>Your information</v-card-title>
 					</v-card>
-					<v-card flat class="profile-left-bottom" min-witdh=25>
-						<v-card-text>
+					<v-card flat class="profile-left-bottom" min-witdh=15>
+						<v-card-text class="profile-left-text">
 							<v-icon color="rgb(51, 103, 145)">email</v-icon> {{ email }} <br>
 					  <v-icon color="rgb(51, 103, 145)">archive</v-icon> Total reports: {{ reports }} <br>
 							<v-icon color="rgb(51, 103, 145)">computer</v-icon> N. machine(s): {{ machines_count }} <br>
@@ -17,13 +17,22 @@
 					</v-card>
 				</v-layout>
 			  </v-flex>
-			  <v-flex d-flex xs12>
+			  <v-flex d-flex md5>
 				<v-layout column>
-					<v-card flat class="profile-left-top" min-witdh=25>
+					<v-card flat class="profile-left-top" min-witdh=15>
 					  <v-card-title><v-icon color="white">add</v-icon>Add machine</v-card-title>
 				  </v-card>
-				  <v-card flat class="profile-left-bottom" min-witdh=25>
-					
+				  <v-card flat class="profile-left-bottom" min-witdh=15>
+						<v-card-text class="profile-left-text">
+							<v-form ref="form" lazy-validation class="machine-form">
+								<v-text-field label="Alias" single-line dense prepend-inner-icon="public" v-model="new_machine.alias" :counter="20" maxlength="20" required></v-text-field>
+								<v-text-field label="Description" single-line dense prepend-inner-icon="subject" v-model="new_machine.description" :counter="20" maxlength="20" required></v-text-field>
+						</v-form>
+						</v-card-text>
+						<v-card-actions>
+	                		<v-btn block class="profile-button" v-on:click="addMachine()"> ADD </v-btn>
+	                	</v-card-actions>
+					</v-card>
 				 </v-card>
 				</v-layout>
 		  </v-flex>
@@ -58,16 +67,7 @@
                    <v-container grid-list-md>
                     <v-layout wrap>
                         <v-flex xs12 sm6 md4>
-                           <v-text-field v-model="editedMachine.os_name" label="OS name"></v-text-field>
-                        </v-flex>
-                        <v-flex xs12 sm6 md4>
-                           <v-text-field v-model="editedMachine.os_version" label="OS version"></v-text-field>
-                        </v-flex>
-                        <v-flex xs12 sm6 md4>
-                           <v-text-field v-model="editedMachine.comp_name" label="Compiler name"></v-text-field>
-                        </v-flex>
-                        <v-flex xs12 sm6 md4>
-                           <v-text-field v-model="editedMachine.comp_version" label="Compiler version"></v-text-field>
+                           <v-text-field v-model="editedMachine.description" label="Description"></v-text-field>
                         </v-flex>
                     </v-layout>
                  </v-container>
@@ -81,44 +81,15 @@
            </v-card>
         </v-dialog>
 
-			<!-- check server side pagination-->
 			<template>
-			  <v-data-table
-				v-bind:headers="headers"
-				:items="machines"
-				:search="search"
-				item-key="alias"
-				class="elevation-1"
-				hide-actions
-				:loading="loading"
-				loading-text="Loading..."
-			  >
-
-				<template v-slot:items="props">
-				  <tr>
-					<td class="profile-td"> <router-link :to="{path: '/machine/'+ props.item.id }"> {{ props.item.alias }} </router-link></td>
-					<td class="profile-td">{{ props.item.type}}</td>
-					<td class="profile-td">{{ props.item.approved }}</td>
-					<td class="profile-td"> <u> <router-link :to="{path: '/run/'+ props.item.latest }"> {{ props.item.latest }} </router-link> </u></td>
-					<td class="profile-td">{{ props.item.addDate }}</td>
-				  <td class="profile-td">
-				  	<v-tooltip top>
-				  		<template v-slot:activator="{ on }">
-							 <v-icon
-			                  small
-			                  class="mr-2"
-			                  @click="viewSecret(props.item)"
-			                  v-on="on"
-			                  >
-			                  lock_open
-           					</v-icon>
-           				</template>
-           				<span>View machine secret</span>
-           			</v-tooltip>
-               </td>
-          </tr>
-        </template>
-			  </v-data-table>
+				<v-data-table v-bind:headers="headers" :items="machines" hide-default-footer :search="search" :loading="loading" item-key="alias" class="elevation-1">
+					<template #item.alias="{ item }"> <router-link :to="{path: '/machine/'+ item.id }"> {{ item.alias }} </router-link> </template>
+					<template #item.latest="{ item }"> <router-link :to="{path: '/runs/'+ item.latest }"> {{ item.latest }} </router-link> </template>
+					<template v-slot:item.actions="{ item }"> 
+						<v-icon small class="mr-2" @click="viewSecret(item)"> visibility </v-icon>
+						<v-icon small @click="editMachine(item)"> create </v-icon>
+					</template>
+				</v-data-table>
 			</template>
 		  </v-card>
 		</v-layout>
@@ -139,27 +110,30 @@ export default {
   	email: '',
 
   	search: '',
-	  loading: true,
-	  dialog: false,
+	loading: true,
+	dialog: false,
 
 	  headers: [
 		{ text: 'Alias', align: 'center', value: 'alias' },
+		{ text: 'Description', align: 'center', value: 'description' },
 		{ text: 'Type', align: 'center', value: 'system' },
-		{ text: 'Approved', align: 'center', value: 'state' },
+		{ text: 'Approved', align: 'center', value: 'approved' },
+		{ text: 'Runs', align: 'center', value: 'count' },
 		{ text: 'Latest', align: 'center', value: 'latest' },
 		{ text: 'Add date', align: 'center', value: 'addDate' },
-		{ text: 'Actions', align: 'center', value: 'action', sortable: false },
+		{ text: 'Actions', align: 'center', value: 'actions', sortable: false },
 	  ],
 
 	  machines: [],
 	  editedMachine: {
-		os_name: '',
-		os_version: '',
-		comp_name: '',
-		comp_version: '',
-    	sn: ''
-	  	},
-	  	editedIndex: -1,
+		description: '',
+	  },
+
+	  new_machine: {
+	  	'alias': '',
+	  	'description': '',
+	  }
+	  
   	}),
 
   watch: {
@@ -170,67 +144,64 @@ export default {
 
 
   methods: {
-	logout() {
-		this.$store.commit('removeToken', this.$store.state);
-		this.$router.push("/");
+
+  	getCookie(name) {
+		const value = `; ${document.cookie}`;
+		const parts = value.split(`; ${name}=`);
+		if (parts.length === 2) return parts.pop().split(';').shift();
 	},
 
 	getProfile() {
 
-		this.username = this.$route.params.username;
-				var url = this.$store.state.endpoints.user + this.username;
+		var url = this.$store.state.endpoints.user;
+		const httpRequest = new XMLHttpRequest();
+		httpRequest.open("GET", url);
+		httpRequest.withCredentials = true;
+		httpRequest.setRequestHeader("Content-Type", "application/json");
+		httpRequest.send();
 
-				const httpRequest = new XMLHttpRequest();
-				httpRequest.open("GET", url);
-				httpRequest.send();
+		httpRequest.onreadystatechange = () => {
 
-				httpRequest.onreadystatechange = () => {
+			if (httpRequest.readyState === XMLHttpRequest.DONE) {
 
-					if (httpRequest.readyState === XMLHttpRequest.DONE) {
+				if (httpRequest.status === 200) {
+					var response = JSON.parse(httpRequest.response);
 
-						if (httpRequest.status === 200) {
-							var response = JSON.parse(httpRequest.response);
+					this.username = response.results[0].username;
+					this.$store.commit('setUsername', response.results[0].username);
+					this.email = response.results[0].email;
+					this.machines_count = response.results[0].machines.length;
 
-							this.username = response.username;
-							this.email = response.email;
-							this.machines_count = response.machines.length;
+					for (var i = 0; i < this.machines_count; i++) {
 
-							for (var i = 0; i < response.machines.length; i++) {
+						var machine = {
+							alias: response.results[0].machines[i].alias,
+							description: response.results[0].machines[i].description,
+							count: response.results[0].machines[i].count,
+							id: response.results[0].machines[i].machine_id,
+							type: response.results[0].machines[i].machine_type,
+							approved: response.results[0].machines[i].approved,
+							latest: response.results[0].machines[i].latest.run_id,
+							addDate: response.results[0].machines[i].add_time.substring(0, 10),
+							secret: response.results[0].machines[i].machine_secret,
+						};
 
-								var machine = {
-									alias: response.machines[i].alias,
-									id: response.machines[i].machine_id,
-									type: response.machines[i].machine_type,
-									approved: response.machines[i].approved,
-									latest: response.machines[i].latest.run_id,
-									addDate: response.machines[i].add_time.substring(0, 10),
-									secret: response.machines[i].machine_secret,
-								};
-
-								this.machines.push(machine);
-								this.count += response.machines[i].count;
-							}
-
-							this.loading = false;
-							console.log(this.machines);
-
-
-						}
+						this.machines.push(machine);
+						this.reports += response.results[0].machines[i].count;
 					}
-					else {
-							console.log(httpRequest.status);
-						}
-					}
-				},
 
+					this.loading = false;
+				}
+			}
+			else {
+					console.log(httpRequest.status);
+			}
+		}
+	},
 
-editMachine (machine) {
-		this.editedIndex = this.machines.indexOf(machine)
-		this.editedMachine.os_name = machine.system.os_name;
-	    this.editedMachine.os_version = machine.system.os_version;
-	    this.editedMachine.comp_name = machine.system.comp_name;
-	    this.editedMachine.comp_version = machine.system.comp_version;
-	    this.editedMachine.sn = machine.sn;
+	editMachine (machine) {
+		this.editedIndex = machine.id;
+	    this.editedMachine.description = machine.description;
 		this.dialog = true
 	  },
 
@@ -238,80 +209,79 @@ editMachine (machine) {
 		window.alert('Machine secret: ' + machine.secret);
 	  },
 
-	 stopMachine () { /*
-	  	axios.defaults.headers.common["Authorization"] = 'Bearer ' + this.$store.getters.token;
-		var url = this.$store.state.endpoints.my_machine + machine.sn + '/';
-      	axios.put(url, {state: 'I'})
-      	.then (() => {
-	        window.alert("State changed successfully!")
-	        location.reload(); 
-      	})
-      	.catch((error) => {
-      	console.log(error);
-    	}) */
-    },
-
-    startMachine () {
-      //var url = this.$store.state.endpoints.my_machine + machine.sn + '/';
-      /*
-      axios.defaults.headers.common["Authorization"] = 'Bearer ' + this.$store.getters.token;
-      axios.put(url, {state: 'A'})
-      .then (() => {
-        window.alert("State changed successfully!")
-        location.reload(); 
-      })
-      .catch((error) => {
-      console.log(error);
-    }) */
-	  },
-
-	  close () { /*
+	  close () { 
 		this.dialog = false
 		setTimeout(() => {
 		}, 300)
-		*/
 	  },
 
 	  save () {
-	  	/*
-	  	axios.defaults.headers.common["Authorization"] = 'Bearer ' + this.$store.getters.token;
-		var url = this.$store.state.endpoints.my_machine + this.editedMachine.sn + '/';
-      	axios.put(url, {os_name: this.editedMachine.os_name, os_version: this.editedMachine.os_version, comp_name: this.editedMachine.comp_name, comp_version: this.editedMachine.comp_version})
-      .then (() => {
-        window.alert("Information changed successfully!")
-        location.reload(); 
-      })
-      .catch((error) => {
-      console.log(error);
-    })
-		this.close()
-		*/
-	  },
 
-	toggleAll () {
-		if (this.selected.length) this.selected = []
-		else this.selected = this.machines.slice()
-	  },
+	  	var url = this.$store.state.endpoints.edit + this.editedIndex + '/';
+	  	var token = this.getCookie('csrftoken');
+		const httpRequest = new XMLHttpRequest();
+		httpRequest.open("PUT", url);
+		httpRequest.withCredentials = true;
+		httpRequest.setRequestHeader("X-CSRFTOKEN", token);
+		httpRequest.setRequestHeader("Content-Type", "application/json");
+		httpRequest.send(JSON.stringify({description: this.editedMachine.description}));
 
-	changeSort (column) {
-		if (this.pagination.sortBy === column) {
-		  this.pagination.descending = !this.pagination.descending
-		} 
-		else {
-		  this.pagination.sortBy = column
-		  this.pagination.descending = false
+		httpRequest.onreadystatechange = () => {
+
+			if (httpRequest.readyState === XMLHttpRequest.DONE) {
+
+				if (httpRequest.status === 200) {
+
+					window.alert("Information changed successfully!")
+        			location.reload(); 
+					
+				}
+			}
+			else {
+					console.log(httpRequest.status);
+					this.close()
+			}
 		}
-	},
-	
+	  },
+
+	  addMachine () {
+
+	  	var url = this.$store.state.endpoints.add;
+	  	var token = this.getCookie('csrftoken');
+		const httpRequest = new XMLHttpRequest();
+		httpRequest.open("POST", url);
+		httpRequest.withCredentials = true;
+		httpRequest.setRequestHeader("X-CSRFTOKEN", token);
+		httpRequest.setRequestHeader("Content-Type", "application/json");
+		httpRequest.send(JSON.stringify(this.new_machine));
+
+		httpRequest.onreadystatechange = () => {
+
+			if (httpRequest.readyState === XMLHttpRequest.DONE) {
+
+				if (httpRequest.status === 201) {
+
+					window.alert("Machine added successfully!")
+        			location.reload(); 
+					
+				}
+			}
+			else {
+					console.log(httpRequest.status);
+					this.close()
+			}
+		}
+	  },
 
 },
 
-
-
   mounted() {
-	//if (!this.$store.getters.authenticated)
-	  //this.$router.push("/");
+	if (this.getCookie('csrftoken') == null) {
+	  this.$router.push("/");
+	}
+	else {
 	  this.getProfile();
+	}
   },
 
 

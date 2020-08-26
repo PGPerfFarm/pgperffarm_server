@@ -1,18 +1,24 @@
 <template>
 
-<v-card flat class="profile-card-title">
+	<v-flex fluid>
+		<v-card flat class="profile-card-title">
 				
-				<v-tabs
-					dark
-					height=70
-					align-with-title
-				>
-					<v-tabs-slider color="white"></v-tabs-slider>
-					<v-tab v-for="item in branches" :key="item"> <span style="color: white"> {{ item }} </span> </v-tab>
-					
-					<v-tabs-items>
+				<template class="tabs">
+					<v-tabs
+					  v-model="tab"
+					  class="tabs"
+					>
+					  <v-tabs-slider color="white"></v-tabs-slider>
+
+					  <v-tab v-for="item in branches" :key="item">
+						{{ item }}
+					  </v-tab>
+
+					</v-tabs>
+				</template>
+					<v-tabs-items v-model="tab" class="tabs-div">
    
-						<v-tab-item>
+						<v-tab-item eager>
 							<v-card flat>	 
 								<div id="Head"> </div>
 								<v-card-text>
@@ -44,8 +50,8 @@
 							</v-card>
 						</v-tab-item>
 
-						<v-tab-item>
-							<v-card flat>	
+						<v-tab-item eager>
+							<v-card flat>
 								<div id="13_stable"> </div>
 								<v-card-text>
 		                    		<table class="mounts-center">
@@ -76,7 +82,7 @@
 							</v-card>
 						</v-tab-item>
 
-						<v-tab-item>
+						<v-tab-item eager>
 							<v-card flat>	
 								<div id="12_stable"> </div>
 								<v-card-text>
@@ -108,7 +114,7 @@
 							</v-card>
 						</v-tab-item>
 
-						<v-tab-item>
+						<v-tab-item eager>
 							<v-card flat>	
 								<div id="11_stable"> </div>
 								<v-card-text>
@@ -140,7 +146,7 @@
 							</v-card>
 						</v-tab-item>
 
-						<v-tab-item>
+						<v-tab-item eager>
 							<v-card flat>	
 								<div id="10_stable"> </div>
 								<v-card-text>
@@ -173,13 +179,13 @@
 						</v-tab-item>
 
 					</v-tabs-items>
-				</v-tabs>
 
 			</v-card>
+		</v-flex>
 </template>
 
 <script>
-	import Plotly from 'plotly.js-dist'
+	import Plotly from 'plotly.js-basic-dist'
 
 	// same machine, same benchmark configuration, same postgres settings, same os configuration, same git repository
 
@@ -190,6 +196,8 @@
 		name: 'Plots',
 
 		data: () => ({
+
+			tab: null,
 
 			avg_latencies: [[], [], [], [], []],
 			avg_tps: [[], [], [], [], []],
@@ -231,7 +239,6 @@
 							var response = JSON.parse(httpRequest.response);
 
 							var main = response.results[0];
-							this.$store.commit('setPgBenchResults', main);
 
 							var machine_id = response.results[0].machine_id;
 							var config_id = response.results[0].pgbench_benchmark_id;
@@ -370,14 +377,15 @@
 									orientation: "h"
 								},
 							};
-
-							Plotly.newPlot(document.getElementById("Head"), data[0], layout, {responsive: true});
-							Plotly.newPlot(document.getElementById("13_stable"), data[1], layout, {responsive: true});
-							Plotly.newPlot(document.getElementById("12_stable"), data[2], layout, {responsive: true});
-							Plotly.newPlot(document.getElementById("11_stable"), data[3], layout, {responsive: true});
-							Plotly.newPlot(document.getElementById("10_stable"), data[4], layout, {responsive: true});
+							
+							Plotly.react(document.getElementById("Head"), data[0], layout, {responsive: true});
+							Plotly.react(document.getElementById("13_stable"), data[1], layout, {responsive: true});
+							Plotly.react(document.getElementById("12_stable"), data[2], layout, {responsive: true});
+							Plotly.react(document.getElementById("11_stable"), data[3], layout, {responsive: true});
+							Plotly.react(document.getElementById("10_stable"), data[4], layout, {responsive: true});
 
 							var router = this.$router;
+							
 
 							document.getElementById("Head").on('plotly_click', function(data) {
 
@@ -442,7 +450,7 @@
 								var detail = config_id + '/detail/' + commit + '/' + machine_id + '/' + config_id;
 								router.push(detail);
 								
-							});
+							}); 
 
 						}
 						else {
