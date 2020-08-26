@@ -52,6 +52,13 @@ The workflow can be summarized as:
 
 ##### PgBench parameters:
 
+* Clients (number of threads);
+* Scale of the database;
+* Duration of each execution of PgBench;
+* Iterations, number of executions. 
+
+Furthermore, PgBench is ran with additional parameters, such as display of statement latencies and logging of interval every second.
+
 
 
 ##### Files and folders
@@ -186,6 +193,7 @@ Machines:
   * *machine_id*;
   * *add_time*, time of the machine being added;
   * *alias*, unique textual string giving an human readable identifier;
+  * *description*, editable text description;
   * *machine_secret*, unique string used to pair each machine with each run of tests,only known to machine owner;
   * *approved*, flag identifying whether the machine is coming from a known user, set by admins;
   * *owner_id*, foreign key from Users;
@@ -224,7 +232,6 @@ Runs:
   * *os_kernel_version_id*, foreign key with kernel information;
   * *hardware_info*, foreign key containing set of specific information related to the operating system;
   * *sysctl_raw*: JSON field with raw output from sysctl;
-  * *git_branch*: foreign key from branches table;
   * *git_commit*: hash of the commit;
   * *run_received_time*, time when the client received the command of starting a run;
   * *run_start_time*, time when the run is actually executed (might be delayed);
@@ -278,7 +285,25 @@ Systems:
   * *release*: current release;
   * *codename*: commonly known codename of the release (Buster, Bionic Beaver).
 
-Users:
+* Users:
+  * Users, Django base model with predefined features such as username, password and email.
 
-* Users, Django base model with predefined features such as username, password and email.
+In addition to those tables, there is a table dedicated to storing all logs of insertions which failed at some point; if even insertion to the log table fails, the error gets saved to a text file on the server.
 
+All transactions are atomic: if uploading or storing fails at some point, nothing is saved from the result in the database.
+
+##### Community authentication
+
+Authentication currently integrates the existing system on the Postgres infrastructure: the authentication module has been taken from the official pgweb repository, and all related endpoints are also tied to that. 
+
+Currently, the two APIs and the website communicate through cookies, which get saved in the browser and passed in every request which requires authentication. 
+
+The API also implements basic admin features, however at least the first admin user needs to be created through command line on the hosting server. Admins have CRUD privileges on all data (in progress).
+
+
+
+### Website
+
+The website is written using Vue.js, using version 2.6.10, and takes advantage of a few of its dedicated packages to handle style, cached data and routing.
+
+This section will be updated in the next days with detailed explanations of the structure and how to contribute, since the website is still in development - stay tuned!
