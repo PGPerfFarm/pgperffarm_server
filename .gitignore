@@ -1,7 +1,8 @@
 [core]
 ignorecase = false
 
-web/pgperffarm/settings_local.py
+rest-api/settings_local.py
+client/settings_local.py
 migrations
 *.pyc
 *.swp
