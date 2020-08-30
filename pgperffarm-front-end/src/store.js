@@ -12,11 +12,8 @@ export default new Vuex.Store({
   		username: null,
 	 
 	    endpoints: {
-		    obtainJWT: baseUrl + 'login_token/',
 		    machines: baseUrl + 'machines/',
 		    machine: baseUrl + 'history/',
-		    my_machine: baseUrl + 'my-machines/',
-		    record: baseUrl + 'last_runs/',
 		    run: baseUrl + 'run/',
 		    user: baseUrl + 'machine_user/',
 		    benchmarks: baseUrl + 'benchmarks_machines/',

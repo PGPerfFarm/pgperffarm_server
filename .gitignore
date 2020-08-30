@@ -1,6 +1,7 @@
 [core]
 ignorecase = false
 
+log.txt
 rest-api/settings_local.py
 client/settings_local.py
 migrations
