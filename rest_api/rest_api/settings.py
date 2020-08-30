@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_api',
     'machines',
     'benchmarks',
     'users',
@@ -46,6 +47,7 @@ INSTALLED_APPS = [
     'systems']
 
 MIDDLEWARE = [
+    'rest_api.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',

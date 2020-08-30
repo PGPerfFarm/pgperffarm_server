@@ -16,6 +16,7 @@ PROJECT_PATH = '/var/www/rest_api/'
 PGAUTH_KEY = ''
 PGAUTH_REDIRECT = ''
 PGAUTH_REDIRECT_SUCCESS = ''
+LOGIN_URL = 'community_login'
 
 EMAIL_HOST_USER = ''
 EMAIL_HOST_PASSWORD = ''  # individual smtp password
