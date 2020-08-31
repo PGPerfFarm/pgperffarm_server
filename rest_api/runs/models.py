@@ -83,7 +83,7 @@ class RunLog(models.Model):
 
 	log_id = models.BigAutoField(primary_key=True)
 	timestamp = models.DateTimeField(auto_now_add=True)
-	machine = models.ForeignKey('machines.Machine', on_delete=models.CASCADE, related_name='log')
+	machine = models.ForeignKey('machines.Machine', on_delete=models.CASCADE, related_name='log', null=True)
 	level = models.CharField(max_length=100, default="failed_run")
 	logmessage = models.CharField(max_length=500)
 	acknowledged = models.BooleanField(default=False)

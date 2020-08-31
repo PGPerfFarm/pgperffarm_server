@@ -3,7 +3,7 @@ from benchmarks import views
  
 urlpatterns = [
 	url('benchmarks_machines', views.PgBenchBenchmarkMachinesView, name="benchmarks_machines"),
-	url('pgbench_results_complete', views.PgBenchResultCompleteView),
+	url(r'pgbench_results_complete/(?P<id>.+)/', views.PgBenchResultCompleteView),
 	url(r'history/(?P<machine>.+)/', views.MachineHistoryView),
 	url('overview', views.OverviewView),
 	url(r'postgres/(?P<machine>.+)/', views.PostgresHistoryView, name="postgres-history"),

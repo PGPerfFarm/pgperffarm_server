@@ -14,24 +14,27 @@ def PgBenchBenchmarkView(request):
 	return JsonResponse(benchmarks_list, safe=False)
 
 
-def PgBenchResultCompleteView(request):
+def PgBenchResultCompleteView(request, id):
 
-	results = PgBenchResult.objects.all().select_related().order_by('-pgbench_result_id').values('pgbench_result_id', 'tps', 'latency', 'mode', 'start', 'end', 'iteration', 'init', 'benchmark_config', 'run_id_id')
+	results = PgBenchResult.objects.filter(pgbench_result_id=id).order_by('-pgbench_result_id').values('pgbench_result_id', 'tps', 'latency', 'mode', 'start', 'end', 'iteration', 'init', 'benchmark_config', 'run_id_id', 'run_id_id__machine_id', 'run_id_id__machine_id__machine_type', 'run_id_id__machine_id__alias', 'run_id_id__os_version_id__dist_id_id__dist_name', 'run_id_id__os_version_id__release', 'run_id_id__git_branch_id__name', 'run_id_id__git_commit', 'run_id_id__os_kernel_version_id_id__kernel_id__kernel_name', 'run_id_id__os_kernel_version_id__kernel_release')
 	results_list = list(results)
 
-	for result in results_list:
-		logs = PgBenchLog.objects.filter(pgbench_result_id=result['pgbench_result_id']).values()
-		run_statements = PgBenchRunStatement.objects.filter(pgbench_result_id=result['pgbench_result_id']).values('line_id', 'latency', 'pgbench_run_statement_id')
-		logs_list = list(logs)
-		run_statements_list = list(run_statements)
+	logs = PgBenchLog.objects.filter(pgbench_result_id=results_list[0]['pgbench_result_id']).values()
+	run_statements = PgBenchRunStatement.objects.filter(pgbench_result_id=results_list[0]['pgbench_result_id']).values('line_id', 'latency', 'pgbench_run_statement_id')
+	config = PgBenchBenchmark.objects.filter(pgbench_benchmark_id=results_list[0]['benchmark_config']).values()
 
-		for run_statement in run_statements_list:
-			statements = PgBenchStatement.objects.filter(pgbench_statement_id=run_statement['pgbench_run_statement_id']).values()
-			statements_list = list(statements)
-			run_statement['statements'] = statements_list
+	logs_list = list(logs)
+	run_statements_list = list(run_statements)
+	config_list = list(config)
 
-		result['pgbench_log'] = logs_list
-		result['pgbench_run_statement'] = run_statements_list
+	for run_statement in run_statements_list:
+		statements = PgBenchStatement.objects.filter(pgbench_statement_id=run_statement['pgbench_run_statement_id']).values()
+		statements_list = list(statements)
+		run_statement['statements'] = statements_list
+
+	results_list[0]['pgbench_log'] = logs_list
+	results_list[0]['pgbench_run_statement'] = run_statements_list
+	results_list[0]['benchmark_config'] = config_list
 
 	return JsonResponse(results_list, safe=False)
 
@@ -105,7 +108,9 @@ def MachineHistoryView(request, machine):
 	return JsonResponse(machine_history_list, safe=False)
 
 
-def PgBenchRunsView(request, machine, config, commit):
+def PgBenchRunsView(request, commit, machine, config):
+
+	commit = '%' + commit
 
 	pgbench_runs = RunInfo.objects.raw("select runs_runinfo.run_id, pgbench_result_id, runs_runinfo.add_time from benchmarks_pgbenchbenchmark, benchmarks_pgbenchresult, runs_runinfo, runs_branch where runs_runinfo.git_branch_id = runs_branch.branch_id and benchmarks_pgbenchbenchmark.pgbench_benchmark_id = benchmarks_pgbenchresult.benchmark_config_id and benchmarks_pgbenchresult.run_id_id = runs_runinfo.run_id and git_commit like %s and machine_id_id = %s and benchmark_config_id = %s and runs_branch.git_repo_id < 5 order by add_time;", [commit, machine, config])
 

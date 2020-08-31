@@ -32,11 +32,12 @@ def SingleRunView(request, id):
 
 	pgbench_results = PgBenchResult.objects.filter(run_id_id=run_list[0]['run_id']).values()
 	pgbench_results_list = list(pgbench_results)
-	run_list[0]['pgbench_results'] = pgbench_results_list
+	run_list[0]['pgbench_result'] = pgbench_results_list
 
-	benchmark_config = PgBenchBenchmark.objects.filter(pgbench_benchmark_id = pgbench_results_list[0]['benchmark_config_id']).values()
-	benchmark_config_list = list(benchmark_config)
-	run_list[0]['benchmark_config'] = benchmark_config_list
+	for pgbench_result in pgbench_results_list:
+		benchmark_config = PgBenchBenchmark.objects.filter(pgbench_benchmark_id = pgbench_result['benchmark_config_id']).values()
+		benchmark_config_list = list(benchmark_config)
+		pgbench_result['benchmark_config'] = benchmark_config_list
 
 	return JsonResponse(run_list, safe=False)
 
@@ -45,6 +46,7 @@ def SingleRunView(request, id):
 def CreateRunInfo(request, format=None):
 
 	error = ''
+	machine = None
 
 	data = json.loads(request.body)
 	json_data = data[0]
