@@ -4,6 +4,7 @@ import codecs
 import requests
 import shutil
 import psutil
+import sys
 
 from multiprocessing import Process, Queue
 from time import gmtime, strftime
@@ -113,7 +114,6 @@ class BenchmarkRunner(object):
 			'name': config_name,
 		}
 
-
 		r['git'] = {
 				'branch': config['branch'],
 				'commit': config['commit'],
@@ -129,23 +129,33 @@ class BenchmarkRunner(object):
 
 		uname = os.popen("uname").readlines()[0].split()[0]
 
+		try:
+			if uname == 'Linux':
+				r['os_information'] = {
+					'distributor': check_output(['lsb_release', '-i']).rstrip().decode().split('\t')[1],
+					'description': check_output(['lsb_release', '-d']).rstrip().decode().split('\t')[1],
+					'release': check_output(['lsb_release', '-r']).rstrip().decode().split('\t')[1],
+					'codename': check_output(['lsb_release', '-c']).rstrip().decode().split('\t')[1]
+				}
 
-		if uname == 'Linux':
-			r['os_information'] = {
-				'distributor': check_output(['lsb_release', '-i']).rstrip().decode().split('\t')[1],
-				'description': check_output(['lsb_release', '-d']).rstrip().decode().split('\t')[1],
-				'release': check_output(['lsb_release', '-r']).rstrip().decode().split('\t')[1],
-				'codename': check_output(['lsb_release', '-c']).rstrip().decode().split('\t')[1]
-			}
+		except Exception as e:
+			log("Error calling lsb_release, please install it.")
+			sys.exit()
 
 
-		if uname == 'Darwin':
-			r['os_information'] = {
-				'distributor': check_output(['sw_vers', '-productName']).rstrip(),
-				'description': 'not available',
-				'release': check_output(['sw_vers', '-productVersion']).rstrip(),
-				'codename': check_output(['sw_vers', '-buildVersion']).rstrip()
-			}
+		try:
+			if uname == 'Darwin':
+				r['os_information'] = {
+					'distributor': check_output(['sw_vers', '-productName']).rstrip(),
+					'description': 'not available',
+					'release': check_output(['sw_vers', '-productVersion']).rstrip(),
+					'codename': check_output(['sw_vers', '-buildVersion']).rstrip()
+				}
+
+		except Exception as e:
+			log("Error calling os_information, please install it.")
+			sys.exit()
+
 
 		with open('%s/%s' % (self._output, 'results.json'), 'w+') as f:
 			f.write(json.dumps(r, indent=4))

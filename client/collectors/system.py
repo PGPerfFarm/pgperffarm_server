@@ -65,48 +65,15 @@ class SystemCollector(object):
 
 		system = {}
 		system['cpu'] = {}
-		system['os'] = {}
 		system['memory'] = {}
 		system['disk'] = {}
-		system['process'] = {}
 
 		system['cpu']['information'] = get_cpu_info()
 		system['cpu']['number'] = psutil.cpu_count()
-		system['cpu']['times'] = psutil.cpu_times(percpu=False)
-		system['cpu']['percent'] = psutil.cpu_times_percent(percpu=False)
-		system['cpu']['stats'] = psutil.cpu_stats()
-		system['cpu']['load_avg'] = psutil.getloadavg()
 
-		system['os']['architecture'] = platform.architecture()
-		system['os']['processor'] = platform.processor()
-		system['os']['release'] = platform.release()
-		system['os']['version'] = platform.version()
-		system['os']['libc'] = platform.libc_ver()
-
-		system['memory']['virtual'] = psutil.virtual_memory()
 		system['memory']['swap'] = psutil.swap_memory()
 		system['memory']['mounts'] = psutil.disk_partitions()
 
 		system['disk']['usage'] = psutil.disk_usage('/')
-		system['disk']['io'] = psutil.disk_io_counters(perdisk=False, nowrap=True)
-
-		process = psutil.Process()
-		system['process']['cpu_times'] = process.cpu_times()
-		system['process']['cpu_percent'] = process.cpu_percent()
-		system['process']['memory'] = process.memory_info()
-		system['process']['memory_percent'] = process.memory_percent()
-
-
-		# files to be uploaded and saved somewhere
-		'''
-		with open('/proc/cpuinfo', 'r') as f:
-			system['cpuinfo'] = f.read()
-
-		with open('/proc/meminfo', 'r') as f:
-			system['meminfo'] = f.read()
-
-		with open('/proc/mounts', 'r') as f:
-			system['mounts'] = f.read()
-		'''
 
 		return system
