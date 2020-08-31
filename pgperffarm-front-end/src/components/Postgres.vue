@@ -55,7 +55,7 @@
 								<v-card-text>
 		                    		<table class="mounts-center">
 		                    			<tr class="mounts-r">
-										    		<th class="mounts-h"> <b> First run ID </b> </th>
+										    		<th class="mounts-h"> <b> First run </b> </th>
 										    		<th class="mounts-h"> <b> Edit date </b> </th>
 										    		<th class="mounts-h"> <b> Setting name </b> </th>
 										    		<th class="mounts-h"> <b> Setting unit (previous) </b> </th>
@@ -126,24 +126,24 @@
 						if (httpRequest.status === 200) {
 				  			var response = JSON.parse(httpRequest.response);
 
-				  			this.alias = response.results[0].alias;
-				  			this.id = response.results[0].machine_id;
-				  			this.kernel = response.results[0].kernel_name;
-				  			this.type = response.results[0].machine_type;
-				  			this.first_run = response.results[0].first_run;
-				  			this.last_run = response.results[0].last_run;
-				  			this.first_run_date = new Date(response.results[0].min_add_time);
-				  			this.last_run_date = new Date(response.results[0].max_add_time);
+				  			this.alias = response[0].alias;
+				  			this.id = response[0].machine_id;
+				  			this.kernel = response[0].kernel_name;
+				  			this.type = response[0].machine_type;
+				  			this.first_run = response[0].first_run;
+				  			this.last_run = response[0].last_run;
+				  			this.first_run_date = new Date(response[0].min_add_time);
+				  			this.last_run_date = new Date(response[0].max_add_time);
 
-				  			for (let i = 0; i < response.count; i++) {
+				  			for (let i = 0; i < response.length; i++) {
 
-				  				var set = {'run_id': response.results[i].min, 'setting_name': response.results[i].setting_name, 'unit1': response.results[i].unit1, 'unit2': response.results[i].unit2, 'value1': response.results[i].value1, 'value2': response.results[i].value2, 'add_time': response.results[i].add_time.substring(0, 10)};
+				  				var set = {'run_id': response[i].min, 'setting_name': response[i].setting_name, 'unit1': response[i].unit1, 'unit2': response[i].unit2, 'value1': response[i].value1, 'value2': response[i].value2, 'add_time': response[i].add_time.substring(0, 10)};
 
-				  				if (!this.postgres_history.hasOwnProperty(response.results[i].name)) {
-									this.postgres_history[response.results[i].name] = [];
+				  				if (!this.postgres_history.hasOwnProperty(response[i].name)) {
+									this.postgres_history[response[i].name] = [];
 								}
 
-								this.postgres_history[response.results[i].name].push(set);
+								this.postgres_history[response[i].name].push(set);
 
 				  			}
 

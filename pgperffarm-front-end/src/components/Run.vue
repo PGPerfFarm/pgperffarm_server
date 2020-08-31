@@ -132,7 +132,7 @@
 											    	
 										  	
 										  </tr>
-										  		<tr v-for="item in postgres_settings" :key="item" class="mounts-r">
+										  		<tr v-for="(item, i) in postgres_settings" :key="i" class="mounts-r">
 													<td class="mounts-d"> {{item.setting_name}} </td>
 												    <td class="mounts-d"> {{item.setting_unit}} </td>
 												    <td class="mounts-d"> {{item.setting_value}} </td>
@@ -227,38 +227,40 @@
 					if (httpRequest.readyState === XMLHttpRequest.DONE) {
 
 						if (httpRequest.status === 200) {
-							var response = JSON.parse(httpRequest.response);
+							var response = JSON.parse(httpRequest.response)[0];
 
 							this.run = response;
 
-		        			this.branch = response.git_branch.name;
+		        			this.branch = response.git_branch_id__name;
 		        			this.commit = 'https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=' + response.git_commit;
 		        			this.date = new Date(response.add_time);
-		        			this.owner = response.machine.owner.username;
-		        			this.alias = response.machine.alias;
-		        			this.alias = response.machine.machine_id;
-		        			this.git_repo = response.git_branch.git_repo.url;
-		        			this.farmer = response.machine.alias;
-		        			this.id = response.machine.machine_id;
+		        			this.owner = response.machine_id__owner_id__username;
+		        			this.alias = response.machine_id__alias;
+		        			this.git_repo = response.git_branch_id__git_repo_id__url;
+		        			this.id = response.machine_id;
 
-		        			this.kernel = response.os_kernel.kernel.kernel_name + ' ' + response.os_kernel.kernel_release;
-		        			this.os = response.os_version.dist.dist_name + ' ' + response.os_version.release;
-		        			this.compiler = response.compiler.compiler;
-		        			this.type = response.machine.machine_type;
+		        			this.kernel = response.os_kernel_version_id__kernel_id__kernel_name + ' ' + response.os_kernel_version_id__kernel_release;
+		        			this.os = response.os_version_id__dist_id__dist_name + ' ' + response.os_version_id__release;
+		        			this.compiler = response.compiler_id__compiler;
+		        			this.type = response.machine_id__machine_type;
 
-		        			this.memory = response.hardware_info.total_memory / 1073741824;
-		        			this.swap = response.hardware_info.total_swap / 1073741824;
-		        			this.cpu = response.hardware_info.cpu_brand + ', ' + response.hardware_info.cpu_cores + ' cores';
+		        			this.memory = response.hardware_info_id__total_memory / 1073741824;
+		        			this.swap = response.hardware_info_id__total_swap / 1073741824;
+		        			this.cpu = response.hardware_info_id__cpu_brand + ', ' + response.hardware_info_id__cpu_cores + ' cores';
 
-		        			this.mounts = response.hardware_info.mounts;
-		        			this.sysctl = response.hardware_info.sysctl;
-		        			this.postgres_settings = response.postgres_info.settings;
+		        			if (this.swap == 0) {
+				  				this.swap = "not available";
+				  			}
+
+		        			this.mounts = response.hardware_info_id__mounts;
+		        			this.sysctl = response.hardware_info_id__sysctl;
+		        			this.postgres_settings = response.postgres_info;
 
 		        			for (let i = 0; i < response.pgbench_result.length; i++) {
 
 		        				var read_only = '';
 
-								if (response.pgbench_result[i].benchmark_config.read_only == true) {
+								if (response.pgbench_result[i].benchmark_config[0].read_only == true) {
 									read_only = "read-only test";
 								}
 
@@ -266,7 +268,7 @@
 									read_only = "read-write test";
 								}
 
-		        				var config = 'Scale ' + response.pgbench_result[i].benchmark_config.scale + ', duration ' + response.pgbench_result[i].benchmark_config.duration + ', clients ' + response.pgbench_result[i].benchmark_config.clients + ', ' + read_only;
+		        				var config = 'Scale ' + response.pgbench_result[i].benchmark_config[0].scale + ', duration ' + response.pgbench_result[i].benchmark_config[0].duration + ', clients ' + response.pgbench_result[i].benchmark_config[0].clients + ', ' + read_only;
 
 		        				var date = new Date(response.pgbench_result[i].start * 1000).toLocaleString();
 

@@ -107,11 +107,9 @@
 						if (httpRequest.status === 200) {
 							var response = JSON.parse(httpRequest.response);
 
-							console.log(response);
-
 							this.json_data = response;
 
-			        		var main = response.results[0];
+			        		var main = response[0];
 
 			        		this.alias = main.alias;
 			        		this.owner = main.username;

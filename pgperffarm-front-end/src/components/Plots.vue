@@ -187,11 +187,6 @@
 <script>
 	import Plotly from 'plotly.js-basic-dist'
 
-	// same machine, same benchmark configuration, same postgres settings, same os configuration, same git repository
-
-	// machine, benchmark: user defined parameters
-	// results/benchmark/machine
-
 	export default {
 		name: 'Plots',
 
@@ -238,45 +233,43 @@
 						if (httpRequest.status === 200) {
 							var response = JSON.parse(httpRequest.response);
 
-							var main = response.results[0];
-
-							var machine_id = response.results[0].machine_id;
-							var config_id = response.results[0].pgbench_benchmark_id;
+							var machine_id = response[0].machine_id;
+							var config_id = response[0].pgbench_benchmark_id;
 
 							var branches_raw = ['master', 'REL_13_STABLE', 'REL_12_STABLE', 'REL_11_STABLE', 'REL_10_STABLE'];
 							var max_length = 20;
 
-							for (let run = 0; run < response.results.length; run++) {
+							for (let run = 0; run < response.length; run++) {
 
 								for (let i = 0; i < 5; i++) {
 
-									if (branches_raw[i] == response.results[run].name) {
+									if (branches_raw[i] == response[run].name) {
 
 										if (this.commits[i].length < max_length) {
 
-											this.avg_latencies[i].push(response.results[run].avglat);
+											this.avg_latencies[i].push(response[run].avglat);
 
-											if (response.results[run].stdlat == null) {
+											if (response[run].stdlat == null) {
 												this.std_latencies[i].push(0);
 											}
 											else {
-												this.std_latencies[i].push(response.results[run].stdlat);
+												this.std_latencies[i].push(response[run].stdlat);
 											}
 
-											if (response.results[run].stdtps == null) {
+											if (response[run].stdtps == null) {
 												this.std_tps[i].push(0);
 											}
 											else {
-												this.std_tps[i].push(response.results[run].stdtps);
+												this.std_tps[i].push(response[run].stdtps);
 											}
 
-											this.avg_tps[i].push(response.results[run].avgtps);
-											this.min_tps[i].push(response.results[run].mintps);
-											this.max_tps[i].push(response.results[run].maxtps);
-											this.min_latencies[i].push(response.results[run].minlat);
-											this.max_latencies[i].push(response.results[run].maxlat);
-											this.commits[i].push(response.results[run].git_commit.substring(30, 40)).toString();
-											this.commits_raw[i].push('https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=' + response.results[run].git_commit);
+											this.avg_tps[i].push(response[run].avgtps);
+											this.min_tps[i].push(response[run].mintps);
+											this.max_tps[i].push(response[run].maxtps);
+											this.min_latencies[i].push(response[run].minlat);
+											this.max_latencies[i].push(response[run].maxlat);
+											this.commits[i].push(response[run].git_commit.substring(30, 40)).toString();
+											this.commits_raw[i].push('https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=' + response[run].git_commit);
 
 										}
 									}
@@ -395,7 +388,7 @@
 									commit = data.points[i].text;
 								}
 
-								var detail = config_id + '/detail/' + commit + '/' + machine_id + '/' + config_id;
+								var detail = config_id + '/detail/' + commit + '/';
 								router.push(detail);
 								
 							});
@@ -408,7 +401,7 @@
 									commit = data.points[i].text;
 								}
 
-								var detail = config_id + '/detail/' + commit + '/' + machine_id + '/' + config_id;
+								var detail = config_id + '/detail/' + commit + '/';
 								router.push(detail);
 								
 							});
@@ -421,7 +414,7 @@
 									commit = data.points[i].text;
 								}
 
-								var detail = config_id + '/detail/' + commit + '/' + machine_id + '/' + config_id;
+								var detail = config_id + '/detail/' + commit + '/';
 								router.push(detail);
 								
 							});
@@ -434,7 +427,7 @@
 									commit = data.points[i].text;
 								}
 
-								var detail = config_id + '/detail/' + commit + '/' + machine_id + '/' + config_id;
+								var detail = config_id + '/detail/' + commit + '/';
 								router.push(detail);
 								
 							});
@@ -447,7 +440,7 @@
 									commit = data.points[i].text;
 								}
 
-								var detail = config_id + '/detail/' + commit + '/' + machine_id + '/' + config_id;
+								var detail = config_id + '/detail/' + commit + '/';
 								router.push(detail);
 								
 							}); 

@@ -6,7 +6,7 @@
 					Welcome to the Postgres Performance Farm!
 				</v-card-title>
 				<v-card-text class="pg-v-card-text">
-		 			The Postgres Performance Farm is a project aiming to collect results of performance tests through source code updates, highlighting trends and changes.
+		 			The Postgres Performance Farm is a project aiming to collect of performance tests through source code updates, highlighting trends and changes.
 				</v-card-text>
 	  		</v-card>
 	  		<v-container fluid>
@@ -112,36 +112,38 @@
 						if (httpRequest.status === 200) {
 							var response = JSON.parse(httpRequest.response);
 
-							this.runs = response.results[0].runs;
-							this.benchmarks = response.results[0].results_count;
+							console.log(response);
 
-							this.last_run = response.results[0].last_run;
-							this.last_run_machine = response.results[0].last_machine_alias;
-							this.last_run_machine_id = response.results[0].last_machine_id;
-							this.last_run_time = new Date(response.results[0].last_run_time).toString().substring(0, 25);
-							this.last_month = response.results[0].recent_runs;
+							this.runs = response[0].runs;
+							this.benchmarks = response[0].results_count;
 
-							this.os = response.results[0].os_count;
-							this.machines = response.results[0].machines_count;
-							this.users = response.results[0].users;
+							this.last_run = response[0].last_run;
+							this.last_run_machine = response[0].last_machine_alias;
+							this.last_run_machine_id = response[0].last_machine_id;
+							this.last_run_time = new Date(response[0].last_run_time).toString().substring(0, 25);
+							this.last_month = response[0].recent_runs;
 
-							this.repos = response.results[0].repos;
-							this.branches = response.results[0].branches;
-							this.configs = response.results[0].configs;
+							this.os = response[0].os_count;
+							this.machines = response[0].machines_count;
+							this.users = response[0].users;
 
-							this.benchmark = response.results[0].pgbench_benchmark_id;
-							this.clients = response.results[0].clients;
-							this.scale = response.results[0].scale;
-							this.duration = response.results[0].duration;
+							this.repos = response[0].repos;
+							this.branches = response[0].branches;
+							this.configs = response[0].configs;
 
-							if (response.results[0].read_only == false) {
+							this.benchmark = response[0].pgbench_benchmark_id;
+							this.clients = response[0].clients;
+							this.scale = response[0].scale;
+							this.duration = response[0].duration;
+
+							if (response[0].read_only == false) {
 								this.read_only = 'read-only test';
 							}
 							else {
 								this.read_only = 'read-write test';
 							}
 
-							this.benchmark_machine = response.results[0].machine_id_id;
+							this.benchmark_machine = response[0].machine_id_id;
 
 						} 
 						else {

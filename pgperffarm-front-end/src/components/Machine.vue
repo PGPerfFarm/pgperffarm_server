@@ -36,7 +36,7 @@
 					</v-card>
 				</v-layout>
 	  </v-flex>
-	  <v-flex d-flex fluid>
+	  <v-flex fluid>
 		  <v-card flat class="machine-card">
 				<v-toolbar flat dark color="rgb(51, 103, 145)">
 				  <v-toolbar-title><b>Machine history (reporting major changes in hardware)</b></v-toolbar-title>
@@ -110,6 +110,29 @@
 		                    	</v-card-text>
 	                    	</v-card>
 	                  	</v-tab-item>
+	                  	<v-tab-item>
+	                    	<v-card flat>
+	                      		<v-card-title class="results-card-title"> Hardware information (static). </v-card-title>
+	                      		<v-card-text>
+		                    		<table class="mounts">
+		                    			<tr class="mounts-r">
+										    <th class="mounts-h"> <b> CPU brand </b> </th>
+										    <th class="mounts-h"> <b> CPU cores </b> </th>
+										    <th class="mounts-h"> <b> CPU HZ </b> </th>
+										    <th class="mounts-h"> <b> Memory </b> </th>
+										    <th class="mounts-h"> <b> Swap </b> </th>
+										</tr>
+										<tr class="mounts-r">
+											<td class="mounts-d"> {{ cpu_brand }} </td>
+											<td class="mounts-d"> {{ cpu_cores }} </td>
+											<td class="mounts-d"> {{ hz }} </td>
+											<td class="mounts-d"> {{ parseFloat(memory).toFixed(2) }} GB </td>
+											<td class="mounts-d"> {{ parseFloat(swap).toFixed(2) }} GB </td>
+										</tr>
+		                    	</table>
+		                    	</v-card-text>
+	                    	</v-card>
+	                  	</v-tab-item>
 				</v-tabs-items>
 		  </v-card>
 	  </v-flex>
@@ -125,7 +148,7 @@
 
 		data: () => ({
 	  		tab: null,
-	  		settings: ['OS', 'Compiler', 'Sysctl'],
+	  		settings: ['OS', 'Compiler', 'Sysctl', 'Hardware'],
 
 			search: '',
 	 		loading: true,
@@ -142,6 +165,12 @@
 	 		branches: [],
 	 		sysctl_data: [],
 	 		benchmarks: {},
+
+	 		cpu_brand: '',
+	 		cpu_cores: '',
+	 		hz: '',
+	 		memory: '',
+	 		swap: '',
 
 		}),
 
@@ -160,30 +189,42 @@
 			  		if (httpRequest.readyState === XMLHttpRequest.DONE) {
 
 						if (httpRequest.status === 200) {
+
 				  			var response = JSON.parse(httpRequest.response);
+				  			console.log(response);
+				  			
+				  			this.owner = response[0].username;
+				  			this.alias = response[0].alias;
+				  			this.id = response[0].machine_id;
+				  			this.add_time = new Date(response[0].add_time);
+				  			this.type = response[0].machine_type;
 
-				  			this.owner = response.results[0].username;
-				  			this.alias = response.results[0].alias;
-				  			this.id = response.results[0].machine_id;
-				  			this.add_time = new Date(response.results[0].add_time);
-				  			this.type = response.results[0].machine_type;
+				  			this.cpu_brand = response[0].cpu_brand;
+				  			this.cpu_cores = response[0].cpu_cores;
+				  			this.hz = response[0].hz;
+				  			this.memory = response[0].total_memory / 1073741824;
+				  			this.swap = response[0].total_swap/ 1073741824;
 
-				  			for (let i = 0; i < response.count; i++) {
+				  			if (this.swap == 0) {
+				  				this.swap = "not available";
+				  			}
 
-				  				this.reports += response.results[i].count;
+				  			for (let i = 0; i < response.length; i++) {
+
+				  				this.reports += response[i].count;
 
 				  				if (this.compiler_data == '') {
-				  					this.compiler_data.push({'compiler': response.results[i].compiler, 'run_id': response.results[i].run_id});
+				  					this.compiler_data.push({'compiler': response[i].compiler, 'run_id': response[i].run_id});
 				  				}
 				  				else {
-				  					if (!this.compiler_data.some(item => item.compiler === response.results[i].compiler)) {
-				  						this.compiler_data.push({'compiler': response.results[i].compiler, 'run_id': response.results[i].run_id});
+				  					if (!this.compiler_data.some(item => item.compiler === response[i].compiler)) {
+				  						this.compiler_data.push({'compiler': response[i].compiler, 'run_id': response[i].run_id});
 				  					}
 				  				}
 
 				  				var read_only = '';
 
-				  				if (response.results[i].read_only == true) {
+				  				if (response[i].read_only == true) {
 									read_only = "read-only";
 								}
 
@@ -191,42 +232,44 @@
 									read_only = "read-write";
 								}
 
-								var benchmark = 'Scale ' + response.results[i].scale + ', duration ' + response.results[i].duration + ', clients ' + response.results[i].clients + ', ' + read_only;
+								var benchmark = 'Scale ' + response[i].scale + ', duration ' + response[i].duration + ', clients ' + response[i].clients + ', ' + read_only;
 				  			
-				  				this.benchmarks[response.results[i].pgbench_benchmark_id] = benchmark;
+				  				this.benchmarks[response[i].pgbench_benchmark_id] = benchmark;
 
-				  				var os_string = response.results[i].kernel_name + ' ' + response.results[i].dist_name + ' ' + response.results[i].release + ' (' + response.results[i].codename + ') ' + response.results[i].kernel_release + ' ' + response.results[i].kernel_version;
+				  				var os_string = response[i].kernel_name + ' ' + response[i].dist_name + ' ' + response[i].release + ' (' + response[i].codename + ') ' + response[i].kernel_release + ' ' + response[i].kernel_version;
 
 				  				if (this.os_data == '') {
-				  					this.os_data.push({'os': os_string, 'run_id': response.results[i].run_id});
+				  					this.os_data.push({'os': os_string, 'run_id': response[i].run_id});
 				  				}
 				  				else {
 				  					if (!this.os_data.some(item => item.os === os_string)) {
-				  						this.os_data.push({'os': os_string, 'run_id': response.results[i].run_id});
+				  						this.os_data.push({'os': os_string, 'run_id': response[i].run_id});
 				  					}
 				  				}
 
-				  				if (!this.branches.includes(response.results[i].name)) {
-				  					this.branches.push(response.results[i].name);
+				  				if (!this.branches.includes(response[i].name)) {
+				  					this.branches.push(response[i].name);
 				  				}
 
-				  				var sysctl_object = response.results[i].sysctl;
+				  				var sysctl_object = response[i].sysctl;
 				  				var sysctl_string = '';
 
-				  				for (const [key, value] of Object.entries(sysctl_object)) {
-				  					sysctl_string += key + ' = ' + value + '\n';
-				  				}
+				  				if (sysctl_object != null) {
+					  				for (const [key, value] of Object.entries(sysctl_object)) {
+					  					sysctl_string += key + ' = ' + value + '\n';
+					  				}
 
-				  				if (this.sysctl_data == '') {
-				  					this.sysctl_data.push({'sysctl': sysctl_string, 'run_id': response.results[i].run_id});
-				  				}
-				  				else {
-				  					if (!this.sysctl_data.some(item => item.sysctl === sysctl_string)) {
-				  						this.sysctl_data.push({'sysctl': sysctl_string, 'run_id': response.results[i].run_id});
-				  					}
-				  				}
-
+					  				if (this.sysctl_data == '') {
+					  					this.sysctl_data.push({'sysctl': sysctl_string, 'run_id': response[i].run_id});
+					  				}
+					  				else {
+					  					if (!this.sysctl_data.some(item => item.sysctl === sysctl_string)) {
+					  						this.sysctl_data.push({'sysctl': sysctl_string, 'run_id': response[i].run_id});
+					  					}
+					  				}
+					  			}
 				  			}
+				  			
 				  		}
 				  	}
 				  	else {

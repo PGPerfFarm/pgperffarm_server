@@ -195,15 +195,15 @@
 					if (httpRequest.readyState === XMLHttpRequest.DONE) {
 
 						if (httpRequest.status === 200) {
-							var response = JSON.parse(httpRequest.response);
+							var response = JSON.parse(httpRequest.response)[0];
 
 							this.result = response;
 
-		        			this.clients = response.benchmark_config.clients;
-		        			this.scale = response.benchmark_config.scale;
-		        			this.duration = response.benchmark_config.duration;
+		        			this.clients = response.benchmark_config[0].clients;
+		        			this.scale = response.benchmark_config[0].scale;
+		        			this.duration = response.benchmark_config[0].duration;
 
-		        			if (response.benchmark_config.read_only == true) {
+		        			if (response.benchmark_config[0].read_only == true) {
 								this.read_only = "Read-only test";
 							}
 
@@ -211,7 +211,7 @@
 								this.read_only = "Read-write test";
 							}
 
-		        			this.config = response.benchmark_config.pgbench_benchmark_id;
+		        			this.config = response.benchmark_config[0].pgbench_benchmark_id;
 
 		        			this.tps = response.tps;
 		        			this.latency = response.latency;
@@ -221,13 +221,13 @@
 		        			this.mode = response.mode;
 		        			this.iteration = response.iteration;
 
-		        			this.alias = response.run.machine.alias;
-		        			this.id = response.run.machine.machine_id;
-		        			this.os = response.run.os_version.dist.dist_name + ' ' + response.run.os_version.release;
-		        			this.branch = response.run.git_branch.name;
-		        			this.kernel = response.run.os_kernel.kernel.kernel_name + ' ' + response.run.os_kernel.kernel_release;
-		        			this.run = response.run.run_id;
-		        			this.commit = 'https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=' + response.run.git_commit;
+		        			this.alias = response.run_id_id__machine_id__alias;
+		        			this.id = response.run_id_id__machine_id;
+		        			this.os = response.run_id_id__os_version_id__dist_id_id__dist_name + ' ' + response.run_id_id__os_version_id__release;
+		        			this.branch = response.run_id_id__git_branch_id__name;
+		        			this.kernel = response.run_id_id__os_kernel_version_id_id__kernel_id__kernel_name + ' ' + response.run_id_id__os_kernel_version_id__kernel_release;
+		        			this.run = response.run_id_id;
+		        			this.commit = 'https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=' + response.run_id_id__git_commit;
 
 		        			for (let i = 0; i < response.pgbench_run_statement.length; i++) {
 		        				var result = {

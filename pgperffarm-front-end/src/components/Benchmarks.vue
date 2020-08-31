@@ -103,11 +103,11 @@
 
 							var response = JSON.parse(httpRequest.response);
 
-							for (let i = 0; i < response.count; i++) {
+							for (let i = 0; i < response.length; i++) {
 
 								var read_only = '';
 
-								if (response.results[i].read_only == true) {
+								if (response[i].read_only == true) {
 									read_only = "read-only test";
 								}
 
@@ -115,16 +115,16 @@
 									read_only = "read-write test";
 								}
 
-								var benchmark = 'Scale ' + response.results[i].scale + ', duration ' + response.results[i].duration + ', clients ' + response.results[i].clients + ', ' + read_only;
+								var benchmark = 'Scale ' + response[i].scale + ', duration ' + response[i].duration + ', clients ' + response[i].clients + ', ' + read_only;
 
 								var machine = {
-									alias: response.results[i].alias,
-									add_time: response.results[i].add_time.substring(0, 10),
-									type: response.results[i].machine_type,
-									owner: response.results[i].username,
-									count: response.results[i].count,
-									config_id: response.results[i].pgbench_benchmark_id,
-									id: response.results[i].machine_id,
+									alias: response[i].alias,
+									add_time: response[i].add_time.substring(0, 10),
+									type: response[i].machine_type,
+									owner: response[i].username,
+									count: response[i].count,
+									config_id: response[i].pgbench_benchmark_id,
+									id: response[i].machine_id,
 								};
 
 								if (!this.machines.hasOwnProperty(benchmark)) {

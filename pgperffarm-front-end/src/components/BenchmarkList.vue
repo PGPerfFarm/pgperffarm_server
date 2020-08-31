@@ -37,7 +37,7 @@
 
 			getBenchmarks() {
 
-				var url = this.$store.state.endpoints.trends_benchmarks + this.$route.params.commit + '/' + this.$route.params.machine + '/' + this.$route.params.benchmark;
+				var url = this.$store.state.endpoints.trends_benchmarks + this.$route.params.commit + '/' + this.$route.params.id + '/' + this.$route.params.config;
 
 	  			const httpRequest = new XMLHttpRequest();
 				httpRequest.open("GET", url);
@@ -51,12 +51,12 @@
 
 							var response = JSON.parse(httpRequest.response);
 
-						  	for (var i = 0; i < response.count; i++) {
+						  	for (var i = 0; i < response.length; i++) {
 
 								var result = {
-									run_id: response.results[i].run_id,
-									pgbench_result_id: response.results[i].pgbench_result_id,
-									add_time: new Date(response.results[i].add_time),
+									run_id: response[i].run_id,
+									pgbench_result_id: response[i].pgbench_result_id,
+									add_time: new Date(response[i].add_time),
 								};
 
 								this.results.push(result);

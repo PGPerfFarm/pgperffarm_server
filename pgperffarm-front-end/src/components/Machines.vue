@@ -17,7 +17,7 @@
 					<template>
 						<v-data-table :headers="headers" :items="machines" hide-default-footer :search="search" :loading="loading" item-key="alias" class="elevation-1" sort-by="addDate">
 							<template #item.alias="{ item }"> <router-link :to="{path: '/machine/'+ item.id }"> {{ item.alias }} </router-link> </template>
-							<template #item.latest="{ item }"> <router-link :to="{path: '/runs/'+ item.latest }"> {{ item.latest }} </router-link> </template>
+							<template #item.latest="{ item }"> <router-link :to="{path: '/run/'+ item.latest }"> {{ item.latest }} </router-link> </template>
 						</v-data-table>
 					</template>
 				</v-card>
@@ -63,16 +63,16 @@
 						if (httpRequest.status === 200) {
 							var response = JSON.parse(httpRequest.response);
 
-							for (var i = 0; i < response.count; i++) {
+							for (var i = 0; i < response.length; i++) {
 
 								var machine = {
-									alias: response.results[i].alias,
-									id: response.results[i].machine_id,
-									system: response.results[i].machine_type,
-									approved: response.results[i].approved,
-									latest: response.results[i].latest.run_id,
-									owner: response.results[i].owner.username,
-									addDate: response.results[i].add_time.substring(0, 10)
+									alias: response[i].alias,
+									id: response[i].machine_id,
+									system: response[i].machine_type,
+									approved: response[i].approved,
+									latest: response[i].latest,
+									owner: response[i].owner_id__username,
+									addDate: response[i].add_time.substring(0, 10)
 								};
 
 								this.machines.push(machine);
