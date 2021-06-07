@@ -1,12 +1,9 @@
 #!/usr/bin/env python3
 
-import argparse
 import json
 import os
 import git
-import pathlib
 import shutil
-import psutil
 import time
 from datetime import datetime
 from dateutil import tz
@@ -14,7 +11,6 @@ from dateutil import tz
 from benchmarks.pgbench import PgBench
 from benchmarks.runner import BenchmarkRunner
 
-from collectors.collectd import CollectdCollector
 from collectors.system import SystemCollector
 from collectors.postgres import PostgresCollector
 from collectors.collector import MultiCollector
@@ -25,7 +21,6 @@ from utils.cluster import PgCluster
 from utils.logging import log
 from utils.upload import upload
 
-from settings import *
 from settings_local import * 
 from branches import *
 

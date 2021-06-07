@@ -1,20 +1,10 @@
-import json
 import os
-import codecs
-import requests
-import shutil
-import psutil
-import sys
-
-from multiprocessing import Process, Queue
+import json
 from time import gmtime, strftime
 from subprocess import check_output
 import simplejson as json
 
 from utils.logging import log
-from utils.misc import run_cmd
-
-from settings import *
 from settings_local import *
 
 
@@ -171,4 +161,3 @@ class BenchmarkRunner(object):
 
 		for config_name in self._configs[0]:
 			self._run_config(config_name)
-

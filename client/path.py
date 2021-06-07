@@ -1,6 +1,7 @@
 import os
 import folders
 
+
 def create_path(BRANCH_PATH):
 
 	folders.BUILD_PATH = os.path.join(BRANCH_PATH, 'build')

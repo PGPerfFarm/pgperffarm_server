@@ -1,16 +1,13 @@
 import csv
-import multiprocessing
 import os
 import psycopg2
 import psycopg2.extras
-import time
 import sys
-
-from multiprocessing import Process, Queue
-from utils.logging import log
-from utils.misc import run_cmd
+import shutil
 
 import folders
+from utils.logging import log
+
 
 class PostgresCollector(object):
     """

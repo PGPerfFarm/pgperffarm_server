@@ -1,13 +1,11 @@
 import os
-import shutil
-import time
-
-from multiprocessing import cpu_count, Process, Queue
 from subprocess import call, STDOUT
 from tempfile import TemporaryFile
-from utils.logging import log
 
 import folders
+from utils.logging import log
+from utils.misc import run_cmd
+
 
 class PgCluster(object):
     'basic manipulation of postgres cluster (init, start, stop, destroy)'

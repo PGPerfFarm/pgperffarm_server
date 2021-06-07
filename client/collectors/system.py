@@ -1,14 +1,12 @@
 import os.path
-import platform
 import psutil
 import json
-from cpuinfo import get_cpu_info_json, get_cpu_info
+from cpuinfo import get_cpu_info
 
-from datetime import datetime, timedelta, time
+import folders
 from utils.logging import log
 from utils.misc import run_cmd
 
-import folders
 
 class SystemCollector(object):
 	'Collect various Unix-specific statistics (cpuinfo, mounts)'

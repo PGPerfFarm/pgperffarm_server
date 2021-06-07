@@ -1,14 +1,11 @@
-import os
-import shutil
 import subprocess
-import sys
-
 from datetime import datetime
 from multiprocessing import cpu_count
 from tempfile import TemporaryFile
-from utils.logging import log
 
 import folders
+from utils.logging import log
+
 
 def build():
 
@@ -52,8 +49,3 @@ def build():
         log("Anomalies have been found while installing, please check logs in '%s'" % (folders.LOG_PATH,))
 
     return str(configure_runtime), str(build_runtime), str(install_runtime)
-
-
-
-
-

@@ -1,8 +1,6 @@
 # -*- encoding:utf-8 -*-
 
 import json
-import codecs
-import urllib.request
 import requests
 import os
 

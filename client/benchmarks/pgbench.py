@@ -1,17 +1,11 @@
-import math
-import os
 import os.path
 import re
 import time
-import psutil
 
-from multiprocessing import cpu_count
-from utils.logging import log
-from utils.misc import available_ram, run_cmd
-
-from settings import *
-from settings_local import *
 import folders
+from utils.logging import log
+from utils.misc import run_cmd
+
 
 class PgBench(object):
     'a simple wrapper around pgbench, running TPC-B-like workload by default'
