@@ -170,10 +170,10 @@ if __name__ == '__main__':
 
 				#collectors.register('collectd', CollectdCollector(folders.OUTPUT_PATH, DATABASE_NAME, ''))
 
-				pg_collector = PostgresCollector(folders.OUTPUT_PATH, dbname=DATABASE_NAME, bin_path=('%s/bin' % (folders.BUILD_PATH)))
+				pg_collector = PostgresCollector(folders.OUTPUT_PATH, dbname=DATABASE_NAME)
 				collectors.register('postgres', pg_collector)
 
-				runner = BenchmarkRunner(folders.OUTPUT_PATH, API_URL, MACHINE_SECRET, cluster, collectors)
+				runner = BenchmarkRunner(folders.OUTPUT_PATH, cluster, collectors)
 
 				# register the three tests we currently have
 				runner.register_benchmark('pgbench', PgBench)

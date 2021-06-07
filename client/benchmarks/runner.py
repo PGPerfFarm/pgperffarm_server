@@ -11,15 +11,13 @@ from settings_local import *
 class BenchmarkRunner(object):
 	'manages iterations of all the benchmarks, including cluster restarts etc.'
 
-	def __init__(self, out_dir, url, secret, cluster, collector):
+	def __init__(self, out_dir, cluster, collector):
 		
 		self._output = out_dir  # where to store output files
 		self._benchmarks = {}  # bench name => class implementing the benchmark
 		self._configs = []  # config name => (bench name, config)
 		self._cluster = cluster
 		self._collector = collector
-		self._url = url
-		self._secret = secret
 
 
 	def register_benchmark(self, benchmark_name, benchmark_class):

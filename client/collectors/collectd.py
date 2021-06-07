@@ -73,7 +73,3 @@ class CollectdCollector(object):
 
     def result(self):
         return {}
-
-
-def run_collector(in_queue, out_queue, dbname, bin_path, outdir, interval=1.0):
-    pass
