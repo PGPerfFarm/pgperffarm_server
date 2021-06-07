@@ -52,8 +52,8 @@ class SystemCollector(object):
 					key, value = item.decode("utf-8").split(':', 1)
 				sysctl_json.update({key.rstrip(): value.rstrip().lstrip()})
 
-		with open(folders.LOG_PATH + '/sysctl_log.txt', 'w+') as file:
-			file.write(json.dumps(sysctl_json))
+		with open(folders.LOG_PATH + '/sysctl_log.json', 'w+') as file:
+			file.write(json.dumps(sysctl_json, indent=4))
 
 
 	def _collect_system_info(self):

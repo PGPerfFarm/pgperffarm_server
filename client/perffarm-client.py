@@ -241,8 +241,8 @@ if __name__ == '__main__':
 			}
 
 			# saving times in a text file
-			with open(folders.LOG_PATH + '/runtime_log.txt', 'w+') as file:
-				file.write(json.dumps(runtime))
+			with open(folders.LOG_PATH + '/runtime_log.json', 'w+') as file:
+				file.write(json.dumps(runtime, indent=4))
 
 
 			if (AUTOMATIC_UPLOAD):
