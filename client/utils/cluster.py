@@ -63,6 +63,10 @@ class PgCluster(object):
         self._initdb()
         self._configure(config)
 
+        # add pg_stat_statements to postgresql.conf
+        with open(''.join([self._data, '/postgresql.conf']), 'a') as file:
+            file.write("shared_preload_libraries = 'pg_stat_statements'")
+
         with TemporaryFile() as strout:
             log("starting cluster in '%s' using '%s' binaries" %
                 (self._data, self._bin))

@@ -1,6 +1,8 @@
 import os.path
 import re
 import time
+import psycopg2
+import psycopg2.extras
 
 import folders
 from utils.logging import log
@@ -187,6 +189,21 @@ class PgBench(object):
 
         return r
 
+    def collect_pg_stat_statements(self):
+        conn = psycopg2.connect('host=%s dbname=%s' % (folders.SOCKET_PATH, self._dbname))
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+        cur.execute(
+            'CREATE EXTENSION pg_stat_statements;'
+            'SELECT * FROM pg_stat_statements;'
+        )
+
+        result = cur.fetchall()
+
+        conn.close()
+
+        return result
+
     def run_tests(self):
         """
         execute the whole benchmark, including initialization, warmup and
@@ -221,6 +238,11 @@ class PgBench(object):
                 r = self._run(i, scale, self._duration, self._pgbench_init, self._read_only, clients, clients, True)
 
                 r.update({'iteration': i})
+
+                # get pg_stat_statements after each run
+                pg_stat_statements = self.collect_pg_stat_statements()
+                r.update({'pg_stat_statements': pg_stat_statements})
+
                 results.append(r)
 
         info['scale'] = scale

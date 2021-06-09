@@ -35,6 +35,11 @@ def build():
                 cwd=folders.BUILD_PATH, capture_output=True, text=True)
         install_end_time = datetime.now()
         install_runtime = install_end_time - install_start_time
+
+        # build pg_stat_statements
+        subprocess.run(['make', '-s', '-j', str(cpu_count()), 'install'],
+                       cwd=''.join([folders.BUILD_PATH, '/contrib/pg_stat_statements']),
+                       capture_output=True, text=True)
             
     with open(folders.LOG_PATH + '/configure_log.txt', 'w+') as file:
         file.write(a.stderr)
