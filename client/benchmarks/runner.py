@@ -93,6 +93,9 @@ class BenchmarkRunner(object):
 			# run the tests
 			r['pgbench'].append(bench.run_tests())
 
+		# stop collectors
+		self._collector.stop()
+
 		# merge data from the collectors into the JSON document with results
 		r.update(self._collector.result())
 

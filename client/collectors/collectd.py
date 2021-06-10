@@ -1,4 +1,5 @@
 import os
+import csv
 
 from utils.logging import log
 from utils.misc import run_cmd
@@ -12,8 +13,8 @@ class CollectdCollector(object):
     Collect basic system and database statistics using collectd.
     """
 
-    def __init__(self, outdir, dbname, bin_path):
-        self._bin_path = bin_path
+    def __init__(self, outdir, dbname):
+        self._outdir = '%s/stats' % outdir
 
         # Hard code all possible places a packager might install collectd.
         self._env = os.environ
@@ -44,11 +45,10 @@ class CollectdCollector(object):
                 'LoadPlugin vmem\n'
             )
 
-        outdir = '%s/stats' % outdir
         config_template = open('%s/collectd.conf.in' % cwd, 'r')
         config = open(COLLECTD_CONFIG, 'w')
         config.write(config_template.read() % {'database': dbname,
-                                               'datadir': outdir,
+                                               'datadir': self._outdir,
                                                'modules': modules,
                                                'pguser': self._env['USER']})
         config.close()
@@ -69,7 +69,27 @@ class CollectdCollector(object):
             run_cmd(['kill', pid])
         except FileNotFoundError:
             log('collectd pid not found - processes may still be running')
-        
 
     def result(self):
-        return {}
+        r = {}
+        r.update(self._collect_collectd_csv())
+
+        return r
+
+    def _collect_collectd_csv(self):
+        collectd = {}
+
+        for name in os.listdir(self._outdir):
+            collectd[name] = {}
+            for plugin in os.listdir(''.join([self._outdir, '/', name])):
+                collectd[name][plugin] = {}
+                for file in os.listdir(''.join([self._outdir, '/', name, '/', plugin])):
+                    csv_file = ''.join([self._outdir, '/', name, '/', plugin, '/', file])
+                    with open(csv_file, 'r') as csv_file_open:
+                        reader = csv.DictReader(csv_file_open)
+                        rows = []
+                        for row in reader:
+                            rows.append(row)
+                        collectd[name][plugin][file] = rows
+
+        return collectd
