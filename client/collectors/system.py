@@ -69,6 +69,7 @@ class SystemCollector(object):
 		system['cpu']['information'] = get_cpu_info()
 		system['cpu']['number'] = psutil.cpu_count()
 
+		system['memory']['virtual'] = psutil.virtual_memory()
 		system['memory']['swap'] = psutil.swap_memory()
 		system['memory']['mounts'] = psutil.disk_partitions()
 
