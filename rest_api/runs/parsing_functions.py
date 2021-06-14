@@ -10,7 +10,7 @@ from benchmarks.models import PgBenchBenchmark, PgBenchResult, PgBenchStatement,
 from systems.models import Kernel
 
 
-def ParseSysctl(raw_data):
+def parse_sysctl(raw_data):
 
     data = json.loads(raw_data)
     json_dict = {}
@@ -36,13 +36,13 @@ def ParseSysctl(raw_data):
         return json_dict
 
 
-def Hash(json_data):
+def hash(json_data):
 
     hash_value = hashlib.sha256(json.dumps(json_data).encode('utf-8'))
     return hash_value.hexdigest()
 
 
-def ParseLinuxData(json_data):
+def parse_linux_data(json_data):
 
     if ('brand' in json_data['system']['cpu']['information']):
         brand = json_data['system']['cpu']['information']['brand']
@@ -56,7 +56,7 @@ def ParseLinuxData(json_data):
     else:
         hz = json_data['system']['cpu']['information']['hz_actual'][0]
 
-    sysctl = ParseSysctl(json_data['sysctl_log'])
+    sysctl = parse_sysctl(json_data['sysctl_log'])
 
     result = {
         'cpu_brand': brand,
@@ -64,16 +64,16 @@ def ParseLinuxData(json_data):
         'cpu_cores': json_data['system']['cpu']['information']['count'],
         'total_memory': json_data['system']['memory']['virtual']['total'],
         'total_swap': json_data['system']['memory']['swap']['total'],
-        'mounts_hash': Hash(json_data['system']['memory']['mounts']),
+        'mounts_hash': hash(json_data['system']['memory']['mounts']),
         'mounts': json_data['system']['memory']['mounts'],
         'sysctl': sysctl,
-        'sysctl_hash': Hash(sysctl)
+        'sysctl_hash': hash(sysctl)
     }
 
     return result
 
 
-def GetHash(postgres_settings):
+def get_hash(postgres_settings):
 
     reader = csv.DictReader(io.StringIO(postgres_settings))
     postgres_settings_json = json.loads(json.dumps(list(reader)))
@@ -84,12 +84,12 @@ def GetHash(postgres_settings):
         if setting['source'] != "default" and setting['source'] != "client":
             hash_json.append(setting)
 
-    hash_string = Hash(hash_json)
+    hash_string = hash(hash_json)
 
     return hash_string, hash_json
 
 
-def AddPostgresSettings(hash_value, settings):
+def add_postgres_settings(hash_value, settings):
 
     settings_set = PostgresSettingsSet.objects.filter(settings_sha256=hash_value).get()
 
@@ -108,7 +108,7 @@ def AddPostgresSettings(hash_value, settings):
             raise RuntimeError(e)
 
 
-def ParsePgBenchOptions(item, clients):
+def parse_pgbench_options(item, clients):
 
     result = {
         'clients': clients,
@@ -120,7 +120,7 @@ def ParsePgBenchOptions(item, clients):
     return result
 
 
-def ParsePgBenchStatementLatencies(statement_latencies, pgbench_result_id):
+def parse_pgbench_statement_latencies(statement_latencies, pgbench_result_id):
 
     # extract the nonempty statements
     statements = statement_latencies.split("\n")
@@ -155,7 +155,7 @@ def ParsePgBenchStatementLatencies(statement_latencies, pgbench_result_id):
             raise RuntimeError(e)
 
 
-def ParsePgBenchLogValues(result, values):
+def parse_pgbench_log_values(result, values):
 
     lines = values.splitlines()
 
@@ -173,7 +173,7 @@ def ParsePgBenchLogValues(result, values):
             raise RuntimeError(e)
 
 
-def ParsePgBenchLogs(result, log_array, iteration):
+def parse_pgbench_logs(result, log_array, iteration):
 
     found = False
 
@@ -195,7 +195,7 @@ def ParsePgBenchLogs(result, log_array, iteration):
             # then, check if it is the same as the test result
             if pgbench_config.pgbench_benchmark_id == result.benchmark_config.pgbench_benchmark_id:
                 if int(configs[5]) == iteration:
-                    ParsePgBenchLogValues(result, value)
+                    parse_pgbench_log_values(result, value)
                     found = True
 
     # if no match has been found, return error
@@ -203,7 +203,7 @@ def ParsePgBenchLogs(result, log_array, iteration):
         raise RuntimeError('Invalid PgBench logs.')
 
 
-def ParsePgBenchResults(item, run_id, pgbench_log):
+def parse_pgbench_results(item, run_id, pgbench_log):
 
     json = item['iterations']
     iterations = 0
@@ -236,8 +236,8 @@ def ParsePgBenchResults(item, run_id, pgbench_log):
                 try:
                     result_object.save()
 
-                    ParsePgBenchLogs(result_object, pgbench_log, iterations)
-                    ParsePgBenchStatementLatencies(statement_latencies, result_object)
+                    parse_pgbench_logs(result_object, pgbench_log, iterations)
+                    parse_pgbench_statement_latencies(statement_latencies, result_object)
 
                 except Exception as e:
                     raise RuntimeError(e)

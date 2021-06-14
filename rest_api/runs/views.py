@@ -6,7 +6,7 @@ from datetime import datetime
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from runs.parsing_functions import ParseLinuxData, GetHash, AddPostgresSettings, ParsePgBenchOptions, ParsePgBenchResults
+from runs.parsing_functions import parse_linux_data, get_hash, add_postgres_settings, parse_pgbench_options, parse_pgbench_results
 from machines.models import Machine
 from postgres.models import PostgresSettingsSet, PostgresSettings
 from runs.models import RunInfo, GitRepo, Branch, RunLog
@@ -14,7 +14,7 @@ from systems.models import HardwareInfo, Compiler, Kernel, OsDistributor, OsKern
 from benchmarks.models import PgBenchBenchmark, PgBenchResult
 
 
-def SingleRunView(request, id):
+def single_run_view(request, id):
 
     run = RunInfo.objects.filter(run_id=id).values('run_id', 'add_time', 'git_branch_id__name', 'git_branch_id__git_repo_id__url', 'git_commit', 'os_version_id__dist_id__dist_name', 'os_version_id__description', 'os_version_id__release', 'os_version_id__codename', 'os_kernel_version_id__kernel_release', 'os_kernel_version_id__kernel_version', 'os_kernel_version_id__kernel_id__kernel_name', 'compiler_id__compiler', 'machine_id', 'machine_id__alias', 'machine_id__machine_type', 'machine_id__description', 'machine_id__add_time','machine_id__owner_id__username', 'postgres_info_id', 'hardware_info_id__cpu_brand', 'hardware_info_id__hz', 'hardware_info_id__cpu_cores', 'hardware_info_id__total_memory', 'hardware_info_id__total_swap', 'hardware_info_id__mounts', 'hardware_info_id__sysctl')
 
@@ -37,7 +37,7 @@ def SingleRunView(request, id):
 
 
 @csrf_exempt
-def CreateRunInfo(request, format=None):
+def create_run_info(request, format=None):
 
     error = ''
     machine = None
@@ -179,7 +179,7 @@ def CreateRunInfo(request, format=None):
                 except Exception as e:
                     raise RuntimeError(e)
 
-            hardware_info_new = ParseLinuxData(json_data)
+            hardware_info_new = parse_linux_data(json_data)
 
             try:
                 hardware_info = HardwareInfo.objects.filter(cpu_brand=hardware_info_new['cpu_brand'], cpu_cores=hardware_info_new['cpu_cores'], hz=hardware_info_new['hz'], total_memory=hardware_info_new['total_memory'], total_swap=hardware_info_new['total_swap'], sysctl_hash=hardware_info_new['sysctl_hash'], mounts_hash=hardware_info_new['mounts_hash']).get()
@@ -197,7 +197,7 @@ def CreateRunInfo(request, format=None):
 
             commit = json_data['git']['commit']
 
-            postgres_hash, postgres_hash_object = GetHash(json_data['postgres_settings'])
+            postgres_hash, postgres_hash_object = get_hash(json_data['postgres_settings'])
 
             try:
                 postgres_info = PostgresSettingsSet.objects.filter(settings_sha256=postgres_hash).get()
@@ -208,7 +208,7 @@ def CreateRunInfo(request, format=None):
 
                     postgres_info = PostgresSettingsSet(settings_sha256=postgres_hash)
                     postgres_info.save()
-                    AddPostgresSettings(postgres_hash, postgres_hash_object)
+                    add_postgres_settings(postgres_hash, postgres_hash_object)
 
                 except Exception as e:
                     raise RuntimeError(e)
@@ -280,7 +280,7 @@ def CreateRunInfo(request, format=None):
             for item in json_data['pgbench']:
 
                 for client in item['clients']:
-                    pgbench = ParsePgBenchOptions(item, client)
+                    pgbench = parse_pgbench_options(item, client)
 
                     try:
                         pgbench_info = PgBenchBenchmark.objects.filter(clients=client, scale=pgbench['scale'], duration=pgbench['duration'], read_only=pgbench['read_only']).get()
@@ -297,7 +297,7 @@ def CreateRunInfo(request, format=None):
                             raise RuntimeError(e)
 
             for item in json_data['pgbench']:
-                ParsePgBenchResults(item, run_info, json_data['pgbench_log_aggregate'])
+                parse_pgbench_results(item, run_info, json_data['pgbench_log_aggregate'])
 
 
     except Exception as e:

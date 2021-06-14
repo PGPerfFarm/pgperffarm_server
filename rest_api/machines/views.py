@@ -8,7 +8,7 @@ from runs.models import RunInfo
 from machines.forms import MachineForm
 
 
-def AddMachineView(request):
+def add_machine_view(request):
 
     m = hashlib.md5()
     m.update(make_password(str(request.data), 'pg_perf_farm').encode('utf-8'))
@@ -23,7 +23,7 @@ def AddMachineView(request):
     return HttpResponse(text='Machine added successfully!', status_code=201, headers=headers)
 
 
-def MachinesView(request):
+def machines_view(request):
 
     def get_latest(machine):
 
@@ -42,7 +42,7 @@ def MachinesView(request):
 
 
 @login_required
-def MyMachinesView(request):
+def my_machines_view(request):
 
     def get_latest(machine):
 
@@ -65,7 +65,7 @@ def MyMachinesView(request):
     return JsonResponse(my_machines_list, safe=False)
 
 
-def EditMachineView(request, id):
+def edit_machine_view(request, id):
 
     machine = Machine.objects.get(machine_id=id)
 
