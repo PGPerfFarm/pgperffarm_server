@@ -1,7 +1,6 @@
 from django.contrib import admin
 
 from machines.models import Machine
-from postgres.models import PostgresSettingsSet, PostgresSettings
 from runs.models import RunInfo, GitRepo, Branch, RunLog
 from systems.models import HardwareInfo, Compiler, Kernel, OsDistributor, OsKernelVersion, OsVersion
 from benchmarks.models import PgBenchBenchmark, PgBenchResult, PgBenchStatement, PgBenchLog, PgBenchRunStatement
