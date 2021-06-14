@@ -140,7 +140,7 @@ def ParsePgBenchStatementLatencies(statement_latencies, pgbench_result_id):
             pgbench_statement = PgBenchStatement(statement=text)
 
             try:
-                postgres_settings.save()
+                pgbench_statement.save()
 
             except Exception as e:
                 raise RuntimeError(e)

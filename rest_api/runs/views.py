@@ -64,6 +64,7 @@ def CreateRunInfo(request, format=None):
             if os_old == '':
                 machine.machine_type = os_new
                 machine.save()
+                os_old = os_new
 
             if machine.approved == False:
                 error = 'The machine is not approved.'
