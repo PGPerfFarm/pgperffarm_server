@@ -222,7 +222,7 @@ def parse_pgbench_results(item, run_id, pgbench_log):
                     iterations = 0
 
                 # assuming results get added in order
-                elif (pgbench_result_last.benchmark_config.pgbench_benchmark_id == pgbench_config.pgbench_benchmark_id):
+                elif (pgbench_result_last.benchmark_config.pgbench_benchmark_id == pgbench_config.pgbench_benchmark_id) and (pgbench_result_last.run_id.run_id == run_id):
                     iterations += 1
 
                 else:
