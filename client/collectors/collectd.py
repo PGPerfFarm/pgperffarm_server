@@ -1,6 +1,7 @@
 import os
 import csv
 
+import folders
 from utils.logging import log
 from utils.misc import run_cmd
 from settings_local import *
@@ -56,6 +57,7 @@ class CollectdCollector(object):
                                                'disk': disk,
                                                'datadir': self._outdir,
                                                'modules': modules,
+                                               'pghost': folders.SOCKET_PATH,
                                                'pguser': self._env['USER']})
         config.close()
         config_template.close()

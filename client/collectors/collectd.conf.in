@@ -418,7 +418,7 @@ FROM pg_stat_bgwriter;"
         </Result>
     </Query>
 	<Database %(database)s>
-		Host "localhost"
+		Host "%(pghost)s"
 		User "%(pguser)s"
 		Query db_stats
 		Query table_stats
