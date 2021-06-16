@@ -3,6 +3,7 @@ import csv
 
 from utils.logging import log
 from utils.misc import run_cmd
+from settings_local import *
 
 COLLECTD_CONFIG = '/tmp/.collectd.conf'
 COLLECTD_PIDFILE = '/tmp/.collectd.pid'
@@ -20,6 +21,11 @@ class CollectdCollector(object):
         self._env = os.environ
         self._env['PATH'] = ':'.join(['/usr/sbin/', '/sbin/', self._env['PATH']])
 
+        # get partition being used by postgres
+        r = run_cmd(['df', '.'], cwd=BASE_PATH)
+        partition = r[1].decode('utf-8').split('\n')[1].split(' ')[0]
+        disk = partition.replace('/dev/', '')
+
         # Assume collectd.conf.in file to be in the same directory as this
         # file.
         cwd = os.path.dirname(os.path.realpath(__file__))
@@ -30,7 +36,6 @@ class CollectdCollector(object):
             'LoadPlugin cpu\n'
             'LoadPlugin csv\n'
             'LoadPlugin disk\n'
-            'LoadPlugin interface\n'
             'LoadPlugin memory\n'
             'LoadPlugin postgresql\n'
             'LoadPlugin processes\n'
@@ -48,6 +53,7 @@ class CollectdCollector(object):
         config_template = open('%s/collectd.conf.in' % cwd, 'r')
         config = open(COLLECTD_CONFIG, 'w')
         config.write(config_template.read() % {'database': dbname,
+                                               'disk': disk,
                                                'datadir': self._outdir,
                                                'modules': modules,
                                                'pguser': self._env['USER']})

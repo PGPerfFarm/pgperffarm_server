@@ -57,22 +57,37 @@ LoadPlugin logfile
 ##############################################################################
 
 <Plugin aggregation>
-  <Aggregation>
-    Plugin "cpu"
-    Type "percent"
+	<Aggregation>
+		Plugin "cpu"
+		Type "percent"
 
-    GroupBy "Host"
-    GroupBy "TypeInstance"
+		GroupBy "Host"
+		GroupBy "TypeInstance"
 
-    CalculateSum false
-    CalculateAverage true
-  </Aggregation>
+		CalculateSum false
+		CalculateAverage true
+	</Aggregation>
 </Plugin>
 
 <Plugin cpu>
-  ReportByCpu true
-  ReportByState true
-  ValuesPercentage true
+	ReportByCpu true
+	ReportByState true
+	ValuesPercentage true
+</Plugin>
+
+<Plugin swap>
+	ReportByDevice false
+	ReportBytes true
+	ValuesAbsolute true
+	ValuesPercentage false
+</Plugin>
+
+<Plugin vmem>
+	Verbose false
+</Plugin>
+
+<Plugin disk>
+	Disk "%(disk)s"
 </Plugin>
 
 <Plugin csv>
@@ -409,15 +424,4 @@ FROM pg_stat_bgwriter;"
 		Query table_stats
 		Query index_stats
 	</Database>
-</Plugin>
-
-<Plugin swap>
-	ReportByDevice false
-	ReportBytes true
-	ValuesAbsolute true
-	ValuesPercentage false
-</Plugin>
-
-<Plugin vmem>
-	Verbose false
 </Plugin>
