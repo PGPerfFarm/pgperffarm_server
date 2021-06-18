@@ -1,16 +1,14 @@
 import json
-import re
 import sys
 import os
 from datetime import datetime
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from runs.parsing_functions import parse_linux_data, get_hash, add_postgres_settings, parse_pgbench_options, parse_pgbench_results
+from runs.parsing_functions import parse_pgbench_options, parse_pgbench_results, parse_os_kernel, parse_compiler, parse_git, parse_hardware, parse_postgres
 from machines.models import Machine
-from postgres.models import PostgresSettingsSet, PostgresSettings
-from runs.models import RunInfo, GitRepo, Branch, RunLog
-from systems.models import HardwareInfo, Compiler, Kernel, OsDistributor, OsKernelVersion, OsVersion
+from postgres.models import PostgresSettings
+from runs.models import RunInfo, RunLog
 from benchmarks.models import PgBenchBenchmark, PgBenchResult
 
 
@@ -80,138 +78,11 @@ def create_run_info(request, format=None):
 
         with transaction.atomic():
 
-            try:
-                os_distributor = OsDistributor.objects.filter(dist_name=json_data['os_information']['distributor']).get()
-
-            except OsDistributor.DoesNotExist:
-
-                try:
-
-                    os_distributor = OsDistributor(dist_name=json_data['os_information']['distributor'])
-                    os_distributor.save()
-
-                except Exception as e:
-                    raise RuntimeError(e)
-            try:
-                os_kernel = Kernel.objects.filter(kernel_name=json_data['kernel']['uname_s']).get()
-
-            except Kernel.DoesNotExist:
-
-                try:
-
-                    os_kernel = Kernel(kernel_name=json_data['kernel']['uname_s'])
-                    os_kernel.save()
-
-                except Exception as e:
-                    raise RuntimeError(e)
-
-            try:
-                os_version = OsVersion.objects.filter(dist_id=os_distributor.os_distributor_id, release=json_data['os_information']['release'], codename=json_data['os_information']['codename'], description=json_data['os_information']['description']).get()
-
-            except OsVersion.DoesNotExist:
-
-                try:
-
-                    os_version = OsVersion(dist_id=os_distributor, release=json_data['os_information']['release'], codename=json_data['os_information']['codename'], description=json_data['os_information']['description'])
-                    os_version.save()
-
-                except Exception as e:
-                    raise RuntimeError(e)
-
-            try:
-                kernel_version = OsKernelVersion.objects.filter(kernel_id=os_kernel.kernel_id, kernel_release=json_data['kernel']['uname_r'], kernel_version=json_data['kernel']['uname_v']).get()
-
-            except OsKernelVersion.DoesNotExist:
-
-                try:
-
-                    kernel_version = OsKernelVersion(kernel_id=os_kernel, kernel_release=json_data['kernel']['uname_r'], kernel_version=json_data['kernel']['uname_v'])
-                    kernel_version.save()
-
-                except Exception as e:
-                    raise RuntimeError(e)
-
-            compiler_raw = json_data['compiler']
-            compiler_match = re.search('compiled by (.*),', compiler_raw)
-
-            if compiler_match:
-                compiler = compiler_match.group(1)
-
-            else:
-                compiler = 'impossible to parse compiler'
-
-            try:
-                compiler_result = Compiler.objects.filter(compiler=compiler).get()
-
-            except Compiler.DoesNotExist:
-
-                try:
-
-                    compiler_result = Compiler(compiler=compiler)
-                    compiler_result.save()
-
-                except Exception as e:
-                    raise RuntimeError(e)
-
-            try:
-                repo = GitRepo.objects.filter(url=json_data['git']['remote']).get()
-
-            except GitRepo.DoesNotExist:
-
-                try:
-
-                    repo = GitRepo(url=json_data['git']['remote'])
-                    repo.save()
-
-                except Exception as e:
-                    raise RuntimeError(e)
-
-            try:
-                branch = Branch.objects.filter(name=json_data['git']['branch'], git_repo=repo.git_repo_id).get()
-
-            except Branch.DoesNotExist:
-
-                try:
-
-                    branch = Branch(name=json_data['git']['branch'], git_repo=repo)
-                    branch.save()
-
-                except Exception as e:
-                    raise RuntimeError(e)
-
-            hardware_info_new = parse_linux_data(json_data)
-
-            try:
-                hardware_info = HardwareInfo.objects.filter(cpu_brand=hardware_info_new['cpu_brand'], cpu_cores=hardware_info_new['cpu_cores'], hz=hardware_info_new['hz'], total_memory=hardware_info_new['total_memory'], total_swap=hardware_info_new['total_swap'], sysctl_hash=hardware_info_new['sysctl_hash'], mounts_hash=hardware_info_new['mounts_hash']).get()
-
-            except HardwareInfo.DoesNotExist:
-
-                try:
-
-                    hardware_info = HardwareInfo(cpu_brand=hardware_info_new['cpu_brand'], cpu_cores=hardware_info_new['cpu_cores'], hz=hardware_info_new['hz'], total_memory=hardware_info_new['total_memory'], total_swap=hardware_info_new['total_swap'], sysctl_hash=hardware_info_new['sysctl_hash'], mounts_hash=hardware_info_new['mounts_hash'], sysctl=hardware_info_new['sysctl'], mounts=hardware_info_new['mounts'])
-
-                    hardware_info.save()
-
-                except Exception as e:
-                    raise RuntimeError(e)
-
-            commit = json_data['git']['commit']
-
-            postgres_hash, postgres_hash_object = get_hash(json_data['postgres_settings'])
-
-            try:
-                postgres_info = PostgresSettingsSet.objects.filter(settings_sha256=postgres_hash).get()
-
-            except PostgresSettingsSet.DoesNotExist:
-
-                try:
-
-                    postgres_info = PostgresSettingsSet(settings_sha256=postgres_hash)
-                    postgres_info.save()
-                    add_postgres_settings(postgres_hash, postgres_hash_object)
-
-                except Exception as e:
-                    raise RuntimeError(e)
+            os_version, kernel_version = parse_os_kernel(json_data)
+            compiler_result = parse_compiler(json_data)
+            branch, commit = parse_git(json_data)
+            hardware_info = parse_hardware(json_data)
+            postgres_info = parse_postgres(json_data)
 
             if 'git_clone_log' not in json_data:
                 git_clone_log = ''
@@ -298,7 +169,6 @@ def create_run_info(request, format=None):
 
             for item in json_data['pgbench']:
                 parse_pgbench_results(item, run_info, json_data['pgbench_log_aggregate'])
-
 
     except Exception as e:
 
