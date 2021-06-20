@@ -18,10 +18,10 @@ def add_machine_view(request):
 
     try:
         machine.save()
-        return HttpResponse(text='Machine added successfully!', status_code=201)
+        return HttpResponse(text='Machine added successfully!', status=201)
 
     except Exception as e:
-        return HttpResponse(status_code=400)
+        return HttpResponse(status=400)
 
 
 def machines_view(request):
@@ -74,7 +74,7 @@ def edit_machine_view(request, id):
 
         machine.description = request.POST.get('description')
         machine.save()
-        return HttpResponse(status_code=201)
+        return HttpResponse(status=201)
 
     else:
-        return HttpResponse(status_code=403)
+        return HttpResponse(status=403)
