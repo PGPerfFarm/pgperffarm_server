@@ -5,22 +5,23 @@ from django.contrib.auth.hashers import make_password
 
 from machines.models import Machine
 from runs.models import RunInfo
-from machines.forms import MachineForm
 
 
+@login_required
 def add_machine_view(request):
 
     m = hashlib.md5()
-    m.update(make_password(str(request.data), 'pg_perf_farm').encode('utf-8'))
+    m.update(make_password(str(request.POST), 'pg_perf_farm').encode('utf-8'))
     machine_secret = m.hexdigest()
 
-    form = MachineForm(request.POST)
-    if form.is_valid():
-        form.save(owner_id=self.request.user, machine_secret=machine_secret, approved=False)
+    machine = Machine(alias=request.POST['alias'], description=request.POST['description'], owner_id=request.user, machine_secret=machine_secret, approved=False)
 
-    headers = self.get_success_headers(form.data)
+    try:
+        machine.save()
+        return HttpResponse(text='Machine added successfully!', status_code=201)
 
-    return HttpResponse(text='Machine added successfully!', status_code=201, headers=headers)
+    except Exception as e:
+        return HttpResponse(status_code=400)
 
 
 def machines_view(request):
