@@ -204,6 +204,17 @@ def parse_pgbench_logs(result, log_array, iteration):
         raise RuntimeError('Invalid PgBench logs.')
 
 
+def parse_pg_stat_statements(result):
+    for item in result:
+        query = item['query']
+        total_exec_time = item['total_exec_time']
+        min_exec_time = item['min_exec_time']
+        max_exec_time = item['max_exec_time']
+        mean_exec_time = item['mean_exec_time']
+        stddev_exec_time = item['stddev_exec_time']
+        rows = item['rows']
+
+
 def parse_pgbench_results(item, run_id, pgbench_log):
 
     json = item['iterations']
@@ -233,6 +244,10 @@ def parse_pgbench_results(item, run_id, pgbench_log):
                 statement_latencies = result['statement_latencies']
 
                 result_object = PgBenchResult(run_id=run_id, benchmark_config=pgbench_config, tps=result['tps'], mode=result['mode'], latency=result['latency'], start=result['start'], end=result['end'], iteration=result['iteration'], init=result['init'])
+
+                # parse pg_stat_statements
+                pg_stat_statements = result['pg_stat_statements']
+                parse_pg_stat_statements(pg_stat_statements)
 
                 try:
                     result_object.save()
@@ -395,3 +410,24 @@ def parse_postgres(json_data):
             raise RuntimeError(e)
 
     return postgres_info
+
+
+def parse_collectd(json_data):
+
+    def parse_collectd_key(collectd_key):
+        date = re.search('-\d\d\d\d-\d\d-\d\d', collectd_key).group(0)
+        collectd_key = collectd_key.replace(date, '')
+        return collectd_key
+
+    collectd = list(json_data['collectd'].values())[0]
+
+    cpu_average = collectd['aggregation-cpu-average']
+    processes = collectd['processes']
+    contextswitch = collectd['contextswitch']
+    ipc_shm = collectd['ipc-shm']
+    ipc_msg = collectd['ipc-msg']
+    ipc_sem = collectd['ipc-sem']
+    memory = collectd['memory']
+    swap = collectd['swap']
+    vmem = collectd['vmem']
+    postgres = collectd['postgresql-postgres']
