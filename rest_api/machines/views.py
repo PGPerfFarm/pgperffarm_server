@@ -1,5 +1,5 @@
 import hashlib
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, Http404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
 
@@ -18,10 +18,28 @@ def add_machine_view(request):
 
     try:
         machine.save()
-        return HttpResponse(text='Machine added successfully!', status=201)
+        return HttpResponse('Machine added successfully!', status=201)
 
     except Exception as e:
         return HttpResponse(status=400)
+
+
+@login_required
+def approve_machine_view(request):
+
+    if request.user.is_staff:
+        try:
+            machine = Machine.objects.get(alias=request.POST['alias'])
+            machine.approved = True
+            machine.save()
+
+            return HttpResponse('Machine approved successfully!', status=201)
+
+        except Machine.DoesNotExist:
+            raise Http404()
+
+    else:
+        return HttpResponse(status=403)
 
 
 def machines_view(request):
