@@ -60,3 +60,16 @@ class PgBenchLog(models.Model):
     sum_latency_2 = models.BigIntegerField(null=True, validators=[validators.MaxValueValidator(1000000), validators.MinValueValidator(0)])
     min_latency = models.IntegerField(null=True, validators=[validators.MaxValueValidator(100), validators.MinValueValidator(0)])
     max_latency = models.IntegerField(null=True, validators=[validators.MaxValueValidator(100), validators.MinValueValidator(0)])
+
+
+class PgBenchPgStatStatements(models.Model):
+    pg_stat_statements_id = models.AutoField(primary_key=True)
+    pgbench_result_id = models.ForeignKey('benchmarks.PgBenchResult', on_delete=models.CASCADE, related_name='pg_stat_statements')
+
+    query = models.TextField()
+    total_exec_time = models.FloatField()
+    min_exec_time = models.FloatField()
+    max_exec_time = models.FloatField()
+    mean_exec_time = models.FloatField()
+    stddev_exec_time = models.FloatField()
+    rows = models.IntegerField()

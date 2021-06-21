@@ -6,7 +6,7 @@ import re
 from datetime import datetime
 
 from postgres.models import PostgresSettingsSet, PostgresSettings
-from benchmarks.models import PgBenchBenchmark, PgBenchResult, PgBenchStatement, PgBenchLog, PgBenchRunStatement
+from benchmarks.models import PgBenchBenchmark, PgBenchResult, PgBenchStatement, PgBenchLog, PgBenchRunStatement, PgBenchPgStatStatements
 from systems.models import HardwareInfo, Compiler, Kernel, OsDistributor, OsKernelVersion, OsVersion
 from runs.models import GitRepo, Branch
 
@@ -204,7 +204,7 @@ def parse_pgbench_logs(result, log_array, iteration):
         raise RuntimeError('Invalid PgBench logs.')
 
 
-def parse_pg_stat_statements(result):
+def parse_pg_stat_statements(pgbench_result_id, result):
     for item in result:
         query = item['query']
         total_exec_time = item['total_exec_time']
@@ -213,6 +213,14 @@ def parse_pg_stat_statements(result):
         mean_exec_time = item['mean_exec_time']
         stddev_exec_time = item['stddev_exec_time']
         rows = item['rows']
+
+        pg_stat_statements = PgBenchPgStatStatements(pgbench_result_id=pgbench_result_id, query=query, total_exec_time=total_exec_time, min_exec_time=min_exec_time, max_exec_time=max_exec_time, mean_exec_time=mean_exec_time, stddev_exec_time=stddev_exec_time, rows=rows)
+
+        try:
+            pg_stat_statements.save()
+
+        except Exception as e:
+            raise RuntimeError(e)
 
 
 def parse_pgbench_results(item, run_id, pgbench_log):
@@ -245,15 +253,15 @@ def parse_pgbench_results(item, run_id, pgbench_log):
 
                 result_object = PgBenchResult(run_id=run_id, benchmark_config=pgbench_config, tps=result['tps'], mode=result['mode'], latency=result['latency'], start=result['start'], end=result['end'], iteration=result['iteration'], init=result['init'])
 
-                # parse pg_stat_statements
-                pg_stat_statements = result['pg_stat_statements']
-                parse_pg_stat_statements(pg_stat_statements)
-
                 try:
                     result_object.save()
 
                     parse_pgbench_logs(result_object, pgbench_log, iterations)
                     parse_pgbench_statement_latencies(statement_latencies, result_object)
+
+                    # parse pg_stat_statements
+                    pg_stat_statements = result['pg_stat_statements']
+                    parse_pg_stat_statements(result_object, pg_stat_statements)
 
                 except Exception as e:
                     raise RuntimeError(e)
