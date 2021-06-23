@@ -62,14 +62,228 @@ class PgBenchLog(models.Model):
     max_latency = models.IntegerField(null=True, validators=[validators.MaxValueValidator(100), validators.MinValueValidator(0)])
 
 
-class PgBenchPgStatStatements(models.Model):
-    pg_stat_statements_id = models.AutoField(primary_key=True)
-    pgbench_result_id = models.ForeignKey('benchmarks.PgBenchResult', on_delete=models.CASCADE, related_name='pg_stat_statements')
-
+class PgStatStatementsQuery(models.Model):
+    query_id = models.AutoField(primary_key=True)
     query = models.TextField()
-    total_exec_time = models.FloatField()
-    min_exec_time = models.FloatField()
-    max_exec_time = models.FloatField()
-    mean_exec_time = models.FloatField()
-    stddev_exec_time = models.FloatField()
-    rows = models.IntegerField()
+
+
+class PgStatStatements(models.Model):
+    pg_stat_statements_id = models.AutoField(primary_key=True)
+
+    pgbench_result_id = models.ForeignKey('benchmarks.PgBenchResult', on_delete=models.CASCADE, related_name='pg_stat_statements_iteration')
+    query = models.ForeignKey('benchmarks.PgStatStatementsQuery', on_delete=models.CASCADE, related_name='pg_stat_statements_query')
+
+    queryid = models.TextField()
+    userid = models.IntegerField()
+    dbid = models.IntegerField()
+    plans = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    total_plan_time = models.FloatField(validators=[validators.MinValueValidator(0)])
+    min_plan_time = models.FloatField(validators=[validators.MinValueValidator(0)])
+    max_plan_time = models.FloatField(validators=[validators.MinValueValidator(0)])
+    mean_plan_time = models.FloatField(validators=[validators.MinValueValidator(0)])
+    stddev_plan_time = models.FloatField(validators=[validators.MinValueValidator(0)])
+    calls = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    total_exec_time = models.FloatField(validators=[validators.MinValueValidator(0)])
+    min_exec_time = models.FloatField(validators=[validators.MinValueValidator(0)])
+    max_exec_time = models.FloatField(validators=[validators.MinValueValidator(0)])
+    mean_exec_time = models.FloatField(validators=[validators.MinValueValidator(0)])
+    stddev_exec_time = models.FloatField(validators=[validators.MinValueValidator(0)])
+    rows = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    shared_blks_hit = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    shared_blks_read = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    shared_blks_dirtied = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    shared_blks_written = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    local_blks_hit = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    local_blks_read = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    local_blks_dirtied = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    local_blks_written = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    temp_blks_read = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    temp_blks_written = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    blk_read_time = models.FloatField(validators=[validators.MinValueValidator(0)])
+    blk_write_time = models.FloatField(validators=[validators.MinValueValidator(0)])
+    wal_records = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    wal_fpi = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    wal_bytes = models.IntegerField(validators=[validators.MinValueValidator(0)])
+
+
+class CollectdCpu(models.Model):
+    collectd_cpu_id = models.AutoField(primary_key=True)
+
+    pgbench_result_id = models.ForeignKey('benchmarks.PgBenchResult', on_delete=models.CASCADE, related_name='collectd_cpu_iteration')
+
+    epoch = models.DateTimeField(validators=[ValidateDate])
+
+    percent_user = models.FloatField(validators=[validators.MaxValueValidator(100), validators.MinValueValidator(0)])
+    percent_system = models.FloatField(validators=[validators.MaxValueValidator(100), validators.MinValueValidator(0)])
+    percent_idle = models.FloatField(validators=[validators.MaxValueValidator(100), validators.MinValueValidator(0)])
+    percent_wait = models.FloatField(validators=[validators.MaxValueValidator(100), validators.MinValueValidator(0)])
+    percent_nice = models.FloatField(validators=[validators.MaxValueValidator(100), validators.MinValueValidator(0)])
+    percent_interrupt = models.FloatField(validators=[validators.MaxValueValidator(100), validators.MinValueValidator(0)])
+    percent_softirq = models.FloatField(validators=[validators.MaxValueValidator(100), validators.MinValueValidator(0)])
+    percent_steal = models.FloatField(validators=[validators.MaxValueValidator(100), validators.MinValueValidator(0)])
+
+
+class CollectdProcess(models.Model):
+    collectd_process_id = models.AutoField(primary_key=True)
+
+    pgbench_result_id = models.ForeignKey('benchmarks.PgBenchResult', on_delete=models.CASCADE, related_name='collectd_process_iteration')
+
+    epoch = models.DateTimeField(validators=[ValidateDate])
+
+    fork_rate = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    ps_state_running = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    ps_state_stopped = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    ps_state_sleeping = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    ps_state_paging = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    ps_state_blocked = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    ps_state_zombies = models.IntegerField(validators=[validators.MinValueValidator(0)])
+
+
+class CollectdContextswitch(models.Model):
+    collectd_contextswitch_id = models.AutoField(primary_key=True)
+
+    pgbench_result_id = models.ForeignKey('benchmarks.PgBenchResult', on_delete=models.CASCADE, related_name='collectd_contextswitch_iteration')
+
+    epoch = models.DateTimeField(validators=[ValidateDate])
+
+    contextswitch = models.IntegerField(validators=[validators.MinValueValidator(0)])
+
+
+class CollectdIpcShm(models.Model):
+    collectd_ipc_shm_id = models.AutoField(primary_key=True)
+
+    pgbench_result_id = models.ForeignKey('benchmarks.PgBenchResult', on_delete=models.CASCADE, related_name='collectd_ipc_shm_iteration')
+
+    epoch = models.DateTimeField(validators=[ValidateDate])
+
+    segments = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    bytes_total = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    bytes_rss = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    bytes_swapped = models.IntegerField(validators=[validators.MinValueValidator(0)])
+
+
+class CollectdIpcMsg(models.Model):
+    collectd_ipc_msg_id = models.AutoField(primary_key=True)
+
+    pgbench_result_id = models.ForeignKey('benchmarks.PgBenchResult', on_delete=models.CASCADE, related_name='collectd_ipc_msg_iteration')
+
+    epoch = models.DateTimeField(validators=[ValidateDate])
+
+    count_space = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    count_queues = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    count_headers = models.IntegerField(validators=[validators.MinValueValidator(0)])
+
+
+class CollectdIpcSem(models.Model):
+    collectd_ipc_sem_id = models.AutoField(primary_key=True)
+
+    pgbench_result_id = models.ForeignKey('benchmarks.PgBenchResult', on_delete=models.CASCADE, related_name='collectd_ipc_sem_iteration')
+
+    epoch = models.DateTimeField(validators=[ValidateDate])
+
+    count_total = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    count_arrays = models.IntegerField(validators=[validators.MinValueValidator(0)])
+
+
+class CollectdMemory(models.Model):
+    collectd_memory_id = models.AutoField(primary_key=True)
+
+    pgbench_result_id = models.ForeignKey('benchmarks.PgBenchResult', on_delete=models.CASCADE, related_name='collectd_memory_iteration')
+
+    epoch = models.DateTimeField(validators=[ValidateDate])
+
+    memory_free = models.BigIntegerField(validators=[validators.MinValueValidator(0)])
+    memory_used = models.BigIntegerField(validators=[validators.MinValueValidator(0)])
+    memory_cached = models.BigIntegerField(validators=[validators.MinValueValidator(0)])
+    memory_buffered = models.BigIntegerField(validators=[validators.MinValueValidator(0)])
+    memory_slab_recl = models.BigIntegerField(validators=[validators.MinValueValidator(0)])
+    memory_slab_unrecl = models.BigIntegerField(validators=[validators.MinValueValidator(0)])
+
+
+class CollectdSwap(models.Model):
+    collectd_swap_id = models.AutoField(primary_key=True)
+
+    pgbench_result_id = models.ForeignKey('benchmarks.PgBenchResult', on_delete=models.CASCADE, related_name='collectd_swap_iteration')
+
+    epoch = models.DateTimeField(validators=[ValidateDate])
+
+    swap_free = models.BigIntegerField(validators=[validators.MinValueValidator(0)])
+    swap_used = models.BigIntegerField(validators=[validators.MinValueValidator(0)])
+    swap_cached = models.BigIntegerField(validators=[validators.MinValueValidator(0)])
+    swap_io_in = models.BigIntegerField(validators=[validators.MinValueValidator(0)])
+    swap_io_out = models.BigIntegerField(validators=[validators.MinValueValidator(0)])
+
+
+class CollectdVmem(models.Model):
+    collectd_vmem_id = models.AutoField(primary_key=True)
+
+    pgbench_result_id = models.ForeignKey('benchmarks.PgBenchResult', on_delete=models.CASCADE, related_name='collectd_vmem_iteration')
+
+    epoch = models.DateTimeField(validators=[ValidateDate])
+
+    vmpage_number_active_file = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    vmpage_number_inactive_file = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    vmpage_number_isolated_file = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    vmpage_number_active_anon = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    vmpage_number_inactive_anon = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    vmpage_number_isolated_anon = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    vmpage_number_file_pages = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    vmpage_number_file_hugepages = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    vmpage_number_file_pmdmapped = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    vmpage_number_kernel_stack = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    vmpage_number_kernel_misc_reclaimable = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    vmpage_number_slab_reclaimable = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    vmpage_number_slab_unreclaimable = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    vmpage_number_zone_write_pending = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    vmpage_number_zone_unevictable = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    vmpage_number_zone_active_anon = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    vmpage_number_zone_inactive_anon = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    vmpage_number_zone_active_file = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    vmpage_number_zone_inactive_file = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    vmpage_number_foll_pin_acquired = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    vmpage_number_foll_pin_released = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    vmpage_number_dirty = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    vmpage_number_dirty_threshold = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    vmpage_number_dirty_background_threshold = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    vmpage_number_vmscan_write = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    vmpage_number_vmscan_immediate_reclaim = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    vmpage_number_anon_pages = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    vmpage_number_anon_transparent_hugepages = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    vmpage_number_shmem = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    vmpage_number_shmem_hugepages = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    vmpage_number_shmem_pmdmapped = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    vmpage_number_writeback = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    vmpage_number_writeback_temp = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    vmpage_number_free_pages = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    vmpage_number_free_cma = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    vmpage_number_bounce = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    vmpage_number_unevictable = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    vmpage_number_page_table_pages = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    vmpage_number_mapped = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    vmpage_number_zspages = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    vmpage_number_mlock = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    vmpage_number_unstable = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    vmpage_action_written = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    vmpage_action_dirtied = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    vmpage_io_memory = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    vmpage_io_swap = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    vmpage_faults = models.IntegerField(validators=[validators.MinValueValidator(0)])
+
+
+class CollectdDisk(models.Model):
+    collectd_disk_id = models.AutoField(primary_key=True)
+
+    pgbench_result_id = models.ForeignKey('benchmarks.PgBenchResult', on_delete=models.CASCADE, related_name='collectd_disk_iteration')
+
+    epoch = models.DateTimeField(validators=[ValidateDate])
+
+    disk_octets_read = models.BigIntegerField(validators=[validators.MinValueValidator(0)])
+    disk_octets_write = models.BigIntegerField(validators=[validators.MinValueValidator(0)])
+    disk_merged_read = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    disk_merged_write = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    disk_ops_read = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    disk_ops_write = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    disk_io_time_io_time = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    disk_io_time_weighted_io_time = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    disk_time_read = models.IntegerField(validators=[validators.MinValueValidator(0)])
+    disk_time_write = models.IntegerField(validators=[validators.MinValueValidator(0)])

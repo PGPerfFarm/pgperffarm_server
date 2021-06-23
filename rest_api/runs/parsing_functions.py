@@ -6,7 +6,7 @@ import re
 from datetime import datetime
 
 from postgres.models import PostgresSettingsSet, PostgresSettings
-from benchmarks.models import PgBenchBenchmark, PgBenchResult, PgBenchStatement, PgBenchLog, PgBenchRunStatement, PgBenchPgStatStatements
+from benchmarks.models import PgBenchBenchmark, PgBenchResult, PgBenchStatement, PgBenchLog, PgBenchRunStatement, PgStatStatementsQuery, PgStatStatements
 from systems.models import HardwareInfo, Compiler, Kernel, OsDistributor, OsKernelVersion, OsVersion
 from runs.models import GitRepo, Branch
 
@@ -206,15 +206,43 @@ def parse_pgbench_logs(result, log_array, iteration):
 
 def parse_pg_stat_statements(pgbench_result_id, result):
     for item in result:
-        query = item['query']
-        total_exec_time = item['total_exec_time']
-        min_exec_time = item['min_exec_time']
-        max_exec_time = item['max_exec_time']
-        mean_exec_time = item['mean_exec_time']
-        stddev_exec_time = item['stddev_exec_time']
-        rows = item['rows']
+        query = PgStatStatementsQuery.objects.get(query=item['query'])
 
-        pg_stat_statements = PgBenchPgStatStatements(pgbench_result_id=pgbench_result_id, query=query, total_exec_time=total_exec_time, min_exec_time=min_exec_time, max_exec_time=max_exec_time, mean_exec_time=mean_exec_time, stddev_exec_time=stddev_exec_time, rows=rows)
+        pg_stat_statements = PgStatStatements(
+            pgbench_result_id=pgbench_result_id,
+            query=query,
+            queryid=item['queryid'],
+            userid=item['userid'],
+            dbid=item['dbid'],
+            plans=item['plans'],
+            total_plan_time=item['total_plan_time'],
+            min_plan_time=item['min_plan_time'],
+            max_plan_time=item['max_plan_time'],
+            mean_plan_time=item['mean_plan_time'],
+            stddev_plan_time=item['stddev_plan_time'],
+            calls=item['calls'],
+            total_exec_time=item['total_exec_time'],
+            min_exec_time=item['min_exec_time'],
+            max_exec_time=item['max_exec_time'],
+            mean_exec_time=item['mean_exec_time'],
+            stddev_exec_time=item['stddev_exec_time'],
+            rows=item['rows'],
+            shared_blks_hit=item['shared_blks_hit'],
+            shared_blks_read=item['shared_blks_read'],
+            shared_blks_dirtied=item['shared_blks_dirtied'],
+            shared_blks_written=item['shared_blks_written'],
+            local_blks_hit=item['local_blks_hit'],
+            local_blks_read=item['local_blks_read'],
+            local_blks_dirtied=item['local_blks_dirtied'],
+            local_blks_written=item['local_blks_written'],
+            temp_blks_read=item['temp_blks_read'],
+            temp_blks_written=item['temp_blks_written'],
+            blk_read_time=item['blk_read_time'],
+            blk_write_time=item['blk_write_time'],
+            wal_records=item['wal_records'],
+            wal_fpi=item['wal_fpi'],
+            wal_bytes=item['wal_bytes'],
+        )
 
         try:
             pg_stat_statements.save()
