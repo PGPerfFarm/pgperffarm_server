@@ -12,7 +12,6 @@ from benchmarks.pgbench import PgBench
 from benchmarks.runner import BenchmarkRunner
 
 from collectors.system import SystemCollector
-from collectors.collectd import CollectdCollector
 from collectors.postgres import PostgresCollector
 from collectors.collector import MultiCollector
 
@@ -168,8 +167,6 @@ if __name__ == '__main__':
 				system = os.popen("uname").readlines()[0].split()[0]
 
 				collectors.register('system', SystemCollector(folders.OUTPUT_PATH))
-
-				collectors.register('collectd', CollectdCollector(folders.OUTPUT_PATH, DATABASE_NAME))
 
 				pg_collector = PostgresCollector(folders.OUTPUT_PATH, dbname=DATABASE_NAME)
 				collectors.register('postgres', pg_collector)

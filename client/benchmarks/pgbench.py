@@ -5,8 +5,11 @@ import psycopg2
 import psycopg2.extras
 
 import folders
+from collectors.collectd import CollectdCollector
+from collectors.pg_stat_statements import PgStatStatementsCollector
 from utils.logging import log
 from utils.misc import run_cmd
+from settings_local import *
 
 
 class PgBench(object):
@@ -235,13 +238,22 @@ class PgBench(object):
                     result['clients'] = clients
 
                 self._init(scale)
+
+                # start collectd collector before run
+                collectd_collector = CollectdCollector(folders.OUTPUT_PATH, DATABASE_NAME)
+                collectd_collector.start()
+
                 r = self._run(i, scale, self._duration, self._pgbench_init, self._read_only, clients, clients, True)
 
-                r.update({'iteration': i})
+                r.update({'collectd': collectd_collector.result()})
+                collectd_collector.stop()
 
-                # get pg_stat_statements after each run
-                pg_stat_statements = self.collect_pg_stat_statements()
-                r.update({'pg_stat_statements': pg_stat_statements})
+                # start pg_stat_statements collector after run
+                pg_stat_statements_collector = PgStatStatementsCollector(DATABASE_NAME)
+                pg_stat_statements_collector.start()
+                r.update({'pg_stat_statements': pg_stat_statements_collector.result()})
+
+                r.update({'iteration': i})
 
                 results.append(r)
 
