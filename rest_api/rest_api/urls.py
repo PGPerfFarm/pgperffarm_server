@@ -18,8 +18,8 @@ from django.conf.urls import include, url
 
 urlpatterns = [
     url('admin/', admin.site.urls),
-    url('', include('benchmarks.urls')),
-    url('', include('machines.urls')),
-    url('', include('users.urls')),
-    url('', include('runs.urls')),
+    url('benchmark/', include('benchmarks.urls')),
+    url('machine/', include('machines.urls')),
+    url('user/', include('users.urls')),
+    url('run/', include('runs.urls')),
 ]
