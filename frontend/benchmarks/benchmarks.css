@@ -1,0 +1,40 @@
+#benchmarks__intro {
+    width: 80%;
+    margin: 50px;
+    padding: 20px;
+    background-color: #FAFAFA;
+}
+
+#benchmarks__intro__title {
+    color: #336791;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+#benchmarks__description {
+    width: 80%;
+    padding: 20px;
+    background-color: #FAFAFA;
+    margin-bottom: 20px;
+}
+
+#benchmarks__config-list {
+    width: 80%;
+}
+
+.benchmarks__config {
+    padding: 20px;
+    background-color: #FAFAFA;
+}
+
+.benchmarks__config__title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.benchmarks__config__table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}

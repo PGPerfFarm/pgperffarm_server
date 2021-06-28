@@ -10,18 +10,120 @@
 
     <base href="http://localhost:8080/">
 
+    <script src="scripts/request.js"></script>
+
 </head>
 
 <body>
 
     <div id="navigation"></div>
 
-    <div>benchmarks</div>
+    <div id="page-content">
 
+        <div id="benchmarks__intro">
+            <div id="benchmarks__intro__title">Benchmarks</div>
+        </div>
+
+        <div id="benchmarks__description">
+            <span>Shown here is the list of different benchmark configurations as well as all machines which reported a run using them. Use the machine link for history of that member on the relevant configuration.</span>
+        </div>
+
+        <div id="benchmarks__config-list">
+        </div>
+
+    </div>
+
+    <script>
+        
+        const benchmarkListElement = document.querySelector('#benchmarks__config-list');
+
+        sendRequest(endpoints.benchmarkConfigMachineList, (response) => {
+
+            let machines = {};
+            let benchmarks = 0;
+
+            // parse config
+            for (let i = 0; i < response.length; i++) {
+
+                let read_only = '';
+                if (response[i].read_only == true) read_only = 'read-only test';
+                else read_only = 'read-write test';
+
+                const benchmark = 'Scale ' + response[i].scale + ', Duration ' + response[i].duration + ', Clients ' + response[i].clients + ', ' + read_only;
+
+                const machine = {
+                    alias: response[i].alias,
+                    add_time: response[i].add_time.substring(0, 10),
+                    type: response[i].machine_type,
+                    owner: response[i].username,
+                    count: response[i].count,
+                    config_id: response[i].pgbench_benchmark_id,
+                    id: response[i].machine_id,
+                };
+
+                if (!machines.hasOwnProperty(benchmark)) {
+                    machines[benchmark] = [];
+                    benchmarks++;
+                }
+
+                machines[benchmark].push(machine);
+
+            }
+
+            // create tables
+            for (const [key, value] of Object.entries(machines)) {
+            
+                let append = `
+                
+                <div class="benchmarks__config">
+
+                    <div class="benchmarks__config__title">${key}</div>
+                    
+                    <table class="benchmarks__config__table" border="1">
+
+                        <thead>
+                            <th>Alias</th>
+                            <th>Add Time</th>
+                            <th>Type</th>
+                            <th>Owner</th>
+                            <th>Count</th>
+                            <th>Trend</th>
+                        </thead>
+                        
+                        <tbody>      
+                
+                `;
+
+                for(const machine of value) {
+
+                    append += `
+                    <tr>
+                        <td>${machine.alias}</td>
+                        <td>${machine.add_time}</td>
+                        <td>${machine.type}</td>
+                        <td>${machine.owner}</td>
+                        <td>${machine.count}</td>
+                        <td>trend</td>
+                    </tr>
+                    `;
+
+                }
+
+                append += '</tbody></table></div>';
+
+                benchmarkListElement.innerHTML += append;
+
+            }
+
+        });
+
+    </script>
+    
     <script src="components/navigation.js"></script>
 
     <link rel="stylesheet" type="text/css" href="styles/common.css">
     <link rel="stylesheet" type="text/css" href="styles/navigation.css">
+    <link rel="stylesheet" type="text/css" href="benchmarks/benchmarks.css">
 
 </body>
 
