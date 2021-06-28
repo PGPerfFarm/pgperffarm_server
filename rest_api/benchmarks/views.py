@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 
-from benchmarks.models import PgBenchBenchmark, PgBenchResult, PgBenchStatement, PgBenchRunStatement, PgBenchLog
+from benchmarks.models import PgBenchBenchmark, PgBenchResult, PgBenchStatement, PgBenchRunStatement, PgBenchLog, PgStatStatements, CollectdCpu, CollectdProcess, CollectdContextswitch, CollectdIpcShm, CollectdIpcMsg, CollectdIpcSem, CollectdMemory, CollectdSwap, CollectdVmem, CollectdDisk
 from runs.models import RunInfo
 from machines.models import Machine
 
@@ -21,19 +21,56 @@ def pgbench_result_complete_view(request, id):
     logs = PgBenchLog.objects.filter(pgbench_result_id=results_list[0]['pgbench_result_id']).values()
     run_statements = PgBenchRunStatement.objects.filter(pgbench_result_id=results_list[0]['pgbench_result_id']).values('line_id', 'latency', 'pgbench_run_statement_id')
     config = PgBenchBenchmark.objects.filter(pgbench_benchmark_id=results_list[0]['benchmark_config']).values()
+    pg_stat_statements = PgStatStatements.objects.filter(pgbench_result_id=results_list[0]['pgbench_result_id']).values()
+    collectd_cpu = CollectdCpu.objects.filter(pgbench_result_id=results_list[0]['pgbench_result_id']).values()
+    collectd_process = CollectdProcess.objects.filter(pgbench_result_id=results_list[0]['pgbench_result_id']).values()
+    collectd_contextswitch = CollectdContextswitch.objects.filter(pgbench_result_id=results_list[0]['pgbench_result_id']).values()
+    collectd_ipc_shm = CollectdIpcShm.objects.filter(pgbench_result_id=results_list[0]['pgbench_result_id']).values()
+    collectd_ipc_msg = CollectdIpcMsg.objects.filter(pgbench_result_id=results_list[0]['pgbench_result_id']).values()
+    collectd_ipc_sem = CollectdIpcSem.objects.filter(pgbench_result_id=results_list[0]['pgbench_result_id']).values()
+    collectd_memory = CollectdMemory.objects.filter(pgbench_result_id=results_list[0]['pgbench_result_id']).values()
+    collectd_swap = CollectdSwap.objects.filter(pgbench_result_id=results_list[0]['pgbench_result_id']).values()
+    collectd_vmem = CollectdVmem.objects.filter(pgbench_result_id=results_list[0]['pgbench_result_id']).values()
+    collectd_disk = CollectdDisk.objects.filter(pgbench_result_id=results_list[0]['pgbench_result_id']).values()
 
     logs_list = list(logs)
     run_statements_list = list(run_statements)
     config_list = list(config)
+    pg_stat_statements_list = list(pg_stat_statements)
+    collectd_cpu_list = list(collectd_cpu)
+    collectd_process_list = list(collectd_process)
+    collectd_contextswitch_list = list(collectd_contextswitch)
+    collectd_ipc_shm_list = list(collectd_ipc_shm)
+    collectd_ipc_msg_list = list(collectd_ipc_msg)
+    collectd_ipc_sem_list = list(collectd_ipc_sem)
+    collectd_memory_list = list(collectd_memory)
+    collectd_swap_list = list(collectd_swap)
+    collectd_vmem_list = list(collectd_vmem)
+    collectd_disk_list = list(collectd_disk)
 
     for run_statement in run_statements_list:
         statements = PgBenchStatement.objects.filter(pgbench_statement_id=run_statement['pgbench_run_statement_id']).values()
         statements_list = list(statements)
         run_statement['statements'] = statements_list
 
+    collectd = {
+        'cpu': collectd_cpu_list,
+        'process': collectd_process_list,
+        'contextswitch': collectd_contextswitch_list,
+        'ipc_shm': collectd_ipc_shm_list,
+        'ipc_msg': collectd_ipc_msg_list,
+        'ipc_sem': collectd_ipc_sem_list,
+        'memory': collectd_memory_list,
+        'swap': collectd_swap_list,
+        'vmem': collectd_vmem_list,
+        'disk': collectd_disk_list
+    }
+
     results_list[0]['pgbench_log'] = logs_list
     results_list[0]['pgbench_run_statement'] = run_statements_list
     results_list[0]['benchmark_config'] = config_list
+    results_list[0]['pg_stat_statements'] = pg_stat_statements_list
+    results_list[0]['collectd'] = collectd
 
     return JsonResponse(results_list, safe=False)
 
