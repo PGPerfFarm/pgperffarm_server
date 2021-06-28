@@ -1,0 +1,11 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #EDF3F7;
+}
+
+#page-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}

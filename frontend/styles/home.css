@@ -1,0 +1,18 @@
+#home__intro {
+    margin: 50px;
+    padding: 20px;
+    background-color: #FAFAFA;
+}
+
+#home__intro__title {
+    color: #336791;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.home__overview-item {
+    width: 500px;
+    padding: 10px;
+    margin-bottom: 20px;
+    background-color: #FAFAFA;
+}
