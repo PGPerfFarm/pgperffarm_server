@@ -10,18 +10,78 @@
 
     <base href="http://localhost:8080/">
 
+    <script src="scripts/request.js"></script>
+
 </head>
 
 <body>
 
     <div id="navigation"></div>
 
-    <div>machines</div>
+    <div id="page-content">
+
+        <div id="machines__intro">
+            <div id="machines__intro__title">Machines List</div>
+        </div>
+
+        <div id="machines__list">
+
+            <div id="machines__list__menu">
+                <span>Shown here is the machine list, along with a summary of relevant information.</span>
+            </div>
+
+            <table id="machines__list__table" border="1">
+
+                <thead>
+                    <th>Alias</th>
+                    <th>System</th>
+                    <th>Approved</th>
+                    <th>Owner</th>
+                    <th>Add date</th>
+                    <th>Latest run</th>
+                </thead>
+                
+                <tbody></tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    <script>
+
+        const tableBodyElement = document.getElementById('machines__list__table').getElementsByTagName('tbody')[0];
+
+        sendRequest(endpoints.machineList, (response) => {
+
+            response.map((machine) => {
+
+                const newRow = tableBodyElement.insertRow();
+                const alias = newRow.insertCell();
+                alias.appendChild(document.createTextNode(machine.alias));
+                const system = newRow.insertCell();
+                system.appendChild(document.createTextNode(machine.machine_type));
+                const approved = newRow.insertCell();
+                approved.appendChild(document.createTextNode(machine.approved));
+                const owner = newRow.insertCell();
+                owner.appendChild(document.createTextNode(machine.owner_id__username));
+                const add_date = newRow.insertCell();
+                add_date.appendChild(document.createTextNode(machine.add_time));
+                const latest_run = newRow.insertCell();
+                latest_run.appendChild(document.createTextNode(machine.latest));
+
+            });
+
+        });
+
+    </script>
 
     <script src="components/navigation.js"></script>
 
     <link rel="stylesheet" type="text/css" href="styles/common.css">
     <link rel="stylesheet" type="text/css" href="styles/navigation.css">
+    <link rel="stylesheet" type="text/css" href="machines/machines.css">
 
 </body>
 
