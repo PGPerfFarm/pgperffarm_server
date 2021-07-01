@@ -11,6 +11,7 @@
     <base href="http://localhost:8080/">
 
     <script src="scripts/request.js"></script>
+    <script src="scripts/common.js"></script>
 
 </head>
 
@@ -98,10 +99,10 @@
 
                     append += `
                     <tr>
-                        <td>${machine.alias}</td>
+                        <td>${escapeHtml(machine.alias)}</td>
                         <td>${machine.add_time}</td>
-                        <td>${machine.type}</td>
-                        <td>${machine.owner}</td>
+                        <td>${escapeHtml(machine.type)}</td>
+                        <td>${escapeHtml(machine.owner)}</td>
                         <td>${machine.count}</td>
                         <td>trend</td>
                     </tr>
