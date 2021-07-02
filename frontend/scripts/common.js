@@ -14,3 +14,20 @@ const escapeHtml = (string) => {
     return String(string).replace(/[&<>"'`=\/]/g, (s) => entityMap[s]);
 
 };
+
+const getUrlParam = (key) => {
+
+    let params = location.search.substr(location.search.indexOf('') + 1);
+    params = params.split('&');
+
+    for(let i = 0; i < params.length; i++) {
+
+        temp = params[i].split('=');
+
+        if([temp[0]] == key) return temp[1];
+
+    }
+
+    return undefined;
+
+}

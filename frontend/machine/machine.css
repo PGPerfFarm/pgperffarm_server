@@ -1,0 +1,44 @@
+#machine__intro {
+    width: 80%;
+    margin: 50px;
+    padding: 20px;
+    background-color: #FAFAFA;
+}
+
+#machine__intro__title {
+    color: #336791;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+#machine__metadata {
+    width: 80%;
+    padding: 20px;
+    margin-bottom: 20px;
+    background-color: #FAFAFA;
+}
+
+#machine__configurations {
+    width: 80%;
+    padding: 20px;
+    margin-bottom: 20px;
+    background-color: #FAFAFA;
+}
+
+#machine__history {
+    width: 80%;
+    padding: 20px;
+    margin-bottom: 20px;
+    background-color: #FAFAFA;
+}
+
+.machine__table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.machine__title {
+    font-size: 20px;
+    font-weight: bold;
+}

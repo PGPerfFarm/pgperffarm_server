@@ -10,18 +10,265 @@
 
     <base href="http://localhost:8080/">
 
+    <script src="scripts/request.js"></script>
+    <script src="scripts/common.js"></script>
+
 </head>
 
 <body>
 
     <div id="navigation"></div>
 
-    <div>machine</div>
+    <div id="page-content">
+
+        <div id="machine__intro">
+            <div id="machine__intro__title">Machine Page : <span id="value_alias"></span></div>
+        </div>
+
+        <div id="machine__metadata">
+
+            <div class="machine__title">Type : <span id="value_type"></span></div>
+            <div class="machine__title">Reports : <span id="value_report"></span></div>
+            <div class="machine__title"><span id="value_branch"></span> branch(es) involved</div>
+            <div>Owner : <span id="value_owner"></span></div>
+            <div>Add Time : <span id="value_time"></span></div>
+
+        </div>
+
+        <div id="machine__configurations">
+
+            <div class="machine__title">Available Configurations</div>
+
+            <div id=machine__configurations__list></div>
+
+        </div>
+
+        <div id="machine__history">
+
+            <div class="machine__title">Machine History (reporting major changes in hardware)</div>
+
+            <div>
+                <div class="machine__title">OS</div>
+                <div>
+
+                    <span>OS and kernel history, showing name and release (an entry in the table represents the first run with a new reported version).</span>
+
+                    <table id="machine__history__table__os" class="machine__table" border="1">
+
+                        <thead>
+                            <th>OS and kernel</th>
+                            <th>Link</th>
+                        </thead>
+                        
+                        <tbody></tbody>
+        
+                    </table>
+
+                </div>
+            </div>
+
+            <div>
+                <div class="machine__title">Compiler</div>
+                <div>
+
+                    <span>Compiler history (an entry in the table represents the first run with a new reported compiler).</span>
+
+                    <table id="machine__history__table__compiler" class="machine__table" border="1">
+
+                        <thead>
+                            <th>Compiler</th>
+                            <th>First run</th>
+                        </thead>
+                        
+                        <tbody></tbody>
+        
+                    </table>
+
+                </div>
+            </div>
+
+            <div>
+                <div class="machine__title">sysctl</div>
+                <div>
+
+                    <span>Sysctl history (an entry in the table represents the first run with new systcl settings of interest).</span>
+
+                    <table id="machine__history__table__sysctl" class="machine__table" border="1">
+
+                        <thead>
+                            <th>Sysctl</th>
+                            <th>First run</th>
+                        </thead>
+                        
+                        <tbody></tbody>
+        
+                    </table>
+
+                </div>
+            </div>
+
+            <div>
+                <div class="machine__title">Hardware</div>
+                <div>
+
+                    <span>Hardware information (static).</span>
+
+                    <table id="machine__history__table__hardware" class="machine__table" border="1">
+
+                        <thead>
+                            <th>CPU brand</th>
+                            <th>CPU cores</th>
+                            <th>CPU HZ</th>
+                            <th>Memory</th>
+                            <th>Swap</th>
+                        </thead>
+                        
+                        <tbody>
+                            <tr>
+                                <td><span id="value_cpu_brand"></span></td>
+                                <td><span id="value_cpu_core"></span></td>
+                                <td><span id="value_cpu_hz"></span></td>
+                                <td><span id="value_memory"></span></td>
+                                <td><span id="value_swap"></span></td>
+                            </tr>
+                        </tbody>
+        
+                    </table>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        
+        const id = getUrlParam('id');
+        const configurationListElement = document.querySelector('#machine__configurations__list');
+        const osTableBodyElement = document.getElementById('machine__history__table__os').getElementsByTagName('tbody')[0];
+        const compilerTableBodyElement = document.getElementById('machine__history__table__compiler').getElementsByTagName('tbody')[0];
+        const sysctlTableBodyElement = document.getElementById('machine__history__table__sysctl').getElementsByTagName('tbody')[0];
+        const hardwareTableBodyElement = document.getElementById('machine__history__table__hardware').getElementsByTagName('tbody')[0];
+
+        sendRequest(endpoints.benchmarkMachineHistory + id, (response) => {
+
+            let reports = 0;
+            let branches = [];
+            let compiler_data = [];
+            let os_data = [];
+            let sysctl_data = [];
+            let benchmarks = {};
+
+            const owner = response[0].username;
+			const alias = response[0].alias;
+			const id = response[0].machine_id;
+			const add_time = new Date(response[0].add_time);
+			const type = response[0].machine_type;
+
+			const cpu_brand = response[0].cpu_brand;
+			const cpu_cores = response[0].cpu_cores;
+			const hz = response[0].hz;
+			const memory = response[0].total_memory / 1073741824;
+			const swap = response[0].total_swap / 1073741824;
+
+			if (swap == 0) swap = 'not available';
+
+			for (let i = 0; i < response.length; i++) {
+
+                reports += response[i].count;
+
+                if (compiler_data == '') compiler_data.push({'compiler': response[i].compiler, 'run_id': response[i].run_id});
+                else if (!compiler_data.some(item => item.compiler === response[i].compiler)) compiler_data.push({'compiler': response[i].compiler, 'run_id': response[i].run_id});
+
+                let read_only = '';
+                if (response[i].read_only == true) read_only = 'read-only';
+                else read_only = 'read-write';
+
+				const benchmark = 'Scale ' + response[i].scale + ', Duration ' + response[i].duration + ', Clients ' + response[i].clients + ', ' + read_only;
+				  			
+				benchmarks[response[i].pgbench_benchmark_id] = benchmark;
+
+				const os_string = response[i].kernel_name + ' ' + response[i].dist_name + ' ' + response[i].release + ' (' + response[i].codename + ') ' + response[i].kernel_release + ' ' + response[i].kernel_version;
+
+			    if (os_data == '') os_data.push({'os': os_string, 'run_id': response[i].run_id});
+				else if (!os_data.some(item => item.os === os_string)) os_data.push({'os': os_string, 'run_id': response[i].run_id});
+
+                if (!branches.includes(response[i].name)) branches.push(response[i].name);
+
+                const sysctl_object = response[i].sysctl;
+                let sysctl_string = '';
+
+                if (sysctl_object != null) {
+
+                    for (const [key, value] of Object.entries(sysctl_object)) sysctl_string += key + ' = ' + value + '\n';
+
+                        if (sysctl_data == '') sysctl_data.push({'sysctl': sysctl_string, 'run_id': response[i].run_id});
+                        else if (!sysctl_data.some(item => item.sysctl === sysctl_string)) sysctl_data.push({'sysctl': sysctl_string, 'run_id': response[i].run_id});
+
+                    }
+
+            }
+
+            document.querySelector('#value_alias').innerHTML = alias;
+            document.querySelector('#value_type').innerHTML = type;
+            document.querySelector('#value_report').innerHTML = reports;
+            document.querySelector('#value_branch').innerHTML = branches.length;
+            document.querySelector('#value_owner').innerHTML = owner;
+            document.querySelector('#value_time').innerHTML = add_time;
+            document.querySelector('#value_cpu_brand').innerHTML = cpu_brand;
+            document.querySelector('#value_cpu_core').innerHTML = cpu_cores;
+            document.querySelector('#value_cpu_hz').innerHTML = hz;
+            document.querySelector('#value_memory').innerHTML = memory;
+            document.querySelector('#value_swap').innerHTML = swap;
+
+            let append = '';
+
+            for(const [value, name] of Object.entries(benchmarks)) {
+                append += `<div>${name}</div>`;
+            }
+
+            configurationListElement.innerHTML = append;
+
+            for(const item of os_data) {
+
+                const newRow = osTableBodyElement.insertRow();
+                const os = newRow.insertCell();
+                os.appendChild(document.createTextNode(escapeHtml(item.os)));
+                const link = newRow.insertCell();
+                link.appendChild(document.createTextNode(escapeHtml(item.run_id)));
+
+            }
+
+            for(const item of compiler_data) {
+
+                const newRow = compilerTableBodyElement.insertRow();
+                const compiler = newRow.insertCell();
+                compiler.appendChild(document.createTextNode(escapeHtml(item.compiler)));
+                const first = newRow.insertCell();
+                first.appendChild(document.createTextNode(escapeHtml(item.run_id)));
+
+            }
+
+            for(const item of sysctl_data) {
+
+                const newRow = sysctlTableBodyElement.insertRow();
+                const sysctl = newRow.insertCell();
+                sysctl.appendChild(document.createTextNode(escapeHtml(item.sysctl)));
+                const first = newRow.insertCell();
+                first.appendChild(document.createTextNode(escapeHtml(item.run_id)));
+
+            }
+
+        });
+
+    </script>
 
     <script src="components/navigation.js"></script>
 
     <link rel="stylesheet" type="text/css" href="styles/common.css">
     <link rel="stylesheet" type="text/css" href="styles/navigation.css">
+    <link rel="stylesheet" type="text/css" href="machine/machine.css">
 
 </body>
 
