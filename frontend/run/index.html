@@ -21,8 +21,9 @@
 
     <div id="page-content">
 
-        <div id="run__intro">
-            <div id="run__intro__title">Report Page : <span id="value_id"></span></div>
+        <div class="card">
+            <div id="page-title">Report Page : <span id="value_id"></span></div>
+            <div class="space-vertical"></div>
             <div>Machine : <span id="value_machine"></span></div>
             <div>Branch : <span id="value_branch"></span></div>
             <div>Uploaded : <span id="value_time"></span></div>
@@ -31,9 +32,10 @@
             <div>Repository : <span id="value_repository"></span></div>
         </div>
 
-        <div id="run__metadata">
+        <div class="card">
 
-            <div class="run__title">Type : <span id="value_type"></span></div>
+            <div class="title">Type : <span id="value_type"></span></div>
+            <div class="space-vertical"></div>
             <div>OS : <span id="value_os"></span></div>
             <div>Compiler : <span id="value_compiler"></span></div>
             <div>Kernel : <span id="value_kernel"></span></div>
@@ -43,15 +45,16 @@
 
         </div>
 
-        <div id="run__data">
+        <div class="card">
 
             <div>
-                <div class="run__title">Results</div>
+                <div class="title">Results</div>
+                <div class="space-vertical"></div>
                 <div>
 
                     <span>Progress for each iteration, showing latency and TPS.</span>
 
-                    <table id="run__data__table__results" class="run__table" border="1">
+                    <table id="run__data__table__results" class="table-outline" border="1">
 
                         <thead>
                             <th>Configuration</th>
@@ -66,13 +69,16 @@
                 </div>
             </div>
 
+            <div class="space-vertical"></div>
+
             <div>
-                <div class="run__title">sysctl</div>
+                <div class="title">sysctl</div>
+                <div class="space-vertical"></div>
                 <div>
 
                     <span>Displayed below is information about the sysctl settings.</span>
 
-                    <table id="run__data__table__sysctl" class="run__table" border="1">
+                    <table id="run__data__table__sysctl" class="table-outline" border="1">
 
                         <thead>
                             <th>Parameter</th>
@@ -86,13 +92,16 @@
                 </div>
             </div>
 
+            <div class="space-vertical"></div>
+
             <div>
-                <div class="run__title">Postgres</div>
+                <div class="title">Postgres</div>
+                <div class="space-vertical"></div>
                 <div>
 
                     <span>Displayed below is information about the Postgres settings.</span>
 
-                    <table id="run__data__table__postgres" class="run__table" border="1">
+                    <table id="run__data__table__postgres" class="table-outline" border="1">
 
                         <thead>
                             <th>Name</th>
@@ -107,13 +116,16 @@
                 </div>
             </div>
 
+            <div class="space-vertical"></div>
+
             <div>
-                <div class="run__title">Mounts</div>
+                <div class="title">Mounts</div>
+                <div class="space-vertical"></div>
                 <div>
 
                     <span>Displayed below is information about the mounts of the hardware.</span>
 
-                    <table id="run__data__table__mounts" class="run__table" border="1">
+                    <table id="run__data__table__mounts" class="table-outline" border="1">
 
                         <thead>
                             <th>OPTS</th>

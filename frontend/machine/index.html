@@ -21,39 +21,45 @@
 
     <div id="page-content">
 
-        <div id="machine__intro">
-            <div id="machine__intro__title">Machine Page : <span id="value_alias"></span></div>
+        <div class="card">
+            <div id="page-title">Machine Page : <span id="value_alias"></span></div>
         </div>
 
-        <div id="machine__metadata">
+        <div class="card">
 
-            <div class="machine__title">Type : <span id="value_type"></span></div>
-            <div class="machine__title">Reports : <span id="value_report"></span></div>
-            <div class="machine__title"><span id="value_branch"></span> branch(es) involved</div>
+            <div class="title">Type : <span id="value_type"></span></div>
+            <div class="title">Reports : <span id="value_report"></span></div>
+            <div class="title"><span id="value_branch"></span> branch(es) involved</div>
+            <div class="space-vertical"></div>
             <div>Owner : <span id="value_owner"></span></div>
             <div>Add Time : <span id="value_time"></span></div>
 
         </div>
 
-        <div id="machine__configurations">
+        <div class="card">
 
-            <div class="machine__title">Available Configurations</div>
+            <div class="title">Available Configurations</div>
+
+            <div class="space-vertical"></div>
 
             <div id=machine__configurations__list></div>
 
         </div>
 
-        <div id="machine__history">
+        <div class="card">
 
-            <div class="machine__title">Machine History (reporting major changes in hardware)</div>
+            <div class="title">Machine History (reporting major changes in hardware)</div>
+
+            <div class="space-vertical"></div>
 
             <div>
-                <div class="machine__title">OS</div>
+                <div class="title">OS</div>
+                <div class="space-vertical"></div>
                 <div>
 
                     <span>OS and kernel history, showing name and release (an entry in the table represents the first run with a new reported version).</span>
 
-                    <table id="machine__history__table__os" class="machine__table" border="1">
+                    <table id="machine__history__table__os" class="table-outline" border="1">
 
                         <thead>
                             <th>OS and kernel</th>
@@ -67,13 +73,16 @@
                 </div>
             </div>
 
+            <div class="space-vertical"></div>
+
             <div>
-                <div class="machine__title">Compiler</div>
+                <div class="title">Compiler</div>
+                <div class="space-vertical"></div>
                 <div>
 
                     <span>Compiler history (an entry in the table represents the first run with a new reported compiler).</span>
 
-                    <table id="machine__history__table__compiler" class="machine__table" border="1">
+                    <table id="machine__history__table__compiler" class="table-outline" border="1">
 
                         <thead>
                             <th>Compiler</th>
@@ -87,13 +96,16 @@
                 </div>
             </div>
 
+            <div class="space-vertical"></div>
+
             <div>
-                <div class="machine__title">sysctl</div>
+                <div class="title">sysctl</div>
+                <div class="space-vertical"></div>
                 <div>
 
                     <span>Sysctl history (an entry in the table represents the first run with new systcl settings of interest).</span>
 
-                    <table id="machine__history__table__sysctl" class="machine__table" border="1">
+                    <table id="machine__history__table__sysctl" class="table-outline" border="1">
 
                         <thead>
                             <th>Sysctl</th>
@@ -107,13 +119,16 @@
                 </div>
             </div>
 
+            <div class="space-vertical"></div>
+
             <div>
-                <div class="machine__title">Hardware</div>
+                <div class="title">Hardware</div>
+                <div class="space-vertical"></div>
                 <div>
 
                     <span>Hardware information (static).</span>
 
-                    <table id="machine__history__table__hardware" class="machine__table" border="1">
+                    <table id="machine__history__table__hardware" class="table-outline" border="1">
 
                         <thead>
                             <th>CPU brand</th>

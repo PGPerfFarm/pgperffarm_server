@@ -21,22 +21,22 @@
 
     <div id="page-content">
 
-        <div id="benchmarks__intro">
-            <div id="benchmarks__intro__title">Benchmarks</div>
+        <div class="card">
+            <div id="page-title">Benchmarks</div>
         </div>
 
-        <div id="benchmarks__description">
+        <div class="card">
             <span>Shown here is the list of different benchmark configurations as well as all machines which reported a run using them. Use the machine link for history of that member on the relevant configuration.</span>
         </div>
 
-        <div id="benchmarks__config-list">
+        <div id="benchmarks__config">
         </div>
 
     </div>
 
     <script>
         
-        const benchmarkListElement = document.querySelector('#benchmarks__config-list');
+        const benchmarkListElement = document.querySelector('#benchmarks__config');
 
         sendRequest(endpoints.benchmarkConfigMachineList, (response) => {
 
@@ -76,11 +76,13 @@
             
                 let append = `
                 
-                <div class="benchmarks__config">
+                <div class="card">
 
-                    <div class="benchmarks__config__title">${key}</div>
+                    <div class="title">${key}</div>
                     
-                    <table class="benchmarks__config__table" border="1">
+                    <div class="space-vertical"></div>
+
+                    <table class="table-outline" border="1">
 
                         <thead>
                             <th>Alias</th>

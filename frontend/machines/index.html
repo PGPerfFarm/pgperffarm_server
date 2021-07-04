@@ -21,17 +21,19 @@
 
     <div id="page-content">
 
-        <div id="machines__intro">
-            <div id="machines__intro__title">Machines List</div>
+        <div class="card">
+            <div id="page-title">Machines List</div>
         </div>
 
-        <div id="machines__list">
+        <div class="card">
 
-            <div id="machines__list__menu">
+            <div>
                 <span>Shown here is the machine list, along with a summary of relevant information.</span>
             </div>
 
-            <table id="machines__list__table" border="1">
+            <div class="space-vertical"></div>
+
+            <table id="machines__table" class="table-outline" border="1">
 
                 <thead>
                     <th>Alias</th>
@@ -52,7 +54,7 @@
 
     <script>
 
-        const tableBodyElement = document.getElementById('machines__list__table').getElementsByTagName('tbody')[0];
+        const tableBodyElement = document.getElementById('machines__table').getElementsByTagName('tbody')[0];
 
         sendRequest(endpoints.machineList, (response) => {
 
