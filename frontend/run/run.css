@@ -1,0 +1,37 @@
+#run__intro {
+    width: 80%;
+    margin: 50px;
+    padding: 20px;
+    background-color: #FAFAFA;
+}
+
+#run__intro__title {
+    color: #336791;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+#run__metadata {
+    width: 80%;
+    padding: 20px;
+    margin-bottom: 20px;
+    background-color: #FAFAFA;
+}
+
+#run__data {
+    width: 80%;
+    padding: 20px;
+    margin-bottom: 20px;
+    background-color: #FAFAFA;
+}
+
+.run__title {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.run__table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}

@@ -10,18 +10,274 @@
 
     <base href="http://localhost:8080/">
 
+    <script src="scripts/request.js"></script>
+    <script src="scripts/common.js"></script>
+
 </head>
 
 <body>
 
     <div id="navigation"></div>
 
-    <div>run</div>
+    <div id="page-content">
+
+        <div id="run__intro">
+            <div id="run__intro__title">Report Page : <span id="value_id"></span></div>
+            <div>Machine : <span id="value_machine"></span></div>
+            <div>Branch : <span id="value_branch"></span></div>
+            <div>Uploaded : <span id="value_time"></span></div>
+            <div>Owner : <span id="value_owner"></span></div>
+            <div>Commit : <span id="value_commit"></span></div>
+            <div>Repository : <span id="value_repository"></span></div>
+        </div>
+
+        <div id="run__metadata">
+
+            <div class="run__title">Type : <span id="value_type"></span></div>
+            <div>OS : <span id="value_os"></span></div>
+            <div>Compiler : <span id="value_compiler"></span></div>
+            <div>Kernel : <span id="value_kernel"></span></div>
+            <div>Memory : <span id="value_memory"></span></div>
+            <div>Swap : <span id="value_swap"></span></div>
+            <div>CPU : <span id="value_cpu"></span></div>
+
+        </div>
+
+        <div id="run__data">
+
+            <div>
+                <div class="run__title">Results</div>
+                <div>
+
+                    <span>Progress for each iteration, showing latency and TPS.</span>
+
+                    <table id="run__data__table__results" class="run__table" border="1">
+
+                        <thead>
+                            <th>Configuration</th>
+                            <th>Start Time</th>
+                            <th>Link</th>
+                        </thead>
+                        
+                        <tbody></tbody>
+        
+                    </table>
+
+                </div>
+            </div>
+
+            <div>
+                <div class="run__title">sysctl</div>
+                <div>
+
+                    <span>Displayed below is information about the sysctl settings.</span>
+
+                    <table id="run__data__table__sysctl" class="run__table" border="1">
+
+                        <thead>
+                            <th>Parameter</th>
+                            <th>Value</th>
+                        </thead>
+                        
+                        <tbody></tbody>
+        
+                    </table>
+
+                </div>
+            </div>
+
+            <div>
+                <div class="run__title">Postgres</div>
+                <div>
+
+                    <span>Displayed below is information about the Postgres settings.</span>
+
+                    <table id="run__data__table__postgres" class="run__table" border="1">
+
+                        <thead>
+                            <th>Name</th>
+                            <th>Unit</th>
+                            <th>Value</th>
+                        </thead>
+                        
+                        <tbody></tbody>
+        
+                    </table>
+
+                </div>
+            </div>
+
+            <div>
+                <div class="run__title">Mounts</div>
+                <div>
+
+                    <span>Displayed below is information about the mounts of the hardware.</span>
+
+                    <table id="run__data__table__mounts" class="run__table" border="1">
+
+                        <thead>
+                            <th>OPTS</th>
+                            <th>Device</th>
+                            <th>FS Type</th>
+                            <th>Mountpoint</th>
+                        </thead>
+                        
+                        <tbody></tbody>
+        
+                    </table>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        
+        const id = getUrlParam('id');
+
+        const resultsTableBodyElement = document.getElementById('run__data__table__results').getElementsByTagName('tbody')[0];
+        const sysctlTableBodyElement = document.getElementById('run__data__table__sysctl').getElementsByTagName('tbody')[0];
+        const postgresTableBodyElement = document.getElementById('run__data__table__postgres').getElementsByTagName('tbody')[0];
+        const mountsTableBodyElement = document.getElementById('run__data__table__mounts').getElementsByTagName('tbody')[0];
+
+        sendRequest(endpoints.run + id, (response) => {
+
+            response = response[0];
+
+            const branch = response.git_branch_id__name;
+            const commit = 'https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=' + response.git_commit;
+            const date = new Date(response.add_time);
+            const owner = response.machine_id__owner_id__username;
+            const alias = response.machine_id__alias;
+            const git_repo = response.git_branch_id__git_repo_id__url;
+            const machine_id = response.machine_id;
+
+            const kernel = response.os_kernel_version_id__kernel_id__kernel_name + ' ' + response.os_kernel_version_id__kernel_release;
+            const os = response.os_version_id__dist_id__dist_name + ' ' + response.os_version_id__release;
+            const compiler = response.compiler_id__compiler;
+            const type = response.machine_id__machine_type;
+
+            const memory = response.hardware_info_id__total_memory / 1073741824;
+            const swap = response.hardware_info_id__total_swap / 1073741824;
+            const cpu = response.hardware_info_id__cpu_brand + ', ' + response.hardware_info_id__cpu_cores + ' cores';
+
+            if (swap == 0)  swap = 'not available';
+
+            const mounts = response.hardware_info_id__mounts;
+            const sysctl = response.hardware_info_id__sysctl;
+            const postgres_settings = response.postgres_info;
+
+            let benchmarks = [];
+
+            for (let i = 0; i < response.pgbench_result.length; i++) {
+
+                var read_only = '';
+
+                if (response.pgbench_result[i].benchmark_config[0].read_only == true) read_only = 'read-only test';
+                else read_only = 'read-write test';
+
+                const config = 'Scale ' + response.pgbench_result[i].benchmark_config[0].scale + ', Duration ' + response.pgbench_result[i].benchmark_config[0].duration + ', Clients ' + response.pgbench_result[i].benchmark_config[0].clients + ', ' + read_only;
+
+                const date = new Date(response.pgbench_result[i].start * 1000).toLocaleString();
+
+                benchmarks.push({
+                    "config": config,
+                    "id": response.pgbench_result[i].pgbench_result_id,
+                    "start": date,
+                });
+            
+            }
+
+            document.querySelector('#value_id').innerHTML = id;
+            document.querySelector('#value_machine').innerHTML = alias;
+            document.querySelector('#value_branch').innerHTML = branch;
+            document.querySelector('#value_time').innerHTML = date;
+            document.querySelector('#value_owner').innerHTML = owner;
+            document.querySelector('#value_commit').innerHTML = commit;
+            document.querySelector('#value_repository').innerHTML = git_repo;
+            document.querySelector('#value_type').innerHTML = type;
+            document.querySelector('#value_os').innerHTML = os;
+            document.querySelector('#value_compiler').innerHTML = compiler;
+            document.querySelector('#value_kernel').innerHTML = kernel;
+            document.querySelector('#value_memory').innerHTML = memory;
+            document.querySelector('#value_swap').innerHTML = swap;
+            document.querySelector('#value_cpu').innerHTML = cpu;
+
+            let resultsTableBodyContent = '';
+
+            for(const item of benchmarks) {
+
+                resultsTableBodyContent += `
+                <tr>
+                    <td>${escapeHtml(item.config)}</td>
+                    <td>${escapeHtml(item.start)}</td>
+                    <td>${escapeHtml(item.id)}</td>
+                </tr>
+                `;
+
+            }
+
+            resultsTableBodyElement.innerHTML = resultsTableBodyContent;
+
+            let sysctlTableBodyContent = '';
+
+            for(const [key, value] of Object.entries(sysctl)) {
+
+                sysctlTableBodyContent += `
+                <tr>
+                    <td>${escapeHtml(key)}</td>
+                    <td>${escapeHtml(value)}</td>
+                </tr>
+                `;
+
+            }
+
+            sysctlTableBodyElement.innerHTML = sysctlTableBodyContent;
+
+            let postgresTableBodyContent = '';
+
+            for(const item of postgres_settings) {
+
+                postgresTableBodyContent += `
+                <tr>
+                    <td>${escapeHtml(item.setting_name)}</td>
+                    <td>${escapeHtml(item.setting_unit)}</td>
+                    <td>${escapeHtml(item.setting_value)}</td>
+                </tr>
+                `;
+
+            }
+
+            postgresTableBodyElement.innerHTML = postgresTableBodyContent;
+
+            let mountsTableBodyContent = '';
+
+            for(const item of mounts) {
+
+                mountsTableBodyContent += `
+                <tr>
+                    <td>${escapeHtml(item.opts)}</td>
+                    <td>${escapeHtml(item.device)}</td>
+                    <td>${escapeHtml(item.fstype)}</td>
+                    <td>${escapeHtml(item.mountpoint)}</td>
+                </tr>
+                `;
+
+            }
+
+            mountsTableBodyElement.innerHTML = mountsTableBodyContent;
+
+        });
+
+    </script>
 
     <script src="components/navigation.js"></script>
 
     <link rel="stylesheet" type="text/css" href="styles/common.css">
     <link rel="stylesheet" type="text/css" href="styles/navigation.css">
+    <link rel="stylesheet" type="text/css" href="run/run.css">
 
 </body>
 
