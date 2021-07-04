@@ -99,7 +99,7 @@
 
                     append += `
                     <tr>
-                        <td>${escapeHtml(machine.alias)}</td>
+                        <td><a href="machine?id=${machine.id}">${escapeHtml(machine.alias)}</a></td>
                         <td>${machine.add_time}</td>
                         <td>${escapeHtml(machine.type)}</td>
                         <td>${escapeHtml(machine.owner)}</td>

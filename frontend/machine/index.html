@@ -222,43 +222,60 @@
             document.querySelector('#value_memory').innerHTML = memory;
             document.querySelector('#value_swap').innerHTML = swap;
 
-            let append = '';
+            let configurationListContent = '';
 
             for(const [value, name] of Object.entries(benchmarks)) {
-                append += `<div>${name}</div>`;
+
+                configurationListContent += `<div>${name}</div>`;
+
             }
 
-            configurationListElement.innerHTML = append;
+            configurationListElement.innerHTML = configurationListContent;
+
+            let osTableBodyContent = '';
 
             for(const item of os_data) {
 
-                const newRow = osTableBodyElement.insertRow();
-                const os = newRow.insertCell();
-                os.appendChild(document.createTextNode(escapeHtml(item.os)));
-                const link = newRow.insertCell();
-                link.appendChild(document.createTextNode(escapeHtml(item.run_id)));
+                osTableBodyContent += `
+                <tr>
+                    <td>${escapeHtml(item.os)}</td>
+                    <td>${escapeHtml(item.run_id)}</td>
+                </tr>
+                `;
 
             }
+
+            osTableBodyElement.innerHTML = osTableBodyContent;
+
+            let compilerTableBodyContent = '';
 
             for(const item of compiler_data) {
 
-                const newRow = compilerTableBodyElement.insertRow();
-                const compiler = newRow.insertCell();
-                compiler.appendChild(document.createTextNode(escapeHtml(item.compiler)));
-                const first = newRow.insertCell();
-                first.appendChild(document.createTextNode(escapeHtml(item.run_id)));
+                compilerTableBodyContent += `
+                <tr>
+                    <td>${escapeHtml(item.compiler)}</td>
+                    <td>${escapeHtml(item.run_id)}</td>
+                </tr>
+                `;
 
             }
+
+            compilerTableBodyElement.innerHTML = compilerTableBodyContent;
+
+            let sysctlTableBodyContent = '';
 
             for(const item of sysctl_data) {
 
-                const newRow = sysctlTableBodyElement.insertRow();
-                const sysctl = newRow.insertCell();
-                sysctl.appendChild(document.createTextNode(escapeHtml(item.sysctl)));
-                const first = newRow.insertCell();
-                first.appendChild(document.createTextNode(escapeHtml(item.run_id)));
+                sysctlTableBodyContent += `
+                <tr>
+                    <td>${escapeHtml(item.sysctl)}</td>
+                    <td>${escapeHtml(item.run_id)}</td>
+                </tr>
+                `;
 
             }
+
+            sysctlTableBodyElement.innerHTML = sysctlTableBodyContent;
 
         });
 

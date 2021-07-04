@@ -56,23 +56,24 @@
 
         sendRequest(endpoints.machineList, (response) => {
 
+            let tableBodyContent = '';
+
             response.map((machine) => {
 
-                const newRow = tableBodyElement.insertRow();
-                const alias = newRow.insertCell();
-                alias.appendChild(document.createTextNode(escapeHtml(machine.alias)));
-                const system = newRow.insertCell();
-                system.appendChild(document.createTextNode(escapeHtml(machine.machine_type)));
-                const approved = newRow.insertCell();
-                approved.appendChild(document.createTextNode(machine.approved));
-                const owner = newRow.insertCell();
-                owner.appendChild(document.createTextNode(escapeHtml(machine.owner_id__username)));
-                const add_date = newRow.insertCell();
-                add_date.appendChild(document.createTextNode(machine.add_time));
-                const latest_run = newRow.insertCell();
-                latest_run.appendChild(document.createTextNode(machine.latest));
+                tableBodyContent += `
+                <tr>
+                    <td><a href="machine?id=${machine.machine_id}">${escapeHtml(machine.alias)}</a></td>
+                    <td>${escapeHtml(machine.machine_type)}</td>
+                    <td>${machine.approved}</td>
+                    <td>${escapeHtml(machine.owner_id__username)}</td>
+                    <td>${machine.add_time}</td>
+                    <td>${machine.latest}</td>
+                </tr>
+                `;
 
             });
+
+            tableBodyElement.innerHTML = tableBodyContent;
 
         });
 
