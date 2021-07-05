@@ -47,12 +47,25 @@
 
         <div class="card">
 
-            <div>
-                <div class="title">Results</div>
-                <div class="space-vertical"></div>
+            <input id="tab1" type="radio" name="tabs" checked>
+            <label for="tab1">Results</label>
+        
+            <input id="tab2" type="radio" name="tabs">
+            <label for="tab2">sysctl</label>
+        
+            <input id="tab3" type="radio" name="tabs">
+            <label for="tab3">Postgres</label>
+        
+            <input id="tab4" type="radio" name="tabs">
+            <label for="tab4">Mounts</label>
+        
+            <section id="content1">
+                
                 <div>
 
                     <span>Progress for each iteration, showing latency and TPS.</span>
+
+                    <div class="space-vertical"></div>
 
                     <table id="run__data__table__results" class="table-outline" border="1">
 
@@ -67,16 +80,16 @@
                     </table>
 
                 </div>
-            </div>
 
-            <div class="space-vertical"></div>
-
-            <div>
-                <div class="title">sysctl</div>
-                <div class="space-vertical"></div>
+            </section>
+        
+            <section id="content2">
+                
                 <div>
 
                     <span>Displayed below is information about the sysctl settings.</span>
+
+                    <div class="space-vertical"></div>
 
                     <table id="run__data__table__sysctl" class="table-outline" border="1">
 
@@ -90,16 +103,16 @@
                     </table>
 
                 </div>
-            </div>
-
-            <div class="space-vertical"></div>
-
-            <div>
-                <div class="title">Postgres</div>
-                <div class="space-vertical"></div>
+                
+            </section>
+        
+            <section id="content3">
+                
                 <div>
 
                     <span>Displayed below is information about the Postgres settings.</span>
+
+                    <div class="space-vertical"></div>
 
                     <table id="run__data__table__postgres" class="table-outline" border="1">
 
@@ -114,16 +127,16 @@
                     </table>
 
                 </div>
-            </div>
 
-            <div class="space-vertical"></div>
-
-            <div>
-                <div class="title">Mounts</div>
-                <div class="space-vertical"></div>
+            </section>
+        
+            <section id="content4">
+                
                 <div>
 
                     <span>Displayed below is information about the mounts of the hardware.</span>
+
+                    <div class="space-vertical"></div>
 
                     <table id="run__data__table__mounts" class="table-outline" border="1">
 
@@ -139,7 +152,8 @@
                     </table>
 
                 </div>
-            </div>
+
+            </section>
 
         </div>
 

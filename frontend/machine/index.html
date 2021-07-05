@@ -52,12 +52,25 @@
 
             <div class="space-vertical"></div>
 
-            <div>
-                <div class="title">OS</div>
-                <div class="space-vertical"></div>
-                <div>
+            <input id="tab1" type="radio" name="tabs" checked>
+            <label for="tab1">OS</label>
+        
+            <input id="tab2" type="radio" name="tabs">
+            <label for="tab2">Compiler</label>
+        
+            <input id="tab3" type="radio" name="tabs">
+            <label for="tab3">sysctl</label>
+        
+            <input id="tab4" type="radio" name="tabs">
+            <label for="tab4">Hardware</label>
+        
+            <section id="content1">
 
+                <div>
+    
                     <span>OS and kernel history, showing name and release (an entry in the table represents the first run with a new reported version).</span>
+
+                    <div class="space-vertical"></div>
 
                     <table id="machine__history__table__os" class="table-outline" border="1">
 
@@ -71,16 +84,16 @@
                     </table>
 
                 </div>
-            </div>
 
-            <div class="space-vertical"></div>
-
-            <div>
-                <div class="title">Compiler</div>
-                <div class="space-vertical"></div>
+            </section>
+        
+            <section id="content2">
+                
                 <div>
-
+    
                     <span>Compiler history (an entry in the table represents the first run with a new reported compiler).</span>
+
+                    <div class="space-vertical"></div>
 
                     <table id="machine__history__table__compiler" class="table-outline" border="1">
 
@@ -94,16 +107,16 @@
                     </table>
 
                 </div>
-            </div>
 
-            <div class="space-vertical"></div>
-
-            <div>
-                <div class="title">sysctl</div>
-                <div class="space-vertical"></div>
+            </section>
+        
+            <section id="content3">
+                
                 <div>
-
+    
                     <span>Sysctl history (an entry in the table represents the first run with new systcl settings of interest).</span>
+
+                    <div class="space-vertical"></div>
 
                     <table id="machine__history__table__sysctl" class="table-outline" border="1">
 
@@ -117,16 +130,16 @@
                     </table>
 
                 </div>
-            </div>
 
-            <div class="space-vertical"></div>
-
-            <div>
-                <div class="title">Hardware</div>
-                <div class="space-vertical"></div>
+            </section>
+        
+            <section id="content4">
+                
                 <div>
-
+    
                     <span>Hardware information (static).</span>
+
+                    <div class="space-vertical"></div>
 
                     <table id="machine__history__table__hardware" class="table-outline" border="1">
 
@@ -151,7 +164,8 @@
                     </table>
 
                 </div>
-            </div>
+
+            </section>
 
         </div>
 
@@ -254,7 +268,7 @@
                 osTableBodyContent += `
                 <tr>
                     <td>${escapeHtml(item.os)}</td>
-                    <td>${escapeHtml(item.run_id)}</td>
+                    <td><a href="run?id=${item.run_id}">${escapeHtml(item.run_id)}</a></td>
                 </tr>
                 `;
 
@@ -269,7 +283,7 @@
                 compilerTableBodyContent += `
                 <tr>
                     <td>${escapeHtml(item.compiler)}</td>
-                    <td>${escapeHtml(item.run_id)}</td>
+                    <td><a href="run?id=${item.run_id}">${escapeHtml(item.run_id)}</a></td>
                 </tr>
                 `;
 
@@ -284,7 +298,7 @@
                 sysctlTableBodyContent += `
                 <tr>
                     <td>${escapeHtml(item.sysctl)}</td>
-                    <td>${escapeHtml(item.run_id)}</td>
+                    <td><a href="run?id=${item.run_id}">${escapeHtml(item.run_id)}</a></td>
                 </tr>
                 `;
 

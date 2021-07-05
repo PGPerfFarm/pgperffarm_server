@@ -53,12 +53,19 @@
 
         <div class="card">
 
-            <div>
-                <div class="title">Statement Latencies</div>
-                <div class="space-vertical"></div>
+            <input id="tab1" type="radio" name="tabs" checked>
+            <label for="tab1">Statement Latencies</label>
+        
+            <input id="tab2" type="radio" name="tabs">
+            <label for="tab2">Log</label>
+
+            <section id="content1">
+                
                 <div>
 
                     <span>Statement latencies for each line.</span>
+
+                    <div class="space-vertical"></div>
 
                     <table id="result__table__latency" class="table-outline" border="1">
 
@@ -73,16 +80,16 @@
                     </table>
 
                 </div>
-            </div>
 
-            <div class="space-vertical"></div>
-
-            <div>
-                <div class="title">Log</div>
-                <div class="space-vertical"></div>
+            </section>
+        
+            <section id="content2">
+                
                 <div>
 
                     <span>Log produced with aggregate intervals of 1 second.</span>
+
+                    <div class="space-vertical"></div>
 
                     <table id="result__table__log" class="table-outline" border="1">
 
@@ -100,7 +107,8 @@
                     </table>
 
                 </div>
-            </div>
+
+            </section>
 
         </div>
 
@@ -236,6 +244,7 @@
 
     <link rel="stylesheet" type="text/css" href="styles/common.css">
     <link rel="stylesheet" type="text/css" href="styles/navigation.css">
+    <link rel="stylesheet" type="text/css" href="result/result.css">
 
 </body>
 
