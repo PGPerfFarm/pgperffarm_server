@@ -69,7 +69,7 @@
                     <td>${machine.approved}</td>
                     <td>${escapeHtml(machine.owner_id__username)}</td>
                     <td>${machine.add_time}</td>
-                    <td>${machine.latest}</td>
+                    <td><a href="run?id=${machine.latest}">${machine.latest}<a></td>
                 </tr>
                 `;
 

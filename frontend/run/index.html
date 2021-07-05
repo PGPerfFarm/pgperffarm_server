@@ -185,8 +185,7 @@
 
             for (let i = 0; i < response.pgbench_result.length; i++) {
 
-                var read_only = '';
-
+                let read_only = '';
                 if (response.pgbench_result[i].benchmark_config[0].read_only == true) read_only = 'read-only test';
                 else read_only = 'read-write test';
 
@@ -225,7 +224,7 @@
                 <tr>
                     <td>${escapeHtml(item.config)}</td>
                     <td>${escapeHtml(item.start)}</td>
-                    <td>${escapeHtml(item.id)}</td>
+                    <td><a href="result?id=${item.id}">${escapeHtml(item.id)}</a></td>
                 </tr>
                 `;
 

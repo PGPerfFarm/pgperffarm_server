@@ -10,13 +10,227 @@
 
     <base href="http://localhost:8080/">
 
+    <script src="scripts/request.js"></script>
+    <script src="scripts/common.js"></script>
+
 </head>
 
 <body>
 
     <div id="navigation"></div>
 
-    <div>result</div>
+    <div id="page-content">
+
+        <div class="card">
+
+            <div id="page-title">Benchmark Result Page : <span id="value_id"></span></div>
+            <div class="space-vertical"></div>
+            <div>Machine : <span id="value_machine"></span></div>
+            <div>Branch : <span id="value_branch"></span></div>
+            <div>OS : <span id="value_os"></span></div>
+            <div>Run : <span id="value_run"></span></div>
+            <div>Commit : <span id="value_commit"></span></div>
+            <div>Kernel : <span id="value_kernel"></span></div>
+
+        </div>
+
+        <div class="card">
+
+            <div class="title">Benchmark Configuration : <span id="value_config"></span></div>
+            <div class="space-vertical"></div>
+            <div>Clients : <span id="value_clients"></span></div>
+            <div>Scale : <span id="value_scale"></span></div>
+            <div><span id="value_read_write"></span></div>
+            <div>Iteration : <span id="value_iteration"></span></div>
+            <div>TPS : <span id="value_tps"></span></div>
+            <div>Latency : <span id="value_latency"></span></div>
+            <div>Mode : <span id="value_mode"></span></div>
+            <div>Init : <span id="value_init"></span></div>
+            <div>Start : <span id="value_start"></span></div>
+            <div>End : <span id="value_end"></span></div>
+
+        </div>
+
+        <div class="card">
+
+            <div>
+                <div class="title">Statement Latencies</div>
+                <div class="space-vertical"></div>
+                <div>
+
+                    <span>Statement latencies for each line.</span>
+
+                    <table id="result__table__latency" class="table-outline" border="1">
+
+                        <thead>
+                            <th>Line</th>
+                            <th>Latency</th>
+                            <th>Statement</th>
+                        </thead>
+                        
+                        <tbody></tbody>
+        
+                    </table>
+
+                </div>
+            </div>
+
+            <div class="space-vertical"></div>
+
+            <div>
+                <div class="title">Log</div>
+                <div class="space-vertical"></div>
+                <div>
+
+                    <span>Log produced with aggregate intervals of 1 second.</span>
+
+                    <table id="result__table__log" class="table-outline" border="1">
+
+                        <thead>
+                            <th>Start</th>
+                            <th>Transactions</th>
+                            <th>Sum Latency</th>
+                            <th>Sum Latency 2</th>
+                            <th>Min Latency</th>
+                            <th>Max Latency</th>
+                        </thead>
+                        
+                        <tbody></tbody>
+        
+                    </table>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        
+        const id = getUrlParam('id');
+
+        const latencyTableBodyElement = document.getElementById('result__table__latency').getElementsByTagName('tbody')[0];
+        const logTableBodyElement = document.getElementById('result__table__log').getElementsByTagName('tbody')[0];
+
+        sendRequest(endpoints.benchmarkResults + id, (response) => {
+
+            response = response[0];
+
+            const clients = response.benchmark_config[0].clients;
+            const scale = response.benchmark_config[0].scale;
+            const duration = response.benchmark_config[0].duration;
+
+            let read_only = '';
+            if (response.benchmark_config[0].read_only == true) read_only = 'read-only test';
+            else read_only = 'read-write test';
+
+            const config = response.benchmark_config[0].pgbench_benchmark_id;
+
+            const tps = response.tps;
+            const latency = response.latency;
+            const init = response.init;
+            const start = new Date(response.start * 1000).toLocaleTimeString();
+            const end = new Date(response.end * 1000).toLocaleTimeString();
+            const mode = response.mode;
+            const iteration = response.iteration;
+
+            const alias = response.run_id_id__machine_id__alias;
+            const machine_id = response.run_id_id__machine_id;
+            const os = response.run_id_id__os_version_id__dist_id_id__dist_name + ' ' + response.run_id_id__os_version_id__release;
+            const branch = response.run_id_id__git_branch_id__name;
+            const kernel = response.run_id_id__os_kernel_version_id_id__kernel_id__kernel_name + ' ' + response.run_id_id__os_kernel_version_id__kernel_release;
+            const run = response.run_id_id;
+            const commit = 'https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=' + response.run_id_id__git_commit;
+
+            let results = {};
+
+            for (let i = 0; i < response.pgbench_run_statement.length; i++) {
+
+                const result = {
+                    "line": response.pgbench_run_statement[i].line_id,
+                    "latency": response.pgbench_run_statement[i].latency,
+                    "statement": response.pgbench_run_statement[i].statements.statement
+                };
+
+                results[response.pgbench_run_statement[i].line_id] = result;
+
+            }
+
+            let log = {};
+
+            for (let i = 0; i < response.pgbench_log.length; i++) {
+
+                const single_result = {
+                    "interval_start": new Date(response.pgbench_log[i].interval_start).toLocaleTimeString(),
+                    "num_transactions": response.pgbench_log[i].num_transactions,
+                    "sum_latency": response.pgbench_log[i].sum_latency,
+                    "sum_latency_2": response.pgbench_log[i].sum_latency_2,
+                    "min_latency": response.pgbench_log[i].min_latency,
+                    "max_latency": response.pgbench_log[i].max_latency,
+                };
+
+                log[response.pgbench_log[i].pgbench_log_id] = single_result;
+            
+            }
+
+            document.querySelector('#value_id').innerHTML = id;
+            document.querySelector('#value_machine').innerHTML = alias;
+            document.querySelector('#value_branch').innerHTML = branch;
+            document.querySelector('#value_os').innerHTML = os;
+            document.querySelector('#value_run').innerHTML = run;
+            document.querySelector('#value_commit').innerHTML = commit;
+            document.querySelector('#value_kernel').innerHTML = kernel;
+            document.querySelector('#value_config').innerHTML = config;
+            document.querySelector('#value_clients').innerHTML = clients;
+            document.querySelector('#value_scale').innerHTML = scale;
+            document.querySelector('#value_read_write').innerHTML = read_only;
+            document.querySelector('#value_iteration').innerHTML = iteration;
+            document.querySelector('#value_tps').innerHTML = tps;
+            document.querySelector('#value_latency').innerHTML = latency;
+            document.querySelector('#value_mode').innerHTML = mode;
+            document.querySelector('#value_init').innerHTML = init;
+            document.querySelector('#value_start').innerHTML = start;
+            document.querySelector('#value_end').innerHTML = end;
+
+            let latencyTableBodyContent = '';
+
+            for(const item of Object.values(results)) {
+
+                latencyTableBodyContent += `
+                <tr>
+                    <td>${escapeHtml(item.line)}</td>
+                    <td>${escapeHtml(item.latency)}</td>
+                    <td>${escapeHtml(item.statement)}</td>
+                </tr>
+                `;
+
+            }
+
+            latencyTableBodyElement.innerHTML = latencyTableBodyContent;
+
+            let logTableBodyContent = '';
+
+            for(const item of Object.values(log)) {
+
+                logTableBodyContent += `
+                <tr>
+                    <td>${escapeHtml(item.interval_start)}</td>
+                    <td>${escapeHtml(item.num_transactions)}</td>
+                    <td>${escapeHtml(item.sum_latency)}</td>
+                    <td>${escapeHtml(item.sum_latency_2)}</td>
+                    <td>${escapeHtml(item.min_latency)}</td>
+                    <td>${escapeHtml(item.max_latency)}</td>
+                </tr>
+                `;
+
+            }
+
+            logTableBodyElement.innerHTML = logTableBodyContent;
+
+        });
+
+    </script>
 
     <script src="components/navigation.js"></script>
 
