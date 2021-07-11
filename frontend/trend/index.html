@@ -10,13 +10,104 @@
 
     <base href="http://localhost:8080/">
 
+    <script src="scripts/request.js"></script>
+    <script src="scripts/common.js"></script>
+
 </head>
 
 <body>
 
     <div id="navigation"></div>
 
-    <div>trend</div>
+    <div id="page-content">
+
+        <div class="card">
+            <div id="page-title">Average TPS and latency in milliseconds : <span id="value_alias"></span></div>
+        </div>
+
+        <div class="card">
+
+            <div class="title">Owner : <span id="value_owner"></span></div>
+
+            <div class="space-vertical"></div>
+
+            <div><span id="value_os"></span></div>
+            <div><span id="value_compiler"></span></div>
+
+        </div>
+
+        <div class="card">
+
+            <div class="title">Command Line</div>
+
+            <div class="space-vertical"></div>
+
+            <div><span id="value_command"></span></div>
+
+        </div>
+
+        <div class="card">
+
+            <div class="title">Benchmark Configuration</div>
+
+            <div class="space-vertical"></div>
+
+            <div>Clients : <span id="value_client"></span></div>
+            <div>Scale : <span id="value_scale"></span></div>
+            <div>Duration : <span id="value_duration"></span></div>
+            <div><span id="value_read_write"></span></div>
+
+        </div>
+
+    </div>
+
+    <script>
+        
+        const id = getUrlParam('id');
+        const config = getUrlParam('config');
+
+        sendRequest(endpoints.trend + id + '/' + config, (response) => {
+
+            console.log(response);
+
+            const main = response[0];
+
+            const alias = main.alias;
+			const owner = main.username;
+			const id = main.machine_id;
+
+			const clients = main.clients;
+            const duration = main.duration;
+            const scale = main.scale;
+
+            let read_only = '';
+            let read_only_command = '';
+
+            if(main.read_only == true) {
+                read_only = "Read-only Test";
+                read_only_command = '-S';
+            } else {
+                read_only = "Read-write Test";
+            }
+
+            const os = main.kernel_name + ' ' + main.dist_name + ' ' + main.machine_type;
+            const compiler = main.compiler;
+
+            const commad = `pgbench -i -s ${scale} -p 5432 && pgbench -r -c ${clients} -j ${clients} -T ${duration} -l --aggregate-interval 1 ${read_only_command}`;
+
+            document.querySelector('#value_alias').innerHTML = alias;
+            document.querySelector('#value_owner').innerHTML = owner;
+            document.querySelector('#value_os').innerHTML = os;
+            document.querySelector('#value_compiler').innerHTML = compiler;
+            document.querySelector('#value_command').innerHTML = commad;
+            document.querySelector('#value_client').innerHTML = clients;
+            document.querySelector('#value_scale').innerHTML = scale;
+            document.querySelector('#value_duration').innerHTML = duration;
+            document.querySelector('#value_read_write').innerHTML = read_only;
+
+        });
+
+    </script>
 
     <script src="components/navigation.js"></script>
 
