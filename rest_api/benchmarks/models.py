@@ -111,8 +111,6 @@ class CollectdCpu(models.Model):
 
     pgbench_result_id = models.ForeignKey('benchmarks.PgBenchResult', on_delete=models.CASCADE, related_name='collectd_cpu_iteration')
 
-    epoch = models.DateTimeField(validators=[ValidateDate])
-
     percent_user = models.FloatField(validators=[validators.MaxValueValidator(100), validators.MinValueValidator(0)])
     percent_system = models.FloatField(validators=[validators.MaxValueValidator(100), validators.MinValueValidator(0)])
     percent_idle = models.FloatField(validators=[validators.MaxValueValidator(100), validators.MinValueValidator(0)])
@@ -122,13 +120,13 @@ class CollectdCpu(models.Model):
     percent_softirq = models.FloatField(validators=[validators.MaxValueValidator(100), validators.MinValueValidator(0)])
     percent_steal = models.FloatField(validators=[validators.MaxValueValidator(100), validators.MinValueValidator(0)])
 
+    epoch = models.FloatField()
+
 
 class CollectdProcess(models.Model):
     collectd_process_id = models.AutoField(primary_key=True)
 
     pgbench_result_id = models.ForeignKey('benchmarks.PgBenchResult', on_delete=models.CASCADE, related_name='collectd_process_iteration')
-
-    epoch = models.DateTimeField(validators=[ValidateDate])
 
     fork_rate = models.IntegerField(validators=[validators.MinValueValidator(0)])
     ps_state_running = models.IntegerField(validators=[validators.MinValueValidator(0)])
@@ -138,15 +136,17 @@ class CollectdProcess(models.Model):
     ps_state_blocked = models.IntegerField(validators=[validators.MinValueValidator(0)])
     ps_state_zombies = models.IntegerField(validators=[validators.MinValueValidator(0)])
 
+    epoch = models.FloatField()
+
 
 class CollectdContextswitch(models.Model):
     collectd_contextswitch_id = models.AutoField(primary_key=True)
 
     pgbench_result_id = models.ForeignKey('benchmarks.PgBenchResult', on_delete=models.CASCADE, related_name='collectd_contextswitch_iteration')
 
-    epoch = models.DateTimeField(validators=[ValidateDate])
-
     contextswitch = models.IntegerField(validators=[validators.MinValueValidator(0)])
+
+    epoch = models.FloatField()
 
 
 class CollectdIpcShm(models.Model):
@@ -154,12 +154,12 @@ class CollectdIpcShm(models.Model):
 
     pgbench_result_id = models.ForeignKey('benchmarks.PgBenchResult', on_delete=models.CASCADE, related_name='collectd_ipc_shm_iteration')
 
-    epoch = models.DateTimeField(validators=[ValidateDate])
-
     segments = models.IntegerField(validators=[validators.MinValueValidator(0)])
     bytes_total = models.IntegerField(validators=[validators.MinValueValidator(0)])
     bytes_rss = models.IntegerField(validators=[validators.MinValueValidator(0)])
     bytes_swapped = models.IntegerField(validators=[validators.MinValueValidator(0)])
+
+    epoch = models.FloatField()
 
 
 class CollectdIpcMsg(models.Model):
@@ -167,11 +167,11 @@ class CollectdIpcMsg(models.Model):
 
     pgbench_result_id = models.ForeignKey('benchmarks.PgBenchResult', on_delete=models.CASCADE, related_name='collectd_ipc_msg_iteration')
 
-    epoch = models.DateTimeField(validators=[ValidateDate])
-
     count_space = models.IntegerField(validators=[validators.MinValueValidator(0)])
     count_queues = models.IntegerField(validators=[validators.MinValueValidator(0)])
     count_headers = models.IntegerField(validators=[validators.MinValueValidator(0)])
+
+    epoch = models.FloatField()
 
 
 class CollectdIpcSem(models.Model):
@@ -179,18 +179,16 @@ class CollectdIpcSem(models.Model):
 
     pgbench_result_id = models.ForeignKey('benchmarks.PgBenchResult', on_delete=models.CASCADE, related_name='collectd_ipc_sem_iteration')
 
-    epoch = models.DateTimeField(validators=[ValidateDate])
-
     count_total = models.IntegerField(validators=[validators.MinValueValidator(0)])
     count_arrays = models.IntegerField(validators=[validators.MinValueValidator(0)])
+
+    epoch = models.FloatField()
 
 
 class CollectdMemory(models.Model):
     collectd_memory_id = models.AutoField(primary_key=True)
 
     pgbench_result_id = models.ForeignKey('benchmarks.PgBenchResult', on_delete=models.CASCADE, related_name='collectd_memory_iteration')
-
-    epoch = models.DateTimeField(validators=[ValidateDate])
 
     memory_free = models.BigIntegerField(validators=[validators.MinValueValidator(0)])
     memory_used = models.BigIntegerField(validators=[validators.MinValueValidator(0)])
@@ -199,13 +197,13 @@ class CollectdMemory(models.Model):
     memory_slab_recl = models.BigIntegerField(validators=[validators.MinValueValidator(0)])
     memory_slab_unrecl = models.BigIntegerField(validators=[validators.MinValueValidator(0)])
 
+    epoch = models.FloatField()
+
 
 class CollectdSwap(models.Model):
     collectd_swap_id = models.AutoField(primary_key=True)
 
     pgbench_result_id = models.ForeignKey('benchmarks.PgBenchResult', on_delete=models.CASCADE, related_name='collectd_swap_iteration')
-
-    epoch = models.DateTimeField(validators=[ValidateDate])
 
     swap_free = models.BigIntegerField(validators=[validators.MinValueValidator(0)])
     swap_used = models.BigIntegerField(validators=[validators.MinValueValidator(0)])
@@ -213,13 +211,13 @@ class CollectdSwap(models.Model):
     swap_io_in = models.BigIntegerField(validators=[validators.MinValueValidator(0)])
     swap_io_out = models.BigIntegerField(validators=[validators.MinValueValidator(0)])
 
+    epoch = models.FloatField()
+
 
 class CollectdVmem(models.Model):
     collectd_vmem_id = models.AutoField(primary_key=True)
 
     pgbench_result_id = models.ForeignKey('benchmarks.PgBenchResult', on_delete=models.CASCADE, related_name='collectd_vmem_iteration')
-
-    epoch = models.DateTimeField(validators=[ValidateDate])
 
     vmpage_number_active_file = models.IntegerField(validators=[validators.MinValueValidator(0)])
     vmpage_number_inactive_file = models.IntegerField(validators=[validators.MinValueValidator(0)])
@@ -265,17 +263,14 @@ class CollectdVmem(models.Model):
     vmpage_number_unstable = models.IntegerField(validators=[validators.MinValueValidator(0)])
     vmpage_action_written = models.IntegerField(validators=[validators.MinValueValidator(0)])
     vmpage_action_dirtied = models.IntegerField(validators=[validators.MinValueValidator(0)])
-    vmpage_io_memory = models.IntegerField(validators=[validators.MinValueValidator(0)])
-    vmpage_io_swap = models.IntegerField(validators=[validators.MinValueValidator(0)])
-    vmpage_faults = models.IntegerField(validators=[validators.MinValueValidator(0)])
+
+    epoch = models.FloatField()
 
 
 class CollectdDisk(models.Model):
     collectd_disk_id = models.AutoField(primary_key=True)
 
     pgbench_result_id = models.ForeignKey('benchmarks.PgBenchResult', on_delete=models.CASCADE, related_name='collectd_disk_iteration')
-
-    epoch = models.DateTimeField(validators=[ValidateDate])
 
     disk_octets_read = models.BigIntegerField(validators=[validators.MinValueValidator(0)])
     disk_octets_write = models.BigIntegerField(validators=[validators.MinValueValidator(0)])
@@ -287,3 +282,5 @@ class CollectdDisk(models.Model):
     disk_io_time_weighted_io_time = models.IntegerField(validators=[validators.MinValueValidator(0)])
     disk_time_read = models.IntegerField(validators=[validators.MinValueValidator(0)])
     disk_time_write = models.IntegerField(validators=[validators.MinValueValidator(0)])
+
+    epoch = models.FloatField()

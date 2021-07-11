@@ -5,7 +5,7 @@ from datetime import datetime
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from runs.parsing_functions import parse_pgbench_options, parse_pgbench_results, parse_os_kernel, parse_compiler, parse_git, parse_hardware, parse_postgres, parse_collectd
+from runs.parsing_functions import parse_pgbench_options, parse_pgbench_results, parse_os_kernel, parse_compiler, parse_git, parse_hardware, parse_postgres
 from machines.models import Machine
 from postgres.models import PostgresSettings
 from runs.models import RunInfo, RunLog
@@ -83,7 +83,6 @@ def create_run_info(request, format=None):
             branch, commit = parse_git(json_data)
             hardware_info = parse_hardware(json_data)
             postgres_info = parse_postgres(json_data)
-            parse_collectd(json_data)
 
             if 'git_clone_log' not in json_data:
                 git_clone_log = ''
