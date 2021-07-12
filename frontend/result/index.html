@@ -194,7 +194,7 @@
             document.querySelector('#value_scale').innerHTML = scale;
             document.querySelector('#value_read_write').innerHTML = read_only;
             document.querySelector('#value_iteration').innerHTML = iteration;
-            document.querySelector('#value_tps').innerHTML = tps;
+            document.querySelector('#value_tps').innerHTML = formatNumberRound(tps);
             document.querySelector('#value_latency').innerHTML = latency;
             document.querySelector('#value_mode').innerHTML = mode;
             document.querySelector('#value_init').innerHTML = init;
@@ -228,11 +228,11 @@
                 logTableBodyContent += `
                 <tr>
                     <td>${escapeHtml(item.interval_start)}</td>
-                    <td>${escapeHtml(item.num_transactions)}</td>
-                    <td>${escapeHtml(item.sum_latency)}</td>
-                    <td>${escapeHtml(item.sum_latency_2)}</td>
-                    <td>${escapeHtml(item.min_latency)}</td>
-                    <td>${escapeHtml(item.max_latency)}</td>
+                    <td>${escapeHtml(formatNumber(item.num_transactions))}</td>
+                    <td>${escapeHtml(formatNumber(item.sum_latency))}</td>
+                    <td>${escapeHtml(formatNumber(item.sum_latency_2))}</td>
+                    <td>${escapeHtml(formatNumber(item.min_latency))}</td>
+                    <td>${escapeHtml(formatNumber(item.max_latency))}</td>
                 </tr>
                 `;
 

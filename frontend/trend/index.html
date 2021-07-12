@@ -44,6 +44,10 @@
 
             <div><span id="value_command"></span></div>
 
+            <div class="space-vertical"></div>
+
+            <button onclick="copy()">Copy Command</button>
+
         </div>
 
         <div class="card">
@@ -67,8 +71,6 @@
         const config = getUrlParam('config');
 
         sendRequest(endpoints.trend + id + '/' + config, (response) => {
-
-            console.log(response);
 
             const main = response[0];
 
@@ -106,6 +108,19 @@
             document.querySelector('#value_read_write').innerHTML = read_only;
 
         });
+
+        const copy = () => {
+
+			const command = document.getElementById('value_command').innerHTML;
+
+			const element = document.createElement('textarea');
+			element.value = command;
+			document.body.appendChild(element);
+			element.select();
+			document.execCommand('copy');
+			document.body.removeChild(element);
+
+    	};
 
     </script>
 

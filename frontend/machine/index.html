@@ -253,9 +253,9 @@
             document.querySelector('#value_time').innerHTML = add_time;
             document.querySelector('#value_cpu_brand').innerHTML = cpu_brand;
             document.querySelector('#value_cpu_core').innerHTML = cpu_cores;
-            document.querySelector('#value_cpu_hz').innerHTML = hz;
-            document.querySelector('#value_memory').innerHTML = memory;
-            document.querySelector('#value_swap').innerHTML = swap;
+            document.querySelector('#value_cpu_hz').innerHTML = formatNumber(hz);
+            document.querySelector('#value_memory').innerHTML = formatNumberRound(memory) + 'GB';
+            document.querySelector('#value_swap').innerHTML = formatNumberRound(swap) + 'GB';
 
             document.querySelector('#link__postgres').href = '/postgres?id=' + id;
 

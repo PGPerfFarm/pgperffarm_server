@@ -226,8 +226,8 @@
             document.querySelector('#value_os').innerHTML = os;
             document.querySelector('#value_compiler').innerHTML = compiler;
             document.querySelector('#value_kernel').innerHTML = kernel;
-            document.querySelector('#value_memory').innerHTML = memory;
-            document.querySelector('#value_swap').innerHTML = swap;
+            document.querySelector('#value_memory').innerHTML = formatNumberRound(memory) + 'GB';
+            document.querySelector('#value_swap').innerHTML = formatNumberRound(swap) + 'GB';
             document.querySelector('#value_cpu').innerHTML = cpu;
 
             document.querySelector('#link_machine').href = '/machine?id=' + machine_id;

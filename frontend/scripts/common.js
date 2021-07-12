@@ -30,4 +30,16 @@ const getUrlParam = (key) => {
 
     return undefined;
 
-}
+};
+
+const formatNumber = (number) => {
+
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+};
+
+const formatNumberRound = (number) => {
+
+    return Number(number).toFixed(2);
+
+};
