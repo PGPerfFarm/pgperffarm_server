@@ -25,11 +25,15 @@
             <div id="page-title">Postgres History Page : <span id="value_id"></span></div>
             <div class="space-vertical"></div>
             <div>Machine Type : <span id="value_machine"></span></div>
-            <div>First Run : <span id="value_first_run"></span></div>
+            <div>First Run : <a id="link_first_run"><span id="value_first_run"></span></a></div>
             <div>First Run Date : <span id="value_first_run_date"></span></div>
             <div>Kernel : <span id="value_kernel"></span></div>
-            <div>Last Run : <span id="value_last_run"></span></div>
+            <div>Last Run : <a id="link_last_run"><span id="value_last_run"></span></a></div>
             <div>Last Run Date : <span id="value_last_run_date"></span></div>
+        </div>
+
+        <div class="card">
+            To see the whole list of the latest settings, go to the Postgres tab in <a id="link_latest_run"></a>
         </div>
 
         <div id="postgres__branch__list"></div>
@@ -79,6 +83,11 @@
             document.querySelector('#value_kernel').innerHTML = kernel;
             document.querySelector('#value_last_run').innerHTML = last_run;
             document.querySelector('#value_last_run_date').innerHTML = last_run_date;
+            document.querySelector('#link_latest_run').innerHTML = '/run?id=' + last_run;
+
+            document.querySelector('#link_first_run').href = '/run?id=' + first_run;
+            document.querySelector('#link_last_run').href = '/run?id=' + last_run;
+            document.querySelector('#link_latest_run').href = '/run?id=' + last_run;
 
             for(const [key, value] of Object.entries(postgres_history)) {
 

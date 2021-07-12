@@ -25,11 +25,11 @@
 
             <div id="page-title">Benchmark Result Page : <span id="value_id"></span></div>
             <div class="space-vertical"></div>
-            <div>Machine : <span id="value_machine"></span></div>
+            <div>Machine : <a id="link_machine"><span id="value_machine"></span></a></div>
             <div>Branch : <span id="value_branch"></span></div>
             <div>OS : <span id="value_os"></span></div>
-            <div>Run : <span id="value_run"></span></div>
-            <div>Commit : <span id="value_commit"></span></div>
+            <div>Run : <a id="link_run"><span id="value_run"></span></a></div>
+            <div>Commit : <a id="link_commit"><span id="value_commit"></span></a></div>
             <div>Kernel : <span id="value_kernel"></span></div>
 
         </div>
@@ -200,6 +200,10 @@
             document.querySelector('#value_init').innerHTML = init;
             document.querySelector('#value_start').innerHTML = start;
             document.querySelector('#value_end').innerHTML = end;
+
+            document.querySelector('#link_machine').href = '/machine?id=' + machine_id;
+            document.querySelector('#link_run').href = '/run?id=' + run;
+            document.querySelector('#link_commit').href = commit;
 
             let latencyTableBodyContent = '';
 

@@ -30,9 +30,15 @@
             <div class="title">Type : <span id="value_type"></span></div>
             <div class="title">Reports : <span id="value_report"></span></div>
             <div class="title"><span id="value_branch"></span> branch(es) involved</div>
+
             <div class="space-vertical"></div>
+
             <div>Owner : <span id="value_owner"></span></div>
             <div>Add Time : <span id="value_time"></span></div>
+
+            <div class="space-vertical"></div>
+
+            <a id="link__postgres"><button>View Postgres History</button></a>
 
         </div>
 
@@ -250,6 +256,8 @@
             document.querySelector('#value_cpu_hz').innerHTML = hz;
             document.querySelector('#value_memory').innerHTML = memory;
             document.querySelector('#value_swap').innerHTML = swap;
+
+            document.querySelector('#link__postgres').href = '/postgres?id=' + id;
 
             let configurationListContent = '';
 

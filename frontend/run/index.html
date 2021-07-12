@@ -24,11 +24,11 @@
         <div class="card">
             <div id="page-title">Report Page : <span id="value_id"></span></div>
             <div class="space-vertical"></div>
-            <div>Machine : <span id="value_machine"></span></div>
+            <div>Machine : <a id="link_machine"><span id="value_machine"></span></a></div>
             <div>Branch : <span id="value_branch"></span></div>
             <div>Uploaded : <span id="value_time"></span></div>
             <div>Owner : <span id="value_owner"></span></div>
-            <div>Commit : <span id="value_commit"></span></div>
+            <div>Commit : <a id="link_commit"><span id="value_commit"></span></a></div>
             <div>Repository : <span id="value_repository"></span></div>
         </div>
 
@@ -229,6 +229,9 @@
             document.querySelector('#value_memory').innerHTML = memory;
             document.querySelector('#value_swap').innerHTML = swap;
             document.querySelector('#value_cpu').innerHTML = cpu;
+
+            document.querySelector('#link_machine').href = '/machine?id=' + machine_id;
+            document.querySelector('#link_commit').href = commit;
 
             let resultsTableBodyContent = '';
 
