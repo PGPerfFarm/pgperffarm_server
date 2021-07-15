@@ -63,6 +63,8 @@
 
         </div>
 
+        <div id="canvas"></div>
+
     </div>
 
     <script>
@@ -97,6 +99,33 @@
 
             const commad = `pgbench -i -s ${scale} -p 5432 && pgbench -r -c ${clients} -j ${clients} -T ${duration} -l --aggregate-interval 1 ${read_only_command}`;
 
+            const chartData = {};
+
+            // group by branch name
+            for(const item of response) {
+
+                const branch = item.name;
+
+                if (!(branch in chartData)) chartData[branch] = [];
+
+                chartData[branch].push(item);
+
+            }
+
+            // sort each branch by time
+            for(const branchArray of Object.values(chartData)) {
+
+                branchArray.sort(function(a, b) {
+                    const aDate = new Date(a.add_time), bDate = new Date(b.add_time);
+                    if (aDate < bDate) return -1;
+                    else if (aDate > bDate) return 1;
+                    else return 0;
+                });
+
+                drawChart(branchArray);
+
+            }
+
             document.querySelector('#value_alias').innerHTML = alias;
             document.querySelector('#value_owner').innerHTML = owner;
             document.querySelector('#value_os').innerHTML = os;
@@ -122,9 +151,211 @@
 
     	};
 
+        const drawChart = (branchArray) => {
+
+            const commitList = branchArray.map((value) => value.git_commit);
+            let maxLatency = branchArray[0].maxlat;
+            let minLatency = branchArray[0].minlat;
+            let maxTps = branchArray[0].maxtps;
+            let minTps = branchArray[0].mintps;
+
+            for(const item of branchArray) {
+
+                if (item.maxlat > maxLatency) maxLatency = item.maxlat;
+                if (item.minlat < minLatency) minLatency = item.minlat;
+                if (item.maxtps > maxTps) maxTps = item.maxtps;
+                if (item.mintps < minTps) minTps = item.mintps;
+
+            }
+
+            const canvasElement = document.getElementById('canvas');
+            const canvasWidth = canvasElement.parentElement.clientWidth;
+            const canvasHeight = canvasElement.parentElement.clientHeight;
+            const canvasPadding = 50;
+            const graphWidth = canvasWidth - canvasPadding*2;
+            const graphHeight = canvasHeight - canvasPadding*2;
+
+            const canvas = d3.select('#canvas');
+
+            const svg = canvas
+                .append('svg')
+                .attr('width', canvasWidth)
+                .attr('height', canvasHeight);
+
+            const xScale = d3
+                .scalePoint()
+                .domain(commitList)
+                .range([0, graphWidth]);
+
+            const latencyScale = d3
+                .scaleLinear()
+                .domain([minLatency, maxLatency])
+                .range([graphHeight, 0]);
+
+            const tpsScale = d3
+                .scaleLinear()
+                .domain([minTps, maxTps])
+                .range([graphHeight, 0]);
+
+            const latencyLine = d3
+                .line()
+                .x((d) => xScale(d.git_commit) + canvasPadding)
+                .y((d) => latencyScale(d.avglat) + canvasPadding);
+
+            const tpsLine = d3
+                .line()
+                .x((d) => xScale(d.git_commit) + canvasPadding)
+                .y((d) => tpsScale(d.avgtps) + canvasPadding);
+
+            // background
+            svg
+                .append('rect')
+                .attr('width', canvasWidth)
+                .attr('height', canvasHeight)
+                .attr('fill', '#FAFAFA');
+
+            // commit axis
+            svg
+                .append('g')
+                .attr('transform', `translate(${canvasPadding}, ${canvasHeight-canvasPadding})`)
+                .call(d3.axisBottom(xScale));
+
+            svg
+                .append('text')
+                .attr('id', 'x-axis')
+                .attr('x', canvasWidth/2)
+                .attr('y', canvasHeight - 10)
+                .text('Commit');
+
+            // latency axis
+            svg
+                .append('g')
+                .attr('transform', `translate(${canvasPadding}, ${canvasPadding})`)
+                .call(d3.axisLeft(latencyScale));
+
+            svg
+                .append('text')
+                .attr('id', 'y-axis')
+                .attr('x', 10)
+                .attr('y', canvasHeight/2)
+                .text('Latency');
+
+            // tps axis
+            svg
+                .append('g')
+                .attr('transform', `translate(${canvasWidth-canvasPadding}, ${canvasPadding})`)
+                .call(d3.axisRight(tpsScale));
+
+            svg
+                .append('text')
+                .attr('id', 'y-axis')
+                .attr('x', canvasWidth - 10)
+                .attr('y', canvasHeight/2)
+                .text('TPS');
+
+            // legend
+            svg
+                .append('circle')
+                .attr('cx', canvasWidth - 130)
+                .attr('cy', 25)
+                .attr('r', 4)
+                .style('fill', '#303F9F')
+
+            svg
+                .append('text')
+                .attr('x', canvasWidth - 120)
+                .attr('y', 25)
+                .style('font-size', '11px')
+                .attr('alignment-baseline', 'middle')
+                .text('Latency');
+
+            svg
+                .append('circle')
+                .attr('cx', canvasWidth - 60)
+                .attr('cy', 25)
+                .attr('r', 4)
+                .style('fill', '#C2185B')
+
+            svg
+                .append('text')
+                .attr('x', canvasWidth - 50)
+                .attr('y', 25)
+                .style('font-size', '11px')
+                .attr('alignment-baseline', 'middle')
+                .text('TPS');
+
+            // latency
+            svg
+                .append('path')
+                .datum(branchArray)
+                .attr('fill', 'none')
+                .attr('stroke', '#303F9F')
+                .attr('stroke-width', '1.5px')
+                .attr('d', latencyLine);
+
+            svg
+                .selectAll('latencyDot')
+                .data(branchArray)
+                .enter()
+                .append('circle')
+                .attr('cx', (d) => xScale(d.git_commit))
+                .attr('cy', (d) => latencyScale(d.avglat))
+                .attr('transform', `translate(${canvasPadding}, ${canvasPadding})`)
+                .attr('r', 2);
+
+            for(const item of branchArray) {
+
+                svg
+                    .append('line')
+                    .attr('stroke', '#909FEF')
+                    .attr('stroke-width', '1.5px')
+                    .attr("x1", xScale(item.git_commit))
+                    .attr("y1", latencyScale(item.maxlat))
+                    .attr("x2", xScale(item.git_commit))
+                    .attr("y2", latencyScale(item.minlat))
+                    .attr('transform', `translate(${canvasPadding}, ${canvasPadding})`); 
+
+            }
+
+            // tps
+            svg
+                .append('path')
+                .datum(branchArray)
+                .attr('fill', 'none')
+                .attr('stroke', '#C2185B')
+                .attr('stroke-width', '1.5px')
+                .attr('d', tpsLine);
+
+            svg
+                .selectAll('tpsDot')
+                .data(branchArray)
+                .enter()
+                .append('circle')
+                .attr('cx', (d) => xScale(d.git_commit))
+                .attr('cy', (d) => tpsScale(d.avgtps))
+                .attr('transform', `translate(${canvasPadding}, ${canvasPadding})`)
+                .attr('r', 2);
+
+            for(const item of branchArray) {
+
+                svg
+                    .append('line')
+                    .attr('stroke', '#F278AB')
+                    .attr('stroke-width', '1.5px')
+                    .attr("x1", xScale(item.git_commit))
+                    .attr("y1", tpsScale(item.maxtps))
+                    .attr("x2", xScale(item.git_commit))
+                    .attr("y2", tpsScale(item.mintps))
+                    .attr('transform', `translate(${canvasPadding}, ${canvasPadding})`); 
+
+            }
+
+        };
+
     </script>
 
     <script src="components/navigation.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/d3js/6.7.0/d3.min.js"></script>
 
     <link rel="stylesheet" type="text/css" href="styles/common.css">
     <link rel="stylesheet" type="text/css" href="styles/navigation.css">
