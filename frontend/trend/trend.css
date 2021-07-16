@@ -1,0 +1,10 @@
+#trend__chart__list {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.trend__chart {
+    width: 100%;
+}

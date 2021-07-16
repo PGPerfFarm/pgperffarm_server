@@ -12,6 +12,8 @@
 
     <script src="scripts/request.js"></script>
     <script src="scripts/common.js"></script>
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/d3js/6.7.0/d3.min.js"></script>
 
 </head>
 
@@ -63,7 +65,7 @@
 
         </div>
 
-        <div id="canvas"></div>
+        <div id="trend__chart__list"></div>
 
     </div>
 
@@ -71,6 +73,7 @@
         
         const id = getUrlParam('id');
         const config = getUrlParam('config');
+        const chartListElement = document.querySelector('#trend__chart__list');
 
         sendRequest(endpoints.trend + id + '/' + config, (response) => {
 
@@ -113,7 +116,7 @@
             }
 
             // sort each branch by time
-            for(const branchArray of Object.values(chartData)) {
+            for(const [branch, branchArray] of Object.entries(chartData)) {
 
                 branchArray.sort(function(a, b) {
                     const aDate = new Date(a.add_time), bDate = new Date(b.add_time);
@@ -122,7 +125,57 @@
                     else return 0;
                 });
 
-                drawChart(branchArray);
+                let append = `
+
+                    <div class="card">
+
+                        <div class="title">${branch}</div>
+                        
+                        <div class="space-vertical"></div>
+
+                        <div id="canvas-${branch}" class="trend__chart"></div>
+
+                        <table class="table-outline" border="1">
+
+                            <thead>
+                                <th>Commit</th>
+                                <th>Average Latency</th>
+                                <th>STD Latency</th>
+                                <th>Average TPS</th>
+                                <th>STD TPS</th>
+                                <th>Min Latency</th>
+                                <th>Max Latency</th>
+                                <th>Min TPS</th>
+                                <th>Max TPS</th>
+                            </thead>
+
+                            <tbody>
+
+                `;
+
+                for(const item of branchArray) {
+
+                    append += `
+                    <tr>
+                        <td>${item.git_commit}</td>
+                        <td>${item.avglat}</td>
+                        <td>${item.stdlat}</td>
+                        <td>${item.avgtps}</td>
+                        <td>${item.stdtps}</td>
+                        <td>${item.minlat}</td>
+                        <td>${item.maxlat}</td>
+                        <td>${item.mintps}</td>
+                        <td>${item.maxtps}</td>
+                    </tr>
+                    `;
+
+                }
+
+                append += '</tbody></table></div>';
+
+                chartListElement.innerHTML += append;
+
+                drawChart("canvas-" + branch, branchArray);
 
             }
 
@@ -151,7 +204,7 @@
 
     	};
 
-        const drawChart = (branchArray) => {
+        const drawChart = (elementId, branchArray) => {
 
             const commitList = branchArray.map((value) => value.git_commit);
             let maxLatency = branchArray[0].maxlat;
@@ -168,14 +221,14 @@
 
             }
 
-            const canvasElement = document.getElementById('canvas');
-            const canvasWidth = canvasElement.parentElement.clientWidth;
-            const canvasHeight = canvasElement.parentElement.clientHeight;
+            const canvasElement = document.getElementById(elementId);
+            const canvasWidth = canvasElement.parentElement.clientWidth - 40;
+            const canvasHeight = 500;
             const canvasPadding = 50;
             const graphWidth = canvasWidth - canvasPadding*2;
             const graphHeight = canvasHeight - canvasPadding*2;
 
-            const canvas = d3.select('#canvas');
+            const canvas = d3.select('#' + elementId);
 
             const svg = canvas
                 .append('svg')
@@ -355,10 +408,10 @@
     </script>
 
     <script src="components/navigation.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/d3js/6.7.0/d3.min.js"></script>
 
     <link rel="stylesheet" type="text/css" href="styles/common.css">
     <link rel="stylesheet" type="text/css" href="styles/navigation.css">
+    <link rel="stylesheet" type="text/css" href="trend/trend.css">
 
 </body>
 
