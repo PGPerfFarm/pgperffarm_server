@@ -8,3 +8,14 @@
 .trend__chart {
     width: 100%;
 }
+
+.x-axis {
+    font-size: 13px;
+    text-anchor: middle;
+}
+
+.y-axis {
+    font-size: 13px;
+    text-anchor: middle;
+    writing-mode: vertical-rl;
+}
