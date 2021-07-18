@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 
-from benchmarks.models import PgBenchBenchmark, PgBenchResult, PgBenchStatement, PgBenchRunStatement, PgBenchLog, PgStatStatements, CollectdCpu, CollectdProcess, CollectdContextswitch, CollectdIpcShm, CollectdIpcMsg, CollectdIpcSem, CollectdMemory, CollectdSwap, CollectdVmem, CollectdDisk
+from benchmarks.models import PgBenchBenchmark, PgBenchResult, PgBenchStatement, PgBenchRunStatement, PgBenchLog, PgStatStatements, PgStatStatementsQuery, CollectdCpu, CollectdProcess, CollectdContextswitch, CollectdIpcShm, CollectdIpcMsg, CollectdIpcSem, CollectdMemory, CollectdSwap, CollectdVmem, CollectdDisk
 from runs.models import RunInfo
 from machines.models import Machine
 
@@ -52,6 +52,10 @@ def pgbench_result_complete_view(request, id):
         statements = PgBenchStatement.objects.filter(pgbench_statement_id=run_statement['pgbench_run_statement_id']).values()
         statements_list = list(statements)
         run_statement['statements'] = statements_list
+
+    for pg_stat_statements in pg_stat_statements_list:
+        query = PgStatStatementsQuery.objects.filter(query_id=pg_stat_statements['query_id']).values().first()['query']
+        pg_stat_statements['query'] = query
 
     collectd = {
         'cpu': collectd_cpu_list,
