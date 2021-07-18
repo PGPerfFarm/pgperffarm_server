@@ -301,157 +301,193 @@ def parse_collectd(pgbench_result_id, result):
 
     try:
 
-        for key, value in cpu_average.items():
-            collectd_cpu = CollectdCpu(
-                epoch=float(key),
-                percent_user=float(get_collectd_item('percent-user', value)),
-                percent_system=float(get_collectd_item('percent-system', value)),
-                percent_idle=float(get_collectd_item('percent-idle', value)),
-                percent_wait=float(get_collectd_item('percent-wait', value)),
-                percent_nice=float(get_collectd_item('percent-nice', value)),
-                percent_interrupt=float(get_collectd_item('percent-interrupt', value)),
-                percent_softirq=float(get_collectd_item('percent-softirq', value)),
-                percent_steal=float(get_collectd_item('percent-steal', value)),
-                pgbench_result_id=pgbench_result_id,
-            )
+        try:
+            for key, value in cpu_average.items():
+                collectd_cpu = CollectdCpu(
+                    epoch=float(key),
+                    percent_user=float(get_collectd_item('percent-user', value)),
+                    percent_system=float(get_collectd_item('percent-system', value)),
+                    percent_idle=float(get_collectd_item('percent-idle', value)),
+                    percent_wait=float(get_collectd_item('percent-wait', value)),
+                    percent_nice=float(get_collectd_item('percent-nice', value)),
+                    percent_interrupt=float(get_collectd_item('percent-interrupt', value)),
+                    percent_softirq=float(get_collectd_item('percent-softirq', value)),
+                    percent_steal=float(get_collectd_item('percent-steal', value)),
+                    pgbench_result_id=pgbench_result_id,
+                )
 
-            collectd_cpu.save()
+                collectd_cpu.save()
 
-        for key, value in processes.items():
-            collectd_processes = CollectdProcess(
-                epoch=float(key),
-                fork_rate=int(float(get_collectd_item('fork_rate', value))),
-                ps_state_running=int(float(get_collectd_item('ps_state-running', value))),
-                ps_state_stopped=int(float(get_collectd_item('ps_state-stopped', value))),
-                ps_state_sleeping=int(float(get_collectd_item('ps_state-sleeping', value))),
-                ps_state_paging=int(float(get_collectd_item('ps_state-paging', value))),
-                ps_state_blocked=int(float(get_collectd_item('ps_state-blocked', value))),
-                ps_state_zombies=int(float(get_collectd_item('ps_state-zombies', value))),
-                pgbench_result_id=pgbench_result_id,
-            )
+        except TypeError:
+            pass
 
-            collectd_processes.save()
+        try:
+            for key, value in processes.items():
+                collectd_processes = CollectdProcess(
+                    epoch=float(key),
+                    fork_rate=int(float(get_collectd_item('fork_rate', value))),
+                    ps_state_running=int(float(get_collectd_item('ps_state-running', value))),
+                    ps_state_stopped=int(float(get_collectd_item('ps_state-stopped', value))),
+                    ps_state_sleeping=int(float(get_collectd_item('ps_state-sleeping', value))),
+                    ps_state_paging=int(float(get_collectd_item('ps_state-paging', value))),
+                    ps_state_blocked=int(float(get_collectd_item('ps_state-blocked', value))),
+                    ps_state_zombies=int(float(get_collectd_item('ps_state-zombies', value))),
+                    pgbench_result_id=pgbench_result_id,
+                )
 
-        for key, value in contextswitch.items():
-            collectd_contextswitch = CollectdContextswitch(
-                epoch=float(key),
-                contextswitch=int(float(get_collectd_item('contextswitch', value))),
-                pgbench_result_id=pgbench_result_id,
-            )
+                collectd_processes.save()
 
-            collectd_contextswitch.save()
+        except TypeError:
+            pass
 
-        for key, value in ipc_shm.items():
-            collectd_ipc_shm = CollectdIpcShm(
-                epoch=float(key),
-                segments=int(float(get_collectd_item('segments', value))),
-                bytes_total=int(float(get_collectd_item('bytes-total', value))),
-                bytes_rss=int(float(get_collectd_item('bytes-rss', value))),
-                bytes_swapped=int(float(get_collectd_item('bytes-swapped', value))),
-                pgbench_result_id=pgbench_result_id,
-            )
+        try:
+            for key, value in contextswitch.items():
+                collectd_contextswitch = CollectdContextswitch(
+                    epoch=float(key),
+                    contextswitch=int(float(get_collectd_item('contextswitch', value))),
+                    pgbench_result_id=pgbench_result_id,
+                )
 
-            collectd_ipc_shm.save()
+                collectd_contextswitch.save()
 
-        for key, value in ipc_msg.items():
-            collectd_ipc_msg = CollectdIpcMsg(
-                epoch=float(key),
-                count_space=int(float(get_collectd_item('count-space', value))),
-                count_queues=int(float(get_collectd_item('count-queues', value))),
-                count_headers=int(float(get_collectd_item('count-headers', value))),
-                pgbench_result_id=pgbench_result_id,
-            )
+        except TypeError:
+            pass
 
-            collectd_ipc_msg.save()
+        try:
+            for key, value in ipc_shm.items():
+                collectd_ipc_shm = CollectdIpcShm(
+                    epoch=float(key),
+                    segments=int(float(get_collectd_item('segments', value))),
+                    bytes_total=int(float(get_collectd_item('bytes-total', value))),
+                    bytes_rss=int(float(get_collectd_item('bytes-rss', value))),
+                    bytes_swapped=int(float(get_collectd_item('bytes-swapped', value))),
+                    pgbench_result_id=pgbench_result_id,
+                )
 
-        for key, value in ipc_sem.items():
-            collectd_ipc_sem = CollectdIpcSem(
-                epoch=float(key),
-                count_total=int(float(get_collectd_item('count-total', value))),
-                count_arrays=int(float(get_collectd_item('count-arrays', value))),
-                pgbench_result_id=pgbench_result_id,
-            )
+                collectd_ipc_shm.save()
 
-            collectd_ipc_sem.save()
+        except TypeError:
+            pass
 
-        for key, value in memory.items():
-            collectd_memory = CollectdMemory(
-                epoch=float(key),
-                memory_free=int(float(get_collectd_item('memory-free', value))),
-                memory_used=int(float(get_collectd_item('memory-used', value))),
-                memory_cached=int(float(get_collectd_item('memory-cached', value))),
-                memory_buffered=int(float(get_collectd_item('memory-buffered', value))),
-                memory_slab_recl=int(float(get_collectd_item('memory-slab_recl', value))),
-                memory_slab_unrecl=int(float(get_collectd_item('memory-slab_unrecl', value))),
-                pgbench_result_id=pgbench_result_id,
-            )
+        try:
+            for key, value in ipc_msg.items():
+                collectd_ipc_msg = CollectdIpcMsg(
+                    epoch=float(key),
+                    count_space=int(float(get_collectd_item('count-space', value))),
+                    count_queues=int(float(get_collectd_item('count-queues', value))),
+                    count_headers=int(float(get_collectd_item('count-headers', value))),
+                    pgbench_result_id=pgbench_result_id,
+                )
 
-            collectd_memory.save()
+                collectd_ipc_msg.save()
 
-        for key, value in swap.items():
-            collectd_swap = CollectdSwap(
-                epoch=float(key),
-                swap_free=int(float(get_collectd_item('swap-free', value))),
-                swap_used=int(float(get_collectd_item('swap-used', value))),
-                swap_cached=int(float(get_collectd_item('swap-cached', value))),
-                swap_io_in=int(float(get_collectd_item('swap_io-in', value))),
-                swap_io_out=int(float(get_collectd_item('swap_io-out', value))),
-                pgbench_result_id=pgbench_result_id,
-            )
+        except TypeError:
+            pass
 
-            collectd_swap.save()
+        try:
+            for key, value in ipc_sem.items():
+                collectd_ipc_sem = CollectdIpcSem(
+                    epoch=float(key),
+                    count_total=int(float(get_collectd_item('count-total', value))),
+                    count_arrays=int(float(get_collectd_item('count-arrays', value))),
+                    pgbench_result_id=pgbench_result_id,
+                )
 
-        for key, value in vmem.items():
-            collectd_vmem = CollectdVmem(
-                epoch=float(key),
-                vmpage_number_active_file=int(float(get_collectd_item('vmpage_number-active_file', value))),
-                vmpage_number_inactive_file=int(float(get_collectd_item('vmpage_number-inactive_file', value))),
-                vmpage_number_isolated_file=int(float(get_collectd_item('vmpage_number-isolated_file', value))),
-                vmpage_number_active_anon=int(float(get_collectd_item('vmpage_number-active_anon', value))),
-                vmpage_number_inactive_anon=int(float(get_collectd_item('vmpage_number-inactive_anon', value))),
-                vmpage_number_isolated_anon=int(float(get_collectd_item('vmpage_number-isolated_anon', value))),
-                vmpage_number_file_pages=int(float(get_collectd_item('vmpage_number-file_pages', value))),
-                vmpage_number_file_hugepages=int(float(get_collectd_item('vmpage_number-file_hugepages', value))),
-                vmpage_number_file_pmdmapped=int(float(get_collectd_item('vmpage_number-file_pmdmapped', value))),
-                vmpage_number_kernel_stack=int(float(get_collectd_item('vmpage_number-kernel_stack', value))),
-                vmpage_number_kernel_misc_reclaimable=int(float(get_collectd_item('vmpage_number-kernel_misc_reclaimable', value))),
-                vmpage_number_slab_reclaimable=int(float(get_collectd_item('vmpage_number-slab_reclaimable', value))),
-                vmpage_number_slab_unreclaimable=int(float(get_collectd_item('vmpage_number-slab_unreclaimable', value))),
-                vmpage_number_zone_write_pending=int(float(get_collectd_item('vmpage_number-zone_write_pending', value))),
-                vmpage_number_zone_unevictable=int(float(get_collectd_item('vmpage_number-zone_unevictable', value))),
-                vmpage_number_zone_active_anon=int(float(get_collectd_item('vmpage_number-zone_active_anon', value))),
-                vmpage_number_zone_inactive_anon=int(float(get_collectd_item('vmpage_number-zone_inactive_anon', value))),
-                vmpage_number_zone_active_file=int(float(get_collectd_item('vmpage_number-zone_active_file', value))),
-                vmpage_number_zone_inactive_file=int(float(get_collectd_item('vmpage_number-zone_inactive_file', value))),
-                vmpage_number_foll_pin_acquired=int(float(get_collectd_item('vmpage_number-foll_pin_acquired', value))),
-                vmpage_number_foll_pin_released=int(float(get_collectd_item('vmpage_number-foll_pin_released', value))),
-                vmpage_number_dirty=int(float(get_collectd_item('vmpage_number-dirty', value))),
-                vmpage_number_dirty_threshold=int(float(get_collectd_item('vmpage_number-dirty_threshold', value))),
-                vmpage_number_dirty_background_threshold=int(float(get_collectd_item('vmpage_number-dirty_background_threshold', value))),
-                vmpage_number_vmscan_write=int(float(get_collectd_item('vmpage_number-vmscan_write', value))),
-                vmpage_number_vmscan_immediate_reclaim=int(float(get_collectd_item('vmpage_number-vmscan_immediate_reclaim', value))),
-                vmpage_number_anon_pages=int(float(get_collectd_item('vmpage_number-anon_pages', value))),
-                vmpage_number_anon_transparent_hugepages=int(float(get_collectd_item('vmpage_number-anon_transparent_hugepages', value))),
-                vmpage_number_shmem=int(float(get_collectd_item('vmpage_number-shmem', value))),
-                vmpage_number_shmem_hugepages=int(float(get_collectd_item('vmpage_number-shmem_hugepages', value))),
-                vmpage_number_shmem_pmdmapped=int(float(get_collectd_item('vmpage_number-shmem_pmdmapped', value))),
-                vmpage_number_writeback=int(float(get_collectd_item('vmpage_number-writeback', value))),
-                vmpage_number_writeback_temp=int(float(get_collectd_item('vmpage_number-writeback_temp', value))),
-                vmpage_number_free_pages=int(float(get_collectd_item('vmpage_number-free_pages', value))),
-                vmpage_number_free_cma=int(float(get_collectd_item('vmpage_number-free_cma', value))),
-                vmpage_number_bounce=int(float(get_collectd_item('vmpage_number-bounce', value))),
-                vmpage_number_unevictable=int(float(get_collectd_item('vmpage_number-unevictable', value))),
-                vmpage_number_page_table_pages=int(float(get_collectd_item('vmpage_number-page_table_pages', value))),
-                vmpage_number_mapped=int(float(get_collectd_item('vmpage_number-mapped', value))),
-                vmpage_number_zspages=int(float(get_collectd_item('vmpage_number-zspages', value))),
-                vmpage_number_mlock=int(float(get_collectd_item('vmpage_number-mlock', value))),
-                vmpage_number_unstable=int(float(get_collectd_item('vmpage_number-unstable', value))),
-                vmpage_action_written=int(float(get_collectd_item('vmpage_action-written', value))),
-                vmpage_action_dirtied=int(float(get_collectd_item('vmpage_action-dirtied', value))),
-                pgbench_result_id=pgbench_result_id,
-            )
+                collectd_ipc_sem.save()
 
-            collectd_vmem.save()
+        except TypeError:
+            pass
+
+        try:
+            for key, value in memory.items():
+                collectd_memory = CollectdMemory(
+                    epoch=float(key),
+                    memory_free=int(float(get_collectd_item('memory-free', value))),
+                    memory_used=int(float(get_collectd_item('memory-used', value))),
+                    memory_cached=int(float(get_collectd_item('memory-cached', value))),
+                    memory_buffered=int(float(get_collectd_item('memory-buffered', value))),
+                    memory_slab_recl=int(float(get_collectd_item('memory-slab_recl', value))),
+                    memory_slab_unrecl=int(float(get_collectd_item('memory-slab_unrecl', value))),
+                    pgbench_result_id=pgbench_result_id,
+                )
+
+                collectd_memory.save()
+
+        except TypeError:
+            pass
+
+        try:
+            for key, value in swap.items():
+                collectd_swap = CollectdSwap(
+                    epoch=float(key),
+                    swap_free=int(float(get_collectd_item('swap-free', value))),
+                    swap_used=int(float(get_collectd_item('swap-used', value))),
+                    swap_cached=int(float(get_collectd_item('swap-cached', value))),
+                    swap_io_in=int(float(get_collectd_item('swap_io-in', value))),
+                    swap_io_out=int(float(get_collectd_item('swap_io-out', value))),
+                    pgbench_result_id=pgbench_result_id,
+                )
+
+                collectd_swap.save()
+
+        except TypeError:
+            pass
+
+        try:
+            for key, value in vmem.items():
+                collectd_vmem = CollectdVmem(
+                    epoch=float(key),
+                    vmpage_number_active_file=int(float(get_collectd_item('vmpage_number-active_file', value))),
+                    vmpage_number_inactive_file=int(float(get_collectd_item('vmpage_number-inactive_file', value))),
+                    vmpage_number_isolated_file=int(float(get_collectd_item('vmpage_number-isolated_file', value))),
+                    vmpage_number_active_anon=int(float(get_collectd_item('vmpage_number-active_anon', value))),
+                    vmpage_number_inactive_anon=int(float(get_collectd_item('vmpage_number-inactive_anon', value))),
+                    vmpage_number_isolated_anon=int(float(get_collectd_item('vmpage_number-isolated_anon', value))),
+                    vmpage_number_file_pages=int(float(get_collectd_item('vmpage_number-file_pages', value))),
+                    vmpage_number_file_hugepages=int(float(get_collectd_item('vmpage_number-file_hugepages', value))),
+                    vmpage_number_file_pmdmapped=int(float(get_collectd_item('vmpage_number-file_pmdmapped', value))),
+                    vmpage_number_kernel_stack=int(float(get_collectd_item('vmpage_number-kernel_stack', value))),
+                    vmpage_number_kernel_misc_reclaimable=int(float(get_collectd_item('vmpage_number-kernel_misc_reclaimable', value))),
+                    vmpage_number_slab_reclaimable=int(float(get_collectd_item('vmpage_number-slab_reclaimable', value))),
+                    vmpage_number_slab_unreclaimable=int(float(get_collectd_item('vmpage_number-slab_unreclaimable', value))),
+                    vmpage_number_zone_write_pending=int(float(get_collectd_item('vmpage_number-zone_write_pending', value))),
+                    vmpage_number_zone_unevictable=int(float(get_collectd_item('vmpage_number-zone_unevictable', value))),
+                    vmpage_number_zone_active_anon=int(float(get_collectd_item('vmpage_number-zone_active_anon', value))),
+                    vmpage_number_zone_inactive_anon=int(float(get_collectd_item('vmpage_number-zone_inactive_anon', value))),
+                    vmpage_number_zone_active_file=int(float(get_collectd_item('vmpage_number-zone_active_file', value))),
+                    vmpage_number_zone_inactive_file=int(float(get_collectd_item('vmpage_number-zone_inactive_file', value))),
+                    vmpage_number_foll_pin_acquired=int(float(get_collectd_item('vmpage_number-foll_pin_acquired', value))),
+                    vmpage_number_foll_pin_released=int(float(get_collectd_item('vmpage_number-foll_pin_released', value))),
+                    vmpage_number_dirty=int(float(get_collectd_item('vmpage_number-dirty', value))),
+                    vmpage_number_dirty_threshold=int(float(get_collectd_item('vmpage_number-dirty_threshold', value))),
+                    vmpage_number_dirty_background_threshold=int(float(get_collectd_item('vmpage_number-dirty_background_threshold', value))),
+                    vmpage_number_vmscan_write=int(float(get_collectd_item('vmpage_number-vmscan_write', value))),
+                    vmpage_number_vmscan_immediate_reclaim=int(float(get_collectd_item('vmpage_number-vmscan_immediate_reclaim', value))),
+                    vmpage_number_anon_pages=int(float(get_collectd_item('vmpage_number-anon_pages', value))),
+                    vmpage_number_anon_transparent_hugepages=int(float(get_collectd_item('vmpage_number-anon_transparent_hugepages', value))),
+                    vmpage_number_shmem=int(float(get_collectd_item('vmpage_number-shmem', value))),
+                    vmpage_number_shmem_hugepages=int(float(get_collectd_item('vmpage_number-shmem_hugepages', value))),
+                    vmpage_number_shmem_pmdmapped=int(float(get_collectd_item('vmpage_number-shmem_pmdmapped', value))),
+                    vmpage_number_writeback=int(float(get_collectd_item('vmpage_number-writeback', value))),
+                    vmpage_number_writeback_temp=int(float(get_collectd_item('vmpage_number-writeback_temp', value))),
+                    vmpage_number_free_pages=int(float(get_collectd_item('vmpage_number-free_pages', value))),
+                    vmpage_number_free_cma=int(float(get_collectd_item('vmpage_number-free_cma', value))),
+                    vmpage_number_bounce=int(float(get_collectd_item('vmpage_number-bounce', value))),
+                    vmpage_number_unevictable=int(float(get_collectd_item('vmpage_number-unevictable', value))),
+                    vmpage_number_page_table_pages=int(float(get_collectd_item('vmpage_number-page_table_pages', value))),
+                    vmpage_number_mapped=int(float(get_collectd_item('vmpage_number-mapped', value))),
+                    vmpage_number_zspages=int(float(get_collectd_item('vmpage_number-zspages', value))),
+                    vmpage_number_mlock=int(float(get_collectd_item('vmpage_number-mlock', value))),
+                    vmpage_number_unstable=int(float(get_collectd_item('vmpage_number-unstable', value))),
+                    vmpage_action_written=int(float(get_collectd_item('vmpage_action-written', value))),
+                    vmpage_action_dirtied=int(float(get_collectd_item('vmpage_action-dirtied', value))),
+                    pgbench_result_id=pgbench_result_id,
+                )
+
+                collectd_vmem.save()
+
+        except TypeError:
+            pass
 
     except Exception as e:
         raise RuntimeError(e)
