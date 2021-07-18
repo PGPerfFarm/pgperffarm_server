@@ -206,7 +206,19 @@ def parse_pgbench_logs(result, log_array, iteration):
 
 def parse_pg_stat_statements(pgbench_result_id, result):
     for item in result:
-        query = PgStatStatementsQuery.objects.get(query=item['query'])
+
+        try:
+            query = PgStatStatementsQuery.objects.get(query=item['query'])
+
+        except PgStatStatementsQuery.DoesNotExist:
+
+            try:
+
+                query = PgStatStatementsQuery(query=item['query'])
+                query.save()
+
+            except Exception as e:
+                raise RuntimeError(e)
 
         pg_stat_statements = PgStatStatements(
             pgbench_result_id=pgbench_result_id,
