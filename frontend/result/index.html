@@ -59,6 +59,12 @@
             <input id="tab2" type="radio" name="tabs">
             <label for="tab2">Log</label>
 
+            <input id="tab3" type="radio" name="tabs">
+            <label for="tab3">pg_stat_statements</label>
+
+            <input id="tab4" type="radio" name="tabs">
+            <label for="tab4">collectd</label>
+
             <section id="content1">
                 
                 <div>
@@ -110,6 +116,220 @@
 
             </section>
 
+            <section id="content3">
+                
+                <div>
+
+                    <table id="result__table__pg_stat_statements" class="table-outline" border="1">
+
+                        <thead>
+                            <th>Query</th>
+                            <th>Calls</th>
+                            <th>Total Exec Time</th>
+                            <th>Min Exec Time</th>
+                            <th>Max Exec Time</th>
+                            <th>Mean Exec Time</th>
+                            <th>Stddev Exec Time</th>
+                            <th>Rows</th>
+                        </thead>
+                        
+                        <tbody></tbody>
+        
+                    </table>
+
+                </div>
+
+            </section>
+
+            <section id="content4">
+                
+                <div>
+
+                    <span>CPU Average</span>
+
+                    <div class="space-vertical"></div>
+
+                    <table id="result__table__cpu" class="table-outline" border="1">
+
+                        <thead>
+                            <th>epoch</th>
+                            <th>percent_user</th>
+                            <th>percent_system</th>
+                            <th>percent_idle</th>
+                            <th>percent_wait</th>
+                            <th>percent_nice</th>
+                            <th>percent_interrupt</th>
+                            <th>percent_softirq</th>
+                            <th>percent_steal</th>
+                        </thead>
+                        
+                        <tbody></tbody>
+        
+                    </table>
+
+                    <div class="space-vertical"></div>
+
+                    <span>Processes</span>
+
+                    <div class="space-vertical"></div>
+
+                    <table id="result__table__processes" class="table-outline" border="1">
+
+                        <thead>
+                            <th>epoch</th>
+                            <th>fork_rate</th>
+                            <th>ps_state_running</th>
+                            <th>ps_state_stopped</th>
+                            <th>ps_state_sleeping</th>
+                            <th>ps_state_paging</th>
+                            <th>ps_state_blocked</th>
+                            <th>ps_state_zombies</th>
+                        </thead>
+                        
+                        <tbody></tbody>
+        
+                    </table>
+
+                    <div class="space-vertical"></div>
+
+                    <span>Contextswitch</span>
+
+                    <div class="space-vertical"></div>
+
+                    <table id="result__table__contextswitch" class="table-outline" border="1">
+
+                        <thead>
+                            <th>epoch</th>
+                            <th>contextswitch</th>
+                        </thead>
+                        
+                        <tbody></tbody>
+        
+                    </table>
+
+                    <div class="space-vertical"></div>
+
+                    <span>IPC shm</span>
+
+                    <div class="space-vertical"></div>
+
+                    <table id="result__table__ipc_shm" class="table-outline" border="1">
+
+                        <thead>
+                            <th>epoch</th>
+                            <th>segments</th>
+                            <th>bytes_total</th>
+                            <th>bytes_rss</th>
+                            <th>bytes_swapped</th>
+                        </thead>
+                        
+                        <tbody></tbody>
+        
+                    </table>
+
+                    <div class="space-vertical"></div>
+
+                    <span>IPC msg</span>
+
+                    <div class="space-vertical"></div>
+
+                    <table id="result__table__ipc_msg" class="table-outline" border="1">
+
+                        <thead>
+                            <th>epoch</th>
+                            <th>count_space</th>
+                            <th>count_queues</th>
+                            <th>count_headers</th>
+                        </thead>
+                        
+                        <tbody></tbody>
+        
+                    </table>
+
+                    <div class="space-vertical"></div>
+
+                    <span>IPC sem</span>
+
+                    <div class="space-vertical"></div>
+
+                    <table id="result__table__ipc_sem" class="table-outline" border="1">
+
+                        <thead>
+                            <th>epoch</th>
+                            <th>count_total</th>
+                            <th>count_arrays</th>
+                        </thead>
+                        
+                        <tbody></tbody>
+        
+                    </table>
+
+                    <div class="space-vertical"></div>
+
+                    <span>Memory</span>
+
+                    <div class="space-vertical"></div>
+
+                    <table id="result__table__memory" class="table-outline" border="1">
+
+                        <thead>
+                            <th>epoch</th>
+                            <th>memory_free</th>
+                            <th>memory_used</th>
+                            <th>memory_cached</th>
+                            <th>memory_buffered</th>
+                            <th>memory_slab_recl</th>
+                            <th>memory_slab_unrecl</th>
+                        </thead>
+                        
+                        <tbody></tbody>
+        
+                    </table>
+
+                    <div class="space-vertical"></div>
+
+                    <span>Swap</span>
+
+                    <div class="space-vertical"></div>
+
+                    <table id="result__table__swap" class="table-outline" border="1">
+
+                        <thead>
+                            <th>epoch</th>
+                            <th>swap_free</th>
+                            <th>swap_used</th>
+                            <th>swap_cached</th>
+                            <th>swap_io_in</th>
+                            <th>swap_io_out</th>
+                        </thead>
+                        
+                        <tbody></tbody>
+        
+                    </table>
+
+                    <div class="space-vertical"></div>
+
+                    <span>Vmem</span>
+
+                    <div class="space-vertical"></div>
+
+                    <table id="result__table__vmem" class="table-outline" border="1">
+
+                        <thead>
+                            <th>epoch</th>
+                            <th>vmpage_number_active_file</th>
+                            <th>vmpage_number_inactive_file</th>
+                            <th>vmpage_number_isolated_file</th>
+                        </thead>
+                        
+                        <tbody></tbody>
+        
+                    </table>
+
+                </div>
+
+            </section>
+
         </div>
 
     </div>
@@ -120,6 +340,16 @@
 
         const latencyTableBodyElement = document.getElementById('result__table__latency').getElementsByTagName('tbody')[0];
         const logTableBodyElement = document.getElementById('result__table__log').getElementsByTagName('tbody')[0];
+        const pgStatStatementsTableBodyElement = document.getElementById('result__table__pg_stat_statements').getElementsByTagName('tbody')[0];
+        const cpuTableBodyElement = document.getElementById('result__table__cpu').getElementsByTagName('tbody')[0];
+        const processesTableBodyElement = document.getElementById('result__table__processes').getElementsByTagName('tbody')[0];
+        const contextswitchTableBodyElement = document.getElementById('result__table__contextswitch').getElementsByTagName('tbody')[0];
+        const ipcShmTableBodyElement = document.getElementById('result__table__ipc_shm').getElementsByTagName('tbody')[0];
+        const ipcMsgTableBodyElement = document.getElementById('result__table__ipc_msg').getElementsByTagName('tbody')[0];
+        const ipcSemTableBodyElement = document.getElementById('result__table__ipc_sem').getElementsByTagName('tbody')[0];
+        const memoryTableBodyElement = document.getElementById('result__table__memory').getElementsByTagName('tbody')[0];
+        const swapTableBodyElement = document.getElementById('result__table__swap').getElementsByTagName('tbody')[0];
+        const vmemTableBodyElement = document.getElementById('result__table__vmem').getElementsByTagName('tbody')[0];
 
         sendRequest(endpoints.benchmarkResults + id, (response) => {
 
@@ -182,6 +412,172 @@
             
             }
 
+            let pg_stat_statements = {};
+
+            for (let i = 0; i < response.pg_stat_statements.length; i++) {
+
+                const single_result = {
+                    "query": response.pg_stat_statements[i].query,
+                    "calls": response.pg_stat_statements[i].calls,
+                    "total_exec_time": response.pg_stat_statements[i].total_exec_time,
+                    "min_exec_time": response.pg_stat_statements[i].min_exec_time,
+                    "max_exec_time": response.pg_stat_statements[i].max_exec_time,
+                    "mean_exec_time": response.pg_stat_statements[i].mean_exec_time,
+                    "stddev_exec_time": response.pg_stat_statements[i].stddev_exec_time,
+                    "rows": response.pg_stat_statements[i].rows,
+                };
+
+                pg_stat_statements[response.pg_stat_statements[i].pg_stat_statements_id] = single_result;
+            
+            }
+
+            let collectd_cpu = {};
+
+            for (let i = 0; i < response.collectd.cpu.length; i++) {
+
+                const single_result = {
+                    "epoch": response.collectd.cpu[i].epoch,
+                    "percent_user": response.collectd.cpu[i].percent_user,
+                    "percent_system": response.collectd.cpu[i].percent_system,
+                    "percent_idle": response.collectd.cpu[i].percent_idle,
+                    "epopercent_waitch": response.collectd.cpu[i].percent_wait,
+                    "percent_nice": response.collectd.cpu[i].percent_nice,
+                    "percent_interrupt": response.collectd.cpu[i].percent_interrupt,
+                    "percent_softirq": response.collectd.cpu[i].percent_softirq,
+                    "percent_steal": response.collectd.cpu[i].percent_steal,
+                };
+
+                collectd_cpu[response.collectd.cpu[i].collectd_cpu_id] = single_result;
+
+            }
+
+            let collectd_process = {};
+
+            for (let i = 0; i < response.collectd.process.length; i++) {
+
+                const single_result = {
+                    "epoch": response.collectd.process[i].epoch,
+                    "fork_rate": response.collectd.process[i].fork_rate,
+                    "ps_state_running": response.collectd.process[i].ps_state_running,
+                    "ps_state_stopped": response.collectd.process[i].ps_state_stopped,
+                    "ps_state_sleeping": response.collectd.process[i].ps_state_sleeping,
+                    "ps_state_paging": response.collectd.process[i].ps_state_paging,
+                    "ps_state_blocked": response.collectd.process[i].ps_state_blocked,
+                    "ps_state_zombies": response.collectd.process[i].ps_state_zombies,
+                };
+
+                collectd_process[response.collectd.process[i].collectd_process_id] = single_result;
+
+            }
+
+            let collectd_contextswitch = {};
+
+            for (let i = 0; i < response.collectd.contextswitch.length; i++) {
+
+                const single_result = {
+                    "epoch": response.collectd.contextswitch[i].epoch,
+                    "contextswitch": response.collectd.contextswitch[i].contextswitch,
+                };
+
+                collectd_contextswitch[response.collectd.contextswitch[i].collectd_contextswitch_id] = single_result;
+
+            }
+
+            let collectd_ipc_shm = {};
+
+            for (let i = 0; i < response.collectd.ipc_shm.length; i++) {
+
+                const single_result = {
+                    "epoch": response.collectd.ipc_shm[i].epoch,
+                    "segments": response.collectd.ipc_shm[i].segments,
+                    "bytes_total": response.collectd.ipc_shm[i].bytes_total,
+                    "bytes_rss": response.collectd.ipc_shm[i].bytes_rss,
+                    "bytes_swapped": response.collectd.ipc_shm[i].bytes_swapped,
+                };
+
+                collectd_ipc_shm[response.collectd.ipc_shm[i].collectd_ipc_shm_id] = single_result;
+
+            }
+
+            let collectd_ipc_msg = {};
+
+            for (let i = 0; i < response.collectd.ipc_msg.length; i++) {
+
+                const single_result = {
+                    "epoch": response.collectd.ipc_msg[i].epoch,
+                    "count_space": response.collectd.ipc_msg[i].count_space,
+                    "count_queues": response.collectd.ipc_msg[i].count_queues,
+                    "count_headers": response.collectd.ipc_msg[i].count_headers,
+                };
+
+                collectd_ipc_msg[response.collectd.ipc_msg[i].collectd_ipc_msg_id] = single_result;
+
+            }
+
+            let collectd_ipc_sem = {};
+
+            for (let i = 0; i < response.collectd.ipc_sem.length; i++) {
+
+                const single_result = {
+                    "epoch": response.collectd.ipc_sem[i].epoch,
+                    "count_total": response.collectd.ipc_sem[i].count_total,
+                    "count_arrays": response.collectd.ipc_sem[i].count_arrays,
+                };
+
+                collectd_ipc_sem[response.collectd.ipc_sem[i].collectd_ipc_sem_id] = single_result;
+
+            }
+
+            let collectd_memory = {};
+
+            for (let i = 0; i < response.collectd.memory.length; i++) {
+
+                const single_result = {
+                    "epoch": response.collectd.memory[i].epoch,
+                    "memory_free": response.collectd.memory[i].memory_free,
+                    "memory_used": response.collectd.memory[i].memory_used,
+                    "memory_cached": response.collectd.memory[i].memory_cached,
+                    "memory_buffered": response.collectd.memory[i].memory_buffered,
+                    "memory_slab_recl": response.collectd.memory[i].memory_slab_recl,
+                    "memory_slab_unrecl": response.collectd.memory[i].memory_slab_unrecl,
+                };
+
+                collectd_memory[response.collectd.memory[i].collectd_memory_id] = single_result;
+
+            }
+
+            let collectd_swap = {};
+
+            for (let i = 0; i < response.collectd.swap.length; i++) {
+
+                const single_result = {
+                    "epoch": response.collectd.swap[i].epoch,
+                    "swap_free": response.collectd.swap[i].swap_free,
+                    "swap_used": response.collectd.swap[i].swap_used,
+                    "swap_cached": response.collectd.swap[i].swap_cached,
+                    "swap_io_in": response.collectd.swap[i].swap_io_in,
+                    "swap_io_out": response.collectd.swap[i].swap_io_out,
+                };
+
+                collectd_swap[response.collectd.swap[i].collectd_swap_id] = single_result;
+
+            }
+
+            let collectd_vmem = {};
+
+            for (let i = 0; i < response.collectd.vmem.length; i++) {
+
+                const single_result = {
+                    "epoch": response.collectd.vmem[i].epoch,
+                    "vmpage_number_active_file": response.collectd.vmem[i].vmpage_number_active_file,
+                    "vmpage_number_inactive_file": response.collectd.vmem[i].vmpage_number_inactive_file,
+                    "vmpage_number_isolated_file": response.collectd.vmem[i].vmpage_number_isolated_file,
+                };
+
+                collectd_vmem[response.collectd.vmem[i].collectd_vmem_id] = single_result;
+
+            }
+
             document.querySelector('#value_id').innerHTML = id;
             document.querySelector('#value_machine').innerHTML = alias;
             document.querySelector('#value_branch').innerHTML = branch;
@@ -239,6 +635,192 @@
             }
 
             logTableBodyElement.innerHTML = logTableBodyContent;
+
+            let pgStatStatementsTableBodyContent = '';
+
+            for(const item of Object.values(pg_stat_statements)) {
+
+                pgStatStatementsTableBodyContent += `
+                <tr>
+                    <td>${escapeHtml(item.query)}</td>
+                    <td>${item.calls}</td>
+                    <td>${item.total_exec_time}</td>
+                    <td>${item.min_exec_time}</td>
+                    <td>${item.max_exec_time}</td>
+                    <td>${item.mean_exec_time}</td>
+                    <td>${item.stddev_exec_time}</td>
+                    <td>${item.rows}</td>
+                </tr>
+                `;
+
+            }
+
+            pgStatStatementsTableBodyElement.innerHTML = pgStatStatementsTableBodyContent;
+
+            let cpuTableBodyContent = '';
+
+            for(const item of Object.values(collectd_cpu)) {
+
+                cpuTableBodyContent += `
+                <tr>
+                    <td>${item.epoch}</td>
+                    <td>${item.percent_user}</td>
+                    <td>${item.percent_system}</td>
+                    <td>${item.percent_idle}</td>
+                    <td>${item.percent_wait}</td>
+                    <td>${item.percent_nice}</td>
+                    <td>${item.percent_interrupt}</td>
+                    <td>${item.percent_softirq}</td>
+                    <td>${item.percent_steal}</td>
+                </tr>
+                `;
+
+            }
+
+            cpuTableBodyElement.innerHTML = cpuTableBodyContent;
+
+            let processesTableBodyContent = '';
+
+            for(const item of Object.values(collectd_process)) {
+
+                processesTableBodyContent += `
+                <tr>
+                    <td>${item.epoch}</td>
+                    <td>${item.fork_rate}</td>
+                    <td>${item.ps_state_running}</td>
+                    <td>${item.ps_state_stopped}</td>
+                    <td>${item.ps_state_sleeping}</td>
+                    <td>${item.ps_state_paging}</td>
+                    <td>${item.ps_state_blocked}</td>
+                    <td>${item.ps_state_zombies}</td>
+                </tr>
+                `;
+
+            }
+
+            processesTableBodyElement.innerHTML = processesTableBodyContent;
+
+            let contextswitchTableBodyContent = '';
+
+            for(const item of Object.values(collectd_contextswitch)) {
+
+                contextswitchTableBodyContent += `
+                <tr>
+                    <td>${item.epoch}</td>
+                    <td>${item.contextswitch}</td>
+                </tr>
+                `;
+
+            }
+
+            contextswitchTableBodyElement.innerHTML = contextswitchTableBodyContent;
+
+            let ipcShmTableBodyContent = '';
+
+            for(const item of Object.values(collectd_ipc_shm)) {
+
+                ipcShmTableBodyContent += `
+                <tr>
+                    <td>${item.epoch}</td>
+                    <td>${item.segments}</td>
+                    <td>${item.bytes_total}</td>
+                    <td>${item.bytes_rss}</td>
+                    <td>${item.bytes_swapped}</td>
+                </tr>
+                `;
+
+            }
+
+            ipcShmTableBodyElement.innerHTML = ipcShmTableBodyContent;
+
+            let ipcMsgTableBodyContent = '';
+
+            for(const item of Object.values(collectd_ipc_msg)) {
+
+                ipcMsgTableBodyContent += `
+                <tr>
+                    <td>${item.epoch}</td>
+                    <td>${item.count_space}</td>
+                    <td>${item.count_queues}</td>
+                    <td>${item.count_headers}</td>
+                </tr>
+                `;
+
+            }
+
+            ipcMsgTableBodyElement.innerHTML = ipcMsgTableBodyContent;
+
+            let ipcSemTableBodyContent = '';
+
+            for(const item of Object.values(collectd_ipc_sem)) {
+
+                ipcSemTableBodyContent += `
+                <tr>
+                    <td>${item.epoch}</td>
+                    <td>${item.count_total}</td>
+                    <td>${item.count_arrays}</td>
+                </tr>
+                `;
+
+            }
+
+            ipcSemTableBodyElement.innerHTML = ipcSemTableBodyContent;
+
+            let memoryTableBodyContent = '';
+
+            for(const item of Object.values(collectd_memory)) {
+
+                memoryTableBodyContent += `
+                <tr>
+                    <td>${item.epoch}</td>
+                    <td>${item.memory_free}</td>
+                    <td>${item.memory_used}</td>
+                    <td>${item.memory_cached}</td>
+                    <td>${item.memory_buffered}</td>
+                    <td>${item.memory_slab_recl}</td>
+                    <td>${item.memory_slab_unrecl}</td>
+                </tr>
+                `;
+
+            }
+
+            memoryTableBodyElement.innerHTML = memoryTableBodyContent;
+
+            let swapTableBodyContent = '';
+
+            for(const item of Object.values(collectd_swap)) {
+
+                swapTableBodyContent += `
+                <tr>
+                    <td>${item.epoch}</td>
+                    <td>${item.swap_free}</td>
+                    <td>${item.swap_used}</td>
+                    <td>${item.swap_cached}</td>
+                    <td>${item.swap_io_in}</td>
+                    <td>${item.swap_io_out}</td>
+                </tr>
+                `;
+
+            }
+
+            swapTableBodyElement.innerHTML = swapTableBodyContent;
+
+            let vmemTableBodyContent = '';
+
+            for(const item of Object.values(collectd_vmem)) {
+
+                vmemTableBodyContent += `
+                <tr>
+                    <td>${item.epoch}</td>
+                    <td>${item.vmpage_number_active_file}</td>
+                    <td>${item.vmpage_number_inactive_file}</td>
+                    <td>${item.vmpage_number_isolated_file}</td>
+                </tr>
+                `;
+
+            }
+
+            vmemTableBodyElement.innerHTML = vmemTableBodyContent;
 
         });
 
