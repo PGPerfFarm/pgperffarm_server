@@ -36,6 +36,12 @@
             <div><span id="value_os"></span></div>
             <div><span id="value_compiler"></span></div>
 
+            <div class="space-vertical"></div>
+
+            <a id="link__machine"><button>View Machine</button></a>
+
+            <a id="download__json"><button>Download JSON</button></a>
+
         </div>
 
         <div class="card">
@@ -81,7 +87,7 @@
 
             const alias = main.alias;
 			const owner = main.username;
-			const id = main.machine_id;
+			const machine_id = main.machine_id;
 
 			const clients = main.clients;
             const duration = main.duration;
@@ -198,7 +204,21 @@
             document.querySelector('#value_duration').innerHTML = duration;
             document.querySelector('#value_read_write').innerHTML = read_only;
 
+            document.querySelector('#link__machine').href = '/machine?id=' + machine_id;
+            document.querySelector('#download__json').onclick = () => downloadJSON(response);
+
         });
+
+        const downloadJSON = (data) => {
+
+            const url = window.URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'}));
+			const link = document.createElement('a');
+			link.href = url;
+			link.setAttribute('download', 'trend.json');
+			document.body.appendChild(link);
+			link.click();
+
+        };
 
         const copy = () => {
 
