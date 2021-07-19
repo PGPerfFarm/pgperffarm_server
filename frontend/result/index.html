@@ -388,7 +388,7 @@
                 const result = {
                     "line": response.pgbench_run_statement[i].line_id,
                     "latency": response.pgbench_run_statement[i].latency,
-                    "statement": response.pgbench_run_statement[i].statements.statement
+                    "statement": response.pgbench_run_statement[i].statements[0].statement
                 };
 
                 results[response.pgbench_run_statement[i].line_id] = result;
