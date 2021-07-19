@@ -19,7 +19,7 @@ def pgbench_result_complete_view(request, id):
     results_list = list(results)
 
     logs = PgBenchLog.objects.filter(pgbench_result_id=results_list[0]['pgbench_result_id']).values()
-    run_statements = PgBenchRunStatement.objects.filter(pgbench_result_id=results_list[0]['pgbench_result_id']).values('line_id', 'latency', 'pgbench_run_statement_id')
+    run_statements = PgBenchRunStatement.objects.filter(pgbench_result_id=results_list[0]['pgbench_result_id']).values('line_id', 'latency', 'pgbench_run_statement_id', 'result_id')
     config = PgBenchBenchmark.objects.filter(pgbench_benchmark_id=results_list[0]['benchmark_config']).values()
     pg_stat_statements = PgStatStatements.objects.filter(pgbench_result_id=results_list[0]['pgbench_result_id']).values()
     collectd_cpu = CollectdCpu.objects.filter(pgbench_result_id=results_list[0]['pgbench_result_id']).values()
@@ -49,7 +49,7 @@ def pgbench_result_complete_view(request, id):
     collectd_disk_list = list(collectd_disk)
 
     for run_statement in run_statements_list:
-        statements = PgBenchStatement.objects.filter(pgbench_statement_id=run_statement['pgbench_run_statement_id']).values()
+        statements = PgBenchStatement.objects.filter(pgbench_statement_id=run_statement['result_id']).values()
         statements_list = list(statements)
         run_statement['statements'] = statements_list
 
