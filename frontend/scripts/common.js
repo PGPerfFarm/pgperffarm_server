@@ -40,6 +40,6 @@ const formatNumber = (number) => {
 
 const formatNumberRound = (number) => {
 
-    return Number(number).toFixed(2);
+    return Number(number).toFixed(3);
 
 };

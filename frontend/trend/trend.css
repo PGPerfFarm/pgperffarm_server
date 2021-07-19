@@ -19,3 +19,15 @@
     text-anchor: middle;
     writing-mode: vertical-rl;
 }
+
+#tooltip {
+    position: absolute;
+
+    font-size: 11px;
+    color: #FAFAFA;
+    text-align: center;
+
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 5px;
+    border-radius: 5px;
+}

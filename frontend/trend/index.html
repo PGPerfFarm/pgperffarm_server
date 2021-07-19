@@ -167,14 +167,14 @@
                     append += `
                     <tr>
                         <td><a href="https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=${item.git_commit}">${item.commit}</a></td>
-                        <td>${item.avglat}</td>
-                        <td>${item.stdlat}</td>
-                        <td>${item.avgtps}</td>
-                        <td>${item.stdtps}</td>
-                        <td>${item.minlat}</td>
-                        <td>${item.maxlat}</td>
-                        <td>${item.mintps}</td>
-                        <td>${item.maxtps}</td>
+                        <td>${formatNumberRound(item.avglat)}</td>
+                        <td>${formatNumberRound(item.stdlat)}</td>
+                        <td>${formatNumberRound(item.avgtps)}</td>
+                        <td>${formatNumberRound(item.stdtps)}</td>
+                        <td>${formatNumberRound(item.minlat)}</td>
+                        <td>${formatNumberRound(item.maxlat)}</td>
+                        <td>${formatNumberRound(item.mintps)}</td>
+                        <td>${formatNumberRound(item.maxtps)}</td>
                     </tr>
                     `;
 
@@ -275,6 +275,12 @@
                 .x((d) => xScale(d.commit) + canvasPadding)
                 .y((d) => tpsScale(d.avgtps) + canvasPadding);
 
+            const tooltip = d3
+                .select('body')
+                .append('span')
+                .attr('id', 'tooltip')
+                .style('display', 'none');
+                
             // background
             svg
                 .append('rect')
@@ -440,7 +446,18 @@
                 .attr('cx', (d) => xScale(d.commit))
                 .attr('cy', (d) => latencyScale(d.avglat))
                 .attr('transform', `translate(${canvasPadding}, ${canvasPadding})`)
-                .attr('r', 2);
+                .attr('r', 3)
+                .on('mouseover', () => tooltip.style('display', 'block'))
+                .on('mouseout', () => tooltip.style('display', 'none'))
+                .on('mousemove', (event, d) => {
+                    tooltip.style('left', (event.pageX + 10) + 'px');
+                    tooltip.style('top', (event.pageY - 10) + 'px');
+                    tooltip.html(
+                        `Latency<br>
+                        Commit : ${d.commit}<br>
+                        Value : ${d.avglat}`
+                    );
+                });
 
             // tps
             svg
@@ -460,7 +477,18 @@
                 .attr('cx', (d) => xScale(d.commit))
                 .attr('cy', (d) => tpsScale(d.avgtps))
                 .attr('transform', `translate(${canvasPadding}, ${canvasPadding})`)
-                .attr('r', 2);
+                .attr('r', 3)
+                .on('mouseover', () => tooltip.style('display', 'block'))
+                .on('mouseout', () => tooltip.style('display', 'none'))
+                .on('mousemove', (event, d) => {
+                    tooltip.style('left', (event.pageX + 10) + 'px');
+                    tooltip.style('top', (event.pageY - 10) + 'px');
+                    tooltip.html(
+                        `TPS<br>
+                        Commit : ${d.commit}<br>
+                        Value : ${d.avgtps}`
+                    );
+                });
 
         };
 
