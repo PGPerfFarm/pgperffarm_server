@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+    <title>PostgreSQL Performance Farm</title>
+
+    <base href="http://localhost:8080/">
+
+    <script src="scripts/request.js"></script>
+    <script src="scripts/common.js"></script>
+
+</head>
+
+<body>
+
+    <div id="navigation"></div>
+
+    <div id="page-content">
+
+        <div class="card">
+            <div id="page-title">Welcome back, <span id="value_name"></span>!</div>
+            <div class="space-vertical"></div>
+            <div>Email : <span id="value_email"></span></div>
+            <div>Total reports : <span id="value_report_count"></span></div>
+            <div>Number of machines : <span id="value_machine_count"></span></div>
+        </div>
+
+        <div class="card">
+
+            <div>
+                <span>Here is a list of your machines.</span>
+            </div>
+
+            <div class="space-vertical"></div>
+
+            <table id="profile__table" class="table-outline" border="1">
+
+                <thead>
+                    <th>Alias</th>
+                    <th>Description</th>
+                    <th>Type</th>
+                    <th>Approved</th>
+                    <th>Runs</th>
+                    <th>Latest run</th>
+                    <th>Add date</th>
+                    <th>Secret</th>
+                </thead>
+                
+                <tbody></tbody>
+
+            </table>
+
+        </div>
+
+        <div class="card">
+
+            <div class="title">Add machine</div>
+
+            <div class="space-vertical"></div>
+
+            <input id="input__alias" type="text" placeholder="alias">
+            <input id="input__description" type="text" placeholder="description">
+            
+            <button onclick="addMachine();">Add</button>
+
+        </div>
+
+    </div>
+
+    <script>
+
+        const tableBodyElement = document.getElementById('profile__table').getElementsByTagName('tbody')[0];
+        const inputAliasElement = document.getElementById('input__alias');
+        const inputDescriptionElement = document.getElementById('input__description');
+
+        sendRequest(endpoints.userMachine, (response) => {
+
+            const username = response[0].owner_id__username;
+			const email = response[0].email;
+			const machinesCount = response.length;
+            let reportsCount = 0;
+
+            let machines = [];
+
+			for (let i = 0; i < machinesCount; i++) {
+
+				const machine = {
+					alias: response[i].alias,
+					description: response[i].description,
+					count: response[i].count,
+					id: response[i].machine_id,
+					type: response[i].machine_type,
+					approved: response[i].approved,
+					latest: response[i].latest,
+					addDate: response[i].add_time.substring(0, 10),
+					secret: response[i].machine_secret,
+				};
+
+				machines.push(machine);
+				reportsCount += response[i].count;
+
+			}
+
+            let tableBodyContent = '';
+
+            machines.map((machine) => {
+
+                tableBodyContent += `
+                <tr>
+                    <td>${escapeHtml(machine.alias)}</a></td>
+                    <td>${escapeHtml(machine.description)}</td>
+                    <td>${escapeHtml(machine.type)}</td>
+                    <td>${machine.approved}</td>
+                    <td>${machine.count}</td>
+                    <td>${machine.latest}</td>
+                    <td>${machine.addDate}</td>
+                    <td>${escapeHtml(machine.secret)}</td>
+                </tr>
+                `;
+
+            });
+
+            tableBodyElement.innerHTML = tableBodyContent;
+            
+            document.querySelector('#value_name').innerHTML = username;
+            document.querySelector('#value_email').innerHTML = email;
+            document.querySelector('#value_report_count').innerHTML = reportsCount;
+            document.querySelector('#value_machine_count').innerHTML = machinesCount;
+
+        });
+
+        const addMachine = () => {
+
+            const alias = inputAliasElement.value;
+            const description = inputDescriptionElement.value;
+
+            if (alias == '' || description == '') {
+
+                alert('alias and description should not be empty!');
+
+            } else {
+
+                const requestBody = {
+                    'alias': alias,
+                    'description': description,
+                };
+
+                const httpRequest = new XMLHttpRequest();
+                httpRequest.open('POST', endpoints.addMachine);
+                httpRequest.withCredentials = true;
+                httpRequest.send(JSON.stringify(requestBody));
+
+                httpRequest.onreadystatechange = () => {
+                    if (httpRequest.readyState === XMLHttpRequest.DONE) {
+                        if (httpRequest.status === 201) {
+                            alert('Sent machine add request!');
+                        } 
+                        else {
+                            console.log(httpRequest.status);
+                        }
+                    }
+                }
+
+            }
+
+        };
+
+    </script>
+
+    <script src="components/navigation.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="styles/common.css">
+    <link rel="stylesheet" type="text/css" href="styles/navigation.css">
+
+</body>
+
+</html>
