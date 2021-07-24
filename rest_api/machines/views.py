@@ -1,4 +1,5 @@
 import hashlib
+import json
 from django.http import JsonResponse, HttpResponse, Http404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
@@ -10,11 +11,13 @@ from runs.models import RunInfo
 @login_required
 def add_machine_view(request):
 
+    body = json.loads(request.body)
+
     m = hashlib.md5()
-    m.update(make_password(str(request.POST), 'pg_perf_farm').encode('utf-8'))
+    m.update(make_password(str(body), 'pg_perf_farm').encode('utf-8'))
     machine_secret = m.hexdigest()
 
-    machine = Machine(alias=request.POST['alias'], description=request.POST['description'], owner_id=request.user, machine_secret=machine_secret, approved=False)
+    machine = Machine(alias=body['alias'], description=body['description'], owner_id=request.user, machine_secret=machine_secret, approved=False)
 
     try:
         machine.save()
@@ -27,9 +30,11 @@ def add_machine_view(request):
 @login_required
 def approve_machine_view(request):
 
+    body = json.loads(request.body)
+
     if request.user.is_staff:
         try:
-            machine = Machine.objects.get(alias=request.POST['alias'])
+            machine = Machine.objects.get(alias=body['alias'])
             machine.approved = True
             machine.save()
 
@@ -86,11 +91,13 @@ def my_machines_view(request):
 
 def edit_machine_view(request, id):
 
+    body = json.loads(request.body)
+
     machine = Machine.objects.get(machine_id=id)
 
     if machine.owner_id_id == request.user.id:
 
-        machine.description = request.POST.get('description')
+        machine.description = body['description']
         machine.save()
         return HttpResponse(status=201)
 
