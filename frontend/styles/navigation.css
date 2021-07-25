@@ -13,8 +13,16 @@
 #navigation__links {
     padding: 10px;
     background-color: #FAFAFA;
+
+    display: flex;
+    flex-direction: row;
 }
 
 .navigation__links__item {
     margin: 0 10px;
+}
+
+#navigation__links__login {
+    margin-left: auto;
+    margin-right: 10px;
 }
