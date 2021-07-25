@@ -8,10 +8,8 @@
 
     <title>PostgreSQL Performance Farm</title>
 
-    <base href="http://localhost:8080/">
-
-    <script src="scripts/request.js"></script>
-    <script src="scripts/common.js"></script>
+    <script src="/scripts/request.js"></script>
+    <script src="/scripts/common.js"></script>
 
 </head>
 
@@ -276,7 +274,7 @@
                 osTableBodyContent += `
                 <tr>
                     <td>${escapeHtml(item.os)}</td>
-                    <td><a href="run?id=${item.run_id}">${escapeHtml(item.run_id)}</a></td>
+                    <td><a href="/run?id=${item.run_id}">${escapeHtml(item.run_id)}</a></td>
                 </tr>
                 `;
 
@@ -291,7 +289,7 @@
                 compilerTableBodyContent += `
                 <tr>
                     <td>${escapeHtml(item.compiler)}</td>
-                    <td><a href="run?id=${item.run_id}">${escapeHtml(item.run_id)}</a></td>
+                    <td><a href="/run?id=${item.run_id}">${escapeHtml(item.run_id)}</a></td>
                 </tr>
                 `;
 
@@ -306,7 +304,7 @@
                 sysctlTableBodyContent += `
                 <tr>
                     <td>${escapeHtml(item.sysctl)}</td>
-                    <td><a href="run?id=${item.run_id}">${escapeHtml(item.run_id)}</a></td>
+                    <td><a href="/run?id=${item.run_id}">${escapeHtml(item.run_id)}</a></td>
                 </tr>
                 `;
 
@@ -318,11 +316,11 @@
 
     </script>
 
-    <script src="components/navigation.js"></script>
+    <script src="/components/navigation.js"></script>
 
-    <link rel="stylesheet" type="text/css" href="styles/common.css">
-    <link rel="stylesheet" type="text/css" href="styles/navigation.css">
-    <link rel="stylesheet" type="text/css" href="machine/machine.css">
+    <link rel="stylesheet" type="text/css" href="/styles/common.css">
+    <link rel="stylesheet" type="text/css" href="/styles/navigation.css">
+    <link rel="stylesheet" type="text/css" href="/machine/machine.css">
 
 </body>
 

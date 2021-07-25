@@ -8,10 +8,8 @@
 
     <title>PostgreSQL Performance Farm</title>
 
-    <base href="http://localhost:8080/">
-
-    <script src="scripts/request.js"></script>
-    <script src="scripts/common.js"></script>
+    <script src="/scripts/request.js"></script>
+    <script src="/scripts/common.js"></script>
 
 </head>
 
@@ -121,7 +119,7 @@
 
                     append += `
                     <tr>
-                        <td><a href="run?id=${change.run_id}">${change.run_id}</a></td>
+                        <td><a href="/run?id=${change.run_id}">${change.run_id}</a></td>
                         <td>${change.add_time}</td>
                         <td>${escapeHtml(change.setting_name)}</td>
                         <td>${escapeHtml(change.unit1)}</td>
@@ -143,11 +141,11 @@
 
     </script>
 
-    <script src="components/navigation.js"></script>
+    <script src="/components/navigation.js"></script>
 
-    <link rel="stylesheet" type="text/css" href="styles/common.css">
-    <link rel="stylesheet" type="text/css" href="styles/navigation.css">
-    <link rel="stylesheet" type="text/css" href="postgres/postgres.css">
+    <link rel="stylesheet" type="text/css" href="/styles/common.css">
+    <link rel="stylesheet" type="text/css" href="/styles/navigation.css">
+    <link rel="stylesheet" type="text/css" href="/postgres/postgres.css">
 
 </body>
 

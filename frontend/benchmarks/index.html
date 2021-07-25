@@ -8,10 +8,8 @@
 
     <title>PostgreSQL Performance Farm</title>
 
-    <base href="http://localhost:8080/">
-
-    <script src="scripts/request.js"></script>
-    <script src="scripts/common.js"></script>
+    <script src="/scripts/request.js"></script>
+    <script src="/scripts/common.js"></script>
 
 </head>
 
@@ -101,12 +99,12 @@
 
                     append += `
                     <tr>
-                        <td><a href="machine?id=${machine.id}">${escapeHtml(machine.alias)}</a></td>
+                        <td><a href="/machine?id=${machine.id}">${escapeHtml(machine.alias)}</a></td>
                         <td>${machine.add_time}</td>
                         <td>${escapeHtml(machine.type)}</td>
                         <td>${escapeHtml(machine.owner)}</td>
                         <td>${machine.count}</td>
-                        <td><a href="trend?id=${machine.id}&config=${machine.config_id}">link</a></td>
+                        <td><a href="/trend?id=${machine.id}&config=${machine.config_id}">link</a></td>
                     </tr>
                     `;
 
@@ -122,11 +120,11 @@
 
     </script>
     
-    <script src="components/navigation.js"></script>
+    <script src="/components/navigation.js"></script>
 
-    <link rel="stylesheet" type="text/css" href="styles/common.css">
-    <link rel="stylesheet" type="text/css" href="styles/navigation.css">
-    <link rel="stylesheet" type="text/css" href="benchmarks/benchmarks.css">
+    <link rel="stylesheet" type="text/css" href="/styles/common.css">
+    <link rel="stylesheet" type="text/css" href="/styles/navigation.css">
+    <link rel="stylesheet" type="text/css" href="/benchmarks/benchmarks.css">
 
 </body>
 

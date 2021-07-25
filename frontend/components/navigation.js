@@ -2,15 +2,15 @@ const data = {
 	links: [
         {
             name: 'HOME',
-            url: 'index.html'
+            url: '/index.html'
         },
         {
             name: 'MACHINES',
-            url: 'machines/index.html'
+            url: '/machines/index.html'
         },
         {
             name: 'BENCHMARKS',
-            url: 'benchmarks/index.html'
+            url: '/benchmarks/index.html'
         }
     ]
 };
