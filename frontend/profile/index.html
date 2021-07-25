@@ -8,6 +8,7 @@
 
     <title>PostgreSQL Performance Farm</title>
 
+    <script src="/scripts/endpoints.js"></script>
     <script src="/scripts/request.js"></script>
     <script src="/scripts/common.js"></script>
 
@@ -160,21 +161,7 @@
                     'description': description,
                 };
 
-                const httpRequest = new XMLHttpRequest();
-                httpRequest.open('POST', endpoints.addMachine);
-                httpRequest.withCredentials = true;
-                httpRequest.send(JSON.stringify(requestBody));
-
-                httpRequest.onreadystatechange = () => {
-                    if (httpRequest.readyState === XMLHttpRequest.DONE) {
-                        if (httpRequest.status === 201) {
-                            alert('Sent machine add request!');
-                        } 
-                        else {
-                            console.log(httpRequest.status);
-                        }
-                    }
-                }
+                sendPostRequest(endpoints.addMachine, requestBody, () => alert('Sent machine add request!'));
 
             }
 
