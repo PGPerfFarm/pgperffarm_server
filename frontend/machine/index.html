@@ -261,7 +261,7 @@
 
             for(const [value, name] of Object.entries(benchmarks)) {
 
-                configurationListContent += `<div>${name}</div>`;
+                configurationListContent += `<div><a href="/trend?id=${id}&config=${value}">${name}</a></div>`;
 
             }
 
