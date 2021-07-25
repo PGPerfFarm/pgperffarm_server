@@ -15,6 +15,8 @@ const data = {
     ]
 };
 
+const username = sessionStorage.getItem('user');
+
 const template = (data) => `
 
 <div id="navigation__title">PostgreSQL Performance Farm</div>
@@ -27,7 +29,11 @@ const template = (data) => `
             .join('')
     }
 
-    <a id="navigation__links__login" href="${endpoints.login}">LOGIN</a>
+    ${
+        username == null ?
+        `<a id="navigation__links__login" href="${endpoints.login}">LOGIN</a>`:
+        `<a id="navigation__links__login" href="/profile">${username}</a>`
+    }
 
 </div>
 

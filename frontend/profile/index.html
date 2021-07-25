@@ -82,6 +82,8 @@
 			const machinesCount = response.length;
             let reportsCount = 0;
 
+            manageSessionData(username);
+
             let machines = [];
 
 			for (let i = 0; i < machinesCount; i++) {
@@ -130,6 +132,17 @@
             document.querySelector('#value_machine_count').innerHTML = machinesCount;
 
         });
+
+        const manageSessionData = (username) => {
+
+            if(sessionStorage.getItem('user') == null) {
+
+                sessionStorage.setItem('user', username);
+                window.location.reload(); // refresh to update navigation
+
+            }
+
+        };
 
         const addMachine = () => {
 
