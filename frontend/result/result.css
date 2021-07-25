@@ -36,3 +36,17 @@ input:checked + label {
 #tab4:checked ~ #content4 {
     display: block;
 }
+
+#result__table__pg_stat_statements {
+    display: block;
+    overflow-x: auto;
+}
+
+#result__table__pg_stat_statements td {
+    min-width: 100px;
+    max-width: 700px;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

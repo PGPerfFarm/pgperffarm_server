@@ -123,14 +123,38 @@
                     <table id="result__table__pg_stat_statements" class="table-outline" border="1">
 
                         <thead>
-                            <th>Query</th>
-                            <th>Calls</th>
-                            <th>Total Exec Time</th>
-                            <th>Min Exec Time</th>
-                            <th>Max Exec Time</th>
-                            <th>Mean Exec Time</th>
-                            <th>Stddev Exec Time</th>
-                            <th>Rows</th>
+                            <th>query</th>
+                            <th>queryid</th>
+                            <th>userid</th>
+                            <th>dbid</th>
+                            <th>plans</th>
+                            <th>total_plan_time</th>
+                            <th>min_plan_time</th>
+                            <th>max_plan_time</th>
+                            <th>mean_plan_time</th>
+                            <th>stddev_plan_time</th>
+                            <th>calls</th>
+                            <th>total_exec_time</th>
+                            <th>min_exec_time</th>
+                            <th>max_exec_time</th>
+                            <th>mean_exec_time</th>
+                            <th>stddev_exec_time</th>
+                            <th>rows</th>
+                            <th>shared_blks_hit</th>
+                            <th>shared_blks_read</th>
+                            <th>shared_blks_dirtied</th>
+                            <th>shared_blks_written</th>
+                            <th>local_blks_hit</th>
+                            <th>local_blks_read</th>
+                            <th>local_blks_dirtied</th>
+                            <th>local_blks_written</th>
+                            <th>temp_blks_read</th>
+                            <th>temp_blks_written</th>
+                            <th>blk_read_time</th>
+                            <th>blk_write_time</th>
+                            <th>wal_records</th>
+                            <th>wal_fpi</th>
+                            <th>wal_bytes</th>
                         </thead>
                         
                         <tbody></tbody>
@@ -414,22 +438,11 @@
 
             let pg_stat_statements = {};
 
-            for (let i = 0; i < response.pg_stat_statements.length; i++) {
+            response.pg_stat_statements.map((item) => {
 
-                const single_result = {
-                    "query": response.pg_stat_statements[i].query,
-                    "calls": response.pg_stat_statements[i].calls,
-                    "total_exec_time": response.pg_stat_statements[i].total_exec_time,
-                    "min_exec_time": response.pg_stat_statements[i].min_exec_time,
-                    "max_exec_time": response.pg_stat_statements[i].max_exec_time,
-                    "mean_exec_time": response.pg_stat_statements[i].mean_exec_time,
-                    "stddev_exec_time": response.pg_stat_statements[i].stddev_exec_time,
-                    "rows": response.pg_stat_statements[i].rows,
-                };
+                pg_stat_statements[item.pg_stat_statements_id] = item;
 
-                pg_stat_statements[response.pg_stat_statements[i].pg_stat_statements_id] = single_result;
-            
-            }
+            });
 
             let collectd_cpu = {};
 
@@ -643,6 +656,15 @@
                 pgStatStatementsTableBodyContent += `
                 <tr>
                     <td>${escapeHtml(item.query)}</td>
+                    <td>${item.queryid}</td>
+                    <td>${item.userid}</td>
+                    <td>${item.dbid}</td>
+                    <td>${item.plans}</td>
+                    <td>${item.total_plan_time}</td>
+                    <td>${item.min_plan_time}</td>
+                    <td>${item.max_plan_time}</td>
+                    <td>${item.mean_plan_time}</td>
+                    <td>${item.stddev_plan_time}</td>
                     <td>${item.calls}</td>
                     <td>${item.total_exec_time}</td>
                     <td>${item.min_exec_time}</td>
@@ -650,6 +672,21 @@
                     <td>${item.mean_exec_time}</td>
                     <td>${item.stddev_exec_time}</td>
                     <td>${item.rows}</td>
+                    <td>${item.shared_blks_hit}</td>
+                    <td>${item.shared_blks_read}</td>
+                    <td>${item.shared_blks_dirtied}</td>
+                    <td>${item.shared_blks_written}</td>
+                    <td>${item.local_blks_hit}</td>
+                    <td>${item.local_blks_read}</td>
+                    <td>${item.local_blks_dirtied}</td>
+                    <td>${item.local_blks_written}</td>
+                    <td>${item.temp_blks_read}</td>
+                    <td>${item.temp_blks_written}</td>
+                    <td>${item.blk_read_time}</td>
+                    <td>${item.blk_write_time}</td>
+                    <td>${item.wal_records}</td>
+                    <td>${item.wal_fpi}</td>
+                    <td>${item.wal_bytes}</td>
                 </tr>
                 `;
 
