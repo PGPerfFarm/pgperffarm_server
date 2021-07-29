@@ -50,12 +50,8 @@ def approve_machine_view(request):
 def machines_view(request):
 
     def get_latest(machine):
-
-        run_info = RunInfo.objects.filter(machine_id=machine['machine_id']).order_by('-add_time').first()
-        if run_info == None:
-            return ''
-        else:
-            return run_info.run_id
+        run_info = RunInfo.objects.filter(machine_id=machine['machine_id']).order_by('-add_time')[:3].values('run_id')
+        return [item['run_id'] for item in run_info]
 
     machines = Machine.objects.all().values('machine_id', 'alias', 'machine_type', 'add_time', 'description', 'approved', 'owner_id__username')
     machines_list = list(machines)
@@ -69,12 +65,8 @@ def machines_view(request):
 def my_machines_view(request):
 
     def get_latest(machine):
-
-        run_info = RunInfo.objects.filter(machine_id=machine['machine_id']).order_by('-add_time').first()
-        if run_info == None:
-            return ''
-        else:
-            return run_info.run_id
+        run_info = RunInfo.objects.filter(machine_id=machine['machine_id']).order_by('-add_time')[:3].values('run_id')
+        return [item['run_id'] for item in run_info]
 
     def get_count(obj):
         return RunInfo.objects.filter(machine_id=machine['machine_id']).count()
