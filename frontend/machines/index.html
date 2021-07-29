@@ -68,7 +68,7 @@
                     <td>${machine.approved}</td>
                     <td>${escapeHtml(machine.owner_id__username)}</td>
                     <td>${machine.add_time}</td>
-                    <td><a href="/run?id=${machine.latest}">${machine.latest}<a></td>
+                    <td>${machine.latest.map((run) => `<a href="/run?id=${run}">${run}<a>`)}</td>
                 </tr>
                 `;
 

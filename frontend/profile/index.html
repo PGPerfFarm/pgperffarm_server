@@ -117,7 +117,7 @@
                     <td>${escapeHtml(machine.type)}</td>
                     <td>${machine.approved}</td>
                     <td>${machine.count}</td>
-                    <td>${machine.latest}</td>
+                    <td>${machine.latest.map((run) => `<a href="/run?id=${run}">${run}<a>`)}</td>
                     <td>${machine.addDate}</td>
                     <td>${escapeHtml(machine.secret)}</td>
                 </tr>
