@@ -28,7 +28,7 @@
             <div>Uploaded : <span id="value_time"></span></div>
             <div>Owner : <span id="value_owner"></span></div>
             <div>Commit : <a id="link_commit"><span id="value_commit"></span></a></div>
-            <div>Repository : <span id="value_repository"></span></div>
+            <div>Repository : <a id="link_repo"><span id="value_repository"></span></a></div>
         </div>
 
         <div class="card">
@@ -231,6 +231,7 @@
 
             document.querySelector('#link_machine').href = '/machine?id=' + machine_id;
             document.querySelector('#link_commit').href = commit;
+            document.querySelector('#link_repo').href = git_repo;
 
             let resultsTableBodyContent = '';
 

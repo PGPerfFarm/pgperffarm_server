@@ -25,14 +25,14 @@ const template = (data) => `
 
     ${
         data.links
-            .map((v) => `<a class="navigation__links__item" href="${v.url}">${v.name}</a>`)
+            .map((v) => `<a class="navigation__links__item" href="${v.url}"><button>${v.name}</button></a>`)
             .join('')
     }
 
     ${
         username == null ?
-        `<a id="navigation__links__login" href="${endpoints.login}">LOGIN</a>`:
-        `<a id="navigation__links__login" href="/profile">${username}</a>`
+        `<a id="navigation__links__login" href="${endpoints.login}"><button>LOGIN</button></a>`:
+        `<a id="navigation__links__login" href="/profile"><button>${username}</button></a>`
     }
 
 </div>

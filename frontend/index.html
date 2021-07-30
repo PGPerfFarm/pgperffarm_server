@@ -26,39 +26,39 @@
         </div>
     
         <div class="home__item">
-            <span id="value_machines"></span> machines belonging to <span id="value_users"></span> users
+            <span id="value_machines" class="text-color"></span> machines belonging to <span id="value_users" class="text-color"></span> users
             <br>
-            of which <span id="value_last_month"></span> reported in the last month
+            of which <span id="value_last_month" class="text-color"></span> reported in the last month
         </div>
     
         <div class="home__item">
-            <span id="value_branches"></span> reporting branches
+            <span id="value_branches" class="text-color"></span> reporting branches
             <br>
-            from <span id="value_repos"></span> different Postgres repositories
+            from <span id="value_repos" class="text-color"></span> different Postgres repositories
         </div>
     
         <div class="home__item">
-            <span id="value_configs"></span> different PgBench configurations
+            <span id="value_configs" class="text-color"></span> different PgBench configurations
             <br>
-            <span id="value_os"></span> different operating systems
+            <span id="value_os" class="text-color"></span> different operating systems
         </div>
     
         <div class="home__item">
-            <span id="value_runs"></span> total runs
+            <span id="value_runs" class="text-color" class="text-color"></span> total runs
             <br>
-            <span id="value_benchmarks"></span> total benchmarks
+            <span id="value_benchmarks" class="text-color" class="text-color"></span> total benchmarks
         </div>
     
         <div class="home__item">
-            Last run: <span id="value_last_run"></span> on <span id="value_last_run_time"></span>
+            Last run: <a id="value_last_run"></a> on <span id="value_last_run_time" class="text-color"></span>
             <br>
-            Reported by machine <span id="value_last_run_machine"></span>
+            Reported by machine <a id="value_last_run_machine"></a>
         </div>
     
         <div class="home__item">
-            Last run trends
+            Last run <a id="value_last_run_trends">trends</a>
             <br>
-            Scale <span id="value_scale"></span>, duration <span id="value_duration"></span>, clients <span id="value_clients"></span>, <span id="value_read_only"></span>
+            Scale <span id="value_scale" class="text-color"></span>, duration <span id="value_duration" class="text-color"></span>, clients <span id="value_clients" class="text-color"></span>, <span id="value_read_only" class="text-color"></span>
         </div>
 
     </div>
@@ -91,6 +91,7 @@
             result.clients = response[0].clients;
             result.scale = response[0].scale;
             result.duration = response[0].duration;
+            result.benchmark_machine = response[0].machine_id_id;
 
             if (response[0].read_only == false) {
                 result.read_only = 'read-only test';
@@ -99,12 +100,11 @@
                 result.read_only = 'read-write test';
             }
 
-            result.benchmark_machine = response[0].machine_id_id;
-
             // update DOM
             document.querySelector('#value_machines').innerHTML = result.machines;
             document.querySelector('#value_users').innerHTML = result.users;
             document.querySelector('#value_last_month').innerHTML = result.last_month;
+            document.querySelector('#value_branches').innerHTML = result.branches;
             document.querySelector('#value_repos').innerHTML = result.repos;
             document.querySelector('#value_configs').innerHTML = result.configs;
             document.querySelector('#value_os').innerHTML = result.os;
@@ -117,6 +117,10 @@
             document.querySelector('#value_duration').innerHTML = result.duration;
             document.querySelector('#value_clients').innerHTML = result.clients;
             document.querySelector('#value_read_only').innerHTML = result.read_only;
+
+            document.querySelector('#value_last_run').href = '/run?id=' + result.last_run;
+            document.querySelector('#value_last_run_machine').href = '/machine?id=' + result.last_run_machine_id;
+            document.querySelector('#value_last_run_trends').href = '/trend?id=' + result.last_run_machine_id + '&config=' + result.benchmark_machine;
 
         });
 

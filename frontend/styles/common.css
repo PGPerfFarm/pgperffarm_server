@@ -4,6 +4,16 @@ body {
     background-color: #EDF3F7;
 }
 
+td {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+a {
+    text-decoration: none;
+}
+
 #page-content {
     display: flex;
     flex-direction: column;
@@ -25,6 +35,11 @@ body {
 
 .title {
     font-size: 20px;
+    font-weight: bold;
+}
+
+.text-color {
+    color: #336791;
     font-weight: bold;
 }
 
