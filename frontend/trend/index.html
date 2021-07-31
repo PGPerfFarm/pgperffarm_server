@@ -137,6 +137,13 @@
                     };
                 });
 
+                chartData[branch] = branchArray;
+
+            }
+
+            // append branch cards
+            for(let [branch, branchArray] of Object.entries(chartData)) {
+
                 let append = `
 
                     <div class="card">
@@ -188,6 +195,11 @@
                 append += '</tbody></table></div>';
 
                 chartListElement.innerHTML += append;
+
+            }
+
+            // draw charts
+            for(let [branch, branchArray] of Object.entries(chartData)) {
 
                 drawChart("canvas-" + branch, branchArray);
 
