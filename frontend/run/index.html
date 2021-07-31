@@ -184,11 +184,10 @@
             const compiler = response.compiler_id__compiler;
             const type = response.machine_id__machine_type;
 
-            const memory = response.hardware_info_id__total_memory / 1073741824;
-            const swap = response.hardware_info_id__total_swap / 1073741824;
             const cpu = response.hardware_info_id__cpu_brand + ', ' + response.hardware_info_id__cpu_cores + ' cores';
-
-            if (swap == 0)  swap = 'not available';
+            const memory = response.hardware_info_id__total_memory / 1073741824;
+            let swap = response.hardware_info_id__total_swap / 1073741824;
+            if (swap == 0) swap = 'not available';
 
             const mounts = response.hardware_info_id__mounts;
             const sysctl = response.hardware_info_id__sysctl;

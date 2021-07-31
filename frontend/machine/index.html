@@ -204,8 +204,7 @@
 			const cpu_cores = response[0].cpu_cores;
 			const hz = response[0].hz;
 			const memory = response[0].total_memory / 1073741824;
-			const swap = response[0].total_swap / 1073741824;
-
+			let swap = response[0].total_swap / 1073741824;1
 			if (swap == 0) swap = 'not available';
 
 			for (let i = 0; i < response.length; i++) {

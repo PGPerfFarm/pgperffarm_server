@@ -34,11 +34,15 @@ const getUrlParam = (key) => {
 
 const formatNumber = (number) => {
 
+    if (isNaN(number)) return number;
+
     return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
 };
 
 const formatNumberRound = (number) => {
+
+    if (isNaN(number)) return number;
 
     return Number(number).toFixed(3);
 
