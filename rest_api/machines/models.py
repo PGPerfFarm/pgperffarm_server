@@ -16,7 +16,7 @@ class Machine(models.Model):
 
     owner_id = models.ForeignKey('auth.User', related_name='machines', on_delete=models.CASCADE)
 
-    machine_type = models.CharField(max_length=100, blank=False, default='')
+    machine_type = models.CharField(max_length=100, blank=True, default='')
 
     class Meta:
         ordering = ('add_time',)
