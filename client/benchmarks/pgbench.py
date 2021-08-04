@@ -69,6 +69,11 @@ class PgBench(object):
     def _parse_results(data):
         'extract results (including parameters) from the pgbench output'
 
+        with open(folders.LOG_PATH + '/compiler.txt', 'r') as file:
+            line = file.readline()
+            r = re.search('PostgreSQL ([0-9\.]+)', line)
+            postgres_version = float(r.group(1))
+
         data = data.decode('utf-8')
 
         with open(folders.LOG_PATH + '/pgbench_log.txt', 'a+') as file:
@@ -100,8 +105,10 @@ class PgBench(object):
             latency = r.group(1)
 
         tps = -1
-        r = re.search('tps = ([0-9]+\.[0-9]+) \(excluding connections '
-                      'establishing\)', data)
+        if postgres_version >= 14:
+            r = re.search('tps = ([0-9]+\.[0-9]+) \(without initial connection time\)', data)
+        else:
+            r = re.search('tps = ([0-9]+\.[0-9]+) \(excluding connections establishing\)', data)
         if r:
             tps = r.group(1)
 
