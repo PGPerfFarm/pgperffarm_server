@@ -319,11 +319,26 @@
                 .attr('height', canvasHeight)
                 .attr('fill', '#FAFAFA');
 
-            // commit axis
+            // commit axis (maximum 10 ticks)
+            let commitTickList = [];
+
+            if(commitList.length > 10) {
+
+                for(let i = 0.5; i < 10; i++) {
+                    const index = Math.floor(commitList.length * i / 10);
+                    commitTickList.push(commitList[index]);
+                }
+                
+            } else {
+
+                commitTickList = commitList;
+                
+            }
+
             svg
                 .append('g')
                 .attr('transform', `translate(${canvasPadding}, ${canvasHeight-canvasPadding})`)
-                .call(d3.axisBottom(xScale));
+                .call(d3.axisBottom(xScale).tickValues(commitTickList));
 
             svg
                 .append('text')
