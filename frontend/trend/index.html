@@ -72,6 +72,32 @@
 
         <div id="trend__chart__list"></div>
 
+        <div class="modal-wrapper">
+            <div class="modal">
+
+                <div class="title">Commit : <a id="value_modal_commit"></a></div>
+
+                <div class="space-vertical"></div>
+
+                <table id="modal__table" class="table-outline" border="1">
+
+                    <thead>
+                        <th>Run</th>
+                        <th>Add time</th>
+                        <th>Benchmark Link</th>
+                    </thead>
+                    
+                    <tbody></tbody>
+    
+                </table>
+
+                <div class="space-vertical"></div>
+
+                <button onclick="closeModal();">close</button>
+
+            </div>
+        </div>
+
     </div>
 
     <script>
@@ -79,6 +105,8 @@
         const id = getUrlParam('id');
         const config = getUrlParam('config');
         const chartListElement = document.querySelector('#trend__chart__list');
+        const modal = document.querySelector('.modal-wrapper');
+        const modalTableBodyElement = document.getElementById('modal__table').getElementsByTagName('tbody')[0];
 
         sendRequest(endpoints.trend + id + '/' + config, (response) => {
 
@@ -168,6 +196,7 @@
                                 <th>Max Latency</th>
                                 <th>Min TPS</th>
                                 <th>Max TPS</th>
+                                <th>Show Runs</th>
                             </thead>
 
                             <tbody>
@@ -187,6 +216,7 @@
                         <td>${formatNumberRound(item.maxlat)}</td>
                         <td>${formatNumberRound(item.mintps)}</td>
                         <td>${formatNumberRound(item.maxtps)}</td>
+                        <td><button onclick="showModal('${item.git_commit}');">show</button></td>
                     </tr>
                     `;
 
@@ -535,6 +565,41 @@
                         Value : ${d.avgtps}`
                     );
                 });
+
+        };
+
+        const showModal = (commit) => {
+
+            document.querySelector('#value_modal_commit').innerHTML = commit;
+            document.querySelector('#value_modal_commit').href = 'https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=' + commit;
+
+            sendRequest(endpoints.trendCommit + commit + '/' + id + '/' + config, (response) => {
+
+                let tableBodyContent = '';
+
+                response.map((item) => {
+
+                    tableBodyContent += `
+                    <tr>
+                        <td><a href="/run?id=${item.run_id}">${item.run_id}</a></td>
+                        <td>${item.add_time}</td>
+                        <td><a href="/result?id=${item.pgbench_result_id}">${item.pgbench_result_id}</a></td>
+                    </tr>
+                    `;
+
+                });
+
+                modalTableBodyElement.innerHTML = tableBodyContent;
+
+                modal.style.display = 'flex';
+
+            });
+
+        };
+
+        const closeModal = () => {
+
+            modal.style.display = 'none';
 
         };
 
