@@ -533,6 +533,9 @@
                         Commit : ${d.commit}<br>
                         Value : ${d.avglat}`
                     );
+                })
+                .on('click', (event, d) => {
+                    highlightRow(d.commit);
                 });
 
             // tps
@@ -564,6 +567,9 @@
                         Commit : ${d.commit}<br>
                         Value : ${d.avgtps}`
                     );
+                })
+                .on('click', (event, d) => {
+                    highlightRow(d.commit);
                 });
 
         };
@@ -600,6 +606,28 @@
         const closeModal = () => {
 
             modal.style.display = 'none';
+
+        };
+
+        const highlightRow = (commit) => {
+
+            const trElements = document.getElementsByTagName('tr');
+            const tdElements = document.getElementsByTagName('td');
+
+            // remove row styles
+            for(const tr of trElements) {
+                tr.style.backgroundColor = null;
+                tr.style.color = null;
+            }
+
+            // highlight row
+            for(const td of tdElements) {
+                if(td.textContent === commit) {
+                    td.parentElement.style.backgroundColor = '#336791';
+                    td.parentElement.style.color = 'white';
+                    break;
+                }
+            }
 
         };
 
