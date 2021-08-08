@@ -108,6 +108,8 @@
         const modal = document.querySelector('.modal-wrapper');
         const modalTableBodyElement = document.getElementById('modal__table').getElementsByTagName('tbody')[0];
 
+        const chartData = {};
+
         sendRequest(endpoints.trend + id + '/' + config, (response) => {
 
             const main = response[0];
@@ -134,8 +136,6 @@
             const compiler = main.compiler;
 
             const commad = `pgbench -i -s ${scale} -p 5432 && pgbench -r -c ${clients} -j ${clients} -T ${duration} -l --aggregate-interval 1 ${read_only_command}`;
-
-            const chartData = {};
 
             // group by branch name
             for(const item of response) {
@@ -184,9 +184,16 @@
 
                         <div class="space-vertical"></div>
 
-                        <table class="table-outline" border="1">
+                        <button onclick="filterCommits('${branch}')">Apply Filter</button>
+                        <button onclick="selectCommits('${branch}', true)">Select All</button>
+                        <button onclick="selectCommits('${branch}', false)">Select None</button>
+
+                        <div class="space-vertical"></div>
+
+                        <table id="table-${branch}" class="table-outline" border="1">
 
                             <thead>
+                                <th style="width: 25px;"></th>
                                 <th>Commit</th>
                                 <th>Average Latency</th>
                                 <th>STD Latency</th>
@@ -196,7 +203,7 @@
                                 <th>Max Latency</th>
                                 <th>Min TPS</th>
                                 <th>Max TPS</th>
-                                <th>Show Runs</th>
+                                <th style="width: 50px;">Runs</th>
                             </thead>
 
                             <tbody>
@@ -207,6 +214,7 @@
 
                     append += `
                     <tr>
+                        <td><input type="checkbox" checked></td>
                         <td><a href="https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=${item.git_commit}">${item.commit}</a></td>
                         <td>${formatNumberRound(item.avglat)}</td>
                         <td>${formatNumberRound(item.stdlat)}</td>
@@ -281,6 +289,14 @@
             const red = '#C2185B';
             const redLight = '#E198B5';
 
+            const canvasElement = document.getElementById(elementId);
+            canvasElement.innerHTML = '';
+            const canvasWidth = canvasElement.parentElement.clientWidth - 40;
+            const canvasHeight = 500;
+            const canvasPadding = 70;
+            const graphWidth = canvasWidth - canvasPadding*2;
+            const graphHeight = canvasHeight - canvasPadding*2;
+
             const commitList = branchArray.map((value) => value.commit);
             let maxLatency = branchArray[0].maxlat * 1.2;
             let minLatency = branchArray[0].minlat * 0.8;
@@ -295,13 +311,6 @@
                 if (item.mintps < minTps) minTps = item.mintps;
 
             }
-
-            const canvasElement = document.getElementById(elementId);
-            const canvasWidth = canvasElement.parentElement.clientWidth - 40;
-            const canvasHeight = 500;
-            const canvasPadding = 70;
-            const graphWidth = canvasWidth - canvasPadding*2;
-            const graphHeight = canvasHeight - canvasPadding*2;
 
             const canvas = d3.select('#' + elementId);
 
@@ -627,6 +636,47 @@
                     td.parentElement.style.color = 'white';
                     break;
                 }
+            }
+
+        };
+
+        const filterCommits = (targetBranch) => {
+
+            const commitList = [];
+
+            const trElements = document.getElementById('table-' + targetBranch).getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+            for(const tr of trElements) {
+
+                const checkbox = tr.getElementsByTagName('td')[0].getElementsByTagName('input')[0];
+                const commit = tr.getElementsByTagName('td')[1];
+
+                if(checkbox.checked) commitList.push(commit.textContent);
+
+            }
+
+            // draw chart
+            for(let [branch, branchArray] of Object.entries(chartData)) {
+
+                if(branch === targetBranch) {
+                    const filteredArray = branchArray.filter((item) => commitList.includes(item.commit));
+                    drawChart("canvas-" + branch, filteredArray);
+                }
+
+            }
+            
+        };
+
+        const selectCommits = (targetBranch, bool) => {
+
+            const trElements = document.getElementById('table-' + targetBranch).getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+            for(const tr of trElements) {
+
+                const checkbox = tr.getElementsByTagName('td')[0].getElementsByTagName('input')[0];
+
+                checkbox.checked = bool;
+
             }
 
         };
