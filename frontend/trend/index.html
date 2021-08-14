@@ -111,7 +111,7 @@
         const originalData = new Map();
         const chartData = new Map();
         const tableIndexData = new Map();
-        const limitOfCommits = 100;
+        const limitOfCommits = 10;
 
         sendRequest(endpoints.trend + id + '/' + config, (response) => {
 
@@ -211,6 +211,14 @@
                             <tbody></tbody>
 
                         </table>
+
+                        <div class="space-vertical"></div>
+                        
+                        <div class="trend__pagination">
+                            <button onclick="movePage('${branch}', -1)">&lt;</button>
+                            <div id="pagination-${branch}" class="trend__pagination__page"></div>
+                            <button onclick="movePage('${branch}', 1)">&gt;</button>
+                        </div>
                         
                     </div>
                 `;
@@ -219,7 +227,7 @@
 
             }
 
-            // show first 10 rows
+            // show initial table and chart
             for(let [branch, branchArray] of originalData.entries()) {
 
                 tableIndexData.set(branch, {
@@ -227,38 +235,11 @@
                     end: limitOfCommits
                 });
 
-                const branchTableBodyElement = document.getElementById(`table-${branch}`).getElementsByTagName('tbody')[0];
-
-                let tableBodyContent = '';
-
-                for(const [index, item] of branchArray.slice(tableIndexData.get(branch).start, tableIndexData.get(branch).end).entries()) {
-
-                    tableBodyContent += `
-                    <tr>
-                        <td><input type="checkbox" onClick="handleCheckbox('${branch}', '${item.git_commit}', this.checked)" checked></td>
-                        <td><a href="https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=${item.git_commit}">${item.commit}</a></td>
-                        <td>${formatNumberRound(item.avglat)}</td>
-                        <td>${formatNumberRound(item.stdlat)}</td>
-                        <td>${formatNumberRound(item.avgtps)}</td>
-                        <td>${formatNumberRound(item.stdtps)}</td>
-                        <td>${formatNumberRound(item.minlat)}</td>
-                        <td>${formatNumberRound(item.maxlat)}</td>
-                        <td>${formatNumberRound(item.mintps)}</td>
-                        <td>${formatNumberRound(item.maxtps)}</td>
-                        <td><button onclick="showModal('${item.git_commit}');">show</button></td>
-                    </tr>
-                    `;
-
-                }
-
-                branchTableBodyElement.innerHTML = tableBodyContent;
-
-            }
-
-            // draw charts
-            for(let [branch, branchArray] of originalData.entries()) {
-
                 chartData.set(branch, branchArray.slice(tableIndexData.get(branch).start, tableIndexData.get(branch).end));
+
+                updateTable(branch);
+
+                updatePagination(branch);
 
                 drawChart(branch);
 
@@ -279,59 +260,66 @@
 
         });
 
-        const showModal = (commit) => {
+        const updateTable = (branch) => {
 
-            document.querySelector('#value_modal_commit').innerHTML = commit;
-            document.querySelector('#value_modal_commit').href = 'https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=' + commit;
+            const branchArray = originalData.get(branch);
 
-            sendRequest(endpoints.trendCommit + commit + '/' + id + '/' + config, (response) => {
+            const branchTableBodyElement = document.getElementById(`table-${branch}`).getElementsByTagName('tbody')[0];
 
-                let tableBodyContent = '';
+            let tableBodyContent = '';
 
-                response.map((item) => {
+            for(const item of branchArray.slice(tableIndexData.get(branch).start, tableIndexData.get(branch).end)) {
 
-                    tableBodyContent += `
-                    <tr>
-                        <td><a href="/run?id=${item.run_id}">${item.run_id}</a></td>
-                        <td>${item.add_time}</td>
-                        <td><a href="/result?id=${item.pgbench_result_id}">${item.pgbench_result_id}</a></td>
-                    </tr>
-                    `;
+                const index = chartData.get(branch).indexOf(item);
 
-                });
+                tableBodyContent += `
+                <tr>
+                    <td><input type="checkbox" onClick="handleCheckbox('${branch}', '${item.git_commit}', this.checked)" ${index!==-1 ? 'checked' : ''}></td>
+                    <td><a href="https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=${item.git_commit}">${item.commit}</a></td>
+                    <td>${formatNumberRound(item.avglat)}</td>
+                    <td>${formatNumberRound(item.stdlat)}</td>
+                    <td>${formatNumberRound(item.avgtps)}</td>
+                    <td>${formatNumberRound(item.stdtps)}</td>
+                    <td>${formatNumberRound(item.minlat)}</td>
+                    <td>${formatNumberRound(item.maxlat)}</td>
+                    <td>${formatNumberRound(item.mintps)}</td>
+                    <td>${formatNumberRound(item.maxtps)}</td>
+                    <td><button onclick="showModal('${item.git_commit}');">show</button></td>
+                </tr>
+                `;
 
-                modalTableBodyElement.innerHTML = tableBodyContent;
-
-                modal.style.display = 'flex';
-
-            });
-
-        };
-
-        const closeModal = () => {
-
-            modal.style.display = 'none';
-
-        };
-
-        const highlightRow = (commit) => {
-
-            const trElements = document.getElementsByTagName('tr');
-            const tdElements = document.getElementsByTagName('td');
-
-            // remove row styles
-            for(const tr of trElements) {
-                tr.style.backgroundColor = null;
-                tr.style.color = null;
             }
 
-            // highlight row
-            for(const td of tdElements) {
-                if(td.textContent === commit) {
-                    td.parentElement.style.backgroundColor = '#336791';
-                    td.parentElement.style.color = 'white';
-                    break;
-                }
+            branchTableBodyElement.innerHTML = tableBodyContent;
+
+        };
+
+        const updatePagination = (branch) => {
+
+            const chartListElement = document.querySelector('#pagination-' + branch);
+
+            const currentPage = Math.floor(tableIndexData.get(branch).start / limitOfCommits) + 1;
+            const totalPage = Math.floor((originalData.get(branch).length - 1) / limitOfCommits) + 1;
+
+            chartListElement.innerHTML = currentPage + ' / ' + totalPage;
+
+        };
+
+        const movePage = (branch, number) => {
+
+            const currentPage = Math.floor(tableIndexData.get(branch).start / limitOfCommits) + 1;
+            const totalPage = Math.floor((originalData.get(branch).length - 1) / limitOfCommits) + 1;
+
+            if(currentPage + number >= 1 && currentPage + number <= totalPage) {
+             
+                tableIndexData.set(branch, {
+                    start: (currentPage + number - 1) * limitOfCommits,
+                    end: (currentPage + number) * limitOfCommits
+                });
+
+                updateTable(branch);
+                updatePagination(branch);
+
             }
 
         };
@@ -342,7 +330,6 @@
             for(const item of originalData.get(branch)) {
                 if(item.git_commit === git_commit) targetItem = item;
             }
-
             const index = chartData.get(branch).indexOf(targetItem);
 
             if(bool) { // add to chartData
@@ -391,6 +378,28 @@
 
                 handleCheckbox(branch, item.git_commit, bool);
 
+            }
+
+        };
+
+        const highlightRow = (commit) => {
+
+            const trElements = document.getElementsByTagName('tr');
+            const tdElements = document.getElementsByTagName('td');
+
+            // remove row styles
+            for(const tr of trElements) {
+                tr.style.backgroundColor = null;
+                tr.style.color = null;
+            }
+
+            // highlight row
+            for(const td of tdElements) {
+                if(td.textContent === commit) {
+                    td.parentElement.style.backgroundColor = '#336791';
+                    td.parentElement.style.color = 'white';
+                    break;
+                }
             }
 
         };
@@ -722,6 +731,41 @@
 			document.body.removeChild(element);
 
     	};
+
+        const showModal = (commit) => {
+
+            document.querySelector('#value_modal_commit').innerHTML = commit;
+            document.querySelector('#value_modal_commit').href = 'https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=' + commit;
+
+            sendRequest(endpoints.trendCommit + commit + '/' + id + '/' + config, (response) => {
+
+                let tableBodyContent = '';
+
+                response.map((item) => {
+
+                    tableBodyContent += `
+                    <tr>
+                        <td><a href="/run?id=${item.run_id}">${item.run_id}</a></td>
+                        <td>${item.add_time}</td>
+                        <td><a href="/result?id=${item.pgbench_result_id}">${item.pgbench_result_id}</a></td>
+                    </tr>
+                    `;
+
+                });
+
+                modalTableBodyElement.innerHTML = tableBodyContent;
+
+                modal.style.display = 'flex';
+
+            });
+
+        };
+
+        const closeModal = () => {
+
+            modal.style.display = 'none';
+
+        };
         
     </script>
 

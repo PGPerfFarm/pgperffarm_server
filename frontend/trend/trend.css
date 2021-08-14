@@ -9,6 +9,16 @@
     width: 100%;
 }
 
+.trend__pagination {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.trend__pagination__page {
+    margin: 0 10px;
+}
+
 .x-axis {
     font-size: 13px;
     text-anchor: middle;
