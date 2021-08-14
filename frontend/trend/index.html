@@ -108,7 +108,10 @@
         const modal = document.querySelector('.modal-wrapper');
         const modalTableBodyElement = document.getElementById('modal__table').getElementsByTagName('tbody')[0];
 
-        const chartData = {};
+        const originalData = new Map();
+        const chartData = new Map();
+        const tableIndexData = new Map();
+        const limitOfCommits = 100;
 
         sendRequest(endpoints.trend + id + '/' + config, (response) => {
 
@@ -142,14 +145,14 @@
 
                 const branch = item.name;
 
-                if (!(branch in chartData)) chartData[branch] = [];
+                if (!originalData.has(branch)) originalData.set(branch, []);
 
-                chartData[branch].push(item);
+                originalData.get(branch).push(item);
 
             }
 
             // sort each branch by time
-            for(let [branch, branchArray] of Object.entries(chartData)) {
+            for(let [branch, branchArray] of originalData.entries()) {
 
                 branchArray.sort(function(a, b) {
                     const aDate = new Date(a.add_time), bDate = new Date(b.add_time);
@@ -165,15 +168,14 @@
                     };
                 });
 
-                chartData[branch] = branchArray;
+                originalData.set(branch, branchArray);
 
             }
 
             // append branch cards
-            for(let [branch, branchArray] of Object.entries(chartData)) {
+            for(let [branch, branchArray] of originalData.entries()) {
 
                 let append = `
-
                     <div class="card">
 
                         <div class="title">${branch}</div>
@@ -206,15 +208,34 @@
                                 <th style="width: 50px;">Runs</th>
                             </thead>
 
-                            <tbody>
+                            <tbody></tbody>
 
+                        </table>
+                        
+                    </div>
                 `;
 
-                for(const item of branchArray) {
+                chartListElement.innerHTML += append;
 
-                    append += `
+            }
+
+            // show first 10 rows
+            for(let [branch, branchArray] of originalData.entries()) {
+
+                tableIndexData.set(branch, {
+                    start: 0,
+                    end: limitOfCommits
+                });
+
+                const branchTableBodyElement = document.getElementById(`table-${branch}`).getElementsByTagName('tbody')[0];
+
+                let tableBodyContent = '';
+
+                for(const [index, item] of branchArray.slice(tableIndexData.get(branch).start, tableIndexData.get(branch).end).entries()) {
+
+                    tableBodyContent += `
                     <tr>
-                        <td><input type="checkbox" checked></td>
+                        <td><input type="checkbox" onClick="handleCheckbox('${branch}', '${item.git_commit}', this.checked)" checked></td>
                         <td><a href="https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=${item.git_commit}">${item.commit}</a></td>
                         <td>${formatNumberRound(item.avglat)}</td>
                         <td>${formatNumberRound(item.stdlat)}</td>
@@ -230,16 +251,16 @@
 
                 }
 
-                append += '</tbody></table></div>';
-
-                chartListElement.innerHTML += append;
+                branchTableBodyElement.innerHTML = tableBodyContent;
 
             }
 
             // draw charts
-            for(let [branch, branchArray] of Object.entries(chartData)) {
+            for(let [branch, branchArray] of originalData.entries()) {
 
-                drawChart("canvas-" + branch, branchArray);
+                chartData.set(branch, branchArray.slice(tableIndexData.get(branch).start, tableIndexData.get(branch).end));
+
+                drawChart(branch);
 
             }
 
@@ -258,32 +279,127 @@
 
         });
 
-        const downloadJSON = (data) => {
+        const showModal = (commit) => {
 
-            const url = window.URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'}));
-			const link = document.createElement('a');
-			link.href = url;
-			link.setAttribute('download', 'trend.json');
-			document.body.appendChild(link);
-			link.click();
+            document.querySelector('#value_modal_commit').innerHTML = commit;
+            document.querySelector('#value_modal_commit').href = 'https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=' + commit;
+
+            sendRequest(endpoints.trendCommit + commit + '/' + id + '/' + config, (response) => {
+
+                let tableBodyContent = '';
+
+                response.map((item) => {
+
+                    tableBodyContent += `
+                    <tr>
+                        <td><a href="/run?id=${item.run_id}">${item.run_id}</a></td>
+                        <td>${item.add_time}</td>
+                        <td><a href="/result?id=${item.pgbench_result_id}">${item.pgbench_result_id}</a></td>
+                    </tr>
+                    `;
+
+                });
+
+                modalTableBodyElement.innerHTML = tableBodyContent;
+
+                modal.style.display = 'flex';
+
+            });
 
         };
 
-        const copy = () => {
+        const closeModal = () => {
 
-			const command = document.getElementById('value_command').innerHTML;
+            modal.style.display = 'none';
 
-			const element = document.createElement('textarea');
-			element.value = command;
-			document.body.appendChild(element);
-			element.select();
-			document.execCommand('copy');
-			document.body.removeChild(element);
+        };
 
-    	};
+        const highlightRow = (commit) => {
 
-        const drawChart = (elementId, branchArray) => {
+            const trElements = document.getElementsByTagName('tr');
+            const tdElements = document.getElementsByTagName('td');
 
+            // remove row styles
+            for(const tr of trElements) {
+                tr.style.backgroundColor = null;
+                tr.style.color = null;
+            }
+
+            // highlight row
+            for(const td of tdElements) {
+                if(td.textContent === commit) {
+                    td.parentElement.style.backgroundColor = '#336791';
+                    td.parentElement.style.color = 'white';
+                    break;
+                }
+            }
+
+        };
+
+        const handleCheckbox = (branch, git_commit, bool) => {
+
+            let targetItem;
+            for(const item of originalData.get(branch)) {
+                if(item.git_commit === git_commit) targetItem = item;
+            }
+
+            const index = chartData.get(branch).indexOf(targetItem);
+
+            if(bool) { // add to chartData
+
+                if(index === -1) chartData.get(branch).push(targetItem);
+
+            } else { // remove from chartData
+                
+                if(index !== -1) chartData.get(branch).splice(index, 1);
+
+            }
+
+            // sort by time
+            chartData.get(branch).sort(function(a, b) {
+                    const aDate = new Date(a.add_time), bDate = new Date(b.add_time);
+                    if (aDate < bDate) return -1;
+                    else if (aDate > bDate) return 1;
+                    else return 0;
+                });
+
+        };
+
+        const filterCommits = (branch) => {
+
+            drawChart(branch);
+            
+        };
+
+        const selectCommits = (branch, bool) => {
+
+            // update checkbox
+            const trElements = document.getElementById('table-' + branch).getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+            for(const tr of trElements) {
+
+                const checkbox = tr.getElementsByTagName('td')[0].getElementsByTagName('input')[0];
+
+                checkbox.checked = bool;
+
+            }
+
+            // update chartData
+            const branchArray = originalData.get(branch);
+            
+            for(const item of branchArray.slice(tableIndexData.get(branch).start, tableIndexData.get(branch).end)) {
+
+                handleCheckbox(branch, item.git_commit, bool);
+
+            }
+
+        };
+
+        const drawChart = (branch) => {
+
+            const elementId = 'canvas-' + branch;
+            const branchArray = chartData.get(branch);
+            
             const blue = '#303F9F';
             const blueLight = '#8D97D6';
             const red = '#C2185B';
@@ -583,104 +699,30 @@
 
         };
 
-        const showModal = (commit) => {
+        const downloadJSON = (data) => {
 
-            document.querySelector('#value_modal_commit').innerHTML = commit;
-            document.querySelector('#value_modal_commit').href = 'https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=' + commit;
-
-            sendRequest(endpoints.trendCommit + commit + '/' + id + '/' + config, (response) => {
-
-                let tableBodyContent = '';
-
-                response.map((item) => {
-
-                    tableBodyContent += `
-                    <tr>
-                        <td><a href="/run?id=${item.run_id}">${item.run_id}</a></td>
-                        <td>${item.add_time}</td>
-                        <td><a href="/result?id=${item.pgbench_result_id}">${item.pgbench_result_id}</a></td>
-                    </tr>
-                    `;
-
-                });
-
-                modalTableBodyElement.innerHTML = tableBodyContent;
-
-                modal.style.display = 'flex';
-
-            });
+            const url = window.URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'}));
+			const link = document.createElement('a');
+			link.href = url;
+			link.setAttribute('download', 'trend.json');
+			document.body.appendChild(link);
+			link.click();
 
         };
 
-        const closeModal = () => {
+        const copy = () => {
 
-            modal.style.display = 'none';
+			const command = document.getElementById('value_command').innerHTML;
 
-        };
+			const element = document.createElement('textarea');
+			element.value = command;
+			document.body.appendChild(element);
+			element.select();
+			document.execCommand('copy');
+			document.body.removeChild(element);
 
-        const highlightRow = (commit) => {
-
-            const trElements = document.getElementsByTagName('tr');
-            const tdElements = document.getElementsByTagName('td');
-
-            // remove row styles
-            for(const tr of trElements) {
-                tr.style.backgroundColor = null;
-                tr.style.color = null;
-            }
-
-            // highlight row
-            for(const td of tdElements) {
-                if(td.textContent === commit) {
-                    td.parentElement.style.backgroundColor = '#336791';
-                    td.parentElement.style.color = 'white';
-                    break;
-                }
-            }
-
-        };
-
-        const filterCommits = (targetBranch) => {
-
-            const commitList = [];
-
-            const trElements = document.getElementById('table-' + targetBranch).getElementsByTagName('tbody')[0].getElementsByTagName('tr');
-
-            for(const tr of trElements) {
-
-                const checkbox = tr.getElementsByTagName('td')[0].getElementsByTagName('input')[0];
-                const commit = tr.getElementsByTagName('td')[1];
-
-                if(checkbox.checked) commitList.push(commit.textContent);
-
-            }
-
-            // draw chart
-            for(let [branch, branchArray] of Object.entries(chartData)) {
-
-                if(branch === targetBranch) {
-                    const filteredArray = branchArray.filter((item) => commitList.includes(item.commit));
-                    drawChart("canvas-" + branch, filteredArray);
-                }
-
-            }
-            
-        };
-
-        const selectCommits = (targetBranch, bool) => {
-
-            const trElements = document.getElementById('table-' + targetBranch).getElementsByTagName('tbody')[0].getElementsByTagName('tr');
-
-            for(const tr of trElements) {
-
-                const checkbox = tr.getElementsByTagName('td')[0].getElementsByTagName('input')[0];
-
-                checkbox.checked = bool;
-
-            }
-
-        };
-
+    	};
+        
     </script>
 
     <script src="/components/navigation.js"></script>
