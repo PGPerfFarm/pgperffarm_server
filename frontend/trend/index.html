@@ -215,9 +215,9 @@
                         <div class="space-vertical"></div>
                         
                         <div class="trend__pagination">
-                            <button onclick="movePage('${branch}', -1)">&lt;</button>
+                            <button onclick="movePageByNumber('${branch}', -1)">&lt;</button>
                             <div id="pagination-${branch}" class="trend__pagination__page"></div>
-                            <button onclick="movePage('${branch}', 1)">&gt;</button>
+                            <button onclick="movePageByNumber('${branch}', 1)">&gt;</button>
                         </div>
                         
                     </div>
@@ -305,20 +305,48 @@
 
         };
 
-        const movePage = (branch, number) => {
+        const movePageByNumber = (branch, number) => {
 
             const currentPage = Math.floor(tableIndexData.get(branch).start / limitOfCommits) + 1;
             const totalPage = Math.floor((originalData.get(branch).length - 1) / limitOfCommits) + 1;
 
             if(currentPage + number >= 1 && currentPage + number <= totalPage) {
              
+                const pageStart = (currentPage + number - 1) * limitOfCommits
+
                 tableIndexData.set(branch, {
-                    start: (currentPage + number - 1) * limitOfCommits,
-                    end: (currentPage + number) * limitOfCommits
+                    start: pageStart,
+                    end: pageStart + limitOfCommits
                 });
 
                 updateTable(branch);
                 updatePagination(branch);
+
+            }
+
+        };
+
+        const movePageByCommit = (branch, commit) => {
+
+            const branchArray = originalData.get(branch);
+
+            for(const [index, item] of branchArray.entries()) {
+
+                if(item.git_commit.includes(commit)) {
+                    
+                    const pageStart = Math.floor(index / limitOfCommits) * limitOfCommits;
+
+                    tableIndexData.set(branch, {
+                        start: pageStart,
+                        end: pageStart + limitOfCommits
+                    });
+
+                    updateTable(branch);
+                    updatePagination(branch);
+                    
+                    break;
+
+                }
 
             }
 
@@ -669,6 +697,7 @@
                     );
                 })
                 .on('click', (event, d) => {
+                    movePageByCommit(branch, d.commit);
                     highlightRow(d.commit);
                 });
 
@@ -703,6 +732,7 @@
                     );
                 })
                 .on('click', (event, d) => {
+                    movePageByCommit(branch, d.commit);
                     highlightRow(d.commit);
                 });
 
