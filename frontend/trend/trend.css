@@ -9,6 +9,19 @@
     width: 100%;
 }
 
+.trend__control {
+    display: flex;
+    flex-direction: row;
+}
+
+.trend__control__button {
+    margin: 0 5px;
+}
+
+.trend__control__search {
+    margin-left: auto;
+}
+
 .trend__pagination {
     display: flex;
     flex-direction: row;

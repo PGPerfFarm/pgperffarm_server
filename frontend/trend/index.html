@@ -186,9 +186,14 @@
 
                         <div class="space-vertical"></div>
 
-                        <button onclick="filterCommits('${branch}')">Apply Filter</button>
-                        <button onclick="selectCommits('${branch}', true)">Select All</button>
-                        <button onclick="selectCommits('${branch}', false)">Select None</button>
+                        <div class="trend__control">
+                            <button class="trend__control__button" onclick="filterCommits('${branch}')">Apply Filter</button>
+                            <button class="trend__control__button" onclick="selectCommits('${branch}', true)">Select All</button>
+                            <button class="trend__control__button" onclick="selectCommits('${branch}', false)">Select None</button>
+
+                            <input id="search-${branch}" class="trend__control__search" type="text" placeholder="Search commit">
+                            <button class="trend__control__button" onclick="searchCommit('${branch}')">Search</button>
+                        </div>
 
                         <div class="space-vertical"></div>
 
@@ -275,7 +280,7 @@
                 tableBodyContent += `
                 <tr>
                     <td><input type="checkbox" onClick="handleCheckbox('${branch}', '${item.git_commit}', this.checked)" ${index!==-1 ? 'checked' : ''}></td>
-                    <td><a href="https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=${item.git_commit}">${item.commit}</a></td>
+                    <td id="row-${item.git_commit}" class="trend__table__commit"><a href="https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=${item.git_commit}">${item.commit}</a></td>
                     <td>${formatNumberRound(item.avglat)}</td>
                     <td>${formatNumberRound(item.stdlat)}</td>
                     <td>${formatNumberRound(item.avgtps)}</td>
@@ -410,10 +415,10 @@
 
         };
 
-        const highlightRow = (commit) => {
+        const highlightRow = (branch, commit) => {
 
-            const trElements = document.getElementsByTagName('tr');
-            const tdElements = document.getElementsByTagName('td');
+            const trElements = document.getElementById('table-' + branch).getElementsByTagName('tr');
+            const tdElements = document.getElementById('table-' + branch).getElementsByClassName('trend__table__commit');
 
             // remove row styles
             for(const tr of trElements) {
@@ -423,12 +428,23 @@
 
             // highlight row
             for(const td of tdElements) {
-                if(td.textContent === commit) {
-                    td.parentElement.style.backgroundColor = '#336791';
-                    td.parentElement.style.color = 'white';
+                if(td.id.includes(commit)) {
+                    const tr = td.parentElement;
+                    tr.style.backgroundColor = '#336791';
+                    tr.style.color = 'white';
                     break;
                 }
             }
+
+        };
+
+        const searchCommit = (branch) => {
+
+            const inputElement = document.getElementById('search-' + branch);
+            const commit = inputElement.value;
+
+            movePageByCommit(branch, commit);
+            highlightRow(branch, commit);
 
         };
 
@@ -698,7 +714,7 @@
                 })
                 .on('click', (event, d) => {
                     movePageByCommit(branch, d.commit);
-                    highlightRow(d.commit);
+                    highlightRow(branch, d.commit);
                 });
 
             // tps
@@ -733,7 +749,7 @@
                 })
                 .on('click', (event, d) => {
                     movePageByCommit(branch, d.commit);
-                    highlightRow(d.commit);
+                    highlightRow(branch, d.commit);
                 });
 
         };
