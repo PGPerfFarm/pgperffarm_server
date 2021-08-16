@@ -1,0 +1,16 @@
+const baseUrl = '';
+
+const endpoints = {
+    home: baseUrl + '/benchmark/overview',
+    machineList: baseUrl + '/machine/list',
+    benchmarkConfigMachineList: baseUrl + '/benchmark/machines',
+    benchmarkMachineHistory: baseUrl + '/benchmark/history/',
+    run: baseUrl + '/run/',
+    benchmarkResults: baseUrl + '/benchmark/pgbench_results_complete/',
+    postgresHistory: baseUrl + '/benchmark/postgres/',
+    trend: baseUrl + '/benchmark/pgbench_trends/',
+    trendCommit: baseUrl + '/benchmark/pgbench_results_commit/',
+    userMachine: baseUrl + '/machine/user',
+    addMachine: baseUrl + '/machine/add',
+    login: baseUrl + '/user/community_login',
+};
