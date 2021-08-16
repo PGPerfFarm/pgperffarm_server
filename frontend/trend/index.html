@@ -151,13 +151,13 @@
 
             }
 
-            // sort each branch by time
+            // sort each branch by time descending
             for(let [branch, branchArray] of originalData.entries()) {
 
                 branchArray.sort(function(a, b) {
                     const aDate = new Date(a.add_time), bDate = new Date(b.add_time);
-                    if (aDate < bDate) return -1;
-                    else if (aDate > bDate) return 1;
+                    if(aDate < bDate) return 1;
+                    else if(aDate > bDate) return -1;
                     else return 0;
                 });
 
@@ -241,6 +241,14 @@
                 });
 
                 chartData.set(branch, branchArray.slice(tableIndexData.get(branch).start, tableIndexData.get(branch).end));
+
+                // sort chartData by time ascending
+                chartData.get(branch).sort(function(a, b) {
+                    const aDate = new Date(a.add_time), bDate = new Date(b.add_time);
+                    if(aDate < bDate) return -1;
+                    else if(aDate > bDate) return 1;
+                    else return 0;
+                });
 
                 updateTable(branch);
 
@@ -375,13 +383,13 @@
 
             }
 
-            // sort by time
+            // sort chartData by time ascending
             chartData.get(branch).sort(function(a, b) {
-                    const aDate = new Date(a.add_time), bDate = new Date(b.add_time);
-                    if (aDate < bDate) return -1;
-                    else if (aDate > bDate) return 1;
-                    else return 0;
-                });
+                const aDate = new Date(a.add_time), bDate = new Date(b.add_time);
+                if(aDate < bDate) return -1;
+                else if(aDate > bDate) return 1;
+                else return 0;
+            });
 
         };
 
