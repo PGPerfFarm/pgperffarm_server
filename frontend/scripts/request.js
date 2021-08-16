@@ -1,3 +1,8 @@
+const getCookie = (name) => {
+    const value = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
+    return value? value[2] : null;
+};
+
 const sendRequest = (url, callback) => {
 
     const httpRequest = new XMLHttpRequest();
@@ -25,9 +30,12 @@ const sendRequest = (url, callback) => {
 
 const sendPostRequest = (url, requestBody, callback) => {
 
+    const csrftoken = getCookie('csrftoken');
+
     const httpRequest = new XMLHttpRequest();
     httpRequest.open('POST', url);
     httpRequest.withCredentials = true;
+    httpRequest.setRequestHeader('X-CSRFTOKEN', csrftoken);
     httpRequest.send(JSON.stringify(requestBody));
 
     httpRequest.onreadystatechange = () => {
