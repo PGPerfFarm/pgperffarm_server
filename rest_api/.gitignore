@@ -1,1 +1,6 @@
 settings_local.py
+migrations
+.idea
+*.pyc
+*.swp
+*.psp

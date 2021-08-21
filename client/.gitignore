@@ -1,2 +1,6 @@
-.lock
 settings_local.py
+.lock
+.idea
+*.pyc
+*.swp
+*.psp
