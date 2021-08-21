@@ -1,17 +1,16 @@
-import math
-import os
 import os.path
 import re
 import time
-import psutil
+import psycopg2
+import psycopg2.extras
 
-from multiprocessing import cpu_count
-from utils.logging import log
-from utils.misc import available_ram, run_cmd
-
-from settings import *
-from settings_local import *
 import folders
+from collectors.collectd import CollectdCollector
+from collectors.pg_stat_statements import PgStatStatementsCollector
+from utils.logging import log
+from utils.misc import run_cmd
+from settings_local import *
+
 
 class PgBench(object):
     'a simple wrapper around pgbench, running TPC-B-like workload by default'
@@ -70,6 +69,11 @@ class PgBench(object):
     def _parse_results(data):
         'extract results (including parameters) from the pgbench output'
 
+        with open(folders.LOG_PATH + '/compiler.txt', 'r') as file:
+            line = file.readline()
+            r = re.search('PostgreSQL ([0-9\.]+)', line)
+            postgres_version = float(r.group(1))
+
         data = data.decode('utf-8')
 
         with open(folders.LOG_PATH + '/pgbench_log.txt', 'a+') as file:
@@ -101,8 +105,10 @@ class PgBench(object):
             latency = r.group(1)
 
         tps = -1
-        r = re.search('tps = ([0-9]+\.[0-9]+) \(excluding connections '
-                      'establishing\)', data)
+        if postgres_version >= 14:
+            r = re.search('tps = ([0-9]+\.[0-9]+) \(without initial connection time\)', data)
+        else:
+            r = re.search('tps = ([0-9]+\.[0-9]+) \(excluding connections establishing\)', data)
         if r:
             tps = r.group(1)
 
@@ -193,6 +199,21 @@ class PgBench(object):
 
         return r
 
+    def collect_pg_stat_statements(self):
+        conn = psycopg2.connect('host=%s dbname=%s' % (folders.SOCKET_PATH, self._dbname))
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+        cur.execute(
+            'CREATE EXTENSION pg_stat_statements;'
+            'SELECT * FROM pg_stat_statements;'
+        )
+
+        result = cur.fetchall()
+
+        conn.close()
+
+        return result
+
     def run_tests(self):
         """
         execute the whole benchmark, including initialization, warmup and
@@ -224,9 +245,23 @@ class PgBench(object):
                     result['clients'] = clients
 
                 self._init(scale)
+
+                # start collectd collector before run
+                collectd_collector = CollectdCollector(folders.OUTPUT_PATH, DATABASE_NAME)
+                collectd_collector.start()
+
                 r = self._run(i, scale, self._duration, self._pgbench_init, self._read_only, clients, clients, True)
 
+                r.update({'collectd': collectd_collector.result()})
+                collectd_collector.stop()
+
+                # start pg_stat_statements collector after run
+                pg_stat_statements_collector = PgStatStatementsCollector(DATABASE_NAME)
+                pg_stat_statements_collector.start()
+                r.update({'pg_stat_statements': pg_stat_statements_collector.result()})
+
                 r.update({'iteration': i})
+
                 results.append(r)
 
         info['scale'] = scale

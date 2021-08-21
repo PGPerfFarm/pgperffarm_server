@@ -1,13 +1,11 @@
 import os
-import shutil
-import time
-
-from multiprocessing import cpu_count, Process, Queue
 from subprocess import call, STDOUT
 from tempfile import TemporaryFile
-from utils.logging import log
 
 import folders
+from utils.logging import log
+from utils.misc import run_cmd
+
 
 class PgCluster(object):
     'basic manipulation of postgres cluster (init, start, stop, destroy)'
@@ -64,6 +62,10 @@ class PgCluster(object):
 
         self._initdb()
         self._configure(config)
+
+        # add pg_stat_statements to postgresql.conf
+        with open(''.join([self._data, '/postgresql.conf']), 'a') as file:
+            file.write("shared_preload_libraries = 'pg_stat_statements'")
 
         with TemporaryFile() as strout:
             log("starting cluster in '%s' using '%s' binaries" %

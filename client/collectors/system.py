@@ -1,14 +1,12 @@
 import os.path
-import platform
 import psutil
 import json
-from cpuinfo import get_cpu_info_json, get_cpu_info
+from cpuinfo import get_cpu_info
 
-from datetime import datetime, timedelta, time
+import folders
 from utils.logging import log
 from utils.misc import run_cmd
 
-import folders
 
 class SystemCollector(object):
 	'Collect various Unix-specific statistics (cpuinfo, mounts)'
@@ -54,8 +52,8 @@ class SystemCollector(object):
 					key, value = item.decode("utf-8").split(':', 1)
 				sysctl_json.update({key.rstrip(): value.rstrip().lstrip()})
 
-		with open(folders.LOG_PATH + '/sysctl_log.txt', 'w+') as file:
-			file.write(json.dumps(sysctl_json))
+		with open(folders.LOG_PATH + '/sysctl_log.json', 'w+') as file:
+			file.write(json.dumps(sysctl_json, indent=4))
 
 
 	def _collect_system_info(self):
@@ -71,6 +69,7 @@ class SystemCollector(object):
 		system['cpu']['information'] = get_cpu_info()
 		system['cpu']['number'] = psutil.cpu_count()
 
+		system['memory']['virtual'] = psutil.virtual_memory()
 		system['memory']['swap'] = psutil.swap_memory()
 		system['memory']['mounts'] = psutil.disk_partitions()
 

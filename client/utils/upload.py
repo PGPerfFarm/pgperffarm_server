@@ -1,8 +1,6 @@
 # -*- encoding:utf-8 -*-
 
 import json
-import codecs
-import urllib.request
 import requests
 import os
 
@@ -65,5 +63,5 @@ def upload(api_url, results_directory, token):
     load_dict.update({'pgbench_log_aggregate': pgbench_logs})
 
     with open(folders.OUTPUT_PATH + '/results_complete.json', 'w+') as results:
-        results.write(json.dumps(load_dict))
+        results.write(json.dumps(load_dict, indent=4))
         http_post(url, load_dict, token)

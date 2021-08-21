@@ -1,16 +1,13 @@
 import csv
-import multiprocessing
 import os
 import psycopg2
 import psycopg2.extras
-import time
 import sys
-
-from multiprocessing import Process, Queue
-from utils.logging import log
-from utils.misc import run_cmd
+import shutil
 
 import folders
+from utils.logging import log
+
 
 class PostgresCollector(object):
     """
@@ -18,15 +15,9 @@ class PostgresCollector(object):
     indexes)
     """
 
-    def __init__(self, outdir, dbname, bin_path):
+    def __init__(self, outdir, dbname):
         self._outdir = outdir
         self._dbname = dbname
-        self._bin_path = bin_path
-
-        self._env = os.environ
-        self._env['PATH'] = ':'.join([bin_path, self._env['PATH']])
- 
-        self._env['PGDATABASE'] = "postgres"
 
     def start(self):
         log("saving postgres settings")
@@ -73,7 +64,3 @@ class PostgresCollector(object):
 
     def result(self):
         return {}
-
-
-def run_collector(in_queue, out_queue, dbname, bin_path, outdir, interval=1.0):
-    pass

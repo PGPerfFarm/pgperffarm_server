@@ -1,8 +1,6 @@
 # file to declare folders
 # to be imported globally in every script
 
-import os
-
 
 def init():
 

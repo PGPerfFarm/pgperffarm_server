@@ -1,35 +1,23 @@
-import json
 import os
-import codecs
-import requests
-import shutil
-import psutil
-import sys
-
-from multiprocessing import Process, Queue
+import json
 from time import gmtime, strftime
 from subprocess import check_output
 import simplejson as json
 
 from utils.logging import log
-from utils.misc import run_cmd
-
-from settings import *
 from settings_local import *
 
 
 class BenchmarkRunner(object):
 	'manages iterations of all the benchmarks, including cluster restarts etc.'
 
-	def __init__(self, out_dir, url, secret, cluster, collector):
+	def __init__(self, out_dir, cluster, collector):
 		
 		self._output = out_dir  # where to store output files
 		self._benchmarks = {}  # bench name => class implementing the benchmark
 		self._configs = []  # config name => (bench name, config)
 		self._cluster = cluster
 		self._collector = collector
-		self._url = url
-		self._secret = secret
 
 
 	def register_benchmark(self, benchmark_name, benchmark_class):
@@ -105,6 +93,9 @@ class BenchmarkRunner(object):
 			# run the tests
 			r['pgbench'].append(bench.run_tests())
 
+		# stop collectors
+		self._collector.stop()
+
 		# merge data from the collectors into the JSON document with results
 		r.update(self._collector.result())
 
@@ -171,4 +162,3 @@ class BenchmarkRunner(object):
 
 		for config_name in self._configs[0]:
 			self._run_config(config_name)
-

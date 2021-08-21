@@ -1,12 +1,9 @@
 #!/usr/bin/env python3
 
-import argparse
 import json
 import os
 import git
-import pathlib
 import shutil
-import psutil
 import time
 from datetime import datetime
 from dateutil import tz
@@ -14,7 +11,6 @@ from dateutil import tz
 from benchmarks.pgbench import PgBench
 from benchmarks.runner import BenchmarkRunner
 
-from collectors.collectd import CollectdCollector
 from collectors.system import SystemCollector
 from collectors.postgres import PostgresCollector
 from collectors.collector import MultiCollector
@@ -25,7 +21,6 @@ from utils.cluster import PgCluster
 from utils.logging import log
 from utils.upload import upload
 
-from settings import *
 from settings_local import * 
 from branches import *
 
@@ -173,12 +168,10 @@ if __name__ == '__main__':
 
 				collectors.register('system', SystemCollector(folders.OUTPUT_PATH))
 
-				#collectors.register('collectd', CollectdCollector(folders.OUTPUT_PATH, DATABASE_NAME, ''))
-
-				pg_collector = PostgresCollector(folders.OUTPUT_PATH, dbname=DATABASE_NAME, bin_path=('%s/bin' % (folders.BUILD_PATH)))
+				pg_collector = PostgresCollector(folders.OUTPUT_PATH, dbname=DATABASE_NAME)
 				collectors.register('postgres', pg_collector)
 
-				runner = BenchmarkRunner(folders.OUTPUT_PATH, API_URL, MACHINE_SECRET, cluster, collectors)
+				runner = BenchmarkRunner(folders.OUTPUT_PATH, cluster, collectors)
 
 				# register the three tests we currently have
 				runner.register_benchmark('pgbench', PgBench)
@@ -246,8 +239,8 @@ if __name__ == '__main__':
 			}
 
 			# saving times in a text file
-			with open(folders.LOG_PATH + '/runtime_log.txt', 'w+') as file:
-				file.write(json.dumps(runtime))
+			with open(folders.LOG_PATH + '/runtime_log.json', 'w+') as file:
+				file.write(json.dumps(runtime, indent=4))
 
 
 			if (AUTOMATIC_UPLOAD):
