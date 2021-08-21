@@ -1,0 +1,30 @@
+#navigation {
+    margin-bottom: 20px;
+}
+
+#navigation__title {
+    padding: 20px;
+    font-size: 20px;
+    font-weight: bold;
+    color: #FAFAFA;
+    background-color: #336791;
+    cursor: pointer;
+    user-select: none;
+}
+
+#navigation__links {
+    padding: 10px;
+    background-color: #FAFAFA;
+
+    display: flex;
+    flex-direction: row;
+}
+
+.navigation__links__item {
+    margin: 0 10px;
+}
+
+#navigation__links__login {
+    margin-left: auto;
+    margin-right: 10px;
+}

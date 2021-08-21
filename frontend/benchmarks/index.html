@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+    <title>PostgreSQL Performance Farm</title>
+
+    <script src="/scripts/endpoints.js"></script>
+    <script src="/scripts/request.js"></script>
+    <script src="/scripts/common.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="/styles/common.css">
+    <link rel="stylesheet" type="text/css" href="/styles/navigation.css">
+    <link rel="stylesheet" type="text/css" href="/styles/benchmarks.css">
+
+</head>
+
+<body>
+
+    <div id="navigation"></div>
+
+    <div id="page-content">
+
+        <div class="card">
+            <div id="page-title">Benchmarks</div>
+        </div>
+
+        <div class="card">
+            <span>Shown here is the list of different benchmark configurations as well as all machines which reported a run using them. Use the machine link for history of that member on the relevant configuration.</span>
+        </div>
+
+        <div id="benchmarks__config">
+        </div>
+
+    </div>
+
+    <script src="/components/navigation.js"></script>
+
+    <script>
+        
+        const benchmarkListElement = document.querySelector('#benchmarks__config');
+
+        sendRequest(endpoints.benchmarkConfigMachineList, (response) => {
+
+            let machines = {};
+            let benchmarks = 0;
+
+            // parse config
+            for (let i = 0; i < response.length; i++) {
+
+                let read_only = '';
+                if (response[i].read_only == true) read_only = 'read-only test';
+                else read_only = 'read-write test';
+
+                const benchmark = 'Scale ' + response[i].scale + ', Duration ' + response[i].duration + ', Clients ' + response[i].clients + ', ' + read_only;
+
+                const machine = {
+                    alias: response[i].alias,
+                    add_time: response[i].add_time.substring(0, 10),
+                    type: response[i].machine_type,
+                    owner: response[i].username,
+                    count: response[i].count,
+                    config_id: response[i].pgbench_benchmark_id,
+                    id: response[i].machine_id,
+                };
+
+                if (!machines.hasOwnProperty(benchmark)) {
+                    machines[benchmark] = [];
+                    benchmarks++;
+                }
+
+                machines[benchmark].push(machine);
+
+            }
+
+            // create tables
+            for (const [key, value] of Object.entries(machines)) {
+            
+                let append = `
+                
+                <div class="card">
+
+                    <div class="title">${key}</div>
+                    
+                    <div class="space-vertical"></div>
+
+                    <table class="table-outline" border="1">
+
+                        <thead>
+                            <th>Alias</th>
+                            <th>Add Time</th>
+                            <th>Type</th>
+                            <th>Owner</th>
+                            <th>Count</th>
+                            <th>Trend</th>
+                        </thead>
+                        
+                        <tbody>      
+                
+                `;
+
+                for(const machine of value) {
+
+                    append += `
+                    <tr>
+                        <td><a href="/machine?id=${machine.id}">${escapeHtml(machine.alias)}</a></td>
+                        <td>${machine.add_time}</td>
+                        <td>${escapeHtml(machine.type)}</td>
+                        <td>${escapeHtml(machine.owner)}</td>
+                        <td>${machine.count}</td>
+                        <td><a href="/trend?id=${machine.id}&config=${machine.config_id}">link</a></td>
+                    </tr>
+                    `;
+
+                }
+
+                append += '</tbody></table></div>';
+
+                benchmarkListElement.innerHTML += append;
+
+            }
+
+        });
+
+    </script>    
+
+</body>
+
+</html>

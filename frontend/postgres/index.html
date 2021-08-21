@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+    <title>PostgreSQL Performance Farm</title>
+
+    <script src="/scripts/endpoints.js"></script>
+    <script src="/scripts/request.js"></script>
+    <script src="/scripts/common.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="/styles/common.css">
+    <link rel="stylesheet" type="text/css" href="/styles/navigation.css">
+    <link rel="stylesheet" type="text/css" href="/styles/postgres.css">
+
+</head>
+
+<body>
+
+    <div id="navigation"></div>
+
+    <div id="page-content">
+
+        <div class="card">
+            <div id="page-title">Postgres History Page : <span id="value_id"></span></div>
+            <div class="space-vertical"></div>
+            <div>Machine Type : <span id="value_machine"></span></div>
+            <div>First Run : <a id="link_first_run"><span id="value_first_run"></span></a></div>
+            <div>First Run Date : <span id="value_first_run_date"></span></div>
+            <div>Kernel : <span id="value_kernel"></span></div>
+            <div>Last Run : <a id="link_last_run"><span id="value_last_run"></span></a></div>
+            <div>Last Run Date : <span id="value_last_run_date"></span></div>
+        </div>
+
+        <div class="card">
+            To see the whole list of the latest settings, go to the Postgres tab in <a id="link_latest_run"></a>
+        </div>
+
+        <div id="postgres__branch__list"></div>
+
+    </div>
+
+    <script src="/components/navigation.js"></script>
+
+    <script>
+       
+        const id = getUrlParam('id');
+        const branchListElement = document.querySelector('#postgres__branch__list');
+
+        sendRequest(endpoints.postgresHistory + id, (response) => {
+
+            const alias = response[0].alias;
+            const machine_id = response[0].machine_id;
+            const kernel = response[0].kernel_name;
+            const type = response[0].machine_type;
+            const first_run = response[0].first_run;
+            const last_run = response[0].last_run;
+            const first_run_date = new Date(response[0].min_add_time);
+            const last_run_date = new Date(response[0].max_add_time);
+
+            const postgres_history = {};
+
+            for (let i = 0; i < response.length; i++) {
+
+                const set = {
+                    'run_id': response[i].min,
+                    'setting_name': response[i].setting_name,
+                    'unit1': response[i].unit1,
+                    'unit2': response[i].unit2,
+                    'value1': response[i].value1,
+                    'value2': response[i].value2,
+                    'add_time': response[i].add_time.substring(0, 10)
+                };
+
+                if(!postgres_history.hasOwnProperty(response[i].name)) postgres_history[response[i].name] = [];
+
+                postgres_history[response[i].name].push(set);
+
+            }
+
+            document.querySelector('#value_id').innerHTML = id;
+            document.querySelector('#value_machine').innerHTML = type;
+            document.querySelector('#value_first_run').innerHTML = first_run;
+            document.querySelector('#value_first_run_date').innerHTML = first_run_date;
+            document.querySelector('#value_kernel').innerHTML = kernel;
+            document.querySelector('#value_last_run').innerHTML = last_run;
+            document.querySelector('#value_last_run_date').innerHTML = last_run_date;
+            document.querySelector('#link_latest_run').innerHTML = '/run?id=' + last_run;
+
+            document.querySelector('#link_first_run').href = '/run?id=' + first_run;
+            document.querySelector('#link_last_run').href = '/run?id=' + last_run;
+            document.querySelector('#link_latest_run').href = '/run?id=' + last_run;
+
+            for(const [key, value] of Object.entries(postgres_history)) {
+
+                let append = `
+
+                <div class="card">
+
+                    <div class="title">${key}</div>
+                    
+                    <div class="space-vertical"></div>
+
+                    <table class="table-outline" border="1">
+
+                        <thead>
+                            <th>First run</th>
+                            <th>Edit date</th>
+                            <th>Setting name</th>
+                            <th>Setting unit (previous)</th>
+                            <th>Setting unit (next)</th>
+                            <th>Setting value (previous)</th>
+                            <th>Setting value (next)</th>
+                        </thead>
+                        
+                        <tbody>
+
+                </div>
+
+                `;
+
+                for(const change of value) {
+
+                    append += `
+                    <tr>
+                        <td><a href="/run?id=${change.run_id}">${change.run_id}</a></td>
+                        <td>${change.add_time}</td>
+                        <td>${escapeHtml(change.setting_name)}</td>
+                        <td>${escapeHtml(change.unit1)}</td>
+                        <td>${escapeHtml(change.unit2)}</td>
+                        <td>${escapeHtml(change.value1)}</td>
+                        <td>${escapeHtml(change.value2)}</td>
+                    </tr>
+                    `;
+
+                }
+
+                append += '</tbody></table></div>';
+
+                branchListElement.innerHTML += append;
+
+            }
+
+        });
+
+    </script>
+
+</body>
+
+</html>

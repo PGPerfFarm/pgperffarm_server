@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+    <title>PostgreSQL Performance Farm</title>
+
+    <script src="/scripts/endpoints.js"></script>
+    <script src="/scripts/request.js"></script>
+    <script src="/scripts/common.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="/styles/common.css">
+    <link rel="stylesheet" type="text/css" href="/styles/navigation.css">
+
+</head>
+
+<body>
+
+    <div id="navigation"></div>
+
+    <div id="page-content">
+
+        <div class="card">
+            <div id="page-title">Machines List</div>
+        </div>
+
+        <div class="card">
+
+            <div>
+                <span>Shown here is the machine list, along with a summary of relevant information.</span>
+            </div>
+
+            <div class="space-vertical"></div>
+
+            <table id="machines__table" class="table-outline" border="1">
+
+                <thead>
+                    <th>Alias</th>
+                    <th>System</th>
+                    <th>Approved</th>
+                    <th>Owner</th>
+                    <th>Add date</th>
+                    <th>Latest run</th>
+                </thead>
+                
+                <tbody></tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    <script src="/components/navigation.js"></script>
+
+    <script>
+
+        const tableBodyElement = document.getElementById('machines__table').getElementsByTagName('tbody')[0];
+
+        sendRequest(endpoints.machineList, (response) => {
+
+            let tableBodyContent = '';
+
+            response.map((machine) => {
+
+                tableBodyContent += `
+                <tr>
+                    <td><a href="/machine?id=${machine.machine_id}">${escapeHtml(machine.alias)}</a></td>
+                    <td>${escapeHtml(machine.machine_type)}</td>
+                    <td>${machine.approved}</td>
+                    <td>${escapeHtml(machine.owner_id__username)}</td>
+                    <td>${machine.add_time}</td>
+                    <td>${machine.latest.map((run) => `<a href="/run?id=${run}">${run}<a>`)}</td>
+                </tr>
+                `;
+
+            });
+
+            tableBodyElement.innerHTML = tableBodyContent;
+
+        });
+
+    </script>
+
+</body>
+
+</html>

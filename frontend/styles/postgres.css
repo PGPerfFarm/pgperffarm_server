@@ -1,0 +1,5 @@
+#postgres__branch__list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}

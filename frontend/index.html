@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+    <title>PostgreSQL Performance Farm</title>
+
+    <script src="/scripts/endpoints.js"></script>
+    <script src="/scripts/request.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="/styles/common.css">
+    <link rel="stylesheet" type="text/css" href="/styles/navigation.css">
+    <link rel="stylesheet" type="text/css" href="/styles/home.css">
+
+</head>
+
+<body>
+
+    <div id="navigation"></div>
+
+    <div id="page-content">
+
+        <div class="card">
+            <div id="page-title">Welcome to the Postgres Performance Farm!</div>
+            <div class="space-vertical"></div>
+            <div>The Postgres Performance Farm is a project aiming to collect of performance tests through source code updates, highlighting trends and changes.</div>
+        </div>
+    
+        <div class="home__item">
+            <span id="value_machines" class="text-color"></span> machines belonging to <span id="value_users" class="text-color"></span> users
+            <br>
+            of which <span id="value_last_month" class="text-color"></span> reported in the last month
+        </div>
+    
+        <div class="home__item">
+            <span id="value_branches" class="text-color"></span> reporting branches
+            <br>
+            from <span id="value_repos" class="text-color"></span> different Postgres repositories
+        </div>
+    
+        <div class="home__item">
+            <span id="value_configs" class="text-color"></span> different PgBench configurations
+            <br>
+            <span id="value_os" class="text-color"></span> different operating systems
+        </div>
+    
+        <div class="home__item">
+            <span id="value_runs" class="text-color" class="text-color"></span> total runs
+            <br>
+            <span id="value_benchmarks" class="text-color" class="text-color"></span> total benchmarks
+        </div>
+    
+        <div class="home__item">
+            Last run: <a id="value_last_run"></a> on <span id="value_last_run_time" class="text-color"></span>
+            <br>
+            Reported by machine <a id="value_last_run_machine"></a>
+        </div>
+    
+        <div class="home__item">
+            Last run <a id="value_last_run_trends">trends</a>
+            <br>
+            Scale <span id="value_scale" class="text-color"></span>, duration <span id="value_duration" class="text-color"></span>, clients <span id="value_clients" class="text-color"></span>, <span id="value_read_only" class="text-color"></span>
+        </div>
+
+    </div>
+
+    <script src="/components/navigation.js"></script>
+
+    <script>
+
+        sendRequest(endpoints.home, (response) => {
+
+            // parse response
+            const result = {};
+
+            result.runs = response[0].runs;
+            result.benchmarks = response[0].results_count;
+
+            result.last_run = response[0].last_run;
+            result.last_run_machine = response[0].last_machine_alias;
+            result.last_run_machine_id = response[0].last_machine_id;
+            result.last_run_time = new Date(response[0].last_run_time).toString().substring(0, 25);
+            result.last_month = response[0].recent_runs;
+
+            result.os = response[0].os_count;
+            result.machines = response[0].machines_count;
+            result.users = response[0].users;
+
+            result.repos = response[0].repos;
+            result.branches = response[0].branches;
+            result.configs = response[0].configs;
+
+            result.benchmark = response[0].pgbench_benchmark_id;
+            result.clients = response[0].clients;
+            result.scale = response[0].scale;
+            result.duration = response[0].duration;
+            result.benchmark_machine = response[0].machine_id_id;
+
+            if (response[0].read_only == false) {
+                result.read_only = 'read-only test';
+            }
+            else {
+                result.read_only = 'read-write test';
+            }
+
+            // update DOM
+            document.querySelector('#value_machines').innerHTML = result.machines;
+            document.querySelector('#value_users').innerHTML = result.users;
+            document.querySelector('#value_last_month').innerHTML = result.last_month;
+            document.querySelector('#value_branches').innerHTML = result.branches;
+            document.querySelector('#value_repos').innerHTML = result.repos;
+            document.querySelector('#value_configs').innerHTML = result.configs;
+            document.querySelector('#value_os').innerHTML = result.os;
+            document.querySelector('#value_runs').innerHTML = result.runs;
+            document.querySelector('#value_benchmarks').innerHTML = result.benchmark;
+            document.querySelector('#value_last_run').innerHTML = result.last_run;
+            document.querySelector('#value_last_run_time').innerHTML = result.last_run_time;
+            document.querySelector('#value_last_run_machine').innerHTML = result.last_run_machine;
+            document.querySelector('#value_scale').innerHTML = result.scale;
+            document.querySelector('#value_duration').innerHTML = result.duration;
+            document.querySelector('#value_clients').innerHTML = result.clients;
+            document.querySelector('#value_read_only').innerHTML = result.read_only;
+
+            document.querySelector('#value_last_run').href = '/run?id=' + result.last_run;
+            document.querySelector('#value_last_run_machine').href = '/machine?id=' + result.last_run_machine_id;
+            document.querySelector('#value_last_run_trends').href = '/trend?id=' + result.last_run_machine_id + '&config=' + result.benchmark_machine;
+
+        });
+
+    </script>
+
+</body>
+
+</html>
