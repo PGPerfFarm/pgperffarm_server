@@ -26,7 +26,7 @@ SECRET_KEY = '^6bg4l#(4l*)9=9khy4=o*8noi+1%f8b0voq$qmmf9b_yzx_fp'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -47,7 +47,6 @@ INSTALLED_APPS = [
     'systems']
 
 MIDDLEWARE = [
-    'rest_api.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -115,3 +114,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# limit body size to 10MB
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760

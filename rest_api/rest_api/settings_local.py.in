@@ -1,21 +1,20 @@
 DEBUG = True
 
 DATABASES = {
-        'default': {
-                'ENGINE': 'django.db.backends.postgresql_psycopg2',
-                'NAME': 'pgperffarm',
-                'USER': 'user',
-                'PASSWORD': 'password',
-                'HOST': '/var/run/postgresql',
-                #'HOST': '/tmp',
-                'ATOMIC_REQUESTS': True
-                }
-        }
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'pgperffarm',
+        'USER': 'user',
+        'PASSWORD': 'password',
+        'HOST': '/var/run/postgresql',
+        'ATOMIC_REQUESTS': True
+    }
+}
 
 PROJECT_PATH = '/var/www/rest_api/'
-PGAUTH_KEY = ''
 PGAUTH_REDIRECT = ''
 PGAUTH_REDIRECT_SUCCESS = ''
+PGAUTH_KEY = 'FArsd3dlH2jTXHH/mr9khCtQIMrMmB2uH2qa7Vr3gKU='
 LOGIN_URL = 'community_login'
 
 EMAIL_HOST_USER = ''

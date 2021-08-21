@@ -1,9 +1,11 @@
-from django.conf.urls import include, url
-from machines import views	
- 
+from django.conf.urls import url
+
+from machines import views
+
 urlpatterns = [
-	url('machine_user', views.MyMachinesView),
-	url('machines', views.MachinesView, name="machines"),
-	url(r'edit_machine/(?P<id>.+)/', views.EditMachineView),
-	url('add_machine', views.AddMachineView),
+    url('list', views.machines_view, name='machines'),
+    url('user', views.my_machines_view),
+    url('add', views.add_machine_view),
+    url('approve', views.approve_machine_view),
+    url(r'edit/(?P<id>.+)/', views.edit_machine_view),
 ]
