@@ -2,7 +2,10 @@
 
 This repository contains the code for the PostgreSQL Performance Farm, aiming to collect PostgreSQL performance data through a Python script, outputting results on a JSON file. Results are then being sent the REST API and can be browsed through a Website.
 
-For detailed explanations about functioning of the script, check the documentation file in `docs`.
+For detailed explanations about functioning of the script, check the documentation file in `docs/documentation.md`.
+
+**The works done for GSoC are in the `gsoc` branches and the detailed descriptions are in `docs/report_year.md`.**
+
 
 
 ## Structure
