@@ -1,5 +1,6 @@
 settings_local.py
 .lock
+.venv
 .idea
 *.pyc
 *.swp

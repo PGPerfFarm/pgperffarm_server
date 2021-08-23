@@ -11,10 +11,10 @@ DATABASES = {
     }
 }
 
-PROJECT_PATH = '/var/www/rest_api/'
+PROJECT_PATH = ''
 PGAUTH_REDIRECT = ''
 PGAUTH_REDIRECT_SUCCESS = ''
-PGAUTH_KEY = 'FArsd3dlH2jTXHH/mr9khCtQIMrMmB2uH2qa7Vr3gKU='
+PGAUTH_KEY = ''
 LOGIN_URL = 'community_login'
 
 EMAIL_HOST_USER = ''

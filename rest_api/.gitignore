@@ -1,5 +1,6 @@
 settings_local.py
 migrations
+.venv
 .idea
 *.pyc
 *.swp

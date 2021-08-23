@@ -13,7 +13,7 @@ GIT_URL = 'https://github.com/postgres/postgres.git'
 # also should have non-superuser access
 BASE_PATH = '/tmp/perffarm' 
 
-API_URL = 'http://140.211.168.111:8080/'
+API_URL = 'http://140.211.168.111:8080/run/'
 MACHINE_SECRET = 'changeme'
 
 POSTGRES_CONFIG = {
@@ -30,7 +30,7 @@ POSTGRES_CONFIG = {
     'checkpoint_completion_target': '0.9',
 }
 
-DATABASE_NAME = 'perf'
+DATABASE_NAME = 'postgres'
 
 # configuration for PgBench
 # iterations - number of repetitions (including test for all client counts)
