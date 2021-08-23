@@ -78,6 +78,17 @@ If mistakes occur, the \$PGDATA directory is removed and it should be safe to re
 
 Note that there may be issues with directories, since each system has its own defaults and permissions. If you encounter any problem, feel free to open an issue.
 
+### Uploading
+
+These steps are needed to upload benchmark results to the REST API.
+
+Login using PostgreSQL community login to the Performance Farm website.
+
+Go to your profile page and create a machine and copy the machine secret and paste it in the `settings_local.py` and set `AUTOMATIC_UPLOAD` to True.
+
+After the machine gets approved, you will be able to upload benchmark results.
+
+
 ### Automation
 
 To set up automatic execution of the Client, it is advised to create a cron job for it.
