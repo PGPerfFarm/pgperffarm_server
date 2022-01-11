@@ -1,5 +1,4 @@
 from django.db import models
-from django.contrib.postgres.fields.jsonb import JSONField
 from django.contrib.postgres.fields import ArrayField
 from django.core import validators
 
@@ -17,10 +16,10 @@ class HardwareInfo(models.Model):
     total_memory = models.BigIntegerField(null=True, validators=[validators.MaxValueValidator(10000000000), validators.MinValueValidator(0)])
     total_swap = models.BigIntegerField(null=True, validators=[validators.MaxValueValidator(1000000000), validators.MinValueValidator(0)])
 
-    mounts = JSONField(null=True)
+    mounts = models.JSONField(null=True)
     mounts_hash = models.CharField(max_length=256, null=False)
 
-    sysctl = JSONField(null=True)
+    sysctl = models.JSONField(null=True)
     sysctl_hash = models.CharField(max_length=256, null=False)
 
     class Meta:

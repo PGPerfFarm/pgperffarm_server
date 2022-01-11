@@ -1,5 +1,4 @@
 from django.db import models
-from django.contrib.postgres.fields.jsonb import JSONField
 from django.core import validators
 
 from rest_api.validators import ValidateDate
@@ -38,7 +37,7 @@ class RunInfo(models.Model):
     os_kernel_version_id = models.ForeignKey('systems.OsKernelVersion', on_delete=models.CASCADE)
     hardware_info = models.ForeignKey('systems.HardwareInfo', on_delete=models.CASCADE)
 
-    sysctl_raw = JSONField(null=True)
+    sysctl_raw = models.JSONField(null=True)
 
     compiler = models.ForeignKey('systems.Compiler', on_delete=models.CASCADE)
 
