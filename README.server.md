@@ -50,7 +50,7 @@ Edit the file and change the database configuration and other settings to suit y
 Finally, synchronise the database and load the data:
 
 ```bash
-$ python3 manage.py makemigrations
+$ python3 manage.py makemigrations benchmarks machines postgres runs systems users
 $ python3 manage.py migrate
 $ python3 manage.py loaddata initial_data.json
 ```
