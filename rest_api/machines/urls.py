@@ -2,6 +2,8 @@ from django.conf.urls import url
 
 from machines import views
 
+app_name = "machines"
+
 urlpatterns = [
     url('index', views.index, name='index'),
     url('list', views.machines_view, name='machines'),

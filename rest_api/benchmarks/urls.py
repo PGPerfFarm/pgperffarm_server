@@ -2,6 +2,8 @@ from django.conf.urls import url
 
 from benchmarks import views
 
+app_name = "benchmarks"
+
 urlpatterns = [
     url('index', views.index, name='index'),
     url('overview', views.overview_view),
