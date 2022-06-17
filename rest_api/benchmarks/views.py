@@ -1,9 +1,12 @@
 from django.http import JsonResponse
-
+from django.shortcuts import render
 from benchmarks.models import PgBenchBenchmark, PgBenchResult, PgBenchStatement, PgBenchRunStatement, PgBenchLog, PgStatStatements, PgStatStatementsQuery, CollectdCpu, CollectdProcess, CollectdContextswitch, CollectdIpcShm, CollectdIpcMsg, CollectdIpcSem, CollectdMemory, CollectdSwap, CollectdVmem, CollectdDisk
 from runs.models import RunInfo
 from machines.models import Machine
 
+
+def index(request):
+    return render(request, 'benchmarks/index.html')
 
 def pgbench_benchmark_view(request):
 

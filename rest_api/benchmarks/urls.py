@@ -3,6 +3,7 @@ from django.conf.urls import url
 from benchmarks import views
 
 urlpatterns = [
+    url('index', views.index, name='index'),
     url('overview', views.overview_view),
     url('machines', views.pgbench_benchmark_machines_view, name='benchmarks_machines'),
     url(r'history/(?P<machine>.+)/', views.machine_history_view),
