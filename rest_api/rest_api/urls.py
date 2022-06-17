@@ -22,4 +22,5 @@ urlpatterns = [
     url('machine/', include('machines.urls')),
     url('user/', include('users.urls')),
     url('run/', include('runs.urls')),
+    url('', include('pages.urls')),
 ]
