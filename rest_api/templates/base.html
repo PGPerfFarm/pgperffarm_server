@@ -10,7 +10,9 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/common.css' %}">
 </head>
 <body>
-   {% block styles %}
+    <!--    Navbar-->
+    {% include 'partials/_navbar.html' %}
+    {% block styles %}
 
     {% endblock %}
     {% block content %}
