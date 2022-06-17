@@ -8,9 +8,11 @@
     <title>PostgreSQL Performance Farm {% block title%} {% endblock %}</title>
     {% load static %}
     <link rel="stylesheet" type="text/css" href="{% static 'css/common.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/machine.css' %}">
 </head>
 <body>
+   {% block styles %}
+
+    {% endblock %}
     {% block content %}
 
     {% endblock %}
