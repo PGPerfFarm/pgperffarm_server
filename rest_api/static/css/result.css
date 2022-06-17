@@ -1,0 +1,48 @@
+#tab1, #tab2, #tab3, #tab4 {
+    display: none;
+}
+
+label {
+    display: inline-block;
+    margin: 0 0 -1px;
+    padding: 15px 25px;
+    font-weight: 600;
+    text-align: center;
+    color: #BBBBBB;
+    border: 1px solid transparent;
+}
+
+label:hover {
+    color: #336791;
+    cursor: pointer;
+}
+
+section {
+    display: none;
+    padding: 20px 0 0;
+    border-top: 1px solid #DDDDDD;
+}
+
+input:checked + label {
+    color: #000000;
+    border: 1px solid #DDDDDD;
+    border-top: 2px solid #336791;
+    border-bottom: 1px solid #FAFAFA;
+}
+
+#tab1:checked ~ #content1,
+#tab2:checked ~ #content2,
+#tab3:checked ~ #content3,
+#tab4:checked ~ #content4 {
+    display: block;
+}
+
+#result__table__pg_stat_statements {
+    display: block;
+    overflow-x: auto;
+}
+
+#result__table__pg_stat_statements td {
+    min-width: 100px;
+    max-width: 700px;
+}

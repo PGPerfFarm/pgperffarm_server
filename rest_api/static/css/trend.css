@@ -1,0 +1,76 @@
+#trend__chart__list {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.trend__chart {
+    width: 100%;
+}
+
+.trend__control {
+    display: flex;
+    flex-direction: row;
+}
+
+.trend__control__button {
+    margin: 0 5px;
+}
+
+.trend__control__search {
+    margin-left: auto;
+}
+
+.trend__pagination {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.trend__pagination__page {
+    margin: 0 10px;
+}
+
+.x-axis {
+    font-size: 13px;
+    text-anchor: middle;
+}
+
+.y-axis {
+    font-size: 13px;
+    text-anchor: middle;
+    writing-mode: vertical-rl;
+}
+
+#tooltip {
+    position: absolute;
+
+    font-size: 11px;
+    color: #FAFAFA;
+    text-align: center;
+
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.modal-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal {
+    width: 50%;
+    padding: 20px;
+    border-radius: 20px;
+    background: white;
+}
