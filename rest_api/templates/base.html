@@ -10,13 +10,16 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/common.css' %}">
 </head>
 <body>
-    <!--    Navbar-->
+    <!-- Navbar -->
     {% include 'partials/_navbar.html' %}
+
     {% block styles %}
-
     {% endblock %}
-    {% block content %}
 
-    {% endblock %}
+    <!-- Main body -->
+    <div id="page-content">
+        {% block content %}
+        {% endblock %}
+    </div>
 </body>
 </html>
