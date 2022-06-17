@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block styles %}
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/common.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/machine.css' %}">
+{% endblock %}
+{% block content %}
+    <div class="card">
+        <div id="page-title">Machines List</div>
+    </div>
+            <div class="card">
+            <div>
+                <span>Shown here is the machine list, along with a summary of relevant information.</span>
+            </div>
+            <div class="space-vertical"></div>
+            <table id="machines__table" class="table-outline" border="1">
+                <thead>
+                    <th>Alias</th>
+                    <th>System</th>
+                    <th>Approved</th>
+                    <th>Owner</th>
+                    <th>Add date</th>
+                    <th>Latest run</th>
+                </thead>
+                <tbody>
+                        {% if machines %}
+                            {% for machine in machines %}
+                                <tr>
+                                    <h1>asdasd</h1>
+                                    <td><a href="">{{ machine.alias }}</a></td>
+                                    <td>{{ machine.machine_type }}</td>
+                                    <td>{{ machine.approved }}</td>
+                                    <td>{{ machine.owner_id__username }}</td>
+                                    <td>{{ machine.add_time }}</td>
+                                    <td>
+                                        {% if machine.latest %}
+                                            <a href="">latest run</a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% endif %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+{% endblock %}

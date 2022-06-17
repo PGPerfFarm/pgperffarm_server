@@ -3,6 +3,7 @@ from django.conf.urls import url
 from machines import views
 
 urlpatterns = [
+    url('index', views.index, name='index'),
     url('list', views.machines_view, name='machines'),
     url('user', views.my_machines_view),
     url('add', views.add_machine_view),

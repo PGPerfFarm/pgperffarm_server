@@ -1,5 +1,6 @@
 import hashlib
 import json
+from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse, Http404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
@@ -7,6 +8,12 @@ from django.contrib.auth.hashers import make_password
 from machines.models import Machine
 from runs.models import RunInfo
 
+
+def index(request):
+    machines = Machine.objects.all().values('machine_id', 'alias', 'machine_type', 'add_time', 'description',
+                                            'approved', 'owner_id__username')
+    context = {'machines': machines}
+    return render(request, 'machines/index.html', context)
 
 @login_required
 def add_machine_view(request):
