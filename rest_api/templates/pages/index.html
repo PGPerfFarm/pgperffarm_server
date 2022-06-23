@@ -10,39 +10,53 @@
         <div class="space-vertical"></div>
         <div>The Postgres Performance Farm is a project aiming to collect of performance tests through source code updates, highlighting trends and changes.</div>
     </div>
+    {% if result %}
     <div class="home__item">
-        <span id="value_machines" class="text-color"></span> machines belonging to <span id="value_users" class="text-color"></span> users
+        <span id="value_machines" class="text-color">{{ result.machines_count }}</span> machines belonging to <span id="value_users" class="text-color">{{result.users}}</span> users
         <br>
-        of which <span id="value_last_month" class="text-color"></span> reported in the last month
+        of which <span id="value_last_month" class="text-color">{{ result.recent_runs }}</span>  reported in the last month
     </div>
 
     <div class="home__item">
-        <span id="value_branches" class="text-color"></span> reporting branches
+        <span id="value_branches" class="text-color">{{ result.branches }}</span> reporting branches
         <br>
-        from <span id="value_repos" class="text-color"></span> different Postgres repositories
+        from <span id="value_repos" class="text-color">{{ result.repos }}</span> different Postgres repositories
     </div>
 
     <div class="home__item">
-        <span id="value_configs" class="text-color"></span> different PgBench configurations
+        <span id="value_configs" class="text-color">{{ result.configs }}</span> different PgBench configurations
         <br>
-        <span id="value_os" class="text-color"></span> different operating systems
+        <span id="value_os" class="text-color">{{ result.os_count }}</span> different operating systems
     </div>
 
     <div class="home__item">
-        <span id="value_runs" class="text-color" class="text-color"></span> total runs
+        <span id="value_runs" class="text-color" class="text-color">{{ result.runs }}</span> total runs
         <br>
-        <span id="value_benchmarks" class="text-color" class="text-color"></span> total benchmarks
+        <span id="value_benchmarks" class="text-color" class="text-color">{{ result.pgbench_benchmark_id }}</span> total benchmarks
     </div>
 
     <div class="home__item">
-        Last run: <a id="value_last_run"></a> on <span id="value_last_run_time" class="text-color"></span>
+        Last run: <a id="value_last_run" href="{{ '/run?id='| add:result.last_run  }}">{{ result.last_run }}</a> on <span id="value_last_run_time" class="text-color">{{ result.last_run_time }}</span>
         <br>
-        Reported by machine <a id="value_last_run_machine"></a>
+        Reported by machine <a id="value_last_run_machine" href="{{ '/machine?id=' | add:result.last_machine_id  }}">{{ result.last_machine_alias }}</a>
     </div>
 
     <div class="home__item">
-        Last run <a id="value_last_run_trends">trends</a>
+        Last run <a id="value_last_run_trends" href="{{ '/trend?id='| add:result.last_machine_id | add:result.machine_id_id }}">trends</a>
         <br>
-        Scale <span id="value_scale" class="text-color"></span>, duration <span id="value_duration" class="text-color"></span>, clients <span id="value_clients" class="text-color"></span>, <span id="value_read_only" class="text-color"></span>
+        Scale <span id="value_scale" class="text-color">{{ result.scale }}</span>, duration <span id="value_duration" class="text-color">{{ result.duration }}</span>, clients <span id="value_clients" class="text-color">{{ result.clients }}</span>,
+        <span id="value_read_only" class="text-color">
+            {% if result.read_only %}
+                read-write test
+            {% else %}
+                read-only test
+            {% endif %}
+        </span>
     </div>
+    {% else %}
+        <div class="home__item">
+             No benchmarks done yet.
+        </div>
+    {% endif %}
+
 {% endblock %}
