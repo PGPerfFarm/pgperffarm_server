@@ -21,7 +21,7 @@ def add_machine_view(request):
     m = hashlib.md5()
     m.update(make_password(str(body), 'pg_perf_farm').encode('utf-8'))
     machine_secret = m.hexdigest()
-    machine = Machine(alias=body.get('alias'), description=body.get('description'), owner_id=request.user, machine_secret=machine_secret, approved=False)
+    machine = Machine(alias=body.get('alias'), description=body.get('description'), owner_id=request.user, machine_secret=machine_secret, approved=True)
     try:
         machine.save()
         return redirect('machines.index')
