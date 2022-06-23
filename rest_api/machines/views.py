@@ -1,6 +1,6 @@
 import hashlib
 import json
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import JsonResponse, HttpResponse, Http404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
@@ -17,18 +17,14 @@ def index(request):
 
 @login_required
 def add_machine_view(request):
-
-    body = json.loads(request.body)
-
+    body = request.POST
     m = hashlib.md5()
     m.update(make_password(str(body), 'pg_perf_farm').encode('utf-8'))
     machine_secret = m.hexdigest()
-
-    machine = Machine(alias=body['alias'], description=body['description'], owner_id=request.user, machine_secret=machine_secret, approved=False)
-
+    machine = Machine(alias=body.get('alias'), description=body.get('description'), owner_id=request.user, machine_secret=machine_secret, approved=False)
     try:
         machine.save()
-        return HttpResponse('Machine added successfully!', status=201)
+        return redirect('machines.index')
 
     except Exception as e:
         return HttpResponse(status=400)
@@ -84,8 +80,8 @@ def my_machines_view(request):
     for machine in my_machines_list:
         machine['latest'] = get_latest(machine)
         machine['count'] = get_count(machine)
-
-    return JsonResponse(my_machines_list, safe=False)
+    print(my_machines_list)
+    return render(request, 'machines/usermachine.html', {'my_machines_list': my_machines_list})
 
 
 def edit_machine_view(request, id):
