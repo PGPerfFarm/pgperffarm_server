@@ -23,10 +23,11 @@
 #
 
 from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 from django.contrib.auth.backends import ModelBackend
-from django.contrib.auth import login as django_login
+from django.contrib.auth import login as django_login, authenticate
 from django.contrib.auth import logout as django_logout
 from django.dispatch import Signal
 from django.db import transaction
@@ -50,11 +51,11 @@ import time
 auth_user_data_received = Signal(providing_args=['user', 'userdata'])
 
 
-class AuthBackend(ModelBackend):
-    # We declare a fake backend that always fails direct authentication -
-    # since we should never be using direct authentication in the first place!
-    def authenticate(self, username=None, password=None):
-        raise Exception("Direct authentication not supported")
+# class AuthBackend(ModelBackend):
+#     # We declare a fake backend that always fails direct authentication -
+#     # since we should never be using direct authentication in the first place!
+#     def authenticate(self, username=None, password=None):
+#         raise Exception("Direct authentication not supported")
 
 
 ####
@@ -177,33 +178,34 @@ We apologize for the inconvenience.
     # Ok, we have a proper user record. Now tell django that
     # we're authenticated so it persists it in the session. Before
     # we do that, we have to annotate it with the backend information.
-    user.backend = "%s.%s" % (AuthBackend.__module__, AuthBackend.__name__)
-    django_login(request, user)
-
+    # user.backend = "%s.%s" % (AuthBackend.__module__, AuthBackend.__name__)
+    # auth_user = authenticate(request, username=user.username, password='123123')
+    django_login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+    return render(request, 'pages/index.html')
     # Signal that we have information about this user
-    auth_user_data_received.send(sender=auth_receive, user=user, userdata={
-        'secondaryemails': data['se'][0].split(',') if 'se' in data else []
-    })
+    # auth_user_data_received.send(sender=auth_receive, user=user, userdata={
+    #     'secondaryemails': data['se'][0].split(',') if 'se' in data else []
+    # })
 
     # Finally, check of we have a data package that tells us where to
     # redirect the user.
-    if 'd' in data:
-        (ivs, datas) = data['d'][0].split('$')
-        decryptor = AES.new(SHA.new(settings.SECRET_KEY.encode('ascii')).digest()[:16],
-                            AES.MODE_CBC,
-                            base64.b64decode(ivs, b"-_"))
-        s = decryptor.decrypt(base64.b64decode(datas, "-_")).rstrip(b' ').decode('utf8')
-        try:
-            rdata = parse_qs(s, strict_parsing=True)
-        except ValueError:
-            return HttpResponse("Invalid encrypted data received.", status=400)
-        if 'r' in rdata:
-            # Redirect address
-            return HttpResponseRedirect(rdata['r'][0])
-    # No redirect specified, see if we have it in our settings
-    if hasattr(settings, 'PGAUTH_REDIRECT_SUCCESS'):
-        return HttpResponseRedirect(settings.PGAUTH_REDIRECT_SUCCESS)
-    return HttpResponse("Authentication successful, but don't know where to redirect!", status=500)
+    # if 'd' in data:
+    #     (ivs, datas) = data['d'][0].split('$')
+    #     decryptor = AES.new(SHA.new(settings.SECRET_KEY.encode('ascii')).digest()[:16],
+    #                         AES.MODE_CBC,
+    #                         base64.b64decode(ivs, b"-_"))
+    #     s = decryptor.decrypt(base64.b64decode(datas, "-_")).rstrip(b' ').decode('utf8')
+    #     try:
+    #         rdata = parse_qs(s, strict_parsing=True)
+    #     except ValueError:
+    #         return HttpResponse("Invalid encrypted data received.", status=400)
+    #     if 'r' in rdata:
+    #         # Redirect address
+    #         return HttpResponseRedirect(rdata['r'][0])
+    # # No redirect specified, see if we have it in our settings
+    # if hasattr(settings, 'PGAUTH_REDIRECT_SUCCESS'):
+    #     return HttpResponseRedirect(settings.PGAUTH_REDIRECT_SUCCESS)
+    # return HttpResponse("Authentication successful, but don't know where to redirect!", status=500)
 
 
 # Receive API calls from upstream, such as push changes to users
