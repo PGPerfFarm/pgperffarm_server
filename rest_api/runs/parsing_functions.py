@@ -266,6 +266,7 @@ def parse_pg_stat_statements(pgbench_result_id, result):
 def parse_collectd(pgbench_result_id, result):
 
     def parse_epoch_value(raw_data):
+        # print("raw_data: ", raw_data)
         data = {}
 
         for key, value in raw_data.items():
@@ -289,7 +290,10 @@ def parse_collectd(pgbench_result_id, result):
 
     collectd = list(result.values())[0]
 
-    cpu_average = parse_epoch_value(collectd['aggregation-cpu-average'])
+    cpu_average = None
+    if 'aggregation-cpu-average' in collectd:
+        cpu_average = parse_epoch_value(collectd['aggregation-cpu-average'])
+
     processes = parse_epoch_value(collectd['processes'])
     contextswitch = parse_epoch_value(collectd['contextswitch'])
     ipc_shm = parse_epoch_value(collectd['ipc-shm'])
@@ -302,21 +306,22 @@ def parse_collectd(pgbench_result_id, result):
     try:
 
         try:
-            for key, value in cpu_average.items():
-                collectd_cpu = CollectdCpu(
-                    epoch=float(key),
-                    percent_user=float(get_collectd_item('percent-user', value)),
-                    percent_system=float(get_collectd_item('percent-system', value)),
-                    percent_idle=float(get_collectd_item('percent-idle', value)),
-                    percent_wait=float(get_collectd_item('percent-wait', value)),
-                    percent_nice=float(get_collectd_item('percent-nice', value)),
-                    percent_interrupt=float(get_collectd_item('percent-interrupt', value)),
-                    percent_softirq=float(get_collectd_item('percent-softirq', value)),
-                    percent_steal=float(get_collectd_item('percent-steal', value)),
-                    pgbench_result_id=pgbench_result_id,
-                )
+            if cpu_average:
+                for key, value in cpu_average.items():
+                    collectd_cpu = CollectdCpu(
+                        epoch=float(key),
+                        percent_user=float(get_collectd_item('percent-user', value)),
+                        percent_system=float(get_collectd_item('percent-system', value)),
+                        percent_idle=float(get_collectd_item('percent-idle', value)),
+                        percent_wait=float(get_collectd_item('percent-wait', value)),
+                        percent_nice=float(get_collectd_item('percent-nice', value)),
+                        percent_interrupt=float(get_collectd_item('percent-interrupt', value)),
+                        percent_softirq=float(get_collectd_item('percent-softirq', value)),
+                        percent_steal=float(get_collectd_item('percent-steal', value)),
+                        pgbench_result_id=pgbench_result_id,
+                    )
 
-                collectd_cpu.save()
+                    collectd_cpu.save()
 
         except TypeError:
             pass
@@ -535,6 +540,7 @@ def parse_pgbench_results(item, run_id, pgbench_log):
 
                     # parse collectd
                     collectd = result['collectd']
+
                     parse_collectd(result_object, collectd)
 
                 except Exception as e:

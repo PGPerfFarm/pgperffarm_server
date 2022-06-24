@@ -71,19 +71,19 @@ def create_run_info(request, format=None):
             elif os_old != os_new:
                 error = 'Machine OS cannot change'
                 raise RuntimeError(error)
-            print(1)
+
         except Machine.DoesNotExist:
             error = "The machine is unavailable"
             raise RuntimeError(error)
 
         with transaction.atomic():
-            print(2)
+
             os_version, kernel_version = parse_os_kernel(json_data)
             compiler_result = parse_compiler(json_data)
             branch, commit = parse_git(json_data)
             hardware_info = parse_hardware(json_data)
             postgres_info = parse_postgres(json_data)
-            print(3)
+
             if 'git_clone_log' not in json_data:
                 git_clone_log = ''
             else:
@@ -111,7 +111,7 @@ def create_run_info(request, format=None):
 
             postgres_log = json_data['pg_ctl']
             benchmark_log = json_data['pgbench_log']
-            print(4)
+
             # before doing anything else related to benchmarks, save the run
             run_info = RunInfo(
                 machine_id=machine,
@@ -140,19 +140,17 @@ def create_run_info(request, format=None):
                 os_kernel_version_id=kernel_version,
                 sysctl_raw=json_data['sysctl_log']
             )
-            print(5)
+
             try:
                 run_info.save()
-                print(6)
-                print(run_info)
 
             except Exception as e:
-                print(7)
+
                 raise RuntimeError(e)
-            print(8)
+
             # now continue with benchmarks
             for item in json_data['pgbench']:
-                print(9)
+
                 for client in item['clients']:
                     pgbench = parse_pgbench_options(item, client)
 
@@ -169,13 +167,13 @@ def create_run_info(request, format=None):
 
                         except Exception as e:
                             raise RuntimeError(e)
-            print(10)
+
             for item in json_data['pgbench']:
                 print('hh')
                 parse_pgbench_results(item, run_info, json_data['pgbench_log_aggregate'])
-            print(11)
+
     except Exception as e:
-        print(12)
+
         if error == '':
             error = e
 
@@ -183,16 +181,16 @@ def create_run_info(request, format=None):
             error_object = RunLog(machine=machine, logmessage=str(error))
             error_object.save()
             print(error)
-            print(13)
+
 
         except Exception as e:
-            print(14)
+
             with open(os.path.join(sys.path[0], "log.txt"), "a+") as f:
                 error_string = str(datetime.now()) + ' ' + str(error)
                 f.write(error_string)
-        print(15)
+
         return HttpResponse(status=406)
 
-    print(15)
+
     print('Upload successful!')
     return HttpResponse(status=201)
