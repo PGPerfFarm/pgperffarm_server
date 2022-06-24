@@ -76,12 +76,14 @@ def my_machines_view(request):
 
     my_machines = Machine.objects.filter(owner_id__username=request.user.username).values('machine_id', 'alias', 'machine_type', 'add_time', 'description', 'machine_secret', 'approved', 'owner_id__username', 'owner_id__email')
     my_machines_list = list(my_machines)
-
+    run_count = 0
     for machine in my_machines_list:
         machine['latest'] = get_latest(machine)
-        machine['count'] = get_count(machine)
+        cnt = get_count(machine)
+        machine['count'] = cnt
+        run_count += cnt
     print(my_machines_list)
-    return render(request, 'machines/usermachine.html', {'my_machines_list': my_machines_list})
+    return render(request, 'machines/usermachine.html', {'my_machines_list': my_machines_list, 'run_count': run_count})
 
 
 def edit_machine_view(request, id):
