@@ -9,6 +9,7 @@
         <a class="navigation__links__item" href="{% url 'benchmarks:index' %}"><button>BENCHMARKS</button></a>
         {% if user.is_authenticated %}
             <a id="navigation__links__login" href="{% url 'machines:usermachine' %}"><button>{{user}}</button></a>
+            <a class="navigation__links__item" href="{% url 'users:logout' %}"><button>logout</button></a>
         {% else %}
             <a id="navigation__links__login" href="{% url 'users:community_login' %}"><button>LOGIN</button></a>
         {% endif %}

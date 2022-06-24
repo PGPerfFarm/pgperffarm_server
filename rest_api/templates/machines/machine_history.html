@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+{% block styles %}
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/machine.css' %}">
+{% endblock %}
+{% block content %}
+    <div class="card">
+        <div id="page-title">Machine Page : <span id="value_alias"></span></div>
+    </div>
+
+    <div class="card">
+
+        <div class="title">Type : <span id="value_type"></span></div>
+        <div class="title">Reports : <span id="value_report"></span></div>
+        <div class="title"><span id="value_branch"></span> branch(es) involved</div>
+
+        <div class="space-vertical"></div>
+
+        <div>Owner : <span id="value_owner"></span></div>
+        <div>Add Time : <span id="value_time"></span></div>
+
+        <div class="space-vertical"></div>
+
+        <a id="link__postgres"><button>View Postgres History</button></a>
+
+    </div>
+
+    <div class="card">
+
+        <div class="title">Available Configurations</div>
+
+        <div class="space-vertical"></div>
+
+        <div id=machine__configurations__list></div>
+
+    </div>
+
+    <div class="card">
+
+        <div class="title">Machine History (reporting major changes in hardware)</div>
+
+        <div class="space-vertical"></div>
+
+        <input id="tab1" type="radio" name="tabs" checked>
+        <label for="tab1">OS</label>
+
+        <input id="tab2" type="radio" name="tabs">
+        <label for="tab2">Compiler</label>
+
+        <input id="tab3" type="radio" name="tabs">
+        <label for="tab3">sysctl</label>
+
+        <input id="tab4" type="radio" name="tabs">
+        <label for="tab4">Hardware</label>
+
+        <section id="content1">
+
+            <div>
+
+                <span>OS and kernel history, showing name and release (an entry in the table represents the first run with a new reported version).</span>
+
+                <div class="space-vertical"></div>
+
+                <table id="machine__history__table__os" class="table-outline" border="1">
+
+                    <thead>
+                        <th>OS and kernel</th>
+                        <th>Link</th>
+                    </thead>
+
+                    <tbody></tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+        <section id="content2">
+
+            <div>
+
+                <span>Compiler history (an entry in the table represents the first run with a new reported compiler).</span>
+
+                <div class="space-vertical"></div>
+
+                <table id="machine__history__table__compiler" class="table-outline" border="1">
+
+                    <thead>
+                        <th>Compiler</th>
+                        <th>First run</th>
+                    </thead>
+
+                    <tbody></tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+        <section id="content3">
+
+            <div>
+
+                <span>Sysctl history (an entry in the table represents the first run with new systcl settings of interest).</span>
+
+                <div class="space-vertical"></div>
+
+                <table id="machine__history__table__sysctl" class="table-outline" border="1">
+
+                    <thead>
+                        <th>Sysctl</th>
+                        <th>First run</th>
+                    </thead>
+
+                    <tbody></tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+        <section id="content4">
+
+            <div>
+
+                <span>Hardware information (static).</span>
+
+                <div class="space-vertical"></div>
+
+                <table id="machine__history__table__hardware" class="table-outline" border="1">
+
+                    <thead>
+                        <th>CPU brand</th>
+                        <th>CPU cores</th>
+                        <th>CPU HZ</th>
+                        <th>Memory</th>
+                        <th>Swap</th>
+                    </thead>
+
+                    <tbody>
+                        <tr>
+                            <td><span id="value_cpu_brand"></span></td>
+                            <td><span id="value_cpu_core"></span></td>
+                            <td><span id="value_cpu_hz"></span></td>
+                            <td><span id="value_memory"></span></td>
+                            <td><span id="value_swap"></span></td>
+                        </tr>
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    </div>
+{% endblock %}

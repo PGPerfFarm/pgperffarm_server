@@ -147,8 +147,8 @@ def machine_history_view(request, machine):
             machine[column] = getattr(row, column)
 
         machine_history_list.append(machine)
-
-    return JsonResponse(machine_history_list, safe=False)
+    print(machine_history_list)
+    return render(request, 'machines/machine_history.html', {'machine_history_list': machine_history_list})
 
 
 def pgbench_runs_view(request, commit, machine, config):

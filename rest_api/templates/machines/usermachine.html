@@ -1,4 +1,8 @@
 {% extends 'base.html' %}
+{% block styles %}
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/machine.css' %}">
+{% endblock %}
 {% block content %}
     <div class="card">
         <div id="page-title">Welcome back, <span id="value_name">{{ my_machines_list.0.owner_id__username }}</span>!</div>
