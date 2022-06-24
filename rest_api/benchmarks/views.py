@@ -120,13 +120,32 @@ def pgbench_benchmark_machines_view(request):
 
     for row in benchmarks_machines:
         benchmark_machine = {}
-
         for column in benchmarks_machines.columns:
             benchmark_machine[column] = getattr(row, column)
-
         benchmarks_machines_list.append(benchmark_machine)
 
-    return render(request, 'benchmarks/index.html', {'benchmarks_machines_list': benchmarks_machines_list})
+    print(benchmarks_machines_list)
+    machines = {}
+    benchmarks = 0
+    for bm in benchmarks_machines_list:
+        read_only = 'read-write test'
+        if bm['read_only']:
+            read_only = 'read-only test'
+        benchmark = 'Scale ' + bm['scale'] + ', Duration ' + bm['duration'] + ', Clients ' + bm['clients'] + ', ' + read_only
+        machine = {
+            'alias': bm['alias'],
+            'add_time': bm['add_time'][:10],
+            'type': bm['machine_type'],
+            'owner': bm['username'],
+            'count': bm['count'],
+            'config_id': bm['pgbench_benchmark_id'],
+            'id': bm['machine_id'],
+        }
+        if benchmark not in machines:
+            machines[benchmark] = []
+            benchmarks += 1
+        machines[benchmark].append(machine)
+    return render(request, 'benchmarks/index.html', {'machines': machines})
 
 
 def machine_history_view(request, machine):
