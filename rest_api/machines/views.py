@@ -12,6 +12,8 @@ from runs.models import RunInfo
 def index(request):
     machines = Machine.objects.all().values('machine_id', 'alias', 'machine_type', 'add_time', 'description',
                                             'approved', 'owner_id__username')
+    for m in machines:
+        m['next_url'] = '/benchmark/history/' + str(m['machine_id']) + '/'
     context = {'machines': machines}
     return render(request, 'machines/index.html', context)
 
