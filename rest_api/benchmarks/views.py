@@ -1,3 +1,6 @@
+import json
+from math import ceil
+
 from django.http import JsonResponse
 from django.shortcuts import render
 from benchmarks.models import PgBenchBenchmark, PgBenchResult, PgBenchStatement, PgBenchRunStatement, PgBenchLog, PgStatStatements, PgStatStatementsQuery, CollectdCpu, CollectdProcess, CollectdContextswitch, CollectdIpcShm, CollectdIpcMsg, CollectdIpcSem, CollectdMemory, CollectdSwap, CollectdVmem, CollectdDisk
@@ -162,8 +165,66 @@ def machine_history_view(request, machine):
             machine[column] = getattr(row, column)
 
         machine_history_list.append(machine)
-    print(machine_history_list)
-    return render(request, 'machines/machine_history.html', {'machine_history_list': machine_history_list})
+    # print(machine_history_list)
+    reports = 0
+    benchmarks = {}
+    compiler_data = []
+    os_data = []
+    branches = []
+    sysctl_data = []
+    for history in machine_history_list:
+        history['total_memory'] = '%s GB' % ceil(history['total_memory'] / 1073741824)
+        history['total_swap'] = '%s GB' % ceil(history['total_swap'] / 1073741824)
+        def comapre_call_back(item, compared_str, item_name):
+            return item[item_name] == compared_str
+        if not compiler_data:
+            compiler_data.append({'compiler': history['compiler'], 'run_id': history['run_id']})
+        elif not any(comapre_call_back(item, history['compiler'], 'compiler') for item in compiler_data):
+            compiler_data.append({'compiler': history['compiler'], 'run_id': history['run_id']})
+        reports += history['count']
+        read_only = 'read-write test'
+        if history['read_only']:
+            read_only = 'read-only test'
+        benchmark = 'Scale ' + str(history['scale']) + ', Duration ' + str(history['duration']) + ', Clients ' + str(
+            history['clients']) + ', ' + read_only
+        benchmarks[history['pgbench_benchmark_id']] = benchmark
+        os_string = history['kernel_name'] + ' ' + history['dist_name'] + ' ' + history['release'] + ' (' + \
+                    history['codename'] + ') ' + history['kernel_release'] + ' ' + history['kernel_version']
+        if not os_data:
+            os_data.append({'os': os_string, 'run_id': history['run_id']})
+        elif not any(comapre_call_back(item, os_string, 'os') for item in os_data):
+            os_data.append({'os': os_string, 'run_id': history['run_id']})
+        if history['name'] not in branches:
+            branches.append(history['name'])
+        sysctl_object = json.loads(history['sysctl'])
+        # print('*******************', sysctl_object)
+        sysctl_string = ''
+        if sysctl_object:
+            for key, value in sysctl_object.items():
+                sysctl_string += key + ' = ' + value + '\n'
+            pass
+            if not sysctl_data:
+                sysctl_data.append({
+                    'sysctl': sysctl_string,
+                    'run_id': history['run_id']
+                })
+            elif not any(comapre_call_back(item, sysctl_string, 'sysctl') for item in sysctl_data):
+                sysctl_data.append({
+                    'sysctl': sysctl_string,
+                    'run_id': history['run_id']
+                })
+    configurationListContent = ''
+    for key, value in benchmarks.items():
+        configurationListContent += '<div><a href="/trend?id=${id}&config=${value}"> ${name}</a></div>' % ()
+
+    return render(request, 'machines/machine_history.html', {'machine_history_list': machine_history_list,
+                                                             'reports': reports,
+                                                             'benchmarks': benchmarks,
+                                                             'branches': branches,
+                                                             'sysctl_data': sysctl_data,
+                                                             'compiler_data': compiler_data,
+                                                             'os_data': os_data
+                                                             })
 
 
 def pgbench_runs_view(request, commit, machine, config):

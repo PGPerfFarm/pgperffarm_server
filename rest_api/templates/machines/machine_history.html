@@ -5,23 +5,23 @@
 {% endblock %}
 {% block content %}
     <div class="card">
-        <div id="page-title">Machine Page : <span id="value_alias"></span></div>
+        <div id="page-title">Machine Page : <span id="value_alias">{{ machine_history_list.0.alias }}</span></div>
     </div>
 
     <div class="card">
 
-        <div class="title">Type : <span id="value_type"></span></div>
-        <div class="title">Reports : <span id="value_report"></span></div>
-        <div class="title"><span id="value_branch"></span> branch(es) involved</div>
+        <div class="title">Type : <span id="value_type">{{ machine_history_list.0.machine_type }}</span></div>
+        <div class="title">Reports : <span id="value_report">{{ reports }}</span></div>
+        <div class="title"><span id="value_branch">{{ branches|length }}</span> branch(es) involved</div>
 
         <div class="space-vertical"></div>
 
-        <div>Owner : <span id="value_owner"></span></div>
-        <div>Add Time : <span id="value_time"></span></div>
+        <div>Owner : <span id="value_owner">{{ machine_history_list.0.username }}</span></div>
+        <div>Add Time : <span id="value_time">{{ machine_history_list.0.add_time }}</span></div>
 
         <div class="space-vertical"></div>
 
-        <a id="link__postgres"><button>View Postgres History</button></a>
+        <a id="link__postgres" href="{{'/postgres?id='|add:machine_history_list.0.machine_id}}"><button>View Postgres History</button></a>
 
     </div>
 
@@ -31,7 +31,11 @@
 
         <div class="space-vertical"></div>
 
-        <div id=machine__configurations__list></div>
+        <div id=machine__configurations__list>
+            {% for value, name in benchmarks.items %}
+                <div><a href="{{'/trend?id='|add:machine_history_list.0.machine_id|add:'&config='|add:value}}">{{name}}</a></div>
+            {% endfor %}
+        </div>
 
     </div>
 
@@ -68,7 +72,14 @@
                         <th>Link</th>
                     </thead>
 
-                    <tbody></tbody>
+                    <tbody>
+                            {% for item in os_data %}
+                                <tr>
+                                    <td>{{item.os}}</td>
+                                    <td><a href="{{'/run?id='|add:item.run_id}}">{{item.run_id}}</a></td>
+                                </tr>
+                            {% endfor %}
+                    </tbody>
 
                 </table>
 
@@ -91,7 +102,14 @@
                         <th>First run</th>
                     </thead>
 
-                    <tbody></tbody>
+                    <tbody>
+                            {% for item in compiler_data %}
+                                <tr>
+                                    <td>{{item.compiler}}</td>
+                                    <td><a href="{{'/run?id='|add:item.run_id}}">{{item.run_id}}</a></td>
+                                </tr>
+                            {% endfor %}
+                    </tbody>
 
                 </table>
 
@@ -114,7 +132,14 @@
                         <th>First run</th>
                     </thead>
 
-                    <tbody></tbody>
+                    <tbody>
+                            {% for item in sysctl_data %}
+                                <tr>
+                                    <td>{{item.sysctl}}</td>
+                                    <td><a href="{{'/run?id='|add:item.run_id}}">{{item.run_id}}</a></td>
+                                </tr>
+                            {% endfor %}
+                    </tbody>
 
                 </table>
 
@@ -142,11 +167,11 @@
 
                     <tbody>
                         <tr>
-                            <td><span id="value_cpu_brand"></span></td>
-                            <td><span id="value_cpu_core"></span></td>
-                            <td><span id="value_cpu_hz"></span></td>
-                            <td><span id="value_memory"></span></td>
-                            <td><span id="value_swap"></span></td>
+                            <td><span id="value_cpu_brand">{{ machine_history_list.0.cpu_brand }}</span></td>
+                            <td><span id="value_cpu_core">{{ machine_history_list.0.cpu_cores }}</span></td>
+                            <td><span id="value_cpu_hz">{{ machine_history_list.0.hz }}</span></td>
+                            <td><span id="value_memory">{{ machine_history_list.0.total_memory }}</span></td>
+                            <td><span id="value_swap">{{ machine_history_list.0.total_swap }}</span></td>
                         </tr>
                     </tbody>
 
