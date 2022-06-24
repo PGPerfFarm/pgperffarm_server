@@ -131,10 +131,10 @@ def pgbench_benchmark_machines_view(request):
         read_only = 'read-write test'
         if bm['read_only']:
             read_only = 'read-only test'
-        benchmark = 'Scale ' + bm['scale'] + ', Duration ' + bm['duration'] + ', Clients ' + bm['clients'] + ', ' + read_only
+        benchmark = 'Scale ' + str(bm['scale']) + ', Duration ' + str(bm['duration']) + ', Clients ' + str(bm['clients']) + ', ' + read_only
         machine = {
             'alias': bm['alias'],
-            'add_time': bm['add_time'][:10],
+            'add_time': str(bm['add_time'])[:10],
             'type': bm['machine_type'],
             'owner': bm['username'],
             'count': bm['count'],
