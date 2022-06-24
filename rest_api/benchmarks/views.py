@@ -4,10 +4,6 @@ from benchmarks.models import PgBenchBenchmark, PgBenchResult, PgBenchStatement,
 from runs.models import RunInfo
 from machines.models import Machine
 
-
-def index(request):
-    return render(request, 'benchmarks/index.html')
-
 def pgbench_benchmark_view(request):
 
     benchmarks = PgBenchBenchmark.objects.all().values()
@@ -130,7 +126,7 @@ def pgbench_benchmark_machines_view(request):
 
         benchmarks_machines_list.append(benchmark_machine)
 
-    return JsonResponse(benchmarks_machines_list, safe=False)
+    return render(request, 'benchmarks/index.html', {'benchmarks_machines_list': benchmarks_machines_list})
 
 
 def machine_history_view(request, machine):
