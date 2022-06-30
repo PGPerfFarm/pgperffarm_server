@@ -16,7 +16,6 @@ def pgbench_benchmark_view(request):
 
 
 def pgbench_result_complete_view(request, id):
-
     results = PgBenchResult.objects.filter(pgbench_result_id=id).order_by('-pgbench_result_id').values('pgbench_result_id', 'tps', 'latency', 'mode', 'start', 'end', 'iteration', 'init', 'benchmark_config', 'run_id_id', 'run_id_id__machine_id', 'run_id_id__machine_id__machine_type', 'run_id_id__machine_id__alias', 'run_id_id__os_version_id__dist_id_id__dist_name', 'run_id_id__os_version_id__release', 'run_id_id__git_branch_id__name', 'run_id_id__git_commit', 'run_id_id__os_kernel_version_id_id__kernel_id__kernel_name', 'run_id_id__os_kernel_version_id__kernel_release')
     results_list = list(results)
 
@@ -78,7 +77,7 @@ def pgbench_result_complete_view(request, id):
     results_list[0]['pg_stat_statements'] = pg_stat_statements_list
     results_list[0]['collectd'] = collectd
 
-    return JsonResponse(results_list, safe=False)
+    return render(request, 'benchmarks/complete_result.html', {'results': results_list})
 
 
 def postgres_history_view(request, machine):
