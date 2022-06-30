@@ -81,13 +81,14 @@ def pgbench_result_complete_view(request, id):
 
 
 def postgres_history_view(request, machine):
-
+    print("hit!")
     history = Machine.objects.raw("with a as (select p1.machine_id_id, p1.name, p1.db_settings_id_id settings1, p2.db_settings_id_id settings2, p1.setting_name, p1.setting_value value1, p1.setting_unit unit1, p2.setting_value value2, p2.setting_unit unit2 from (select * from postgres_postgressettings, runs_runinfo, runs_branch, machines_machine where postgres_postgressettings.db_settings_id_id = runs_runinfo.postgres_info_id and runs_branch.branch_id = runs_runinfo.git_branch_id and machines_machine.machine_id = runs_runinfo.machine_id_id and machine_id_id = %s) p1, (select * from postgres_postgressettings, runs_runinfo, runs_branch, machines_machine where postgres_postgressettings.db_settings_id_id = runs_runinfo.postgres_info_id and runs_branch.branch_id = runs_runinfo.git_branch_id and machines_machine.machine_id = runs_runinfo.machine_id_id and machine_id_id = %s) p2 where p1.db_settings_id_id < p2.db_settings_id_id and p1.setting_name = p2.setting_name and p1.name = p2.name and (p1.setting_value <> p2.setting_value or p1.setting_unit <> p2.setting_unit)), b as (select machine_id, alias, machine_type, kernel_name, name, min(run_id), min(runs_runinfo.add_time) add_time, postgres_info_id from machines_machine, runs_runinfo, runs_branch, systems_oskernelversion, systems_kernel where runs_runinfo.machine_id_id = machines_machine.machine_id and runs_runinfo.git_branch_id = runs_branch.branch_id and runs_runinfo.os_kernel_version_id_id = systems_oskernelversion.os_kernel_version_id and systems_oskernelversion.kernel_id_id = systems_kernel.kernel_id and machine_id = %s group by name, postgres_info_id, machine_id, alias, machine_type, kernel_name order by name, min), c as (select postgres_info_id prev, lead(postgres_info_id) over(partition by name) as next from b) select distinct min, add_time, settings1, settings2, setting_name, unit1, unit2, value1, value2, b.machine_id, a.name, machine_type, alias, kernel_name, first_run, last_run, min_add_time, max_add_time from a, b, c, (select max(run_id) last_run, max(add_time) max_add_time from runs_runinfo where machine_id_id = %s) d, (select min(run_id) first_run, min(add_time) min_add_time from runs_runinfo where machine_id_id = %s) e where a.settings1 = c.prev and a.settings2 = c.next and a.settings2 = b.postgres_info_id order by min;", [machine, machine, machine, machine, machine])
-
-    history_list = []
+    print(history)
+    history_list = list()
 
     for row in history:
-
+        print("inside for")
+        print(row)
         machine = {}
 
         for column in history.columns:
@@ -95,6 +96,7 @@ def postgres_history_view(request, machine):
 
         history_list.append(machine)
 
+    print(history_list)
     return JsonResponse(history_list, safe=False)
 
 
@@ -117,7 +119,6 @@ def overview_view(request):
 def pgbench_benchmark_machines_view(request):
 
     benchmarks_machines = PgBenchBenchmark.objects.raw("select pgbench_benchmark_id, scale, duration, read_only, clients, machine_id, alias, machines_machine.description, machines_machine.add_time, machine_type, username, count(pgbench_benchmark_id) from benchmarks_pgbenchbenchmark, benchmarks_pgbenchresult, runs_runinfo, machines_machine, auth_user where benchmarks_pgbenchbenchmark.pgbench_benchmark_id = benchmarks_pgbenchresult.benchmark_config_id and benchmarks_pgbenchresult.run_id_id = runs_runinfo.run_id and runs_runinfo.machine_id_id = machines_machine.machine_id and machines_machine.owner_id_id = auth_user.id group by machine_id, alias, machines_machine.description, machines_machine.add_time, machine_type, username, pgbench_benchmark_id, scale, duration, read_only, clients;")
-
     benchmarks_machines_list = []
 
     for row in benchmarks_machines:
@@ -126,7 +127,6 @@ def pgbench_benchmark_machines_view(request):
             benchmark_machine[column] = getattr(row, column)
         benchmarks_machines_list.append(benchmark_machine)
 
-    print(benchmarks_machines_list)
     machines = {}
     benchmarks = 0
     for bm in benchmarks_machines_list:
