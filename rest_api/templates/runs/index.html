@@ -4,6 +4,7 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/run.css' %}">
 {% endblock %}
 {% block content %}
+    {% if run %}
         <div class="card">
             <div id="page-title">Report Page : <span id="value_id">{{run.run_id}}</span></div>
             <div class="space-vertical"></div>
@@ -58,7 +59,17 @@
                             <th>Link</th>
                         </thead>
 
-                        <tbody></tbody>
+                        <tbody>
+                            {% if benchmarks %}
+                                {% for item in benchmarks %}
+                                    <tr>
+                                        <td>{{item.config}}</td>
+                                        <td>{{item.start}}</td>
+                                        <td><a href="/result?id={{item.id}}">{{item.id}}</a></td>
+                                    </tr>
+                                {% endfor %}
+                            {% endif %}
+                        </tbody>
 
                     </table>
 
@@ -81,7 +92,16 @@
                             <th>Value</th>
                         </thead>
 
-                        <tbody></tbody>
+                        <tbody>
+                        {% if run.hardware_info_id__sysctl %}
+                            {% for key, value in run.hardware_info_id__sysctl.items %}
+                                <tr>
+                                    <td>{{key}}</td>
+                                    <td>{{value}}</td>
+                                </tr>
+                            {% endfor %}
+                        {% endif %}
+                        </tbody>
 
                     </table>
 
@@ -99,7 +119,17 @@
                             <th>Unit</th>
                             <th>Value</th>
                         </thead>
-                        <tbody></tbody>
+                        <tbody>
+                        {% if postgres_info %}
+                            {% for item in postgres_info %}
+                                <tr>
+                                    <td>{{item.setting_name}}</td>
+                                    <td>{{item.setting_unit}}</td>
+                                    <td>{{item.setting_value}}</td>
+                                </tr>
+                            {% endfor %}
+                        {% endif %}
+                        </tbody>
                     </table>
                 </div>
             </section>
@@ -114,9 +144,21 @@
                             <th>FS Type</th>
                             <th>Mountpoint</th>
                         </thead>
-                        <tbody></tbody>
+                        <tbody>
+                        {% if run.hardware_info_id__mounts %}
+                            {% for item in run.hardware_info_id__mounts %}
+                                <tr>
+                                    <td>{{item.opts}}</td>
+                                    <td>{{item.device}}</td>
+                                    <td>{{item.fstype}}</td>
+                                    <td>{{item.mountpoint}}</td>
+                                </tr>
+                            {% endfor %}
+                        {% endif %}
+                        </tbody>
                     </table>
                 </div>
             </section>
         </div>
+    {% endif %}
 {% endblock %}

@@ -21,18 +21,31 @@ def single_run_view(request, id):
 
     postgres_info = PostgresSettings.objects.filter(db_settings_id_id=run_list[0]['postgres_info_id']).values()
     postgres_info_list = list(postgres_info)
-    run_list[0]['postgres_info'] = postgres_info_list
 
     pgbench_results = PgBenchResult.objects.filter(run_id_id=run_list[0]['run_id']).values()
     pgbench_results_list = list(pgbench_results)
-    run_list[0]['pgbench_result'] = pgbench_results_list
 
+    benchmarks = []
     for pgbench_result in pgbench_results_list:
         benchmark_config = PgBenchBenchmark.objects.filter(pgbench_benchmark_id = pgbench_result['benchmark_config_id']).values()
+        # print(benchmark_config)
         benchmark_config_list = list(benchmark_config)
-        pgbench_result['benchmark_config'] = benchmark_config_list
-    # return JsonResponse(run_list, safe=False)
-    return render(request, 'runs/index.html', {'run': run_list[0]})
+        read_only = 'read-write test'
+        if benchmark_config_list[0]['read_only']:
+            read_only = 'read-only test'
+        config = 'Scale ' + str(benchmark_config_list[0]['scale']) + ', Duration ' + str(benchmark_config_list[0]['duration']) + ', Clients ' + str(
+            benchmark_config_list[0]['clients']) + ', ' + read_only
+        date = datetime.fromtimestamp(pgbench_result['start']).strftime('%Y-%m-%d %H:%M:%S')
+        benchmarks.append({
+            "config": config,
+            "id": pgbench_result['pgbench_result_id'],
+            "start": date,
+        })
+
+    return render(request, 'runs/index.html', {'run': run_list[0],
+                                               'benchmarks': benchmarks,
+                                               'postgres_info' : postgres_info_list,
+                                               })
 
 
 @csrf_exempt
