@@ -126,7 +126,6 @@ def pgbench_benchmark_machines_view(request):
             benchmark_machine[column] = getattr(row, column)
         benchmarks_machines_list.append(benchmark_machine)
 
-    print(benchmarks_machines_list)
     machines = {}
     benchmarks = 0
     for bm in benchmarks_machines_list:
@@ -164,7 +163,7 @@ def machine_history_view(request, machine):
             machine[column] = getattr(row, column)
 
         machine_history_list.append(machine)
-    # print(machine_history_list)
+
     reports = 0
     benchmarks = {}
     compiler_data = []
@@ -196,7 +195,7 @@ def machine_history_view(request, machine):
         if history['name'] not in branches:
             branches.append(history['name'])
         sysctl_object = json.loads(history['sysctl'])
-        # print('*******************', sysctl_object)
+
         sysctl_string = ''
         if sysctl_object:
             for key, value in sysctl_object.items():
@@ -259,4 +258,4 @@ def pgbench_benchmark_trend_view(request, machine, config):
 
         pgbench_trends_list.append(pgbench_trend)
 
-    return JsonResponse(pgbench_trends_list, safe=False)
+    return render(request, 'benchmarks/trend.html', {'results': pgbench_trends_list})

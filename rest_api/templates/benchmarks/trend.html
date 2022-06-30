@@ -1,0 +1,806 @@
+{% extends 'base.html' %}
+{% block styles %}
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/trend.css' %}">
+    <script src="{% static 'javascript/common.js' %}"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/d3js/6.7.0/d3.min.js" integrity="sha384-ma33ZEb8L5emtidZhYJFZNIFdht2E8f5wHQMKQGom0aIx9rRKm86XXCjGxOISpM9" crossorigin="anonymous"></script>
+{% endblock %}
+{% block content %}
+
+        <div class="card">
+            <div id="page-title">Average TPS and latency in milliseconds : <span id="value_alias"></span></div>
+        </div>
+
+        <div class="card">
+
+            <div class="title">Owner : <span id="value_owner"></span></div>
+
+            <div class="space-vertical"></div>
+
+            <div><span id="value_os"></span></div>
+            <div><span id="value_compiler"></span></div>
+
+            <div class="space-vertical"></div>
+
+            <a id="link__machine"><button>View Machine</button></a>
+
+            <a id="download__json"><button>Download JSON</button></a>
+
+        </div>
+
+        <div class="card">
+
+            <div class="title">Command Line</div>
+
+            <div class="space-vertical"></div>
+
+            <div><span id="value_command"></span></div>
+
+            <div class="space-vertical"></div>
+
+            <button onclick="copy()">Copy Command</button>
+
+        </div>
+
+        <div class="card">
+
+            <div class="title">Benchmark Configuration</div>
+
+            <div class="space-vertical"></div>
+
+            <div>Clients : <span id="value_client"></span></div>
+            <div>Scale : <span id="value_scale"></span></div>
+            <div>Duration : <span id="value_duration"></span></div>
+            <div><span id="value_read_write"></span></div>
+
+        </div>
+
+        <div id="trend__chart__list"></div>
+
+        <div class="modal-wrapper">
+            <div class="modal">
+
+                <div class="title">Commit : <a id="value_modal_commit"></a></div>
+
+                <div class="space-vertical"></div>
+
+                <table id="modal__table" class="table-outline" border="1">
+
+                    <thead>
+                        <th>Run</th>
+                        <th>Add time</th>
+                        <th>Benchmark Link</th>
+                    </thead>
+
+                    <tbody></tbody>
+
+                </table>
+
+                <div class="space-vertical"></div>
+
+                <button onclick="closeModal();">close</button>
+
+            </div>
+        </div>
+{{ results|json_script:"my_results" }}
+<script>
+            const updateTable = (branch) => {
+
+            const branchArray = originalData.get(branch);
+
+            const branchTableBodyElement = document.getElementById(`table-${branch}`).getElementsByTagName('tbody')[0];
+
+            let tableBodyContent = '';
+
+            for(const item of branchArray.slice(tableIndexData.get(branch).start, tableIndexData.get(branch).end)) {
+
+                const index = chartData.get(branch).indexOf(item);
+
+                tableBodyContent += `
+                <tr>
+                    <td><input type="checkbox" onClick="handleCheckbox('${branch}', '${item.git_commit}', this.checked)" ${index!==-1 ? 'checked' : ''}></td>
+                    <td id="row-${item.git_commit}" class="trend__table__commit"><a href="https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=${item.git_commit}">${item.commit}</a></td>
+                    <td>${formatNumberRound(item.avglat)}</td>
+                    <td>${formatNumberRound(item.stdlat)}</td>
+                    <td>${formatNumberRound(item.avgtps)}</td>
+                    <td>${formatNumberRound(item.stdtps)}</td>
+                    <td>${formatNumberRound(item.minlat)}</td>
+                    <td>${formatNumberRound(item.maxlat)}</td>
+                    <td>${formatNumberRound(item.mintps)}</td>
+                    <td>${formatNumberRound(item.maxtps)}</td>
+                    <td><button onclick="showModal('${item.git_commit}');">show</button></td>
+                </tr>
+                `;
+
+            }
+
+            branchTableBodyElement.innerHTML = tableBodyContent;
+
+        };
+
+        const updatePagination = (branch) => {
+
+            const chartListElement = document.querySelector('#pagination-' + branch);
+
+            const currentPage = Math.floor(tableIndexData.get(branch).start / limitOfCommits) + 1;
+            const totalPage = Math.floor((originalData.get(branch).length - 1) / limitOfCommits) + 1;
+
+            chartListElement.innerHTML = currentPage + ' / ' + totalPage;
+
+        };
+
+        const movePageByNumber = (branch, number) => {
+
+            const currentPage = Math.floor(tableIndexData.get(branch).start / limitOfCommits) + 1;
+            const totalPage = Math.floor((originalData.get(branch).length - 1) / limitOfCommits) + 1;
+
+            if(currentPage + number >= 1 && currentPage + number <= totalPage) {
+
+                const pageStart = (currentPage + number - 1) * limitOfCommits
+
+                tableIndexData.set(branch, {
+                    start: pageStart,
+                    end: pageStart + limitOfCommits
+                });
+
+                updateTable(branch);
+                updatePagination(branch);
+
+            }
+
+        };
+
+        const movePageByCommit = (branch, commit) => {
+
+            const branchArray = originalData.get(branch);
+
+            for(const [index, item] of branchArray.entries()) {
+
+                if(item.git_commit.includes(commit)) {
+
+                    const pageStart = Math.floor(index / limitOfCommits) * limitOfCommits;
+
+                    tableIndexData.set(branch, {
+                        start: pageStart,
+                        end: pageStart + limitOfCommits
+                    });
+
+                    updateTable(branch);
+                    updatePagination(branch);
+
+                    break;
+
+                }
+
+            }
+
+        };
+
+        const handleCheckbox = (branch, git_commit, bool) => {
+
+            let targetItem;
+            for(const item of originalData.get(branch)) {
+                if(item.git_commit === git_commit) targetItem = item;
+            }
+            const index = chartData.get(branch).indexOf(targetItem);
+
+            if(bool) { // add to chartData
+
+                if(index === -1) chartData.get(branch).push(targetItem);
+
+            } else { // remove from chartData
+
+                if(index !== -1) chartData.get(branch).splice(index, 1);
+
+            }
+
+            // sort chartData by time ascending
+            chartData.get(branch).sort(function(a, b) {
+                const aDate = new Date(a.add_time), bDate = new Date(b.add_time);
+                if(aDate < bDate) return -1;
+                else if(aDate > bDate) return 1;
+                else return 0;
+            });
+
+        };
+
+        const filterCommits = (branch) => {
+
+            drawChart(branch);
+
+        };
+
+        const selectCommits = (branch, bool) => {
+
+            // update checkbox
+            const trElements = document.getElementById('table-' + branch).getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+            for(const tr of trElements) {
+
+                const checkbox = tr.getElementsByTagName('td')[0].getElementsByTagName('input')[0];
+
+                checkbox.checked = bool;
+
+            }
+
+            // update chartData
+            const branchArray = originalData.get(branch);
+
+            for(const item of branchArray.slice(tableIndexData.get(branch).start, tableIndexData.get(branch).end)) {
+
+                handleCheckbox(branch, item.git_commit, bool);
+
+            }
+
+        };
+
+        const highlightRow = (branch, commit) => {
+
+            const trElements = document.getElementById('table-' + branch).getElementsByTagName('tr');
+            const tdElements = document.getElementById('table-' + branch).getElementsByClassName('trend__table__commit');
+
+            // remove row styles
+            for(const tr of trElements) {
+                tr.style.backgroundColor = null;
+                tr.style.color = null;
+            }
+
+            // highlight row
+            for(const td of tdElements) {
+                if(td.id.includes(commit)) {
+                    const tr = td.parentElement;
+                    tr.style.backgroundColor = '#336791';
+                    tr.style.color = 'white';
+                    break;
+                }
+            }
+
+        };
+
+        const searchCommit = (branch) => {
+
+            const inputElement = document.getElementById('search-' + branch);
+            const commit = inputElement.value;
+
+            movePageByCommit(branch, commit);
+            highlightRow(branch, commit);
+
+        };
+
+        const drawChart = (branch) => {
+
+            const elementId = 'canvas-' + branch;
+            const branchArray = chartData.get(branch);
+
+            const blue = '#303F9F';
+            const blueLight = '#8D97D6';
+            const red = '#C2185B';
+            const redLight = '#E198B5';
+
+            const canvasElement = document.getElementById(elementId);
+            canvasElement.innerHTML = '';
+            const canvasWidth = canvasElement.parentElement.clientWidth - 40;
+            const canvasHeight = 500;
+            const canvasPadding = 70;
+            const graphWidth = canvasWidth - canvasPadding*2;
+            const graphHeight = canvasHeight - canvasPadding*2;
+
+            const commitList = branchArray.map((value) => value.commit);
+            let maxLatency = branchArray[0].maxlat * 1.2;
+            let minLatency = branchArray[0].minlat * 0.8;
+            let maxTps = branchArray[0].maxtps * 1.2;
+            let minTps = branchArray[0].mintps * 0.8;
+
+            for(const item of branchArray) {
+
+                if (item.maxlat > maxLatency) maxLatency = item.maxlat;
+                if (item.minlat < minLatency) minLatency = item.minlat;
+                if (item.maxtps > maxTps) maxTps = item.maxtps;
+                if (item.mintps < minTps) minTps = item.mintps;
+
+            }
+
+            const canvas = d3.select('#' + elementId);
+
+            const svg = canvas
+                .append('svg')
+                .attr('width', canvasWidth)
+                .attr('height', canvasHeight);
+
+            const xScale = d3
+                .scalePoint()
+                .domain(commitList)
+                .range([0, graphWidth])
+                .padding(0.1);
+
+            const latencyScale = d3
+                .scaleLinear()
+                .domain([minLatency, maxLatency])
+                .range([graphHeight, 0]);
+
+            const tpsScale = d3
+                .scaleLinear()
+                .domain([minTps, maxTps])
+                .range([graphHeight, 0]);
+
+            const latencyLine = d3
+                .line()
+                .x((d) => xScale(d.commit) + canvasPadding)
+                .y((d) => latencyScale(d.avglat) + canvasPadding);
+
+            const tpsLine = d3
+                .line()
+                .x((d) => xScale(d.commit) + canvasPadding)
+                .y((d) => tpsScale(d.avgtps) + canvasPadding);
+
+            const tooltip = d3
+                .select('body')
+                .append('span')
+                .attr('id', 'tooltip')
+                .style('display', 'none');
+
+            // background
+            svg
+                .append('rect')
+                .attr('width', canvasWidth)
+                .attr('height', canvasHeight)
+                .attr('fill', '#FAFAFA');
+
+            // commit axis (maximum 10 ticks)
+            let commitTickList = [];
+
+            if(commitList.length > 10) {
+
+                for(let i = 0.5; i < 10; i++) {
+                    const index = Math.floor(commitList.length * i / 10);
+                    commitTickList.push(commitList[index]);
+                }
+
+            } else {
+
+                commitTickList = commitList;
+
+            }
+
+            svg
+                .append('g')
+                .attr('transform', `translate(${canvasPadding}, ${canvasHeight-canvasPadding})`)
+                .call(d3.axisBottom(xScale).tickValues(commitTickList));
+
+            svg
+                .append('text')
+                .attr('class', 'x-axis')
+                .attr('x', canvasWidth/2)
+                .attr('y', canvasHeight - 10)
+                .text('Commit');
+
+            // latency axis
+            svg
+                .append('g')
+                .attr('transform', `translate(${canvasPadding}, ${canvasPadding})`)
+                .call(d3.axisLeft(latencyScale));
+
+            svg
+                .append('text')
+                .attr('class', 'y-axis')
+                .attr('x', 10)
+                .attr('y', canvasHeight/2)
+                .text('Latency (s)');
+
+            // tps axis
+            svg
+                .append('g')
+                .attr('transform', `translate(${canvasWidth-canvasPadding}, ${canvasPadding})`)
+                .call(d3.axisRight(tpsScale));
+
+            svg
+                .append('text')
+                .attr('class', 'y-axis')
+                .attr('x', canvasWidth - 10)
+                .attr('y', canvasHeight/2)
+                .text('TPS (transaction/s)');
+
+            // legend
+            svg
+                .append('circle')
+                .attr('cx', canvasWidth - 130)
+                .attr('cy', 25)
+                .attr('r', 4)
+                .style('fill', blue)
+
+            svg
+                .append('text')
+                .attr('x', canvasWidth - 120)
+                .attr('y', 25)
+                .style('font-size', '11px')
+                .attr('alignment-baseline', 'middle')
+                .text('Latency');
+
+            svg
+                .append('circle')
+                .attr('cx', canvasWidth - 60)
+                .attr('cy', 25)
+                .attr('r', 4)
+                .style('fill', red)
+
+            svg
+                .append('text')
+                .attr('x', canvasWidth - 50)
+                .attr('y', 25)
+                .style('font-size', '11px')
+                .attr('alignment-baseline', 'middle')
+                .text('TPS');
+
+            // latency
+            for(const item of branchArray) {
+
+                svg
+                    .append('line')
+                    .attr('stroke', blueLight)
+                    .attr('stroke-width', '1.5px')
+                    .attr("x1", xScale(item.commit))
+                    .attr("y1", latencyScale(item.maxlat))
+                    .attr("x2", xScale(item.commit))
+                    .attr("y2", latencyScale(item.minlat))
+                    .attr('transform', `translate(${canvasPadding}, ${canvasPadding})`);
+
+                svg
+                    .append('line')
+                    .attr('stroke', blueLight)
+                    .attr('stroke-width', '1.5px')
+                    .attr("x1", xScale(item.commit) - 5)
+                    .attr("y1", latencyScale(item.maxlat))
+                    .attr("x2", xScale(item.commit) + 5)
+                    .attr("y2", latencyScale(item.maxlat))
+                    .attr('transform', `translate(${canvasPadding}, ${canvasPadding})`);
+
+                svg
+                    .append('line')
+                    .attr('stroke', blueLight)
+                    .attr('stroke-width', '1.5px')
+                    .attr("x1", xScale(item.commit) - 5)
+                    .attr("y1", latencyScale(item.minlat))
+                    .attr("x2", xScale(item.commit) + 5)
+                    .attr("y2", latencyScale(item.minlat))
+                    .attr('transform', `translate(${canvasPadding}, ${canvasPadding})`);
+
+            }
+
+            // tps
+            for(const item of branchArray) {
+
+                svg
+                    .append('line')
+                    .attr('stroke', redLight)
+                    .attr('stroke-width', '1.5px')
+                    .attr("x1", xScale(item.commit))
+                    .attr("y1", tpsScale(item.maxtps))
+                    .attr("x2", xScale(item.commit))
+                    .attr("y2", tpsScale(item.mintps))
+                    .attr('transform', `translate(${canvasPadding}, ${canvasPadding})`);
+
+                svg
+                    .append('line')
+                    .attr('stroke', redLight)
+                    .attr('stroke-width', '1.5px')
+                    .attr("x1", xScale(item.commit) - 5)
+                    .attr("y1", tpsScale(item.maxtps))
+                    .attr("x2", xScale(item.commit) + 5)
+                    .attr("y2", tpsScale(item.maxtps))
+                    .attr('transform', `translate(${canvasPadding}, ${canvasPadding})`);
+
+                svg
+                    .append('line')
+                    .attr('stroke', redLight)
+                    .attr('stroke-width', '1.5px')
+                    .attr("x1", xScale(item.commit) - 5)
+                    .attr("y1", tpsScale(item.mintps))
+                    .attr("x2", xScale(item.commit) + 5)
+                    .attr("y2", tpsScale(item.mintps))
+                    .attr('transform', `translate(${canvasPadding}, ${canvasPadding})`);
+
+            }
+
+            // latency
+            svg
+                .append('path')
+                .datum(branchArray)
+                .attr('fill', 'none')
+                .attr('stroke', blue)
+                .attr('stroke-width', '1.5px')
+                .attr('d', latencyLine);
+
+            svg
+                .selectAll('latencyDot')
+                .data(branchArray)
+                .enter()
+                .append('circle')
+                .attr('fill', blue)
+                .attr('cx', (d) => xScale(d.commit))
+                .attr('cy', (d) => latencyScale(d.avglat))
+                .attr('transform', `translate(${canvasPadding}, ${canvasPadding})`)
+                .attr('r', 3)
+                .on('mouseover', () => tooltip.style('display', 'block'))
+                .on('mouseout', () => tooltip.style('display', 'none'))
+                .on('mousemove', (event, d) => {
+                    tooltip.style('left', (event.pageX + 10) + 'px');
+                    tooltip.style('top', (event.pageY - 10) + 'px');
+                    tooltip.html(
+                        `Latency<br>
+                        Commit : ${d.commit}<br>
+                        Value : ${d.avglat}`
+                    );
+                })
+                .on('click', (event, d) => {
+                    movePageByCommit(branch, d.commit);
+                    highlightRow(branch, d.commit);
+                });
+
+            // tps
+            svg
+                .append('path')
+                .datum(branchArray)
+                .attr('fill', 'none')
+                .attr('stroke', red)
+                .attr('stroke-width', '1.5px')
+                .attr('d', tpsLine);
+
+            svg
+                .selectAll('tpsDot')
+                .data(branchArray)
+                .enter()
+                .append('circle')
+                .attr('fill', red)
+                .attr('cx', (d) => xScale(d.commit))
+                .attr('cy', (d) => tpsScale(d.avgtps))
+                .attr('transform', `translate(${canvasPadding}, ${canvasPadding})`)
+                .attr('r', 3)
+                .on('mouseover', () => tooltip.style('display', 'block'))
+                .on('mouseout', () => tooltip.style('display', 'none'))
+                .on('mousemove', (event, d) => {
+                    tooltip.style('left', (event.pageX + 10) + 'px');
+                    tooltip.style('top', (event.pageY - 10) + 'px');
+                    tooltip.html(
+                        `TPS<br>
+                        Commit : ${d.commit}<br>
+                        Value : ${d.avgtps}`
+                    );
+                })
+                .on('click', (event, d) => {
+                    movePageByCommit(branch, d.commit);
+                    highlightRow(branch, d.commit);
+                });
+
+        };
+
+        const downloadJSON = (data) => {
+
+            const url = window.URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'}));
+			const link = document.createElement('a');
+			link.href = url;
+			link.setAttribute('download', 'trend.json');
+			document.body.appendChild(link);
+			link.click();
+
+        };
+
+        const copy = () => {
+
+			const command = document.getElementById('value_command').innerHTML;
+
+			const element = document.createElement('textarea');
+			element.value = command;
+			document.body.appendChild(element);
+			element.select();
+			document.execCommand('copy');
+			document.body.removeChild(element);
+
+    	};
+
+        const showModal = (commit) => {
+
+            document.querySelector('#value_modal_commit').innerHTML = commit;
+            document.querySelector('#value_modal_commit').href = 'https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=' + commit;
+
+            sendRequest(endpoints.trendCommit + commit + '/' + id + '/' + config, (response) => {
+
+                let tableBodyContent = '';
+
+                response.map((item) => {
+
+                    tableBodyContent += `
+                    <tr>
+                        <td><a href="/run?id=${item.run_id}">${item.run_id}</a></td>
+                        <td>${item.add_time}</td>
+                        <td><a href="/result?id=${item.pgbench_result_id}">${item.pgbench_result_id}</a></td>
+                    </tr>
+                    `;
+
+                });
+
+                modalTableBodyElement.innerHTML = tableBodyContent;
+
+                modal.style.display = 'flex';
+
+            });
+
+        };
+
+        const closeModal = () => {
+
+            modal.style.display = 'none';
+
+        };
+    (function() {
+        response = JSON.parse(document.getElementById('my_results').textContent);
+        const id = response[0].machine_id;
+        const config = response[0].pgbench_benchmark_id;
+        const chartListElement = document.querySelector('#trend__chart__list');
+        const modal = document.querySelector('.modal-wrapper');
+        const modalTableBodyElement = document.getElementById('modal__table').getElementsByTagName('tbody')[0];
+
+        originalData = new Map();
+        chartData = new Map();
+        tableIndexData = new Map();
+        limitOfCommits = 100;
+
+        const main = response[0];
+
+        const alias = main.alias;
+        const owner = main.username;
+        const machine_id = main.machine_id;
+
+        const clients = main.clients;
+        const duration = main.duration;
+        const scale = main.scale;
+
+        let read_only = '';
+        let read_only_command = '';
+
+        if(main.read_only == true) {
+            read_only = "Read-only Test";
+            read_only_command = '-S';
+        } else {
+            read_only = "Read-write Test";
+        }
+
+        const os = main.kernel_name + ' ' + main.dist_name + ' ' + main.machine_type;
+        const compiler = main.compiler;
+
+        const commad = `pgbench -i -s ${scale} -p 5432 && pgbench -r -c ${clients} -j ${clients} -T ${duration} -l --aggregate-interval 1 ${read_only_command}`;
+
+        // group by branch name
+        for(const item of response) {
+
+            const branch = item.name;
+
+            if (!originalData.has(branch)) originalData.set(branch, []);
+
+            originalData.get(branch).push(item);
+
+        }
+
+        // sort each branch by time descending
+        for(let [branch, branchArray] of originalData.entries()) {
+
+            branchArray.sort(function(a, b) {
+                const aDate = new Date(a.add_time), bDate = new Date(b.add_time);
+                if(aDate < bDate) return 1;
+                else if(aDate > bDate) return -1;
+                else return 0;
+            });
+
+            branchArray = branchArray.map((value) => {
+                return {
+                    ...value,
+                    commit: value.git_commit.slice(0, 10)
+                };
+            });
+
+            originalData.set(branch, branchArray);
+
+        }
+
+        // append branch cards
+        for(let [branch, branchArray] of originalData.entries()) {
+
+            let append = `
+                <div class="card">
+
+                    <div class="title">${branch}</div>
+
+                    <div class="space-vertical"></div>
+
+                    <div id="canvas-${branch}" class="trend__chart"></div>
+
+                    <div class="space-vertical"></div>
+
+                    <div class="trend__control">
+                        <button class="trend__control__button" onclick="filterCommits('${branch}')">Apply Filter</button>
+                        <button class="trend__control__button" onclick="selectCommits('${branch}', true)">Select All</button>
+                        <button class="trend__control__button" onclick="selectCommits('${branch}', false)">Select None</button>
+
+                        <input id="search-${branch}" class="trend__control__search" type="text" placeholder="Search commit">
+                        <button class="trend__control__button" onclick="searchCommit('${branch}')">Search</button>
+                    </div>
+
+                    <div class="space-vertical"></div>
+
+                    <table id="table-${branch}" class="table-outline" border="1">
+
+                        <thead>
+                            <th style="width: 25px;"></th>
+                            <th>Commit</th>
+                            <th>Average Latency</th>
+                            <th>STD Latency</th>
+                            <th>Average TPS</th>
+                            <th>STD TPS</th>
+                            <th>Min Latency</th>
+                            <th>Max Latency</th>
+                            <th>Min TPS</th>
+                            <th>Max TPS</th>
+                            <th style="width: 50px;">Runs</th>
+                        </thead>
+
+                        <tbody></tbody>
+
+                    </table>
+
+                    <div class="space-vertical"></div>
+
+                    <div class="trend__pagination">
+                        <button onclick="movePageByNumber('${branch}', -1)">&lt;</button>
+                        <div id="pagination-${branch}" class="trend__pagination__page"></div>
+                        <button onclick="movePageByNumber('${branch}', 1)">&gt;</button>
+                    </div>
+
+                </div>
+            `;
+
+            chartListElement.innerHTML += append;
+
+        }
+
+        // show initial table and chart
+        for(let [branch, branchArray] of originalData.entries()) {
+
+            tableIndexData.set(branch, {
+                start: 0,
+                end: limitOfCommits
+            });
+
+            chartData.set(branch, branchArray.slice(tableIndexData.get(branch).start, tableIndexData.get(branch).end));
+
+            // sort chartData by time ascending
+            chartData.get(branch).sort(function(a, b) {
+                const aDate = new Date(a.add_time), bDate = new Date(b.add_time);
+                if(aDate < bDate) return -1;
+                else if(aDate > bDate) return 1;
+                else return 0;
+            });
+
+            updateTable(branch);
+
+            updatePagination(branch);
+
+            drawChart(branch);
+
+        }
+
+        document.querySelector('#value_alias').innerHTML = alias;
+        document.querySelector('#value_owner').innerHTML = owner;
+        document.querySelector('#value_os').innerHTML = os;
+        document.querySelector('#value_compiler').innerHTML = compiler;
+        document.querySelector('#value_command').innerHTML = commad;
+        document.querySelector('#value_client').innerHTML = clients;
+        document.querySelector('#value_scale').innerHTML = scale;
+        document.querySelector('#value_duration').innerHTML = duration;
+        document.querySelector('#value_read_write').innerHTML = read_only;
+
+        document.querySelector('#link__machine').href = '/machine?id=' + machine_id;
+        document.querySelector('#download__json').onclick = () => downloadJSON(response);
+
+
+    })();
+    </script>
+{% endblock %}
