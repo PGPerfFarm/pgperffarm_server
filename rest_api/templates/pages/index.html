@@ -36,7 +36,7 @@
     </div>
 
     <div class="home__item">
-        Last run: <a id="value_last_run" href="{{ '/run?id='|add:result.last_run  }}">{{ result.last_run }}</a> on <span id="value_last_run_time" class="text-color">{{ result.last_run_time }}</span>
+        Last run: <a id="value_last_run" href="/run/{{result.last_run}}/">{{ result.last_run }}</a> on <span id="value_last_run_time" class="text-color">{{ result.last_run_time }}</span>
         <br>
         Reported by machine <a id="value_last_run_machine" href="/benchmark/history/{{result.last_machine_id}}/">{{ result.last_machine_alias }}</a>
     </div>
