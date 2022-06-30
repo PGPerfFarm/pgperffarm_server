@@ -4,6 +4,7 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/machine.css' %}">
 {% endblock %}
 {% block content %}
+    {% if machine_history_list %}
     <div class="card">
         <div id="page-title">Machine Page : <span id="value_alias">{{ machine_history_list.0.alias }}</span></div>
     </div>
@@ -182,4 +183,9 @@
         </section>
 
     </div>
+    {% else %}
+    <div class="home__item">
+             No history yet.
+        </div>
+    {% endif %}
 {% endblock %}
