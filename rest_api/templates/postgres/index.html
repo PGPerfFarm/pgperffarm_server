@@ -23,13 +23,12 @@
 
         <div id="postgres__branch__list"></div>
 
+        {{ results|json_script:"my_results" }}
         <script>
-
-        const id = getUrlParam('id');
-        const branchListElement = document.querySelector('#postgres__branch__list');
-
-        sendRequest(endpoints.postgresHistory + id, (response) => {
-
+        (function() {
+            response = JSON.parse(document.getElementById('my_results').textContent);
+            const id = response[0].machine_id;
+            const branchListElement = document.querySelector('#postgres__branch__list');
             const alias = response[0].alias;
             const machine_id = response[0].machine_id;
             const kernel = response[0].kernel_name;
@@ -121,8 +120,9 @@
                 branchListElement.innerHTML += append;
 
             }
+        })();
 
-        });
+
 
     </script>
 {% endblock %}
