@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% block styles %}
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/run.css' %}">
+{% endblock %}
+{% block content %}
+        <div class="card">
+            <div id="page-title">Report Page : <span id="value_id">{{run.run_id}}</span></div>
+            <div class="space-vertical"></div>
+            <div>Machine : <a id="link_machine"><span id="value_machine">{{run.machine_id__alias}}</span></a></div>
+            <div>Branch : <span id="value_branch">{{run.git_branch_id__name}}</span></div>
+            <div>Uploaded : <span id="value_time">{{run.add_time}}</span></div>
+            <div>Owner : <span id="value_owner">{{run.machine_id__owner_id__username}}</span></div>
+            <div>Commit : <a id="link_commit"><span id="value_commit">https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h={{run.git_commit}}</span></a></div>
+            <div>Repository : <a id="link_repo"><span id="value_repository">{{run.git_branch_id__git_repo_id__url}}</span></a></div>
+        </div>
+
+        <div class="card">
+
+            <div class="title">Type : <span id="value_type">{{run.machine_id__machine_type}}</span></div>
+            <div class="space-vertical"></div>
+            <div>OS : <span id="value_os">{{run.os_version_id__dist_id__dist_name|add:' '|add:run.os_version_id__release}}</span></div>
+            <div>Compiler : <span id="value_compiler">{{run.compiler_id__compiler}}</span></div>
+            <div>Kernel : <span id="value_kernel">{{run.os_kernel_version_id__kernel_id__kernel_name|add:' '|add:run.os_kernel_version_id__kernel_release}}</span></div>
+            <div>Memory : <span id="value_memory">{{run.hardware_info_id__total_memory}}</span></div>
+            <div>Swap : <span id="value_swap">{{run.hardware_info_id__total_swap}}</span></div>
+            <div>CPU : <span id="value_cpu">{{run.hardware_info_id__cpu_brand}} {{run.hardware_info_id__cpu_cores}} cores</span></div>
+
+        </div>
+
+        <div class="card">
+
+            <input id="tab1" type="radio" name="tabs" checked>
+            <label for="tab1">Results</label>
+
+            <input id="tab2" type="radio" name="tabs">
+            <label for="tab2">sysctl</label>
+
+            <input id="tab3" type="radio" name="tabs">
+            <label for="tab3">Postgres</label>
+
+            <input id="tab4" type="radio" name="tabs">
+            <label for="tab4">Mounts</label>
+
+            <section id="content1">
+
+                <div>
+
+                    <span>Progress for each iteration, showing latency and TPS.</span>
+
+                    <div class="space-vertical"></div>
+
+                    <table id="run__data__table__results" class="table-outline" border="1">
+
+                        <thead>
+                            <th>Configuration</th>
+                            <th>Start Time</th>
+                            <th>Link</th>
+                        </thead>
+
+                        <tbody></tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+            <section id="content2">
+
+                <div>
+
+                    <span>Displayed below is information about the sysctl settings.</span>
+
+                    <div class="space-vertical"></div>
+
+                    <table id="run__data__table__sysctl" class="table-outline" border="1">
+
+                        <thead>
+                            <th>Parameter</th>
+                            <th>Value</th>
+                        </thead>
+
+                        <tbody></tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+            <section id="content3">
+                <div>
+                    <span>Displayed below is information about the Postgres settings.</span>
+                    <div class="space-vertical"></div>
+                    <table id="run__data__table__postgres" class="table-outline" border="1">
+                        <thead>
+                            <th>Name</th>
+                            <th>Unit</th>
+                            <th>Value</th>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+            <section id="content4">
+                <div>
+                    <span>Displayed below is information about the mounts of the hardware.</span>
+                    <div class="space-vertical"></div>
+                    <table id="run__data__table__mounts" class="table-outline" border="1">
+                        <thead>
+                            <th>OPTS</th>
+                            <th>Device</th>
+                            <th>FS Type</th>
+                            <th>Mountpoint</th>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+{% endblock %}

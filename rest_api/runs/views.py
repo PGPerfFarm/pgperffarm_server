@@ -4,7 +4,7 @@ import os
 from datetime import datetime
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-
+from django.shortcuts import render
 from runs.parsing_functions import parse_pgbench_options, parse_pgbench_results, parse_os_kernel, parse_compiler, parse_git, parse_hardware, parse_postgres
 from machines.models import Machine
 from postgres.models import PostgresSettings
@@ -13,6 +13,7 @@ from benchmarks.models import PgBenchBenchmark, PgBenchResult
 
 
 def single_run_view(request, id):
+    print("hit!")
 
     run = RunInfo.objects.filter(run_id=id).values('run_id', 'add_time', 'git_branch_id__name', 'git_branch_id__git_repo_id__url', 'git_commit', 'os_version_id__dist_id__dist_name', 'os_version_id__description', 'os_version_id__release', 'os_version_id__codename', 'os_kernel_version_id__kernel_release', 'os_kernel_version_id__kernel_version', 'os_kernel_version_id__kernel_id__kernel_name', 'compiler_id__compiler', 'machine_id', 'machine_id__alias', 'machine_id__machine_type', 'machine_id__description', 'machine_id__add_time','machine_id__owner_id__username', 'postgres_info_id', 'hardware_info_id__cpu_brand', 'hardware_info_id__hz', 'hardware_info_id__cpu_cores', 'hardware_info_id__total_memory', 'hardware_info_id__total_swap', 'hardware_info_id__mounts', 'hardware_info_id__sysctl')
 
@@ -30,8 +31,8 @@ def single_run_view(request, id):
         benchmark_config = PgBenchBenchmark.objects.filter(pgbench_benchmark_id = pgbench_result['benchmark_config_id']).values()
         benchmark_config_list = list(benchmark_config)
         pgbench_result['benchmark_config'] = benchmark_config_list
-
-    return JsonResponse(run_list, safe=False)
+    # return JsonResponse(run_list, safe=False)
+    return render(request, 'runs/index.html', {'run': run_list[0]})
 
 
 @csrf_exempt
