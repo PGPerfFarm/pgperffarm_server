@@ -797,7 +797,7 @@
         document.querySelector('#value_duration').innerHTML = duration;
         document.querySelector('#value_read_write').innerHTML = read_only;
 
-        document.querySelector('#link__machine').href = '/machine?id=' + machine_id;
+        document.querySelector('#link__machine').href = '/benchmark/history/' + machine_id + '/';
         document.querySelector('#download__json').onclick = () => downloadJSON(response);
 
 

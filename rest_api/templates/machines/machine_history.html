@@ -34,7 +34,7 @@
 
         <div id=machine__configurations__list>
             {% for value, name in benchmarks.items %}
-                <div><a href="{{'/trend?id='|add:machine_history_list.0.machine_id|add:'&config='|add:value}}">{{name}}</a></div>
+                <div><a href="/benchmark/pgbench_trends/{{machine_history_list.0.machine_id}}/{{value}}/">{{name}}</a></div>
             {% endfor %}
         </div>
 

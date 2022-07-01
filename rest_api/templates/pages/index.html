@@ -42,7 +42,7 @@
     </div>
 
     <div class="home__item">
-        Last run <a id="value_last_run_trends" href="{{ '/trend?id='| add:result.last_machine_id | add:result.machine_id_id }}">trends</a>
+        Last run <a id="value_last_run_trends" href="/benchmark/pgbench_trends/{{result.last_machine_id}}/{{result.pgbench_benchmark_id}}/">trends</a>
         <br>
         Scale <span id="value_scale" class="text-color">{{ result.scale }}</span>, duration <span id="value_duration" class="text-color">{{ result.duration }}</span>, clients <span id="value_clients" class="text-color">{{ result.clients }}</span>,
         <span id="value_read_only" class="text-color">

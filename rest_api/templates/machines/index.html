@@ -32,7 +32,9 @@
                                     <td>{{ machine.add_time }}</td>
                                     <td>
                                         {% if machine.latest %}
-                                            <a href="">latest run</a>
+                                            {% for run in machine.latest %}
+                                                <a href="/run/{{run}}/">{{run}}</a>
+                                            {% endfor %}
                                         {% endif %}
                                     </td>
                                 </tr>

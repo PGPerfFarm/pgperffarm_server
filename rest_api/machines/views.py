@@ -10,12 +10,18 @@ from runs.models import RunInfo
 
 
 def index(request):
-    machines = Machine.objects.all().values('machine_id', 'alias', 'machine_type', 'add_time', 'description',
-                                            'approved', 'owner_id__username')
-    for m in machines:
-        m['next_url'] = '/benchmark/history/' + str(m['machine_id']) + '/'
-    context = {'machines': machines}
-    return render(request, 'machines/index.html', context)
+    def get_latest(machine):
+        run_info = RunInfo.objects.filter(machine_id=machine['machine_id']).order_by('-add_time')[:3].values('run_id')
+        return [item['run_id'] for item in run_info]
+
+    machines = Machine.objects.all().values('machine_id', 'alias', 'machine_type', 'add_time', 'description', 'approved', 'owner_id__username')
+    machines_list = list(machines)
+
+    for machine in machines_list:
+        machine['latest'] = get_latest(machine)
+        machine['next_url'] = '/benchmark/history/' + str(machine['machine_id']) + '/'
+
+    return render(request, 'machines/index.html', {'machines': machines_list})
 
 @login_required
 def add_machine_view(request):

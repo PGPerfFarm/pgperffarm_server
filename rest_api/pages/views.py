@@ -9,5 +9,4 @@ def index(request):
     for row in overview:
         for column in overview.columns:
             overview_json[column] = getattr(row, column)
-    # print(overview_json)
     return render(request, 'pages/index.html', {'result': overview_json})

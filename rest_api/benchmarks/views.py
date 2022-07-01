@@ -150,7 +150,7 @@ def pgbench_benchmark_machines_view(request):
 
 
 def machine_history_view(request, machine):
-
+    machine_id = machine
     machine_history = Machine.objects.raw("select machine_id, alias, machines_machine.description, machines_machine.add_time, machine_type, username, email, url, dist_name, kernel_name, kernel_release, kernel_version, release, codename, compiler, name, url, min(run_id) as run_id, count(run_id), postgres_info_id, mounts, systems_hardwareinfo.sysctl, runs_runinfo.hardware_info_id, pgbench_benchmark_id, scale, duration, read_only, clients, cpu_brand, hz, cpu_cores, total_memory, total_swap from runs_gitrepo, benchmarks_pgbenchbenchmark, benchmarks_pgbenchresult, runs_runinfo, runs_branch, machines_machine, auth_user, systems_compiler, systems_oskernelversion, systems_kernel, systems_osdistributor, systems_osversion, systems_hardwareinfo where benchmarks_pgbenchbenchmark.pgbench_benchmark_id = benchmarks_pgbenchresult.benchmark_config_id and runs_branch.git_repo_id = runs_gitrepo.git_repo_id and benchmarks_pgbenchresult.run_id_id = runs_runinfo.run_id and runs_runinfo.git_branch_id = runs_branch.branch_id and systems_hardwareinfo.hardware_info_id = runs_runinfo.hardware_info_id and runs_runinfo.machine_id_id = machines_machine.machine_id and runs_runinfo.compiler_id = systems_compiler.compiler_id and machines_machine.owner_id_id = auth_user.id and runs_runinfo.os_version_id_id = systems_osversion.os_version_id and runs_runinfo.os_kernel_version_id_id = systems_oskernelversion.os_kernel_version_id and systems_oskernelversion.kernel_id_id = systems_kernel.kernel_id and systems_osversion.dist_id_id = systems_osdistributor.os_distributor_id and machine_id_id = %s group by url, dist_name, machines_machine.add_time, kernel_name, kernel_release, kernel_version, release, codename, mounts, systems_hardwareinfo.sysctl, compiler, name, postgres_info_id, runs_runinfo.hardware_info_id, pgbench_benchmark_id, scale, duration, read_only, clients, machine_id, alias, machines_machine.description, machine_type, username, email, cpu_brand, hz, cpu_cores, total_memory, total_swap order by run_id desc;", [machine])
 
     machine_history_list = []
@@ -211,9 +211,6 @@ def machine_history_view(request, machine):
                     'sysctl': sysctl_string,
                     'run_id': history['run_id']
                 })
-    configurationListContent = ''
-    for key, value in benchmarks.items():
-        configurationListContent += '<div><a href="/trend?id=${id}&config=${value}"> ${name}</a></div>' % ()
 
     return render(request, 'machines/machine_history.html', {'machine_history_list': machine_history_list,
                                                              'reports': reports,
@@ -221,7 +218,7 @@ def machine_history_view(request, machine):
                                                              'branches': branches,
                                                              'sysctl_data': sysctl_data,
                                                              'compiler_data': compiler_data,
-                                                             'os_data': os_data
+                                                             'os_data': os_data,
                                                              })
 
 

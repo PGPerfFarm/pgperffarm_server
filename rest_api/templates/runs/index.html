@@ -12,8 +12,8 @@
             <div>Branch : <span id="value_branch">{{run.git_branch_id__name}}</span></div>
             <div>Uploaded : <span id="value_time">{{run.add_time}}</span></div>
             <div>Owner : <span id="value_owner">{{run.machine_id__owner_id__username}}</span></div>
-            <div>Commit : <a id="link_commit"><span id="value_commit">https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h={{run.git_commit}}</span></a></div>
-            <div>Repository : <a id="link_repo"><span id="value_repository">{{run.git_branch_id__git_repo_id__url}}</span></a></div>
+            <div>Commit : <a id="link_commit" href="https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h={{run.git_commit}}"><span id="value_commit">https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h={{run.git_commit}}</span></a></div>
+            <div>Repository : <a id="link_repo" href="{{run.git_branch_id__git_repo_id__url}}"><span id="value_repository">{{run.git_branch_id__git_repo_id__url}}</span></a></div>
         </div>
 
         <div class="card">
