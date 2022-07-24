@@ -12,7 +12,7 @@
             </button>
             <div class="dropdown-content">
                 <a class="navigation__links__item" href="{% url 'benchmarks:benchmarks_machines' %}">Pgbench</a>
-                <a class="navigation__links__item" href="">TPC-H</a>
+                <a class="navigation__links__item" href="{% url 'tpch:index' %}">TPC-H</a>
             </div>
         </div>
         {% if user.is_authenticated %}
