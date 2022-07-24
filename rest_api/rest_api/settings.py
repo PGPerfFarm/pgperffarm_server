@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'postgres',
     'runs',
     'systems',
-    'pages']
+    'pages',
+    'tpch']
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
