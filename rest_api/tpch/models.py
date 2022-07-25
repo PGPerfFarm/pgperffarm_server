@@ -5,6 +5,6 @@ from django.core import validators
 class Run(models.Model):
     run_id = models.BigAutoField(primary_key=True)
     date_submitted = models.DateTimeField()
-    machine_id = models.ForeignKey('machines.Machine', on_delete=models.CASCADE, related_name='tpchrun')
+    machine = models.ForeignKey('machines.Machine', on_delete=models.CASCADE, related_name='tpch_run')
     scale_factor = models.FloatField(validators=[validators.MinValueValidator(0)])
-    QphH = models.FloatField(validators=[validators.MinValueValidator(0)])
+    qphh = models.FloatField(validators=[validators.MinValueValidator(0)])
