@@ -13,33 +13,27 @@
     </div>
 
     <div id="benchmarks__config">
-        {% for key, value in machines.items %}
             <div class="card">
                 <div class="title">{{ key }}</div>
                 <div class="space-vertical"></div>
                 <table class="table-outline" border="1">
                     <thead>
                         <th>Alias</th>
-                        <th>Add Time</th>
-                        <th>Type</th>
-                        <th>Owner</th>
-                        <th>Count</th>
-                        <th>Trend</th>
+                        <th>Scale_factor</th>
+                        <th>QphH</th>
+                        <th>date_submitted</th>
                     </thead>
                     <tbody>
-                        {% for machine in value %}
+                        {% for res in result %}
                             <tr>
-                                <td><a href="/benchmark/history/{{machine.id}}/">{{machine.alias}}</a></td>
-                                <td>{{machine.add_time}}</td>
-                                <td>{{machine.type}}</td>
-                                <td>{{machine.owner}}</td>
-                                <td>{{machine.count}}</td>
-                                <td><a href="/benchmark/pgbench_trends/{{machine.id}}/{{machine.config_id}}/">link</a></td>
+                                <td><a href="/benchmark/history/{{res.machine_id}}/">{{res.alias}}</a></td>
+                                <td>{{res.scale_factor}}</td>
+                                <td>{{res.qphh |floatformat:2}}</td>
+                                <td>{{res.date_submitted}}</td>
                             </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
-        {% endfor %}
     </div>
 {% endblock %}
