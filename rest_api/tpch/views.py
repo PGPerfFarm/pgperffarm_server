@@ -14,7 +14,7 @@ from tpch.models import Run
 
 
 def index(request):
-    tpch_runs = Run.objects.raw('select machines_machine.machine_id, machines_machine.alias, tpch_run.run_id, tpch_run.date_submitted, tpch_run.scale_factor, tpch_run.qphh from tpch_run, machines_machine where tpch_run.machine_id = machines_machine.machine_id')
+    tpch_runs = Run.objects.raw('select machines_machine.machine_id, machines_machine.alias, tpch_run.run_id, tpch_run.date_submitted, tpch_run.scale_factor, tpch_run.power_score, tpch_run.throughput_score, tpch_run.composite_score from tpch_run, machines_machine where tpch_run.machine_id = machines_machine.machine_id')
     tpch_runs = list(tpch_runs)
     print(tpch_runs)
     return render(request, 'benchmarks/tpch.html', {'result': tpch_runs})
@@ -55,7 +55,9 @@ def create_tpch_run(request, format=None):
                 machine=machine,
                 scale_factor=json_data['scale_factor'],
                 date_submitted=json_data['date_submitted'],
-                qphh=json_data['qphh_size'],
+                composite_score=json_data['qphh_size'],
+                power_score=json_data['power_size'],
+                throughput_score=json_data['throughput_size'],
             )
 
             try:

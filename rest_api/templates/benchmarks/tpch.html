@@ -19,16 +19,20 @@
                 <table class="table-outline" border="1">
                     <thead>
                         <th>Alias</th>
-                        <th>Scale_factor</th>
-                        <th>QphH</th>
-                        <th>date_submitted</th>
+                        <th>Scale factor</th>
+                        <th>Power score</th>
+                        <th>Throughput score</th>
+                        <th>Composite score</th>
+                        <th>Date_submitted</th>
                     </thead>
                     <tbody>
                         {% for res in result %}
                             <tr>
                                 <td><a href="/benchmark/history/{{res.machine_id}}/">{{res.alias}}</a></td>
                                 <td>{{res.scale_factor}}</td>
-                                <td>{{res.qphh |floatformat:2}}</td>
+                                <td>{{res.power_score |floatformat:2}}</td>
+                                <td>{{res.throughput_score |floatformat:2}}</td>
+                                <td>{{res.composite_score |floatformat:2}}</td>
                                 <td>{{res.date_submitted}}</td>
                             </tr>
                         {% endfor %}
