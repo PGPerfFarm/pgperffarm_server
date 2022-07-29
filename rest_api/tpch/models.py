@@ -16,7 +16,7 @@ class Run(models.Model):
 # model to store data for each query in the tpch query set executed during the run
 class QueryResult(models.Model):
     id = models.BigAutoField(primary_key=True)
-    query_idx = models.SmallIntegerField()
-    time = models.FloatField()
-    type = models.CharField(max_length=30)
+    query_idx = models.SmallIntegerField()  # idx of the query in the dataset
+    time = models.FloatField()  # execution time
+    type = models.CharField(max_length=30)  # type of the query executed, like power, throughput, and refresh functions
     run = models.ForeignKey('tpch.Run', on_delete=models.CASCADE, related_name='tpch_queryresult')
