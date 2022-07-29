@@ -10,14 +10,42 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
 from machines.models import Machine
-from tpch.models import Run
+from tpch.models import Run, QueryResult
 
 
 def index(request):
-    tpch_runs = Run.objects.raw('select machines_machine.machine_id, machines_machine.alias, tpch_run.run_id, tpch_run.date_submitted, tpch_run.scale_factor, tpch_run.power_score, tpch_run.throughput_score, tpch_run.composite_score from tpch_run, machines_machine where tpch_run.machine_id = machines_machine.machine_id')
+    tpch_runs = Run.objects.raw(
+        'select machines_machine.machine_id, machines_machine.alias, tpch_run.id, tpch_run.date_submitted, tpch_run.scale_factor, tpch_run.power_score, tpch_run.throughput_score, tpch_run.composite_score from tpch_run, machines_machine where tpch_run.machine_id = machines_machine.machine_id')
     tpch_runs = list(tpch_runs)
     print(tpch_runs)
     return render(request, 'benchmarks/tpch.html', {'result': tpch_runs})
+
+
+def details(request, id):
+    power_queries = QueryResult.objects.raw("select id, query_idx, time from tpch_queryresult where tpch_queryresult.run_id = %s and type=%s", [id, 'power'])
+    power_queries = list(power_queries)
+    power_idx, power_time = [], []
+    for p in power_queries:
+        power_idx.append(p.query_idx)
+        power_time.append(p.time)
+
+    throughput_queries = QueryResult.objects.raw("select id, query_idx, time from tpch_queryresult where tpch_queryresult.run_id = %s and type=%s", [id, 'throughput'])
+    throughput_queries = list(throughput_queries)
+    throughput_time = []
+    for p in throughput_queries:
+        throughput_time.append(p.time)
+    return render(request, 'benchmarks/tpch_details.html', { 'id':id, 'power_queries': power_queries, 'throughput_queries': throughput_queries, 'power_idx': power_idx, 'power_time': power_time, 'throughput_time': throughput_time})
+
+
+def save_tpch_query_result(res, phase, run):
+    for k, v in res.items():
+        query = QueryResult(
+            query_idx=int(k),
+            time=v,
+            type=phase,
+            run=run
+        )
+        query.save()
 
 
 @csrf_exempt
@@ -51,18 +79,15 @@ def create_tpch_run(request, format=None):
 
         with transaction.atomic():
 
-            run = Run(
-                machine=machine,
-                scale_factor=json_data['scale_factor'],
-                date_submitted=json_data['date_submitted'],
-                composite_score=json_data['qphh_size'],
-                power_score=json_data['power_size'],
-                throughput_score=json_data['throughput_size'],
-            )
-
+            new_run = Run.objects.create(machine=machine,
+                                         scale_factor=json_data['scale_factor'],
+                                         date_submitted=json_data['date_submitted'],
+                                         composite_score=json_data['qphh_size'],
+                                         power_score=json_data['power_size'],
+                                         throughput_score=json_data['throughput_size'])
             try:
-                run.save()
-
+                save_tpch_query_result(json_data['power'], 'power', new_run)
+                save_tpch_query_result(json_data['throughput'], 'throughput', new_run)
             except Exception as e:
 
                 raise RuntimeError(e)

@@ -7,4 +7,5 @@ app_name = "tpch"
 urlpatterns = [
     url('machines', views.index, name='index'),
     url('upload', views.create_tpch_run, name='upload'),
+    url(r'details/(?P<id>.+)/', views.details, name='details'),
 ]
