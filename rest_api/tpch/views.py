@@ -24,17 +24,16 @@ def index(request):
 def details(request, id):
     power_queries = QueryResult.objects.raw("select id, query_idx, time from tpch_queryresult where tpch_queryresult.run_id = %s and type=%s", [id, 'power'])
     power_queries = list(power_queries)
-    power_idx, power_time = [], []
-    for p in power_queries:
-        power_idx.append(p.query_idx)
-        power_time.append(p.time)
-
     throughput_queries = QueryResult.objects.raw("select id, query_idx, time from tpch_queryresult where tpch_queryresult.run_id = %s and type=%s", [id, 'throughput'])
     throughput_queries = list(throughput_queries)
-    throughput_time = []
-    for p in throughput_queries:
-        throughput_time.append(p.time)
-    return render(request, 'benchmarks/tpch_details.html', { 'id':id, 'power_queries': power_queries, 'throughput_queries': throughput_queries, 'power_idx': power_idx, 'power_time': power_time, 'throughput_time': throughput_time})
+    models = []
+    for i in range(0, len(power_queries)):
+        models.append({
+            "model_name": power_queries[i].query_idx,
+            "field1": power_queries[i].time,
+            "field2": throughput_queries[i].time
+        })
+    return render(request, 'benchmarks/tpch_details.html', { 'id':id, 'models': models})
 
 
 def save_tpch_query_result(res, phase, run):
