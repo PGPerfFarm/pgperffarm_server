@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block styles %}
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/trend.css' %}">
+    <script src="{% static 'javascript/common.js' %}"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/d3js/6.7.0/d3.min.js" integrity="sha384-ma33ZEb8L5emtidZhYJFZNIFdht2E8f5wHQMKQGom0aIx9rRKm86XXCjGxOISpM9" crossorigin="anonymous"></script>
+    <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+{% endblock %}
+{% block content %}
+
+        <div class="card">
+            <div id="page-title">TPC-H runs for machine {{alias}} and scale {{scale}} <span id="value_alias"></span></div>
+        </div>
+
+        <div id="trend__chart__list"></div>
+         {% for k, v in chart_data.items %}
+                    <div class="card">
+                        <div class="title"> {{k}}</div>
+                        <div class="space-vertical"></div>
+                        <table class="table-outline" border="1">
+                            <thead>
+                                <th>Commit</th>
+                                <th>Average Composite Score</th>
+                                <th>Average Power Score</th>
+                                <th>Average throughput Score</th>
+                                <th>MAX Composite Score</th>
+                                <th>MAX Power Score</th>
+                                <th>MAX Throughput Score</th>
+                                <th>MIN Composite Score</th>
+                                <th>MIN Power Score</th>
+                                <th>MIN Throughput Score</th>
+                                <th></th>
+                            </thead>
+                            <tbody>
+                                {% for machine in v %}
+                                    <tr>
+                                        <td><a href="https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h={{machine.git_commit}}">{{machine.git_commit}} </a></td>
+                                        <td>{{machine.ave_composite_score |floatformat:2}}</td>
+                                        <td>{{machine.ave_power_score |floatformat:2}}</td>
+                                        <td>{{machine.ave_throughput_score |floatformat:2}}</td>
+                                        <td>{{machine.max_composite_score |floatformat:2}}</td>
+                                        <td>{{machine.max_power_score |floatformat:2}}</td>
+                                        <td>{{machine.max_throughput_score |floatformat:2}}</td>
+                                        <td>{{machine.min_composite_score |floatformat:2}}</td>
+                                        <td>{{machine.min_power_score |floatformat:2}}</td>
+                                        <td>{{machine.min_throughput_score |floatformat:2}}</td>
+                                        <td><a href="">runs</a></td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endfor %}
+  <svg width="600" height="375" style="background-image: url('https://etc.usf.edu/presentations/backgrounds/grid/grid_04/1304m.gif');">
+  </svg>
+
+{{ chart_data|json_script:"chart_data_json" }}
+<script>
+   (function() {
+        data = JSON.parse(document.getElementById('chart_data_json').textContent);
+
+    })();
+</script>
+{% endblock %}

@@ -1,11 +1,7 @@
-from django.shortcuts import render
-
-# Create your views here.
 import json
 import os
 import sys
 from datetime import datetime
-from math import ceil
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
@@ -27,6 +23,25 @@ def index(request):
         else:
             overview_json[scale_g.scale_factor].append(scale_g)
     return render(request, 'benchmarks/tpch.html', {'result': tpch_runs, 'overview_json': overview_json})
+
+
+def trend(request, machine, scale):
+    print('hit')
+    tpch_runs = Branch.objects.raw('select machines_machine.alias, runs_branch.branch_id, tpch_run.git_commit, tpch_run.scale_factor, runs_branch.name, tpch_run.machine_id, max(power_score) max_power_score, min(power_score) min_power_score, avg(power_score) ave_power_score, max(throughput_score) max_throughput_score, min(throughput_score) min_throughput_score, avg(throughput_score) ave_throughput_score, max(composite_score) max_composite_score, min(composite_score) min_composite_score, avg(composite_score) ave_composite_score from tpch_run, runs_branch, machines_machine where tpch_run.machine_id = machines_machine.machine_id AND runs_branch.branch_id = tpch_run.git_branch_id AND tpch_run.machine_id = %s AND tpch_run.scale_factor = %s group by tpch_run.git_commit, tpch_run.scale_factor, runs_branch.name, tpch_run.machine_id, runs_branch.branch_id, machines_machine.alias', (machine, scale))
+    tpch_runs_list = []
+    for row in tpch_runs:
+        pgbench_trend = {}
+        for column in tpch_runs.columns:
+            pgbench_trend[column] = getattr(row, column)
+        tpch_runs_list.append(pgbench_trend)
+    alias = tpch_runs_list[0]['alias']
+    chart_data = {}
+    for t_run in tpch_runs_list:
+        if t_run['name'] not in chart_data:
+            chart_data[t_run['name']] = [t_run]
+        else:
+            chart_data[t_run['name']].append(t_run)
+    return render(request, 'benchmarks/tpch_trend.html', {'results': tpch_runs_list, 'chart_data': chart_data, 'alias': alias, 'scale': scale})
 
 
 def details(request, id):

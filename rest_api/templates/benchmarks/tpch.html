@@ -32,40 +32,40 @@
                                 <td>{{machine.add_time}}</td>
                                 <td>{{machine.username}}</td>
                                 <td>{{machine.count}}</td>
-                                <td><a href="">link</a></td>
+                                <td><a href="/tpch/trends/{{machine.machine_id}}/{{k}}/">link</a></td>
                             </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
         {% endfor %}
-        <div class="card">
-                <div class="title">{{ key }}</div>
-                <div class="space-vertical"></div>
-                <table class="table-outline" border="1">
-                    <thead>
-                        <th>Alias</th>
-                        <th>Scale factor</th>
-                        <th>Power score</th>
-                        <th>Throughput score</th>
-                        <th>Composite score</th>
-                        <th>Date_submitted</th>
-                        <th></th>
-                    </thead>
-                    <tbody>
-                        {% for res in result %}
-                            <tr>
-                                <td><a href="/benchmark/history/{{res.machine_id}}/">{{res.alias}}</a></td>
-                                <td>{{res.scale_factor}}</td>
-                                <td>{{res.power_score |floatformat:2}}</td>
-                                <td>{{res.throughput_score |floatformat:2}}</td>
-                                <td>{{res.composite_score |floatformat:2}}</td>
-                                <td>{{res.date_submitted}}</td>
-                                <td><a href="/tpch/details/{{res.id}}/">details</a></td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+<!--        <div class="card">-->
+<!--                <div class="title">{{ key }}</div>-->
+<!--                <div class="space-vertical"></div>-->
+<!--                <table class="table-outline" border="1">-->
+<!--                    <thead>-->
+<!--                        <th>Alias</th>-->
+<!--                        <th>Scale factor</th>-->
+<!--                        <th>Power score</th>-->
+<!--                        <th>Throughput score</th>-->
+<!--                        <th>Composite score</th>-->
+<!--                        <th>Date_submitted</th>-->
+<!--                        <th></th>-->
+<!--                    </thead>-->
+<!--                    <tbody>-->
+<!--                        {% for res in result %}-->
+<!--                            <tr>-->
+<!--                                <td><a href="/benchmark/history/{{res.machine_id}}/">{{res.alias}}</a></td>-->
+<!--                                <td>{{res.scale_factor}}</td>-->
+<!--                                <td>{{res.power_score |floatformat:2}}</td>-->
+<!--                                <td>{{res.throughput_score |floatformat:2}}</td>-->
+<!--                                <td>{{res.composite_score |floatformat:2}}</td>-->
+<!--                                <td>{{res.date_submitted}}</td>-->
+<!--                                <td><a href="/tpch/details/{{res.id}}/">details</a></td>-->
+<!--                            </tr>-->
+<!--                        {% endfor %}-->
+<!--                    </tbody>-->
+<!--                </table>-->
+<!--            </div>-->
     </div>
 {% endblock %}
