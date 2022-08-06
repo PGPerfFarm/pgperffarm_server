@@ -14,7 +14,7 @@ def index(request):
     tpch_runs = Run.objects.raw(
         'select machines_machine.machine_id, machines_machine.alias, tpch_run.id, tpch_run.date_submitted, tpch_run.scale_factor, tpch_run.power_score, tpch_run.throughput_score, tpch_run.composite_score, tpch_run.git_commit, runs_branch.name from tpch_run, machines_machine, runs_branch where tpch_run.machine_id = machines_machine.machine_id and runs_branch.branch_id = tpch_run.git_branch_id')
     tpch_runs = list(tpch_runs)
-    scale_groups = Machine.objects.raw("SELECT tpch_run.machine_id, auth_user.username, count(tpch_run.id), tpch_run.scale_factor, machines_machine.alias, Max(tpch_run.date_submitted) last_run_time FROM tpch_run, auth_user, machines_machine WHERE tpch_run.machine_id = machines_machine.machine_id AND auth_user.id = machines_machine.owner_id_id AND tpch_run.date_submitted > 'now'::timestamp - '1 month'::interval GROUP BY auth_user.username, tpch_run.scale_factor, tpch_run.machine_id, machines_machine.alias")
+    scale_groups = Machine.objects.raw("SELECT tpch_run.machine_id, auth_user.username, count(tpch_run.id), tpch_run.scale_factor, machines_machine.alias, Max(tpch_run.date_submitted) last_run_time FROM tpch_run, auth_user, machines_machine WHERE tpch_run.machine_id = machines_machine.machine_id AND auth_user.id = machines_machine.owner_id_id AND tpch_run.date_submitted > 'now'::timestamp - '1 month'::interval GROUP BY auth_user.username, tpch_run.scale_factor, tpch_run.machine_id, machines_machine.alias order by tpch_run.scale_factor DESC")
     scale_groups = list(scale_groups)
     overview_json = {}
     for scale_g in scale_groups:
@@ -27,21 +27,16 @@ def index(request):
 
 def trend(request, machine, scale):
     print('hit')
-    tpch_runs = Branch.objects.raw('select machines_machine.alias, runs_branch.branch_id, tpch_run.git_commit, tpch_run.scale_factor, runs_branch.name, tpch_run.machine_id, max(power_score) max_power_score, min(power_score) min_power_score, avg(power_score) ave_power_score, max(throughput_score) max_throughput_score, min(throughput_score) min_throughput_score, avg(throughput_score) ave_throughput_score, max(composite_score) max_composite_score, min(composite_score) min_composite_score, avg(composite_score) ave_composite_score from tpch_run, runs_branch, machines_machine where tpch_run.machine_id = machines_machine.machine_id AND runs_branch.branch_id = tpch_run.git_branch_id AND tpch_run.machine_id = %s AND tpch_run.scale_factor = %s group by tpch_run.git_commit, tpch_run.scale_factor, runs_branch.name, tpch_run.machine_id, runs_branch.branch_id, machines_machine.alias', (machine, scale))
-    tpch_runs_list = []
-    for row in tpch_runs:
+    tpch_trends = Branch.objects.raw('select machines_machine.alias, runs_branch.branch_id, tpch_run.git_commit, tpch_run.scale_factor, runs_branch.name, tpch_run.machine_id, max(power_score) max_power_score, min(power_score) min_power_score, avg(power_score) ave_power_score, max(throughput_score) max_throughput_score, min(throughput_score) min_throughput_score, avg(throughput_score) ave_throughput_score, max(composite_score) max_composite_score, min(composite_score) min_composite_score, avg(composite_score) ave_composite_score from tpch_run, runs_branch, machines_machine where tpch_run.machine_id = machines_machine.machine_id AND runs_branch.branch_id = tpch_run.git_branch_id AND tpch_run.machine_id = %s AND tpch_run.scale_factor = %s group by tpch_run.git_commit, tpch_run.scale_factor, runs_branch.name, tpch_run.machine_id, runs_branch.branch_id, machines_machine.alias', (machine, scale))
+    tpch_trends_list = []
+
+    for row in tpch_trends:
         pgbench_trend = {}
-        for column in tpch_runs.columns:
+        for column in tpch_trends.columns:
             pgbench_trend[column] = getattr(row, column)
-        tpch_runs_list.append(pgbench_trend)
-    alias = tpch_runs_list[0]['alias']
-    chart_data = {}
-    for t_run in tpch_runs_list:
-        if t_run['name'] not in chart_data:
-            chart_data[t_run['name']] = [t_run]
-        else:
-            chart_data[t_run['name']].append(t_run)
-    return render(request, 'benchmarks/tpch_trend.html', {'results': tpch_runs_list, 'chart_data': chart_data, 'alias': alias, 'scale': scale})
+        tpch_trends_list.append(pgbench_trend)
+
+    return render(request, 'benchmarks/tpch_trend.html', {'tpch_trends_list': tpch_trends_list})
 
 
 def details(request, id):
