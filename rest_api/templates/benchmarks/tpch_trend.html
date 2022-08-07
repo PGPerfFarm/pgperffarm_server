@@ -3,6 +3,7 @@
     {% load static %}
     <link rel="stylesheet" type="text/css" href="{% static 'css/trend.css' %}">
     <script src="{% static 'javascript/common.js' %}"></script>
+    <script src="{% static 'javascript/request.js' %}"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/d3js/6.7.0/d3.min.js" integrity="sha384-ma33ZEb8L5emtidZhYJFZNIFdht2E8f5wHQMKQGom0aIx9rRKm86XXCjGxOISpM9" crossorigin="anonymous"></script>
     <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
 {% endblock %}
@@ -53,7 +54,7 @@
                     <thead>
                         <th>Run</th>
                         <th>Add time</th>
-                        <th>Benchmark Link</th>
+                        <th>Query set result</th>
                     </thead>
 
                     <tbody></tbody>
@@ -644,7 +645,7 @@
         document.querySelector('#value_modal_commit').innerHTML = commit;
         document.querySelector('#value_modal_commit').href = 'https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=' + commit;
 
-        sendRequest(endpoints.trendCommit + commit + '/' + id + '/' + config, (response) => {
+        sendRequest('/tpch/runs_commit/' + machine_id + '/' + scale_factor + '/' + commit + '/', (response) => {
 
             let tableBodyContent = '';
 
@@ -652,9 +653,9 @@
 
                 tableBodyContent += `
                 <tr>
-                    <td><a href="/run?id=${item.run_id}">${item.run_id}</a></td>
-                    <td>${item.add_time}</td>
-                    <td><a href="/result?id=${item.pgbench_result_id}">${item.pgbench_result_id}</a></td>
+                    <td><a href="/run?id=${item.id}">${item.id}</a></td>
+                    <td>${item.date_submitted}</td>
+                    <td><a href="/result?id=${item.pgbench_result_id}">details</a></td>
                 </tr>
                 `;
 
@@ -681,13 +682,14 @@
         chartData = new Map();
         tableIndexData = new Map();
         limitOfCommits = 100;
-
+        modal = document.querySelector('.modal-wrapper');
+        modalTableBodyElement = document.getElementById('modal__table').getElementsByTagName('tbody')[0];
         const main = recevied_data[0];
         const alias = main.alias;
         const owner = main.username;
-        const scale = main.scale_factor;
+        scale_factor = main.scale_factor;
         const streams = main.streams;
-        const machine_id = main.machine_id;
+        machine_id = main.machine_id;
 
         // group by branch name
         for(const item of recevied_data) {
@@ -812,7 +814,7 @@
         document.querySelector('#value_owner').innerHTML = owner;
         document.querySelector('#download__json').onclick = () => downloadJSON(recevied_data);
         document.querySelector('#link__machine').href = '/benchmark/history/' + machine_id + '/';
-        document.querySelector('#value_scale').innerHTML = scale;
+        document.querySelector('#value_scale').innerHTML = scale_factor;
         document.querySelector('#value_streams').innerHTML = streams;
     })();
 </script>

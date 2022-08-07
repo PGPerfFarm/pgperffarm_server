@@ -128,3 +128,21 @@ def create_tpch_run(request, format=None):
 
     print('Upload successful!')
     return HttpResponse(status=201)
+
+
+def runs_commit_view(request, machine, scale, commit):
+    commit = '%' + commit
+
+    tpch_runs = Run.objects.raw("select tpch_run.id, tpch_run.date_submitted from tpch_run, machines_machine where tpch_run.machine_id = machines_machine.machine_id AND tpch_run.machine_id = %s AND tpch_run.git_commit like %s AND tpch_run.scale_factor = %s order by tpch_run.date_submitted DESC", [machine, commit, scale])
+
+    tpch_runs_list = []
+
+    for row in tpch_runs:
+        pgbench_run = {}
+
+        for column in tpch_runs.columns:
+            pgbench_run[column] = getattr(row, column)
+
+        tpch_runs_list.append(pgbench_run)
+
+    return JsonResponse(tpch_runs_list, safe=False)
