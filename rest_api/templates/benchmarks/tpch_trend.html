@@ -653,9 +653,9 @@
 
                 tableBodyContent += `
                 <tr>
-                    <td><a href="/run?id=${item.id}">${item.id}</a></td>
+                    <td>${item.id}</td>
                     <td>${item.date_submitted}</td>
-                    <td><a href="/result?id=${item.pgbench_result_id}">details</a></td>
+                    <td><a href="/tpch/details/${item.id}/">details</a></td>
                 </tr>
                 `;
 

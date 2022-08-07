@@ -11,9 +11,6 @@ from tpch.models import Run, QueryResult
 
 
 def index(request):
-    tpch_runs = Run.objects.raw(
-        'select machines_machine.machine_id, machines_machine.alias, tpch_run.id, tpch_run.date_submitted, tpch_run.scale_factor, tpch_run.power_score, tpch_run.throughput_score, tpch_run.composite_score, tpch_run.git_commit, runs_branch.name from tpch_run, machines_machine, runs_branch where tpch_run.machine_id = machines_machine.machine_id and runs_branch.branch_id = tpch_run.git_branch_id')
-    tpch_runs = list(tpch_runs)
     scale_groups = Machine.objects.raw("SELECT tpch_run.machine_id, auth_user.username, count(tpch_run.id), tpch_run.scale_factor, machines_machine.alias, Max(tpch_run.date_submitted) last_run_time FROM tpch_run, auth_user, machines_machine WHERE tpch_run.machine_id = machines_machine.machine_id AND auth_user.id = machines_machine.owner_id_id AND tpch_run.date_submitted > 'now'::timestamp - '1 month'::interval GROUP BY auth_user.username, tpch_run.scale_factor, tpch_run.machine_id, machines_machine.alias order by tpch_run.scale_factor DESC")
     scale_groups = list(scale_groups)
     overview_json = {}
@@ -22,7 +19,7 @@ def index(request):
             overview_json[scale_g.scale_factor] = [scale_g]
         else:
             overview_json[scale_g.scale_factor].append(scale_g)
-    return render(request, 'benchmarks/tpch.html', {'result': tpch_runs, 'overview_json': overview_json})
+    return render(request, 'benchmarks/tpch.html', {'overview_json': overview_json})
 
 
 def trend(request, machine, scale):
@@ -39,6 +36,9 @@ def trend(request, machine, scale):
 
 
 def details(request, id):
+    tpch_runs = Run.objects.raw(
+        'select machines_machine.machine_id, machines_machine.alias, tpch_run.id, tpch_run.date_submitted, tpch_run.scale_factor, tpch_run.power_score, tpch_run.throughput_score, tpch_run.composite_score, tpch_run.git_commit, runs_branch.name from tpch_run, machines_machine, runs_branch where tpch_run.machine_id = machines_machine.machine_id and runs_branch.branch_id = tpch_run.git_branch_id and tpch_run.id = %s', [id])
+    tpch_runs = list(tpch_runs)
     power_queries = QueryResult.objects.raw("select id, query_idx, time from tpch_queryresult where tpch_queryresult.run_id = %s and type=%s", [id, 'power'])
     power_queries = list(power_queries)
     throughput_queries = QueryResult.objects.raw("select id, query_idx, time from tpch_queryresult where tpch_queryresult.run_id = %s and type=%s", [id, 'throughput'])
@@ -50,7 +50,7 @@ def details(request, id):
             "field1": power_queries[i].time,
             "field2": throughput_queries[i].time
         })
-    return render(request, 'benchmarks/tpch_details.html', { 'id':id, 'models': models})
+    return render(request, 'benchmarks/tpch_details.html', { 'id':id, 'models': models, 'result': tpch_runs})
 
 
 def save_tpch_query_result(res, phase, run):

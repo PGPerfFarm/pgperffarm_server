@@ -10,9 +10,36 @@
         <div id="page-title">TPC-H benchmark details for run {{id}} </div>
     </div>
     <div class="card">
+        <div class="title">{{ key }}</div>
+        <div class="space-vertical"></div>
+        <table class="table-outline" border="1">
+            <thead>
+                <th>Alias</th>
+                <th>Scale factor</th>
+                <th>Power score</th>
+                <th>Throughput score</th>
+                <th>Composite score</th>
+                <th>Date_submitted</th>
+                <th></th>
+            </thead>
+            <tbody>
+                {% for res in result %}
+                    <tr>
+                        <td><a href="/benchmark/history/{{res.machine_id}}/">{{res.alias}}</a></td>
+                        <td>{{res.scale_factor}}</td>
+                        <td>{{res.power_score |floatformat:2}}</td>
+                        <td>{{res.throughput_score |floatformat:2}}</td>
+                        <td>{{res.composite_score |floatformat:2}}</td>
+                        <td>{{res.date_submitted}}</td>
+                        <td><a href="/tpch/details/{{res.id}}/">details</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="card">
         <span>Below is the chart showing the execution time for each query in Performance test during the run</span>
     </div>
-
     <div id="benchmarks__config">
         <div id="tpch_chart"></div>
     </div>
