@@ -38,7 +38,7 @@
         </table>
     </div>
     <div class="card">
-        <span>Below is the chart showing the execution time for each query in Performance test during the run</span>
+        <span>Below is the chart showing the execution time for each query in Performance test (<span style="color:#CD6155 ">Power</span> and <span style="color:#48C9B0">Throughput</span>) during the run.</span>
     </div>
     <div id="benchmarks__config">
         <div id="tpch_chart"></div>
@@ -85,7 +85,7 @@
       .enter()
       .append("rect")
       .attr("class", "bar field1")
-    .style("fill","blue")
+    .style("fill","#CD6155 ")
       .attr("x", d => xScale1('field1'))
       .attr("y", d => yScale(d.field1))
       .attr("width", xScale1.bandwidth())
@@ -99,7 +99,7 @@
       .enter()
       .append("rect")
       .attr("class", "bar field2")
-    .style("fill","red")
+    .style("fill","#48C9B0")
       .attr("x", d => xScale1('field2'))
       .attr("y", d => yScale(d.field2))
       .attr("width", xScale1.bandwidth())
