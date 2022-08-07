@@ -26,8 +26,7 @@ def index(request):
 
 
 def trend(request, machine, scale):
-    print('hit')
-    tpch_trends = Branch.objects.raw('select machines_machine.alias, auth_user.username, runs_branch.branch_id, tpch_run.git_commit, tpch_run.scale_factor, runs_branch.name, tpch_run.machine_id, max(power_score) max_power_score, min(power_score) min_power_score, avg(power_score) ave_power_score, max(throughput_score) max_throughput_score, min(throughput_score) min_throughput_score, avg(throughput_score) ave_throughput_score, max(composite_score) max_composite_score, min(composite_score) min_composite_score, avg(composite_score) ave_composite_score from auth_user, tpch_run, runs_branch, machines_machine where auth_user.id = machines_machine.owner_id_id AND tpch_run.machine_id = machines_machine.machine_id AND runs_branch.branch_id = tpch_run.git_branch_id AND tpch_run.machine_id = %s AND tpch_run.scale_factor = %s group by auth_user.username, tpch_run.git_commit, tpch_run.scale_factor, runs_branch.name, tpch_run.machine_id, runs_branch.branch_id, machines_machine.alias', (machine, scale))
+    tpch_trends = Branch.objects.raw('select machines_machine.alias, auth_user.username, runs_branch.branch_id, tpch_run.git_commit, tpch_run.scale_factor, tpch_run.streams, runs_branch.name, tpch_run.machine_id, max(power_score) max_power_score, min(power_score) min_power_score, avg(power_score) ave_power_score, max(throughput_score) max_throughput_score, min(throughput_score) min_throughput_score, avg(throughput_score) ave_throughput_score, max(composite_score) max_composite_score, min(composite_score) min_composite_score, avg(composite_score) ave_composite_score from auth_user, tpch_run, runs_branch, machines_machine where auth_user.id = machines_machine.owner_id_id AND tpch_run.machine_id = machines_machine.machine_id AND runs_branch.branch_id = tpch_run.git_branch_id AND tpch_run.machine_id = %s AND tpch_run.scale_factor = %s group by auth_user.username, tpch_run.git_commit, tpch_run.scale_factor, tpch_run.streams, runs_branch.name, tpch_run.machine_id, runs_branch.branch_id, machines_machine.alias', (machine, scale))
     tpch_trends_list = []
 
     for row in tpch_trends:
@@ -97,6 +96,7 @@ def create_tpch_run(request, format=None):
             branch = Branch.objects.filter(name=json_data['branch']).get()
             new_run = Run.objects.create(machine=machine,
                                          scale_factor=json_data['scale_factor'],
+                                         streams=json_data['streams'],
                                          date_submitted=json_data['date_submitted'],
                                          composite_score=json_data['qphh_size'],
                                          power_score=json_data['power_size'],

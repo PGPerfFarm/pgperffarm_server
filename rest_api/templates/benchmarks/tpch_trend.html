@@ -35,7 +35,7 @@
             <div class="space-vertical"></div>
 
             <div>Scale : <span id="value_scale"></span></div>
-            <div>Streams : <span id="value_streams"></span></div>
+            <div>Number of streams : <span id="value_streams"></span></div>
 
         </div>
 
@@ -376,14 +376,14 @@
             // legend
             svg
                 .append('circle')
-                .attr('cx', canvasWidth - 130)
+                .attr('cx', canvasWidth - 200)
                 .attr('cy', 25)
                 .attr('r', 4)
                 .style('fill', blue)
 
             svg
                 .append('text')
-                .attr('x', canvasWidth - 120)
+                .attr('x', canvasWidth - 190)
                 .attr('y', 25)  
                 .style('font-size', '11px')
                 .attr('alignment-baseline', 'middle')
@@ -391,14 +391,14 @@
 
             svg
                 .append('circle')
-                .attr('cx', canvasWidth - 60)
+                .attr('cx', canvasWidth - 130)
                 .attr('cy', 25)
                 .attr('r', 4)
                 .style('fill', red)
 
             svg
                 .append('text')
-                .attr('x', canvasWidth - 50)
+                .attr('x', canvasWidth - 120)
                 .attr('y', 25)
                 .style('font-size', '11px')
                 .attr('alignment-baseline', 'middle')
@@ -406,14 +406,14 @@
 
             svg
                 .append('circle')
-                .attr('cx', canvasWidth - 60)
+                .attr('cx', canvasWidth - 70)
                 .attr('cy', 25)
                 .attr('r', 4)
                 .style('fill', green)
 
             svg
                 .append('text')
-                .attr('x', canvasWidth - 50)
+                .attr('x', canvasWidth - 60)
                 .attr('y', 25)
                 .style('font-size', '11px')
                 .attr('alignment-baseline', 'middle')
@@ -687,6 +687,7 @@
         const owner = main.username;
         const scale = main.scale_factor;
         const streams = main.streams;
+        const machine_id = main.machine_id;
 
         // group by branch name
         for(const item of recevied_data) {
@@ -810,6 +811,7 @@
         document.querySelector('#value_alias').innerHTML = alias;
         document.querySelector('#value_owner').innerHTML = owner;
         document.querySelector('#download__json').onclick = () => downloadJSON(recevied_data);
+        document.querySelector('#link__machine').href = '/benchmark/history/' + machine_id + '/';
         document.querySelector('#value_scale').innerHTML = scale;
         document.querySelector('#value_streams').innerHTML = streams;
     })();

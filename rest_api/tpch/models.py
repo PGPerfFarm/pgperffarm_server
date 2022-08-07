@@ -10,6 +10,7 @@ class Run(models.Model):
     git_commit = models.CharField(max_length=100, blank=False)
     git_branch = models.ForeignKey('runs.Branch', on_delete=models.CASCADE)
     scale_factor = models.FloatField(validators=[validators.MinValueValidator(0)])
+    streams = models.IntegerField()
     power_score = models.FloatField(validators=[validators.MinValueValidator(0)])
     throughput_score = models.FloatField(validators=[validators.MinValueValidator(0)])
     composite_score = models.FloatField(validators=[validators.MinValueValidator(0)])  # QphH score
