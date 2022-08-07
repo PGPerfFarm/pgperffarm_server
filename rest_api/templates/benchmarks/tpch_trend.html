@@ -8,7 +8,7 @@
 {% endblock %}
 {% block content %}
      <div class="card">
-            <div id="page-title">Average PowerScore and CompositeScore in milliseconds : <span id="value_alias"></span></div>
+            <div id="page-title">Composite, Power and Throughput Scores: <span id="value_alias"></span></div>
         </div>
 
         <div class="card">
@@ -30,28 +30,12 @@
 
         <div class="card">
 
-            <div class="title">Command Line</div>
-
-            <div class="space-vertical"></div>
-
-            <div><span id="value_command"></span></div>
-
-            <div class="space-vertical"></div>
-
-            <button onclick="copy()">Copy Command</button>
-
-        </div>
-
-        <div class="card">
-
             <div class="title">Benchmark Configuration</div>
 
             <div class="space-vertical"></div>
 
-            <div>Clients : <span id="value_client"></span></div>
             <div>Scale : <span id="value_scale"></span></div>
-            <div>Duration : <span id="value_duration"></span></div>
-            <div><span id="value_read_write"></span></div>
+            <div>Streams : <span id="value_streams"></span></div>
 
         </div>
 
@@ -126,6 +110,144 @@
             chartListElement.innerHTML = currentPage + ' / ' + totalPage;
 
         };
+
+    const movePageByNumber = (branch, number) => {
+
+        const currentPage = Math.floor(tableIndexData.get(branch).start / limitOfCommits) + 1;
+        const totalPage = Math.floor((originalData.get(branch).length - 1) / limitOfCommits) + 1;
+
+        if(currentPage + number >= 1 && currentPage + number <= totalPage) {
+
+            const pageStart = (currentPage + number - 1) * limitOfCommits
+
+            tableIndexData.set(branch, {
+                start: pageStart,
+                end: pageStart + limitOfCommits
+            });
+
+            updateTable(branch);
+            updatePagination(branch);
+
+        }
+
+    };
+
+    const movePageByCommit = (branch, commit) => {
+
+        const branchArray = originalData.get(branch);
+
+        for(const [index, item] of branchArray.entries()) {
+
+            if(item.git_commit.includes(commit)) {
+
+                const pageStart = Math.floor(index / limitOfCommits) * limitOfCommits;
+
+                tableIndexData.set(branch, {
+                    start: pageStart,
+                    end: pageStart + limitOfCommits
+                });
+
+                updateTable(branch);
+                updatePagination(branch);
+
+                break;
+
+            }
+
+        }
+
+    };
+
+    const handleCheckbox = (branch, git_commit, bool) => {
+
+        let targetItem;
+        for(const item of originalData.get(branch)) {
+            if(item.git_commit === git_commit) targetItem = item;
+        }
+        const index = chartData.get(branch).indexOf(targetItem);
+
+        if(bool) { // add to chartData
+
+            if(index === -1) chartData.get(branch).push(targetItem);
+
+        } else { // remove from chartData
+
+            if(index !== -1) chartData.get(branch).splice(index, 1);
+
+        }
+
+        // sort chartData by time ascending
+        chartData.get(branch).sort(function(a, b) {
+            const aDate = new Date(a.add_time), bDate = new Date(b.add_time);
+            if(aDate < bDate) return -1;
+            else if(aDate > bDate) return 1;
+            else return 0;
+        });
+
+    };
+
+    const filterCommits = (branch) => {
+
+        drawChart(branch);
+
+    };
+
+    const selectCommits = (branch, bool) => {
+
+        // update checkbox
+        const trElements = document.getElementById('table-' + branch).getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+        for(const tr of trElements) {
+
+            const checkbox = tr.getElementsByTagName('td')[0].getElementsByTagName('input')[0];
+
+            checkbox.checked = bool;
+
+        }
+
+        // update chartData
+        const branchArray = originalData.get(branch);
+
+        for(const item of branchArray.slice(tableIndexData.get(branch).start, tableIndexData.get(branch).end)) {
+
+            handleCheckbox(branch, item.git_commit, bool);
+
+        }
+
+    };
+
+    const highlightRow = (branch, commit) => {
+
+        const trElements = document.getElementById('table-' + branch).getElementsByTagName('tr');
+        const tdElements = document.getElementById('table-' + branch).getElementsByClassName('trend__table__commit');
+
+        // remove row styles
+        for(const tr of trElements) {
+            tr.style.backgroundColor = null;
+            tr.style.color = null;
+        }
+
+        // highlight row
+        for(const td of tdElements) {
+            if(td.id.includes(commit)) {
+                const tr = td.parentElement;
+                tr.style.backgroundColor = '#336791';
+                tr.style.color = 'white';
+                break;
+            }
+        }
+
+    };
+
+    const searchCommit = (branch) => {
+
+        const inputElement = document.getElementById('search-' + branch);
+        const commit = inputElement.value;
+
+        movePageByCommit(branch, commit);
+        highlightRow(branch, commit);
+
+    };
 
     const drawChart = (branch) => {
 
@@ -505,6 +627,53 @@
                     highlightRow(branch, d.commit);
                 });
         };
+
+    const downloadJSON = (data) => {
+
+            const url = window.URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'}));
+			const link = document.createElement('a');
+			link.href = url;
+			link.setAttribute('download', 'trend.json');
+			document.body.appendChild(link);
+			link.click();
+
+        };
+
+    const showModal = (commit) => {
+
+        document.querySelector('#value_modal_commit').innerHTML = commit;
+        document.querySelector('#value_modal_commit').href = 'https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=' + commit;
+
+        sendRequest(endpoints.trendCommit + commit + '/' + id + '/' + config, (response) => {
+
+            let tableBodyContent = '';
+
+            response.map((item) => {
+
+                tableBodyContent += `
+                <tr>
+                    <td><a href="/run?id=${item.run_id}">${item.run_id}</a></td>
+                    <td>${item.add_time}</td>
+                    <td><a href="/result?id=${item.pgbench_result_id}">${item.pgbench_result_id}</a></td>
+                </tr>
+                `;
+
+            });
+
+            modalTableBodyElement.innerHTML = tableBodyContent;
+
+            modal.style.display = 'flex';
+
+        });
+
+    };
+
+    const closeModal = () => {
+
+        modal.style.display = 'none';
+
+    };
+
 (function() {
         var recevied_data = JSON.parse(document.getElementById('tpch_trends_list').textContent);
         const chartListElement = document.querySelector('#trend__chart__list');
@@ -512,6 +681,12 @@
         chartData = new Map();
         tableIndexData = new Map();
         limitOfCommits = 100;
+
+        const main = recevied_data[0];
+        const alias = main.alias;
+        const owner = main.username;
+        const scale = main.scale_factor;
+        const streams = main.streams;
 
         // group by branch name
         for(const item of recevied_data) {
@@ -631,6 +806,12 @@
             drawChart(branch);
 
         }
+
+        document.querySelector('#value_alias').innerHTML = alias;
+        document.querySelector('#value_owner').innerHTML = owner;
+        document.querySelector('#download__json').onclick = () => downloadJSON(recevied_data);
+        document.querySelector('#value_scale').innerHTML = scale;
+        document.querySelector('#value_streams').innerHTML = streams;
     })();
 </script>
 {% endblock %}
