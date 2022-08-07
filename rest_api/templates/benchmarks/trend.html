@@ -3,6 +3,7 @@
     {% load static %}
     <link rel="stylesheet" type="text/css" href="{% static 'css/trend.css' %}">
     <script src="{% static 'javascript/common.js' %}"></script>
+    <script src="{% static 'javascript/request.js' %}"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/d3js/6.7.0/d3.min.js" integrity="sha384-ma33ZEb8L5emtidZhYJFZNIFdht2E8f5wHQMKQGom0aIx9rRKm86XXCjGxOISpM9" crossorigin="anonymous"></script>
 {% endblock %}
 {% block content %}
@@ -602,15 +603,14 @@
             document.querySelector('#value_modal_commit').innerHTML = commit;
             document.querySelector('#value_modal_commit').href = 'https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=' + commit;
 
-            sendRequest(endpoints.trendCommit + commit + '/' + id + '/' + config, (response) => {
+            sendRequest('/benchmark/pgbench_results_commit/' + commit + '/' + id + '/' + config + '/', (res) => {
 
                 let tableBodyContent = '';
-
-                response.map((item) => {
+                res.map((item) => {
 
                     tableBodyContent += `
                     <tr>
-                        <td><a href="/run?id=${item.run_id}">${item.run_id}</a></td>
+                        <td><a href="/run/${item.run_id}/">${item.run_id}</a></td>
                         <td>${item.add_time}</td>
                         <td><a href="/result?id=${item.pgbench_result_id}">${item.pgbench_result_id}</a></td>
                     </tr>
@@ -633,11 +633,11 @@
         };
     (function() {
         response = JSON.parse(document.getElementById('my_results').textContent);
-        const id = response[0].machine_id;
-        const config = response[0].pgbench_benchmark_id;
+        id = response[0].machine_id;
+        config = response[0].pgbench_benchmark_id;
         const chartListElement = document.querySelector('#trend__chart__list');
-        const modal = document.querySelector('.modal-wrapper');
-        const modalTableBodyElement = document.getElementById('modal__table').getElementsByTagName('tbody')[0];
+        modal = document.querySelector('.modal-wrapper');
+        modalTableBodyElement = document.getElementById('modal__table').getElementsByTagName('tbody')[0];
 
         originalData = new Map();
         chartData = new Map();
