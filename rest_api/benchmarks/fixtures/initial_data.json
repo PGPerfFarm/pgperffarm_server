@@ -1,0 +1,16 @@
+[
+	{
+		"model": "benchmarks.BenchmarkType",
+		"benchmark_type_id": 1,
+		"fields": {
+			"benchmark_type": "PgBench"
+		}
+	},
+	{
+		"model": "benchmarks.BenchmarkType",
+		"benchmark_type_id": 2,
+		"fields": {
+			"benchmark_type": "TPC-H"
+		}
+	}
+]

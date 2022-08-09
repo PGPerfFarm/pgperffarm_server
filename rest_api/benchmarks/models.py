@@ -284,3 +284,8 @@ class CollectdDisk(models.Model):
     disk_time_write = models.IntegerField(validators=[validators.MinValueValidator(0)])
 
     epoch = models.FloatField()
+
+
+class BenchmarkType(models.Model):
+    benchmark_type_id = models.AutoField(primary_key=True)
+    benchmark_type = models.CharField(max_length=100)

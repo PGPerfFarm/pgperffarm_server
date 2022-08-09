@@ -90,7 +90,7 @@ def my_machines_view(request):
         cnt = get_count(machine)
         machine['count'] = cnt
         run_count += cnt
-    print(my_machines_list)
+
     return render(request, 'machines/usermachine.html', {'my_machines_list': my_machines_list, 'run_count': run_count})
 
 
