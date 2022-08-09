@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     'runs',
     'systems',
     'pages',
-    'tpch']
+    'tpch',
+    'email_notification']
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
