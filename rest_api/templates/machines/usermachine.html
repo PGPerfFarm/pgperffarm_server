@@ -64,17 +64,56 @@
 
         <div class="space-vertical"></div>
 
-        <form method="post" action="{% url 'machines:addMachine' %}"">
+        <form method="post" action="{% url 'machines:addMachine' %}">
             {% csrf_token %}
             <input id="input__alias" name="alias" type="text" placeholder="alias">
             <input id="input__description" name="description" type="text" placeholder="description">
             <button type="submit">Add</button>
         </form>
 
+    </div>
 
+    <div class="card">
 
+        <div class="title">Manage email notification</div>
+
+        <div class="space-vertical"></div>
+        <form method="post" action="{% url 'email_notification:update_email_notification' %}">
+            {% csrf_token %}
+            Notification for PgBench:
+            <select id="noti_pgbench" name="noti_pgbench" style="margin-right: 50px;">
+                <option value="on">On</option>
+                <option value="off">OFF</option>
+            </select>
+            Threshold for performance drop:
+            <input  id="threshold_pgbench" name="threshold_pgbench" type="number" min="1" max="99" value="{{noti_pgbench.threshold}}">%
+            <br>
+            Notification for TPC-H&nbsp;&nbsp;&nbsp;:
+            <select id="noti_tpch" name="noti_tpch" style="margin-right: 50px;">
+                <option value="on">On</option>
+                <option value="off">OFF</option>
+            </select>
+            Threshold for performance drop:
+            <input  id="threshold_tpch" name="threshold_tpch" type="number" min="1" max="99" value="{{noti_tpch.threshold}}">%
+            <button type="submit" style="display: block">Update</button>
+        </form>
 
     </div>
 
-
+<script>
+    (function() {
+        let noti_pgbench_select = document.getElementById('noti_pgbench');
+        let noti_tpch_select = document.getElementById('noti_tpch');
+        {% if noti_pgbench.is_active %}
+            noti_pgbench_select.value = 'on'
+        {% else %}
+            noti_pgbench_select.value = 'off'
+        {% endif %}
+        {% if noti_tpch.is_active %}
+            noti_tpch_select.value = 'on'
+        {% else %}
+            noti_tpch_select.value = 'off'
+        {% endif %}
+    })();
+</script>
 {% endblock %}

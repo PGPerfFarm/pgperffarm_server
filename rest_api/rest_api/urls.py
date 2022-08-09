@@ -23,5 +23,6 @@ urlpatterns = [
     url('user/', include('users.urls')),
     url('run/', include('runs.urls')),
     url('tpch/', include('tpch.urls')),
+    url('email_notification/', include('email_notification.urls')),
     url('', include('pages.urls')),
 ]
