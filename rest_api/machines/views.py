@@ -5,6 +5,7 @@ from django.http import JsonResponse, HttpResponse, Http404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
 from email_notification.models import EmailNotification
+from benchmarks.models import BenchmarkType
 from machines.models import Machine
 from runs.models import RunInfo
 
@@ -92,10 +93,25 @@ def my_machines_view(request):
         run_count += cnt
 
     email_notifications = EmailNotification.objects.raw("select id, is_active, threshold, owner_id, type_id, benchmark_type from email_notification_emailnotification as en, benchmarks_benchmarktype as bt where en.type_id = bt.benchmark_type_id AND en.owner_id = %s order by type_id ASC", [request.user.id])
-    email_notifications = list(email_notifications)
 
-    return render(request, 'machines/usermachine.html', {'my_machines_list': my_machines_list, 'run_count': run_count,
-                                                         'noti_pgbench': email_notifications[0], 'noti_tpch': email_notifications[1]})
+    # if newly created user doesn't have notification objects, create them
+    if not email_notifications:
+        noti_pgbench = EmailNotification(
+            owner = request.user,
+            type = BenchmarkType.objects.get(benchmark_type_id=1),
+        )
+        noti_pgbench.save()
+        noti_tpch = EmailNotification(
+            owner = request.user,
+            type = BenchmarkType.objects.get(benchmark_type_id=2),
+        )
+        noti_tpch.save()
+        email_notifications = EmailNotification.objects.raw("select id, is_active, threshold, owner_id, type_id, benchmark_type from email_notification_emailnotification as en, benchmarks_benchmarktype as bt where en.type_id = bt.benchmark_type_id AND en.owner_id = %s order by type_id ASC",[request.user.id])
+
+    email_notifications = list(email_notifications)
+    return render(request, 'machines/usermachine.html',
+                  {'my_machines_list': my_machines_list, 'run_count': run_count,
+                   'noti_pgbench': email_notifications[0], 'noti_tpch': email_notifications[1]})
 
 
 def edit_machine_view(request, id):
