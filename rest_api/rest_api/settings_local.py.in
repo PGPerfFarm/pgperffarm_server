@@ -17,5 +17,9 @@ PGAUTH_REDIRECT_SUCCESS = ''
 PGAUTH_KEY = ''
 LOGIN_URL = 'community_login'
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = ''
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
 EMAIL_HOST_USER = ''
-EMAIL_HOST_PASSWORD = ''  # individual smtp password
+EMAIL_HOST_PASSWORD = ''
