@@ -26,7 +26,6 @@ def single_run_view(request, id):
     benchmarks = []
     for pgbench_result in pgbench_results_list:
         benchmark_config = PgBenchBenchmark.objects.filter(pgbench_benchmark_id = pgbench_result['benchmark_config_id']).values()
-        # print(benchmark_config)
         benchmark_config_list = list(benchmark_config)
         read_only = 'read-write test'
         if benchmark_config_list[0]['read_only']:
@@ -125,7 +124,7 @@ def create_run_info(request, format=None):
             benchmark_log = json_data['pgbench_log']
 
             # before doing anything else related to benchmarks, save the run
-            run_info = RunInfo(
+            new_run_info = RunInfo(
                 machine_id=machine,
                 hardware_info=hardware_info,
                 compiler=compiler_result,
@@ -154,7 +153,7 @@ def create_run_info(request, format=None):
             )
 
             try:
-                run_info.save()
+                new_run_info.save()
 
             except Exception as e:
 
@@ -181,8 +180,7 @@ def create_run_info(request, format=None):
                             raise RuntimeError(e)
 
             for item in json_data['pgbench']:
-                print('hh')
-                parse_pgbench_results(item, run_info, json_data['pgbench_log_aggregate'])
+                parse_pgbench_results(item, new_run_info, json_data['pgbench_log_aggregate'], machine.owner_id)
 
     except Exception as e:
 

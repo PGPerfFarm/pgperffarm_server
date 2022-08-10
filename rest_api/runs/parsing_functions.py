@@ -5,14 +5,17 @@ import io
 import re
 from datetime import datetime
 
+from email_notification.models import EmailNotification
 from postgres.models import PostgresSettingsSet, PostgresSettings
-from benchmarks.models import PgBenchBenchmark, PgBenchResult, PgBenchStatement, PgBenchLog, PgBenchRunStatement, PgStatStatementsQuery, PgStatStatements, CollectdCpu, CollectdProcess, CollectdContextswitch, CollectdIpcShm, CollectdIpcMsg, CollectdIpcSem, CollectdMemory, CollectdSwap, CollectdVmem
+from benchmarks.models import PgBenchBenchmark, PgBenchResult, PgBenchStatement, PgBenchLog, PgBenchRunStatement, \
+    PgStatStatementsQuery, PgStatStatements, CollectdCpu, CollectdProcess, CollectdContextswitch, CollectdIpcShm, \
+    CollectdIpcMsg, CollectdIpcSem, CollectdMemory, CollectdSwap, CollectdVmem
 from systems.models import HardwareInfo, Compiler, Kernel, OsDistributor, OsKernelVersion, OsVersion
 from runs.models import GitRepo, Branch
+from machines.models import Machine
 
 
 def parse_sysctl(raw_data):
-
     data = json.loads(raw_data)
     json_dict = {}
 
@@ -38,13 +41,11 @@ def parse_sysctl(raw_data):
 
 
 def hash(json_data):
-
     hash_value = hashlib.sha256(json.dumps(json_data).encode('utf-8'))
     return hash_value.hexdigest()
 
 
 def parse_linux_data(json_data):
-
     if ('brand' in json_data['system']['cpu']['information']):
         brand = json_data['system']['cpu']['information']['brand']
 
@@ -75,7 +76,6 @@ def parse_linux_data(json_data):
 
 
 def get_hash(postgres_settings):
-
     reader = csv.DictReader(io.StringIO(postgres_settings))
     postgres_settings_json = json.loads(json.dumps(list(reader)))
 
@@ -91,7 +91,6 @@ def get_hash(postgres_settings):
 
 
 def add_postgres_settings(hash_value, settings):
-
     settings_set = PostgresSettingsSet.objects.filter(settings_sha256=hash_value).get()
 
     # now parsing all settings
@@ -100,7 +99,8 @@ def add_postgres_settings(hash_value, settings):
         unit = row['source']
         value = row['setting']
 
-        postgres_settings = PostgresSettings(db_settings_id=settings_set, setting_name=name, setting_unit=unit, setting_value=value)
+        postgres_settings = PostgresSettings(db_settings_id=settings_set, setting_name=name, setting_unit=unit,
+                                             setting_value=value)
 
         try:
             postgres_settings.save()
@@ -110,7 +110,6 @@ def add_postgres_settings(hash_value, settings):
 
 
 def parse_pgbench_options(item, clients):
-
     result = {
         'clients': clients,
         'scale': item['scale'],
@@ -122,7 +121,6 @@ def parse_pgbench_options(item, clients):
 
 
 def parse_pgbench_statement_latencies(statement_latencies, pgbench_result_id):
-
     # extract the nonempty statements
     statements = statement_latencies.split("\n")
     statements = list(filter(None, statements))
@@ -146,7 +144,8 @@ def parse_pgbench_statement_latencies(statement_latencies, pgbench_result_id):
             except Exception as e:
                 raise RuntimeError(e)
 
-        run_statement = PgBenchRunStatement(latency=latency, line_id=line_id, pgbench_result_id=pgbench_result_id, result_id=pgbench_statement)
+        run_statement = PgBenchRunStatement(latency=latency, line_id=line_id, pgbench_result_id=pgbench_result_id,
+                                            result_id=pgbench_statement)
 
         try:
             run_statement.save()
@@ -157,7 +156,6 @@ def parse_pgbench_statement_latencies(statement_latencies, pgbench_result_id):
 
 
 def parse_pgbench_log_values(result, values):
-
     lines = values.splitlines()
 
     for line in lines:
@@ -165,7 +163,9 @@ def parse_pgbench_log_values(result, values):
 
         date = datetime.utcfromtimestamp(int(results[0])).strftime("%Y-%m-%dT%H:%M:%S%z")
 
-        log = PgBenchLog(pgbench_result_id=result, interval_start=date, num_transactions=results[1], sum_latency=results[2], sum_latency_2=results[3], min_latency=results[4], max_latency=results[5])
+        log = PgBenchLog(pgbench_result_id=result, interval_start=date, num_transactions=results[1],
+                         sum_latency=results[2], sum_latency_2=results[3], min_latency=results[4],
+                         max_latency=results[5])
 
         try:
             log.save()
@@ -175,7 +175,6 @@ def parse_pgbench_log_values(result, values):
 
 
 def parse_pgbench_logs(result, log_array, iteration):
-
     found = False
 
     for log in log_array:
@@ -191,7 +190,8 @@ def parse_pgbench_logs(result, log_array, iteration):
                 read_only = False
 
             # first of all, check that the config of each benchmark actually exists
-            pgbench_config = PgBenchBenchmark.objects.filter(clients=configs[4], scale=configs[2], duration=configs[3], read_only=read_only).get()
+            pgbench_config = PgBenchBenchmark.objects.filter(clients=configs[4], scale=configs[2], duration=configs[3],
+                                                             read_only=read_only).get()
 
             # then, check if it is the same as the test result
             if pgbench_config.pgbench_benchmark_id == result.benchmark_config.pgbench_benchmark_id:
@@ -264,9 +264,8 @@ def parse_pg_stat_statements(pgbench_result_id, result):
 
 
 def parse_collectd(pgbench_result_id, result):
-
     def parse_epoch_value(raw_data):
-        # print("raw_data: ", raw_data)
+
         data = {}
 
         for key, value in raw_data.items():
@@ -452,24 +451,38 @@ def parse_collectd(pgbench_result_id, result):
                     vmpage_number_file_hugepages=int(float(get_collectd_item('vmpage_number-file_hugepages', value))),
                     vmpage_number_file_pmdmapped=int(float(get_collectd_item('vmpage_number-file_pmdmapped', value))),
                     vmpage_number_kernel_stack=int(float(get_collectd_item('vmpage_number-kernel_stack', value))),
-                    vmpage_number_kernel_misc_reclaimable=int(float(get_collectd_item('vmpage_number-kernel_misc_reclaimable', value))),
-                    vmpage_number_slab_reclaimable=int(float(get_collectd_item('vmpage_number-slab_reclaimable', value))),
-                    vmpage_number_slab_unreclaimable=int(float(get_collectd_item('vmpage_number-slab_unreclaimable', value))),
-                    vmpage_number_zone_write_pending=int(float(get_collectd_item('vmpage_number-zone_write_pending', value))),
-                    vmpage_number_zone_unevictable=int(float(get_collectd_item('vmpage_number-zone_unevictable', value))),
-                    vmpage_number_zone_active_anon=int(float(get_collectd_item('vmpage_number-zone_active_anon', value))),
-                    vmpage_number_zone_inactive_anon=int(float(get_collectd_item('vmpage_number-zone_inactive_anon', value))),
-                    vmpage_number_zone_active_file=int(float(get_collectd_item('vmpage_number-zone_active_file', value))),
-                    vmpage_number_zone_inactive_file=int(float(get_collectd_item('vmpage_number-zone_inactive_file', value))),
-                    vmpage_number_foll_pin_acquired=int(float(get_collectd_item('vmpage_number-foll_pin_acquired', value))),
-                    vmpage_number_foll_pin_released=int(float(get_collectd_item('vmpage_number-foll_pin_released', value))),
+                    vmpage_number_kernel_misc_reclaimable=int(
+                        float(get_collectd_item('vmpage_number-kernel_misc_reclaimable', value))),
+                    vmpage_number_slab_reclaimable=int(
+                        float(get_collectd_item('vmpage_number-slab_reclaimable', value))),
+                    vmpage_number_slab_unreclaimable=int(
+                        float(get_collectd_item('vmpage_number-slab_unreclaimable', value))),
+                    vmpage_number_zone_write_pending=int(
+                        float(get_collectd_item('vmpage_number-zone_write_pending', value))),
+                    vmpage_number_zone_unevictable=int(
+                        float(get_collectd_item('vmpage_number-zone_unevictable', value))),
+                    vmpage_number_zone_active_anon=int(
+                        float(get_collectd_item('vmpage_number-zone_active_anon', value))),
+                    vmpage_number_zone_inactive_anon=int(
+                        float(get_collectd_item('vmpage_number-zone_inactive_anon', value))),
+                    vmpage_number_zone_active_file=int(
+                        float(get_collectd_item('vmpage_number-zone_active_file', value))),
+                    vmpage_number_zone_inactive_file=int(
+                        float(get_collectd_item('vmpage_number-zone_inactive_file', value))),
+                    vmpage_number_foll_pin_acquired=int(
+                        float(get_collectd_item('vmpage_number-foll_pin_acquired', value))),
+                    vmpage_number_foll_pin_released=int(
+                        float(get_collectd_item('vmpage_number-foll_pin_released', value))),
                     vmpage_number_dirty=int(float(get_collectd_item('vmpage_number-dirty', value))),
                     vmpage_number_dirty_threshold=int(float(get_collectd_item('vmpage_number-dirty_threshold', value))),
-                    vmpage_number_dirty_background_threshold=int(float(get_collectd_item('vmpage_number-dirty_background_threshold', value))),
+                    vmpage_number_dirty_background_threshold=int(
+                        float(get_collectd_item('vmpage_number-dirty_background_threshold', value))),
                     vmpage_number_vmscan_write=int(float(get_collectd_item('vmpage_number-vmscan_write', value))),
-                    vmpage_number_vmscan_immediate_reclaim=int(float(get_collectd_item('vmpage_number-vmscan_immediate_reclaim', value))),
+                    vmpage_number_vmscan_immediate_reclaim=int(
+                        float(get_collectd_item('vmpage_number-vmscan_immediate_reclaim', value))),
                     vmpage_number_anon_pages=int(float(get_collectd_item('vmpage_number-anon_pages', value))),
-                    vmpage_number_anon_transparent_hugepages=int(float(get_collectd_item('vmpage_number-anon_transparent_hugepages', value))),
+                    vmpage_number_anon_transparent_hugepages=int(
+                        float(get_collectd_item('vmpage_number-anon_transparent_hugepages', value))),
                     vmpage_number_shmem=int(float(get_collectd_item('vmpage_number-shmem', value))),
                     vmpage_number_shmem_hugepages=int(float(get_collectd_item('vmpage_number-shmem_hugepages', value))),
                     vmpage_number_shmem_pmdmapped=int(float(get_collectd_item('vmpage_number-shmem_pmdmapped', value))),
@@ -479,7 +492,8 @@ def parse_collectd(pgbench_result_id, result):
                     vmpage_number_free_cma=int(float(get_collectd_item('vmpage_number-free_cma', value))),
                     vmpage_number_bounce=int(float(get_collectd_item('vmpage_number-bounce', value))),
                     vmpage_number_unevictable=int(float(get_collectd_item('vmpage_number-unevictable', value))),
-                    vmpage_number_page_table_pages=int(float(get_collectd_item('vmpage_number-page_table_pages', value))),
+                    vmpage_number_page_table_pages=int(
+                        float(get_collectd_item('vmpage_number-page_table_pages', value))),
                     vmpage_number_mapped=int(float(get_collectd_item('vmpage_number-mapped', value))),
                     vmpage_number_zspages=int(float(get_collectd_item('vmpage_number-zspages', value))),
                     vmpage_number_mlock=int(float(get_collectd_item('vmpage_number-mlock', value))),
@@ -498,8 +512,7 @@ def parse_collectd(pgbench_result_id, result):
         raise RuntimeError(e)
 
 
-def parse_pgbench_results(item, run_id, pgbench_log):
-
+def parse_pgbench_results(item, new_run, pgbench_log, user):
     json = item['iterations']
     iterations = 0
 
@@ -509,7 +522,9 @@ def parse_pgbench_results(item, run_id, pgbench_log):
 
             if int(result['clients']) == client:
 
-                pgbench_config = PgBenchBenchmark.objects.filter(clients=result['clients'], scale=item['scale'], duration=item['duration'], read_only=item['read_only']).get()
+                pgbench_config = PgBenchBenchmark.objects.filter(clients=result['clients'], scale=item['scale'],
+                                                                 duration=item['duration'],
+                                                                 read_only=item['read_only']).get()
 
                 pgbench_result_last = PgBenchResult.objects.order_by('-pgbench_result_id').first()
 
@@ -517,7 +532,9 @@ def parse_pgbench_results(item, run_id, pgbench_log):
                     iterations = 0
 
                 # assuming results get added in order
-                elif (pgbench_result_last.benchmark_config.pgbench_benchmark_id == pgbench_config.pgbench_benchmark_id) and (pgbench_result_last.run_id.run_id == run_id):
+                elif (
+                        pgbench_result_last.benchmark_config.pgbench_benchmark_id == pgbench_config.pgbench_benchmark_id) and (
+                        pgbench_result_last.run_id.run_id == new_run):
                     iterations += 1
 
                 else:
@@ -526,10 +543,27 @@ def parse_pgbench_results(item, run_id, pgbench_log):
                 # remove statement latencies
                 statement_latencies = result['statement_latencies']
 
-                result_object = PgBenchResult(run_id=run_id, benchmark_config=pgbench_config, tps=result['tps'], mode=result['mode'], latency=result['latency'], start=result['start'], end=result['end'], iteration=result['iteration'], init=result['init'])
+                result_object = PgBenchResult(run_id=new_run, benchmark_config=pgbench_config, tps=result['tps'],
+                                              mode=result['mode'], latency=result['latency'], start=result['start'],
+                                              end=result['end'], iteration=result['iteration'], init=result['init'])
 
                 try:
                     result_object.save()
+                    avg_same_config_result_raw = Machine.objects.raw(
+                        "select machines_machine.machine_id, avg(tps) as avgtps, avg(latency) as avglat from benchmarks_pgbenchresult,runs_runinfo, machines_machine, runs_branch where benchmarks_pgbenchresult.run_id_id = runs_runinfo.run_id AND runs_runinfo.machine_id_id = machines_machine.machine_id AND runs_runinfo.git_branch_id = runs_branch.branch_id AND branch_id = %s AND benchmark_config_id = %s AND machines_machine.machine_id = %s AND runs_runinfo.postgres_info_id=%s group by machines_machine.machine_id",
+                        [new_run.git_branch.branch_id, result_object.benchmark_config.pgbench_benchmark_id, new_run.machine_id.machine_id,
+                         new_run.postgres_info.postgres_settings_set_id])
+                    avg_same_config_result = {}
+                    for row in avg_same_config_result_raw:
+                        for column in avg_same_config_result_raw.columns:
+                            avg_same_config_result[column] = getattr(row, column)
+
+                    email_notification = EmailNotification.objects.get(owner=user, type=1)
+                    if avg_same_config_result and avg_same_config_result['avgtps'] and email_notification.is_active and float(result_object.tps) < float(avg_same_config_result['avgtps'])*(100 - email_notification.threshold)/100:
+
+                        from email_notification.utils import send_the_email
+                        message = "Dear " + user.username + "\n Your most recent benchmark test (run id: %s) is %.2f" % (new_run.run_id, 1 - (float(result_object.tps) / float(avg_same_config_result['avgtps']))) + "% lower than the previous average."
+                        send_the_email(recipents=[user.email], subject="Performance Drop Alert —— Pgperffarm ", message = message)
 
                     parse_pgbench_logs(result_object, pgbench_log, iterations)
                     parse_pgbench_statement_latencies(statement_latencies, result_object)
@@ -574,26 +608,34 @@ def parse_os_kernel(json_data):
             raise RuntimeError(e)
 
     try:
-        os_version = OsVersion.objects.filter(dist_id=os_distributor.os_distributor_id, release=json_data['os_information']['release'], codename=json_data['os_information']['codename'], description=json_data['os_information']['description']).get()
+        os_version = OsVersion.objects.filter(dist_id=os_distributor.os_distributor_id,
+                                              release=json_data['os_information']['release'],
+                                              codename=json_data['os_information']['codename'],
+                                              description=json_data['os_information']['description']).get()
 
     except OsVersion.DoesNotExist:
 
         try:
 
-            os_version = OsVersion(dist_id=os_distributor, release=json_data['os_information']['release'], codename=json_data['os_information']['codename'], description=json_data['os_information']['description'])
+            os_version = OsVersion(dist_id=os_distributor, release=json_data['os_information']['release'],
+                                   codename=json_data['os_information']['codename'],
+                                   description=json_data['os_information']['description'])
             os_version.save()
 
         except Exception as e:
             raise RuntimeError(e)
 
     try:
-        kernel_version = OsKernelVersion.objects.filter(kernel_id=os_kernel.kernel_id, kernel_release=json_data['kernel']['uname_r'], kernel_version=json_data['kernel']['uname_v']).get()
+        kernel_version = OsKernelVersion.objects.filter(kernel_id=os_kernel.kernel_id,
+                                                        kernel_release=json_data['kernel']['uname_r'],
+                                                        kernel_version=json_data['kernel']['uname_v']).get()
 
     except OsKernelVersion.DoesNotExist:
 
         try:
 
-            kernel_version = OsKernelVersion(kernel_id=os_kernel, kernel_release=json_data['kernel']['uname_r'], kernel_version=json_data['kernel']['uname_v'])
+            kernel_version = OsKernelVersion(kernel_id=os_kernel, kernel_release=json_data['kernel']['uname_r'],
+                                             kernel_version=json_data['kernel']['uname_v'])
             kernel_version.save()
 
         except Exception as e:
@@ -664,13 +706,25 @@ def parse_hardware(json_data):
     hardware_info_new = parse_linux_data(json_data)
 
     try:
-        hardware_info = HardwareInfo.objects.filter(cpu_brand=hardware_info_new['cpu_brand'], cpu_cores=hardware_info_new['cpu_cores'], hz=hardware_info_new['hz'], total_memory=hardware_info_new['total_memory'], total_swap=hardware_info_new['total_swap'], sysctl_hash=hardware_info_new['sysctl_hash'], mounts_hash=hardware_info_new['mounts_hash']).get()
+        hardware_info = HardwareInfo.objects.filter(cpu_brand=hardware_info_new['cpu_brand'],
+                                                    cpu_cores=hardware_info_new['cpu_cores'],
+                                                    hz=hardware_info_new['hz'],
+                                                    total_memory=hardware_info_new['total_memory'],
+                                                    total_swap=hardware_info_new['total_swap'],
+                                                    sysctl_hash=hardware_info_new['sysctl_hash'],
+                                                    mounts_hash=hardware_info_new['mounts_hash']).get()
 
     except HardwareInfo.DoesNotExist:
 
         try:
 
-            hardware_info = HardwareInfo(cpu_brand=hardware_info_new['cpu_brand'], cpu_cores=hardware_info_new['cpu_cores'], hz=hardware_info_new['hz'], total_memory=hardware_info_new['total_memory'], total_swap=hardware_info_new['total_swap'], sysctl_hash=hardware_info_new['sysctl_hash'], mounts_hash=hardware_info_new['mounts_hash'], sysctl=hardware_info_new['sysctl'], mounts=hardware_info_new['mounts'])
+            hardware_info = HardwareInfo(cpu_brand=hardware_info_new['cpu_brand'],
+                                         cpu_cores=hardware_info_new['cpu_cores'], hz=hardware_info_new['hz'],
+                                         total_memory=hardware_info_new['total_memory'],
+                                         total_swap=hardware_info_new['total_swap'],
+                                         sysctl_hash=hardware_info_new['sysctl_hash'],
+                                         mounts_hash=hardware_info_new['mounts_hash'],
+                                         sysctl=hardware_info_new['sysctl'], mounts=hardware_info_new['mounts'])
 
             hardware_info.save()
 
