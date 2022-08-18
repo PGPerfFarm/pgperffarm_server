@@ -107,8 +107,8 @@ def create_tpch_run(request, format=None):
                                          git_branch=branch, )
 
             avg_same_config_result_raw = Machine.objects.raw(
-                "select avg(composite_score) from tpch_run where scale_factor = %s and git_branch_id = %s and machine_id = %s group by git_branch_id",
-                [new_run.scale_factor, new_run.git_branch.branch_id, new_run.machine_id.machine_id])
+                "select machines_machine.machine_id, avg(composite_score) as avg_composite from machines_machine, tpch_run where tpch_run.scale_factor = %s and tpch_run.git_branch_id = %s and tpch_run.machine_id = %s and tpch_run.machine_id = machines_machine.machine_id group by tpch_run.git_branch_id, machines_machine.machine_id",
+                [new_run.scale_factor, new_run.git_branch.branch_id, new_run.machine.machine_id])
             avg_same_config_result = {}
             for row in avg_same_config_result_raw:
                 for column in avg_same_config_result_raw.columns:
@@ -128,8 +128,7 @@ def create_tpch_run(request, format=None):
             user = machine.owner_id
             from email_notification.utils import send_the_email
             message = "Dear " + user.username + "\n Your most recent TPC-H benchmark test (run id: %s) is %.2f" % (
-            new_run.run_id, 1 - (float(new_run.composite_score) / float(
-                avg_same_config_result['avgtps']))) + "% lower than the previous average."
+            new_run.id, (float(avg_same_config_result['avg_composite']) - float(new_run.composite_score)) / avg_same_config_result['avg_composite'] * 100) + "% lower than the previous average."
             send_the_email(recipents=[user.email], subject="Performance Drop Alert —— Pgperffarm ", message=message)
 
     except Exception as e:
