@@ -71,22 +71,16 @@ You should see the index page of the application. To log in, go to `/admin`.
 
 The API also supports authentication from the Postgres community infrastructure, however it has not been tied to the official website yet; at the moment it is possible to test with pgweb local servers.
 
+### Email notification functionality
 
+In settings `settings_local.py` file, you can specify the email configurations (email host, host user and user password)
+
+When the server is running, in the user page, the email notification can be set on or off and the thresholds can be set for PgBench and TPC-H like benchmarks accordingly.
 
 ## Website
 
 ### Requirements
 
-The Website is built with vanilla Javascipt. No additional package install is required.
+The Website is built with flask template. No additional package install is required.
 
 Only one external library is being used inside the code. D3.js is being used for drawing the trend charts. It is being loaded from [Google Hosted Libraries](https://developers.google.com/speed/libraries#d3.js).
-
-### Installation
-
-Create `scripts/endpoints.js` and then write the REST API's base url.
-
-```bash
-$ cp scripts/endpoints.js.in scripts/endpoints.js
-```
-
-Because the Website's code only consists of html, css, and js files, it can be directly hosted using a web server.
