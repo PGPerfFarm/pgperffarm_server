@@ -5,6 +5,8 @@ from datetime import datetime
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
+
+from email_notification.models import EmailNotification
 from machines.models import Machine
 from runs.models import Branch
 from tpch.models import Run, QueryResult
@@ -103,12 +105,32 @@ def create_tpch_run(request, format=None):
                                          throughput_score=json_data['throughput_size'],
                                          git_commit=json_data['commit'],
                                          git_branch=branch, )
+
+            avg_same_config_result_raw = Machine.objects.raw(
+                "select avg(composite_score) from tpch_run where scale_factor = %s and git_branch_id = %s and machine_id = %s group by git_branch_id",
+                [new_run.scale_factor, new_run.git_branch.branch_id, new_run.machine_id.machine_id])
+            avg_same_config_result = {}
+            for row in avg_same_config_result_raw:
+                for column in avg_same_config_result_raw.columns:
+                    avg_same_config_result[column] = getattr(row, column)
+
             try:
                 save_tpch_query_result(json_data['power'], 'power', new_run)
                 save_tpch_query_result(json_data['throughput'], 'throughput', new_run)
             except Exception as e:
 
                 raise RuntimeError(e)
+
+        email_notification = EmailNotification.objects.get(owner=machine.owner_id, type=2)
+
+        if avg_same_config_result and avg_same_config_result['avg_composite'] and email_notification.is_active and float(
+                new_run.composite_score) < float(avg_same_config_result['avg_composite']) * (100 - email_notification.threshold) / 100:
+            user = machine.owner_id
+            from email_notification.utils import send_the_email
+            message = "Dear " + user.username + "\n Your most recent TPC-H benchmark test (run id: %s) is %.2f" % (
+            new_run.run_id, 1 - (float(new_run.composite_score) / float(
+                avg_same_config_result['avgtps']))) + "% lower than the previous average."
+            send_the_email(recipents=[user.email], subject="Performance Drop Alert —— Pgperffarm ", message=message)
 
     except Exception as e:
 
