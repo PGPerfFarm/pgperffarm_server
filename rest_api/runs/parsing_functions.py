@@ -551,7 +551,8 @@ def parse_pgbench_results(item, new_run, pgbench_log, user):
                     result_object.save()
                     avg_same_config_result_raw = Machine.objects.raw(
                         "select machines_machine.machine_id, avg(tps) as avgtps, avg(latency) as avglat from benchmarks_pgbenchresult,runs_runinfo, machines_machine, runs_branch where benchmarks_pgbenchresult.run_id_id = runs_runinfo.run_id AND runs_runinfo.machine_id_id = machines_machine.machine_id AND runs_runinfo.git_branch_id = runs_branch.branch_id AND branch_id = %s AND benchmark_config_id = %s AND machines_machine.machine_id = %s AND runs_runinfo.postgres_info_id=%s group by machines_machine.machine_id",
-                        [new_run.git_branch.branch_id, result_object.benchmark_config.pgbench_benchmark_id, new_run.machine_id.machine_id,
+                        [new_run.git_branch.branch_id, result_object.benchmark_config.pgbench_benchmark_id,
+                         new_run.machine_id.machine_id,
                          new_run.postgres_info.postgres_settings_set_id])
                     avg_same_config_result = {}
                     for row in avg_same_config_result_raw:
@@ -559,11 +560,15 @@ def parse_pgbench_results(item, new_run, pgbench_log, user):
                             avg_same_config_result[column] = getattr(row, column)
 
                     email_notification = EmailNotification.objects.get(owner=user, type=1)
-                    if avg_same_config_result and avg_same_config_result['avgtps'] and email_notification.is_active and float(result_object.tps) < float(avg_same_config_result['avgtps'])*(100 - email_notification.threshold)/100:
-
+                    if avg_same_config_result and avg_same_config_result[
+                        'avgtps'] and email_notification.is_active and float(result_object.tps) < float(
+                            avg_same_config_result['avgtps']) * (100 - email_notification.threshold) / 100:
                         from email_notification.utils import send_the_email
-                        message = "Dear " + user.username + "\n Your most recent benchmark test (run id: %s) is %.2f" % (new_run.run_id, 1 - (float(result_object.tps) / float(avg_same_config_result['avgtps']))) + "% lower than the previous average."
-                        send_the_email(recipents=[user.email], subject="Performance Drop Alert —— Pgperffarm ", message = message)
+                        message = "Dear " + user.username + "\n Your most recent benchmark test (run id: %s) is %.2f" % (
+                        new_run.run_id, ((float(avg_same_config_result['avgtps']) - float(result_object.tps)) / float(
+                            avg_same_config_result['avgtps']) * 100)) + "% lower than the previous average."
+                        send_the_email(recipents=[user.email], subject="Performance Drop Alert —— Pgperffarm ",
+                                       message=message)
 
                     parse_pgbench_logs(result_object, pgbench_log, iterations)
                     parse_pgbench_statement_latencies(statement_latencies, result_object)
