@@ -14,14 +14,9 @@ For detailed explanations about functioning of the script, check the documentati
 
 The Client is a Python script that clones the PostgreSQL source code from a specific branch and creates a temporary PostgreSQL cluster. Then runs pgbench and collect the results and finally uploads the results to the API server. The source code is in the `client` directory.
 
-### REST API
+### Backend and Web frontend
 
-The REST API receives benchmark results from the Client and provides data for the Website. It is built with Django and it uses a DB for storing past benchmark results and machine system information. The source code is in the `rest_api` directory.
-
-### Website
-
-The Website shows lists of machines, runs, and benchmark results and also visualizes benchmark result trends. It only uses vanilla Javascript. The source code is in the `frontend` directory.
-
+The backend receives benchmark results from the Client and provides data for the web frontend. The backend is built with Django, the frontend is built with DJango template and a DB is used for storing past benchmark results and machine system information. The source code is in the `rest_api` directory.
 
 
 ## Client
