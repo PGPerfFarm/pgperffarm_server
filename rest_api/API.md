@@ -89,3 +89,26 @@ Upload benchmark results from a machine.
 ### GET /run/[run_id]
 
 Get details of a certain benchmark run.
+
+
+## Tpch
+
+### POST /tpch/upload
+
+Upload tpch benchmark results from a machine.
+
+### GET /tpch/machines
+
+Get tpch benchmark runs of each machine and benchmark config.
+
+### GET /tpch/details/[run_id]
+
+Get details of a certain benchmark run.
+
+### GET /tpch/trend/[machine_id]/[scale_factor]
+
+Get the trends of tpch runs for a machine with certain scale factor
+
+### GET /tpch/runs_commit/[machine_id]/[scale_factor]/[commit]
+
+Get the tpch runs for a certain machine with certain scale factor under certain git commit
