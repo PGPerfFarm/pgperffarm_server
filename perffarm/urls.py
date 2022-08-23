@@ -1,4 +1,4 @@
-"""rest_api URL Configuration
+"""perffarm URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/2.2/topics/http/urls/
@@ -14,12 +14,12 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.conf.urls import include, url
+from django.urls import include, re_path
 
 urlpatterns = [
-    url('admin/', admin.site.urls),
-    url('benchmark/', include('benchmarks.urls')),
-    url('machine/', include('machines.urls')),
-    url('user/', include('users.urls')),
-    url('run/', include('runs.urls')),
+    re_path('admin/', admin.site.urls),
+    re_path('benchmark/', include('benchmarks.urls')),
+    re_path('machine/', include('machines.urls')),
+    re_path('user/', include('users.urls')),
+    re_path('run/', include('runs.urls')),
 ]

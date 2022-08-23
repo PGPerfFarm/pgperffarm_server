@@ -47,7 +47,7 @@ import time
 # This signal fires whenever new user data has been received. Note that this
 # happens *after* first_name, last_name and email has been updated on the user
 # record, so those are not included in the userdata struct.
-auth_user_data_received = Signal(providing_args=['user', 'userdata'])
+auth_user_data_received = Signal()
 
 
 class AuthBackend(ModelBackend):
