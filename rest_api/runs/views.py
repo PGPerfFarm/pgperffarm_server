@@ -9,7 +9,7 @@ from runs.parsing_functions import parse_pgbench_options, parse_pgbench_results,
 from machines.models import Machine
 from postgres.models import PostgresSettings
 from runs.models import RunInfo, RunLog
-from benchmarks.models import PgBenchBenchmark, PgBenchResult
+from benchmarks.models import PgBenchBenchmark, PgBenchResult, BenchmarkType
 
 
 def single_run_view(request, id):
@@ -135,6 +135,7 @@ def create_run_info(request, format=None):
                 build_log=build_log,
                 install_log=install_log,
                 benchmark_log=benchmark_log,
+                benchmark = BenchmarkType.objects.get(pk=1),
                 cleanup_log=cleanup_log,
                 postgres_log=postgres_log,
                 postgres_info=postgres_info,
