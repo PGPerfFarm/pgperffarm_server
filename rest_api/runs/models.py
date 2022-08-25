@@ -62,7 +62,7 @@ class RunInfo(models.Model):
     install_runtime = models.DurationField(null=True, blank=True, validators=[validators.MinValueValidator(0)])
 
     benchmark_log = models.TextField(null=True, blank=True)
-    benchmark = models.CharField(max_length=100, default="pgbench")
+    benchmark = models.ForeignKey('benchmarks.BenchmarkType', on_delete=models.CASCADE)
 
     cleanup_log = models.TextField(null=True, blank=True)
     cleanup_runtime = models.DurationField(null=True, blank=True, validators=[validators.MinValueValidator(0)])
