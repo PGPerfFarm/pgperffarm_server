@@ -13,7 +13,7 @@ from tpch.models import TpchResult, TpchQueryResult
 
 
 def index(request):
-    scale_groups = Machine.objects.raw("SELECT tpch_run.machine_id, auth_user.username, count(tpch_run.id), tpch_run.scale_factor, machines_machine.alias, Max(tpch_run.date_submitted) last_run_time FROM tpch_run, auth_user, machines_machine WHERE tpch_run.machine_id = machines_machine.machine_id AND auth_user.id = machines_machine.owner_id_id AND tpch_run.date_submitted > 'now'::timestamp - '1 month'::interval GROUP BY auth_user.username, tpch_run.scale_factor, tpch_run.machine_id, machines_machine.alias order by tpch_run.scale_factor DESC")
+    scale_groups = Machine.objects.raw("select machines_machine.machine_id, auth_user.username, Count(tpch_tpchresult.id), tpch_tpchconfig.scale_factor, machines_machine.alias, Max(runs_runinfo.add_time) last_run_time from tpch_tpchresult, tpch_tpchconfig, runs_runinfo, auth_user, machines_machine where tpch_tpchresult.run_id_id = runs_runinfo.run_id AND runs_runinfo.machine_id_id = machines_machine.machine_id AND machines_machine.owner_id_id = auth_user.id AND tpch_tpchresult.benchmark_config_id = tpch_tpchconfig.id GROUP  BY auth_user.username, tpch_tpchconfig.scale_factor, machines_machine.machine_id, machines_machine.alias")
     scale_groups = list(scale_groups)
     overview_json = {}
     for scale_g in scale_groups:
@@ -25,7 +25,7 @@ def index(request):
 
 
 def trend(request, machine, scale):
-    tpch_trends = Branch.objects.raw('select machines_machine.alias, auth_user.username, runs_branch.branch_id, tpch_run.git_commit, tpch_run.scale_factor, tpch_run.streams, runs_branch.name, tpch_run.machine_id, max(power_score) max_power_score, min(power_score) min_power_score, avg(power_score) ave_power_score, max(throughput_score) max_throughput_score, min(throughput_score) min_throughput_score, avg(throughput_score) ave_throughput_score, max(composite_score) max_composite_score, min(composite_score) min_composite_score, avg(composite_score) ave_composite_score from auth_user, tpch_run, runs_branch, machines_machine where auth_user.id = machines_machine.owner_id_id AND tpch_run.machine_id = machines_machine.machine_id AND runs_branch.branch_id = tpch_run.git_branch_id AND tpch_run.machine_id = %s AND tpch_run.scale_factor = %s group by auth_user.username, tpch_run.git_commit, tpch_run.scale_factor, tpch_run.streams, runs_branch.name, tpch_run.machine_id, runs_branch.branch_id, machines_machine.alias', (machine, scale))
+    tpch_trends = Branch.objects.raw('select machines_machine.alias, auth_user.username, runs_branch.branch_id, tpch_tpchresult.git_commit, tpch_tpchresult.scale_factor, tpch_tpchresult.streams, runs_branch.name, tpch_tpchresult.machine_id, max(power_score) max_power_score, min(power_score) min_power_score, avg(power_score) ave_power_score, max(throughput_score) max_throughput_score, min(throughput_score) min_throughput_score, avg(throughput_score) ave_throughput_score, max(composite_score) max_composite_score, min(composite_score) min_composite_score, avg(composite_score) ave_composite_score from auth_user, tpch_tpchresult, runs_branch, machines_machine where auth_user.id = machines_machine.owner_id_id AND tpch_tpchresult.machine_id = machines_machine.machine_id AND runs_branch.branch_id = tpch_tpchresult.git_branch_id AND tpch_tpchresult.machine_id = %s AND tpch_tpchresult.scale_factor = %s group by auth_user.username, tpch_tpchresult.git_commit, tpch_tpchresult.scale_factor, tpch_tpchresult.streams, runs_branch.name, tpch_tpchresult.machine_id, runs_branch.branch_id, machines_machine.alias', (machine, scale))
     tpch_trends_list = []
 
     for row in tpch_trends:
@@ -39,7 +39,7 @@ def trend(request, machine, scale):
 
 def details(request, id):
     tpch_runs = TpchResult.objects.raw(
-        'select machines_machine.machine_id, machines_machine.alias, tpch_run.id, tpch_run.date_submitted, tpch_run.scale_factor, tpch_run.power_score, tpch_run.throughput_score, tpch_run.composite_score, tpch_run.git_commit, runs_branch.name from tpch_run, machines_machine, runs_branch where tpch_run.machine_id = machines_machine.machine_id and runs_branch.branch_id = tpch_run.git_branch_id and tpch_run.id = %s', [id])
+        'select machines_machine.machine_id, machines_machine.alias, tpch_tpchresult.id, tpch_tpchresult.date_submitted, tpch_tpchresult.scale_factor, tpch_tpchresult.power_score, tpch_tpchresult.throughput_score, tpch_tpchresult.composite_score, tpch_tpchresult.git_commit, runs_branch.name from tpch_tpchresult, machines_machine, runs_branch where tpch_tpchresult.machine_id = machines_machine.machine_id and runs_branch.branch_id = tpch_tpchresult.git_branch_id and tpch_tpchresult.id = %s', [id])
     tpch_runs = list(tpch_runs)
     power_queries = TpchQueryResult.objects.raw("select id, query_idx, time from tpch_queryresult where tpch_queryresult.run_id = %s and type=%s", [id, 'power'])
     power_queries = list(power_queries)
@@ -107,7 +107,7 @@ def create_tpch_run(request, format=None):
                                          git_branch=branch, )
 
             avg_same_config_result_raw = Machine.objects.raw(
-                "select machines_machine.machine_id, avg(composite_score) as avg_composite from machines_machine, tpch_run where tpch_run.scale_factor = %s and tpch_run.git_branch_id = %s and tpch_run.machine_id = %s and tpch_run.machine_id = machines_machine.machine_id group by tpch_run.git_branch_id, machines_machine.machine_id",
+                "select machines_machine.machine_id, avg(composite_score) as avg_composite from machines_machine, tpch_tpchresult where tpch_tpchresult.scale_factor = %s and tpch_tpchresult.git_branch_id = %s and tpch_tpchresult.machine_id = %s and tpch_tpchresult.machine_id = machines_machine.machine_id group by tpch_tpchresult.git_branch_id, machines_machine.machine_id",
                 [new_run.scale_factor, new_run.git_branch.branch_id, new_run.machine.machine_id])
             avg_same_config_result = {}
             for row in avg_same_config_result_raw:
@@ -154,7 +154,7 @@ def create_tpch_run(request, format=None):
 def runs_commit_view(request, machine, scale, commit):
     commit = '%' + commit
 
-    tpch_runs = TpchResult.objects.raw("select tpch_run.id, tpch_run.date_submitted from tpch_run, machines_machine where tpch_run.machine_id = machines_machine.machine_id AND tpch_run.machine_id = %s AND tpch_run.git_commit like %s AND tpch_run.scale_factor = %s order by tpch_run.date_submitted DESC", [machine, commit, scale])
+    tpch_runs = TpchResult.objects.raw("select tpch_tpchresult.id, tpch_tpchresult.date_submitted from tpch_tpchresult, machines_machine where tpch_tpchresult.machine_id = machines_machine.machine_id AND tpch_tpchresult.machine_id = %s AND tpch_tpchresult.git_commit like %s AND tpch_tpchresult.scale_factor = %s order by tpch_tpchresult.date_submitted DESC", [machine, commit, scale])
 
     tpch_runs_list = []
 

@@ -7,6 +7,7 @@ class TpchConfig(models.Model):
     scale_factor = models.FloatField(validators=[validators.MinValueValidator(0)])
     streams = models.IntegerField()
 
+
 class TpchResult(models.Model):
     id = models.BigAutoField(primary_key=True)
     run_id = models.ForeignKey('runs.RunInfo', on_delete=models.CASCADE)
