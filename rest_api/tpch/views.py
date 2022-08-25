@@ -9,7 +9,7 @@ from django.shortcuts import render
 from email_notification.models import EmailNotification
 from machines.models import Machine
 from runs.models import Branch
-from tpch.models import Run, QueryResult
+from tpch.models import TpchResult, TpchQueryResult
 
 
 def index(request):
@@ -38,12 +38,12 @@ def trend(request, machine, scale):
 
 
 def details(request, id):
-    tpch_runs = Run.objects.raw(
+    tpch_runs = TpchResult.objects.raw(
         'select machines_machine.machine_id, machines_machine.alias, tpch_run.id, tpch_run.date_submitted, tpch_run.scale_factor, tpch_run.power_score, tpch_run.throughput_score, tpch_run.composite_score, tpch_run.git_commit, runs_branch.name from tpch_run, machines_machine, runs_branch where tpch_run.machine_id = machines_machine.machine_id and runs_branch.branch_id = tpch_run.git_branch_id and tpch_run.id = %s', [id])
     tpch_runs = list(tpch_runs)
-    power_queries = QueryResult.objects.raw("select id, query_idx, time from tpch_queryresult where tpch_queryresult.run_id = %s and type=%s", [id, 'power'])
+    power_queries = TpchQueryResult.objects.raw("select id, query_idx, time from tpch_queryresult where tpch_queryresult.run_id = %s and type=%s", [id, 'power'])
     power_queries = list(power_queries)
-    throughput_queries = QueryResult.objects.raw("select id, query_idx, time from tpch_queryresult where tpch_queryresult.run_id = %s and type=%s", [id, 'throughput'])
+    throughput_queries = TpchQueryResult.objects.raw("select id, query_idx, time from tpch_queryresult where tpch_queryresult.run_id = %s and type=%s", [id, 'throughput'])
     throughput_queries = list(throughput_queries)
     models = []
     for i in range(0, len(power_queries)):
@@ -57,7 +57,7 @@ def details(request, id):
 
 def save_tpch_query_result(res, phase, run):
     for k, v in res.items():
-        query = QueryResult(
+        query = TpchQueryResult(
             query_idx=int(k),
             time=v,
             type=phase,
@@ -96,7 +96,7 @@ def create_tpch_run(request, format=None):
 
         with transaction.atomic():
             branch = Branch.objects.filter(name=json_data['branch']).get()
-            new_run = Run.objects.create(machine=machine,
+            new_run = TpchResult.objects.create(machine=machine,
                                          scale_factor=json_data['scale_factor'],
                                          streams=json_data['streams'],
                                          date_submitted=json_data['date_submitted'],
@@ -154,7 +154,7 @@ def create_tpch_run(request, format=None):
 def runs_commit_view(request, machine, scale, commit):
     commit = '%' + commit
 
-    tpch_runs = Run.objects.raw("select tpch_run.id, tpch_run.date_submitted from tpch_run, machines_machine where tpch_run.machine_id = machines_machine.machine_id AND tpch_run.machine_id = %s AND tpch_run.git_commit like %s AND tpch_run.scale_factor = %s order by tpch_run.date_submitted DESC", [machine, commit, scale])
+    tpch_runs = TpchResult.objects.raw("select tpch_run.id, tpch_run.date_submitted from tpch_run, machines_machine where tpch_run.machine_id = machines_machine.machine_id AND tpch_run.machine_id = %s AND tpch_run.git_commit like %s AND tpch_run.scale_factor = %s order by tpch_run.date_submitted DESC", [machine, commit, scale])
 
     tpch_runs_list = []
 
