@@ -5,15 +5,30 @@ from datetime import datetime
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
-from runs.parsing_functions import parse_pgbench_options, parse_pgbench_results, parse_os_kernel, parse_compiler, parse_git, parse_hardware, parse_postgres
+from runs.parsing_functions import parse_pgbench_options, parse_pgbench_results, parse_os_kernel, parse_compiler, \
+    parse_git, parse_hardware, parse_postgres, parse_tpch_results
 from machines.models import Machine
 from postgres.models import PostgresSettings
 from runs.models import RunInfo, RunLog
 from benchmarks.models import PgBenchBenchmark, PgBenchResult, BenchmarkType
+from tpch.models import TpchConfig
 
 
 def single_run_view(request, id):
-    run = RunInfo.objects.filter(run_id=id).values('run_id', 'add_time', 'git_branch_id__name', 'git_branch_id__git_repo_id__url', 'git_commit', 'os_version_id__dist_id__dist_name', 'os_version_id__description', 'os_version_id__release', 'os_version_id__codename', 'os_kernel_version_id__kernel_release', 'os_kernel_version_id__kernel_version', 'os_kernel_version_id__kernel_id__kernel_name', 'compiler_id__compiler', 'machine_id', 'machine_id__alias', 'machine_id__machine_type', 'machine_id__description', 'machine_id__add_time','machine_id__owner_id__username', 'postgres_info_id', 'hardware_info_id__cpu_brand', 'hardware_info_id__hz', 'hardware_info_id__cpu_cores', 'hardware_info_id__total_memory', 'hardware_info_id__total_swap', 'hardware_info_id__mounts', 'hardware_info_id__sysctl')
+    run = RunInfo.objects.filter(run_id=id).values('run_id', 'add_time', 'git_branch_id__name',
+                                                   'git_branch_id__git_repo_id__url', 'git_commit',
+                                                   'os_version_id__dist_id__dist_name', 'os_version_id__description',
+                                                   'os_version_id__release', 'os_version_id__codename',
+                                                   'os_kernel_version_id__kernel_release',
+                                                   'os_kernel_version_id__kernel_version',
+                                                   'os_kernel_version_id__kernel_id__kernel_name',
+                                                   'compiler_id__compiler', 'machine_id', 'machine_id__alias',
+                                                   'machine_id__machine_type', 'machine_id__description',
+                                                   'machine_id__add_time', 'machine_id__owner_id__username',
+                                                   'postgres_info_id', 'hardware_info_id__cpu_brand',
+                                                   'hardware_info_id__hz', 'hardware_info_id__cpu_cores',
+                                                   'hardware_info_id__total_memory', 'hardware_info_id__total_swap',
+                                                   'hardware_info_id__mounts', 'hardware_info_id__sysctl')
 
     run_list = list(run)
 
@@ -25,12 +40,14 @@ def single_run_view(request, id):
 
     benchmarks = []
     for pgbench_result in pgbench_results_list:
-        benchmark_config = PgBenchBenchmark.objects.filter(pgbench_benchmark_id = pgbench_result['benchmark_config_id']).values()
+        benchmark_config = PgBenchBenchmark.objects.filter(
+            pgbench_benchmark_id=pgbench_result['benchmark_config_id']).values()
         benchmark_config_list = list(benchmark_config)
         read_only = 'read-write test'
         if benchmark_config_list[0]['read_only']:
             read_only = 'read-only test'
-        config = 'Scale ' + str(benchmark_config_list[0]['scale']) + ', Duration ' + str(benchmark_config_list[0]['duration']) + ', Clients ' + str(
+        config = 'Scale ' + str(benchmark_config_list[0]['scale']) + ', Duration ' + str(
+            benchmark_config_list[0]['duration']) + ', Clients ' + str(
             benchmark_config_list[0]['clients']) + ', ' + read_only
         date = datetime.fromtimestamp(pgbench_result['start']).strftime('%Y-%m-%d %H:%M:%S')
         benchmarks.append({
@@ -41,13 +58,12 @@ def single_run_view(request, id):
 
     return render(request, 'runs/index.html', {'run': run_list[0],
                                                'benchmarks': benchmarks,
-                                               'postgres_info' : postgres_info_list,
+                                               'postgres_info': postgres_info_list,
                                                })
 
 
 @csrf_exempt
 def create_run_info(request, format=None):
-
     error = ''
     machine = None
 
@@ -95,6 +111,13 @@ def create_run_info(request, format=None):
             hardware_info = parse_hardware(json_data)
             postgres_info = parse_postgres(json_data)
 
+            if json_data['meta']['benchmark'] == 'pgbench':
+                benchmark_type_id = 1
+            elif json_data['meta']['benchmark'] == 'tpch':
+                benchmark_type_id = 2
+            else:
+                return HttpResponse(status=406)
+
             if 'git_clone_log' not in json_data:
                 git_clone_log = ''
             else:
@@ -121,9 +144,11 @@ def create_run_info(request, format=None):
                 install_log = json_data['install_log']
 
             postgres_log = json_data['pg_ctl']
-            benchmark_log = json_data['pgbench_log']
+            benchmark_log = None
+            if benchmark_type_id == 1:
+                benchmark_log = json_data['pgbench_log']
 
-            # before doing anything else related to benchmarks, save the run
+                # before doing anything else related to benchmarks, save the run
             new_run_info = RunInfo(
                 machine_id=machine,
                 hardware_info=hardware_info,
@@ -135,7 +160,7 @@ def create_run_info(request, format=None):
                 build_log=build_log,
                 install_log=install_log,
                 benchmark_log=benchmark_log,
-                benchmark = BenchmarkType.objects.get(pk=1),
+                benchmark=BenchmarkType.objects.get(pk=benchmark_type_id),
                 cleanup_log=cleanup_log,
                 postgres_log=postgres_log,
                 postgres_info=postgres_info,
@@ -161,27 +186,49 @@ def create_run_info(request, format=None):
                 raise RuntimeError(e)
 
             # now continue with benchmarks
-            for item in json_data['pgbench']:
+            if benchmark_type_id == 1:
+                for item in json_data['pgbench']:
 
-                for client in item['clients']:
-                    pgbench = parse_pgbench_options(item, client)
-
-                    try:
-                        pgbench_info = PgBenchBenchmark.objects.filter(clients=client, scale=pgbench['scale'], duration=pgbench['duration'], read_only=pgbench['read_only']).get()
-
-                    except PgBenchBenchmark.DoesNotExist:
-
-                        pgbench_info = PgBenchBenchmark(clients=client, scale=pgbench['scale'], duration=pgbench['duration'], read_only=pgbench['read_only'])
+                    for client in item['clients']:
+                        pgbench = parse_pgbench_options(item, client)
 
                         try:
+                            pgbench_info = PgBenchBenchmark.objects.filter(clients=client, scale=pgbench['scale'],
+                                                                           duration=pgbench['duration'],
+                                                                           read_only=pgbench['read_only']).get()
 
-                            pgbench_info.save()
+                        except PgBenchBenchmark.DoesNotExist:
 
-                        except Exception as e:
-                            raise RuntimeError(e)
+                            pgbench_info = PgBenchBenchmark(clients=client, scale=pgbench['scale'],
+                                                            duration=pgbench['duration'],
+                                                            read_only=pgbench['read_only'])
 
-            for item in json_data['pgbench']:
-                parse_pgbench_results(item, new_run_info, json_data['pgbench_log_aggregate'], machine.owner_id)
+                            try:
+
+                                pgbench_info.save()
+
+                            except Exception as e:
+                                raise RuntimeError(e)
+
+                for item in json_data['pgbench']:
+                    parse_pgbench_results(item, new_run_info, json_data['pgbench_log_aggregate'], machine.owner_id)
+
+            elif benchmark_type_id == 2:
+                try:
+                    tpch_config = TpchConfig.objects.filter(scale_factor=json_data['scale_factor']).get()
+
+                except TpchConfig.DoesNotExist:
+                    tpch_config = TpchConfig(scale_factor=json_data['scale_factor'],
+                                                streams=json_data['num_streams'])
+
+                    try:
+                        tpch_config.save()
+
+                    except Exception as e:
+                        raise RuntimeError(e)
+
+                parse_tpch_results(new_run_info, tpch_config, json_data['qphh_size'], json_data['power_size'], json_data['throughput_size'],
+                                   json_data['power'], json_data['throughput'], machine.owner_id)
 
     except Exception as e:
 
@@ -201,7 +248,6 @@ def create_run_info(request, format=None):
                 f.write(error_string)
 
         return HttpResponse(status=406)
-
 
     print('Upload successful!')
     return HttpResponse(status=201)

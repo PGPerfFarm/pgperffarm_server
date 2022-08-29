@@ -1,12 +1,5 @@
-import json
-import os
-import sys
-from datetime import datetime
-from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse
 from django.shortcuts import render
-
-from email_notification.models import EmailNotification
 from machines.models import Machine
 from runs.models import Branch
 from tpch.models import TpchResult, TpchQueryResult
@@ -53,102 +46,6 @@ def details(request, id):
             "field2": throughput_queries[i].time
         })
     return render(request, 'benchmarks/tpch_details.html', { 'id':id, 'models': models, 'result': tpch_runs})
-
-
-def save_tpch_query_result(res, phase, run):
-    for k, v in res.items():
-        query = TpchQueryResult(
-            query_idx=int(k),
-            time=v,
-            type=phase,
-            run=run
-        )
-        query.save()
-
-
-@csrf_exempt
-def create_tpch_run(request, format=None):
-    error = ''
-    machine = None
-
-    data = json.loads(request.body)
-    json_data = data[0]
-
-    if sys.getsizeof(json_data) > 10000:
-        error = 'The result size is too big.'
-        raise RuntimeError(error)
-
-    from django.db import transaction
-
-    # check if machine exists
-    try:
-        secret = request.META.get("HTTP_AUTHORIZATION")
-        try:
-            machine = Machine.objects.filter(machine_secret=secret).get()
-
-            if machine.approved == False:
-                error = 'The machine is not approved.'
-                raise RuntimeError(error)
-
-        except Machine.DoesNotExist:
-            error = "The machine is unavailable"
-            raise RuntimeError(error)
-
-        with transaction.atomic():
-            branch = Branch.objects.filter(name=json_data['branch']).get()
-            new_run = TpchResult.objects.create(machine=machine,
-                                         scale_factor=json_data['scale_factor'],
-                                         streams=json_data['streams'],
-                                         date_submitted=json_data['date_submitted'],
-                                         composite_score=json_data['qphh_size'],
-                                         power_score=json_data['power_size'],
-                                         throughput_score=json_data['throughput_size'],
-                                         git_commit=json_data['commit'],
-                                         git_branch=branch, )
-
-            avg_same_config_result_raw = Machine.objects.raw(
-                "select machines_machine.machine_id, avg(composite_score) as avg_composite from machines_machine, tpch_tpchresult where tpch_tpchresult.scale_factor = %s and tpch_tpchresult.git_branch_id = %s and tpch_tpchresult.machine_id = %s and tpch_tpchresult.machine_id = machines_machine.machine_id group by tpch_tpchresult.git_branch_id, machines_machine.machine_id",
-                [new_run.scale_factor, new_run.git_branch.branch_id, new_run.machine.machine_id])
-            avg_same_config_result = {}
-            for row in avg_same_config_result_raw:
-                for column in avg_same_config_result_raw.columns:
-                    avg_same_config_result[column] = getattr(row, column)
-
-            try:
-                save_tpch_query_result(json_data['power'], 'power', new_run)
-                save_tpch_query_result(json_data['throughput'], 'throughput', new_run)
-            except Exception as e:
-
-                raise RuntimeError(e)
-
-        email_notification = EmailNotification.objects.get(owner=machine.owner_id, type=2)
-
-        if avg_same_config_result and avg_same_config_result['avg_composite'] and email_notification.is_active and float(
-                new_run.composite_score) < float(avg_same_config_result['avg_composite']) * (100 - email_notification.threshold) / 100:
-            user = machine.owner_id
-            from email_notification.utils import send_the_email
-            message = "Dear " + user.username + "\n Your most recent TPC-H benchmark test (run id: %s) is %.2f" % (
-            new_run.id, (float(avg_same_config_result['avg_composite']) - float(new_run.composite_score)) / avg_same_config_result['avg_composite'] * 100) + "% lower than the previous average."
-            send_the_email(recipents=[user.email], subject="Performance Drop Alert —— Pgperffarm ", message=message)
-
-    except Exception as e:
-
-        if error == '':
-            error = e
-
-        try:
-            print('error: %s' % error)
-
-        except Exception as e:
-
-            with open(os.path.join(sys.path[0], "log.txt"), "a+") as f:
-                error_string = str(datetime.now()) + ' ' + str(error)
-                f.write(error_string)
-
-        return HttpResponse(status=406)
-
-    print('Upload successful!')
-    return HttpResponse(status=201)
 
 
 def runs_commit_view(request, machine, scale, commit):

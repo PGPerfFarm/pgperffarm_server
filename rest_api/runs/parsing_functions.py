@@ -13,6 +13,7 @@ from benchmarks.models import PgBenchBenchmark, PgBenchResult, PgBenchStatement,
 from systems.models import HardwareInfo, Compiler, Kernel, OsDistributor, OsKernelVersion, OsVersion
 from runs.models import GitRepo, Branch
 from machines.models import Machine
+from tpch.models import TpchQueryResult, TpchConfig, TpchResult
 
 
 def parse_sysctl(raw_data):
@@ -586,6 +587,47 @@ def parse_pgbench_results(item, new_run, pgbench_log, user):
                     raise RuntimeError(e)
 
 
+def parse_tpch_results(new_run, tpch_config, qphh_score, power_score, throughput_score, power_results, throughput_results, user):
+    iterations = 0
+
+    tpch_config = TpchConfig.objects.filter(scale_factor=tpch_config.scale_factor).get()
+
+    result_object = TpchResult(run_id=new_run, benchmark_config=tpch_config, power_score=power_score,
+                                  throughput_score=throughput_score, composite_score=qphh_score)
+
+    try:
+        result_object.save()
+        avg_same_config_result_raw = Machine.objects.raw(
+            "select machines_machine.machine_id, avg(composite_score) as avg_composite from machines_machine, tpch_tpchresult, runs_runinfo where runs_runinfo.run_id = tpch_tpchresult.run_id_id AND runs_runinfo.machine_id_id = machines_machine.machine_id AND tpch_tpchresult.benchmark_config_id = %s AND machines_machine.machine_id = %s AND runs_runinfo.git_branch_id = %s group by runs_runinfo.git_branch_id, machines_machine.machine_id",
+            [tpch_config.id, new_run.machine_id.machine_id, new_run.git_branch.branch_id])
+        avg_same_config_result = {}
+        for row in avg_same_config_result_raw:
+            for column in avg_same_config_result_raw.columns:
+                avg_same_config_result[column] = getattr(row, column)
+
+        try:
+            save_tpch_query_result(power_results, 'power', result_object)
+            save_tpch_query_result(throughput_results, 'throughput', result_object)
+        except Exception as e:
+
+            raise RuntimeError(e)
+
+        email_notification = EmailNotification.objects.get(owner=user, type=2)
+
+        if avg_same_config_result and avg_same_config_result[
+            'avg_composite'] and email_notification.is_active and float(
+                new_run.composite_score) < float(avg_same_config_result['avg_composite']) * (
+                100 - email_notification.threshold) / 100:
+            from email_notification.utils import send_the_email
+            message = "Dear " + user.username + "\n Your most recent TPC-H benchmark test (run id: %s) is %.2f" % (
+                new_run.id, (float(avg_same_config_result['avg_composite']) - float(new_run.composite_score)) /
+                avg_same_config_result['avg_composite'] * 100) + "% lower than the previous average."
+            send_the_email(recipents=[user.email], subject="Performance Drop Alert —— Pgperffarm ", message=message)
+
+
+    except Exception as e:
+        raise RuntimeError(e)
+
 def parse_os_kernel(json_data):
     try:
         os_distributor = OsDistributor.objects.filter(dist_name=json_data['os_information']['distributor']).get()
@@ -757,3 +799,17 @@ def parse_postgres(json_data):
             raise RuntimeError(e)
 
     return postgres_info
+
+
+def save_tpch_query_result(res, phase, tpch_result):
+    for k, v in res.items():
+        query = TpchQueryResult(
+            query_idx=int(k),
+            time=v,
+            type=phase,
+            tpch_result=tpch_result
+        )
+        try:
+            query.save()
+        except Exception as e:
+            raise RuntimeError(e)
