@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from django.shortcuts import render
 from machines.models import Machine
-from runs.models import Branch
+from runs.models import Branch, RunInfo
 from tpch.models import TpchResult, TpchQueryResult
 
 
@@ -51,7 +51,7 @@ def details(request, id):
 def runs_commit_view(request, machine, scale, commit):
     commit = '%' + commit
 
-    tpch_runs = TpchResult.objects.raw("select tpch_tpchresult.id, tpch_tpchresult.date_submitted from tpch_tpchresult, machines_machine where tpch_tpchresult.machine_id = machines_machine.machine_id AND tpch_tpchresult.machine_id = %s AND tpch_tpchresult.git_commit like %s AND tpch_tpchresult.scale_factor = %s order by tpch_tpchresult.date_submitted DESC", [machine, commit, scale])
+    tpch_runs = RunInfo.objects.raw("SELECT runs_runinfo.run_id, runs_runinfo.add_time FROM   tpch_tpchresult, machines_machine, runs_runinfo, tpch_tpchconfig WHERE  runs_runinfo.machine_id_id = machines_machine.machine_id AND runs_runinfo.run_id = tpch_tpchresult.run_id_id AND tpch_tpchresult.benchmark_config_id = tpch_tpchconfig.id AND runs_runinfo.machine_id_id = %s AND runs_runinfo.git_commit LIKE %s AND tpch_tpchconfig.scale_factor = %s ORDER  BY runs_runinfo.add_time DESC ", [machine, commit, scale])
 
     tpch_runs_list = []
 
