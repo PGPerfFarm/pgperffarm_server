@@ -20,7 +20,6 @@
                 <th>Throughput score</th>
                 <th>Composite score</th>
                 <th>Date_submitted</th>
-                <th></th>
             </thead>
             <tbody>
                 {% for res in result %}
@@ -31,7 +30,6 @@
                         <td>{{res.throughput_score |floatformat:2}}</td>
                         <td>{{res.composite_score |floatformat:2}}</td>
                         <td>{{res.date_submitted}}</td>
-                        <td><a href="/tpch/details/{{res.id}}/">details</a></td>
                     </tr>
                 {% endfor %}
             </tbody>

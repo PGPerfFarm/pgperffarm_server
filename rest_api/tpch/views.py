@@ -31,12 +31,18 @@ def trend(request, machine, scale):
 
 
 def details(request, id):
-    tpch_runs = TpchResult.objects.raw(
-        'select machines_machine.machine_id, machines_machine.alias, tpch_tpchresult.id, tpch_tpchresult.date_submitted, tpch_tpchresult.scale_factor, tpch_tpchresult.power_score, tpch_tpchresult.throughput_score, tpch_tpchresult.composite_score, tpch_tpchresult.git_commit, runs_branch.name from tpch_tpchresult, machines_machine, runs_branch where tpch_tpchresult.machine_id = machines_machine.machine_id and runs_branch.branch_id = tpch_tpchresult.git_branch_id and tpch_tpchresult.id = %s', [id])
-    tpch_runs = list(tpch_runs)
-    power_queries = TpchQueryResult.objects.raw("select id, query_idx, time from tpch_queryresult where tpch_queryresult.run_id = %s and type=%s", [id, 'power'])
+    tpch_runs = Machine.objects.raw(
+        'SELECT runs_runinfo.run_id, machines_machine.machine_id, machines_machine.alias, runs_runinfo.add_time, tpch_tpchconfig.scale_factor, tpch_tpchresult.power_score, tpch_tpchresult.throughput_score, tpch_tpchresult.composite_score, runs_runinfo.git_commit, runs_branch.name FROM   tpch_tpchresult, tpch_tpchconfig, machines_machine, runs_branch, runs_runinfo WHERE  runs_runinfo.machine_id_id = machines_machine.machine_id AND tpch_tpchresult.benchmark_config_id = tpch_tpchconfig.id AND runs_branch.branch_id = runs_runinfo.git_branch_id AND tpch_tpchresult.run_id_id = runs_runinfo.run_id AND runs_runinfo.run_id = %s', [id])
+    tpch_runs_list = []
+    for row in tpch_runs:
+        single_run = {}
+        for column in tpch_runs.columns:
+            single_run[column] = getattr(row, column)
+        tpch_runs_list.append(single_run)
+
+    power_queries = TpchQueryResult.objects.raw("select tpch_tpchqueryresult.id, tpch_tpchqueryresult.query_idx, tpch_tpchqueryresult.time from tpch_tpchqueryresult, tpch_tpchresult where tpch_tpchqueryresult.tpch_result_id = tpch_tpchresult.id AND tpch_tpchresult.run_id_id = %s AND tpch_tpchqueryresult.type=%s", [id, 'power'])
     power_queries = list(power_queries)
-    throughput_queries = TpchQueryResult.objects.raw("select id, query_idx, time from tpch_queryresult where tpch_queryresult.run_id = %s and type=%s", [id, 'throughput'])
+    throughput_queries = TpchQueryResult.objects.raw("select tpch_tpchqueryresult.id, tpch_tpchqueryresult.query_idx, tpch_tpchqueryresult.time from tpch_tpchqueryresult, tpch_tpchresult where tpch_tpchqueryresult.tpch_result_id = tpch_tpchresult.id AND tpch_tpchresult.run_id_id = %s AND tpch_tpchqueryresult.type=%s", [id, 'throughput'])
     throughput_queries = list(throughput_queries)
     models = []
     for i in range(0, len(power_queries)):
@@ -45,7 +51,7 @@ def details(request, id):
             "field1": power_queries[i].time,
             "field2": throughput_queries[i].time
         })
-    return render(request, 'benchmarks/tpch_details.html', { 'id':id, 'models': models, 'result': tpch_runs})
+    return render(request, 'benchmarks/tpch_details.html', { 'id':id, 'models': models, 'result': tpch_runs_list})
 
 
 def runs_commit_view(request, machine, scale, commit):
@@ -54,13 +60,10 @@ def runs_commit_view(request, machine, scale, commit):
     tpch_runs = RunInfo.objects.raw("SELECT runs_runinfo.run_id, runs_runinfo.add_time FROM   tpch_tpchresult, machines_machine, runs_runinfo, tpch_tpchconfig WHERE  runs_runinfo.machine_id_id = machines_machine.machine_id AND runs_runinfo.run_id = tpch_tpchresult.run_id_id AND tpch_tpchresult.benchmark_config_id = tpch_tpchconfig.id AND runs_runinfo.machine_id_id = %s AND runs_runinfo.git_commit LIKE %s AND tpch_tpchconfig.scale_factor = %s ORDER  BY runs_runinfo.add_time DESC ", [machine, commit, scale])
 
     tpch_runs_list = []
-
     for row in tpch_runs:
-        pgbench_run = {}
-
+        single_run = {}
         for column in tpch_runs.columns:
-            pgbench_run[column] = getattr(row, column)
-
-        tpch_runs_list.append(pgbench_run)
+            single_run[column] = getattr(row, column)
+        tpch_runs_list.append(single_run)
 
     return JsonResponse(tpch_runs_list, safe=False)
