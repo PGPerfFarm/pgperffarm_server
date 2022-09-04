@@ -1,7 +1,7 @@
 from django.db import models
 from django.core import validators
 
-from rest_api.validators import ValidateDate
+from perffarm.validators import ValidateDate
 
 
 class GitRepo(models.Model):
