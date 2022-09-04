@@ -1,7 +1,7 @@
 from django.db import models
 from django.core import validators
 
-from perffarm.validators import ValidateDate
+from validators import ValidateDate
 
 
 class PgBenchBenchmark(models.Model):
