@@ -36,3 +36,10 @@ input:checked + label {
 #tab4:checked ~ #content4 {
     display: block;
 }
+
+.machine_secret{
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+    word-break: break-all;
+}
