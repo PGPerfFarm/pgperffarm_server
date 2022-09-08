@@ -12,8 +12,8 @@ from runs.models import RunInfo
 
 def index(request):
     def get_latest(machine):
-        run_info = RunInfo.objects.filter(machine_id=machine['machine_id']).order_by('-add_time')[:3].values('run_id')
-        return [item['run_id'] for item in run_info]
+        run_info = RunInfo.objects.filter(machine_id=machine['machine_id']).order_by('-add_time')[:3].values('run_id', 'benchmark_id')
+        return list(run_info)
 
     machines = Machine.objects.all().values('machine_id', 'alias', 'machine_type', 'add_time', 'description', 'approved', 'owner_id__username')
     machines_list = list(machines)

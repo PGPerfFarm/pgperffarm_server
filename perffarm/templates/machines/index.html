@@ -33,7 +33,11 @@
                                     <td>
                                         {% if machine.latest %}
                                             {% for run in machine.latest %}
-                                                <a href="/run/{{run}}/">{{run}}</a>
+                                                {% if run.benchmark_id == 1 %}
+                                                    <a href="/run/{{run.run_id}}/">{{run.run_id}}</a>
+                                                {% elif run.benchmark_id == 2 %}
+                                                    <a href="/tpch/details/{{run.run_id}}/">{{run.run_id}}</a>
+                                                {% endif %}
                                             {% endfor %}
                                         {% endif %}
                                     </td>
