@@ -65,11 +65,11 @@
             document.querySelector('#value_kernel').innerHTML = kernel;
             document.querySelector('#value_last_run').innerHTML = last_run;
             document.querySelector('#value_last_run_date').innerHTML = last_run_date;
-            document.querySelector('#link_latest_run').innerHTML = '/run?id=' + last_run;
+            document.querySelector('#link_latest_run').innerHTML = '/run/' + last_run + '/';
 
-            document.querySelector('#link_first_run').href = '/run?id=' + first_run;
-            document.querySelector('#link_last_run').href = '/run?id=' + last_run;
-            document.querySelector('#link_latest_run').href = '/run?id=' + last_run;
+            document.querySelector('#link_first_run').href = '/run/' + first_run + '/';
+            document.querySelector('#link_last_run').href = '/run/' + last_run + '/';
+            document.querySelector('#link_latest_run').href = '/run/' + last_run + '/';
 
             for(const [key, value] of Object.entries(postgres_history)) {
 

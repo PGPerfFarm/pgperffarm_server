@@ -591,8 +591,8 @@
         document.querySelector('#value_start').innerHTML = start;
         document.querySelector('#value_end').innerHTML = end;
 
-        document.querySelector('#link_machine').href = '/machine?id=' + machine_id;
-        document.querySelector('#link_run').href = '/run?id=' + run;
+        document.querySelector('#link_machine').href = '/benchmark/history/' + machine_id + '/';
+        document.querySelector('#link_run').href = '/run/' + run + '/';
         document.querySelector('#link_commit').href = commit;
 
         let latencyTableBodyContent = '';
