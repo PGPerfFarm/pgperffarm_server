@@ -16,7 +16,7 @@ The Client is a Python script that clones the PostgreSQL source code from a spec
 
 ### Backend and Web frontend
 
-The backend receives benchmark results from the Client and provides data for the web frontend. The backend is built with Django, the frontend is built with DJango template and a DB is used for storing past benchmark results and machine system information. The source code is in the `rest_api` directory.
+The backend receives benchmark results from the Client and provides data for the web frontend. The backend is built with Django, the frontend is built with DJango template and a DB is used for storing past benchmark results and machine system information. The source code is in the `perffarm` directory.
 
 
 ## Client
@@ -61,6 +61,38 @@ Specifically, it is possible to set:
 * Database name for benchmarks (must exist, default one is 'postgres')
 * PgBench configuration or set of configurations (two of the same configurations are allowed, as long as all the parameters are integers and clients are arrays)
 * TPC-H scale factor
+* Modes to run the benchmark, running only PgBench, only TPC-H，or both.
+
+
+In order to generate the TPC-h data, the [TPC-H tool](https://www.tpc.org/tpc_documents_current_versions/download_programs/tools-download-request5.asp?bm_type=TPC-H&bm_vers=3.0.0&mode=CURRENT-ONLY) is needed to be downloaded, 
+unzipped to the folder `tpch-h` in the project root and renamed the inner folder `TPC-H_Toolsv*` to `TPC-H_Tools`.
+so that the file structure looks like
+```
+- tpc-h
+    - TPC-H_Tools
+    - tpc-h_v3.*.docx
+    - tpc-h_v3.*.pdf
+```
+
+And edit some files in the dbgen to suit your system. Taking linux as an example, you need to update the following lines in the makefile:
+```
+CC       = gcc
+DATABASE = POSTGRESQL
+MACHINE  = LINUX
+WORKLOAD = TPCH
+```
+
+And add following lines to `tpcd.h`:
+```c
+#ifdef POSTGRESQL
+#define GEN_QUERY_PLAN  "EXPLAIN"      
+#define START_TRAN      "BEGIN TRANSACTION"
+#define END_TRAN        "COMMIT;"
+#define SET_OUTPUT      ""
+#define SET_ROWCOUNT    "LIMIT %d\n"
+#define SET_DBASE       ""
+#endif /* VECTORWISE */
+```
 
 After setting up, run the Client script
 
