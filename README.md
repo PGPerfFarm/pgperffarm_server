@@ -54,12 +54,13 @@ The machine `secret` is obtained registering the machine in the website, therefo
 
 Specifically, it is possible to set:
 
-* Whether to test locally or upload results to the API
+* Whether to test locally or upload results to the server
 * Whether to call `git pull` at every execution
 * Path in which to clone, install and collect output (should have non-superuser access)
 * Postgres configuration
-* Database name for PgBench (must exist)
+* Database name for benchmarks (must exist, default one is 'postgres')
 * PgBench configuration or set of configurations (two of the same configurations are allowed, as long as all the parameters are integers and clients are arrays)
+* TPC-H scale factor
 
 After setting up, run the Client script
 

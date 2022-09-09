@@ -93,10 +93,6 @@ Get details of a certain benchmark run.
 
 ## Tpch
 
-### POST /tpch/upload
-
-Upload tpch benchmark results from a machine.
-
 ### GET /tpch/machines
 
 Get tpch benchmark runs of each machine and benchmark config.
