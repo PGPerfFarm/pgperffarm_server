@@ -1,11 +1,9 @@
 # Google Summer of Code 2022 Report
 
-PostgreSQL is an excellent and progressively refined database management system. To test its performance, the Postgres Performance Farm was born as a result of the efforts of GSOC developers in previous years.In order to improve Pgperffarm even more, this year the GSOC project focused on the following aspects.
-
-In order to improve Pgperffarm even more, this year the GSOC project focused on the following aspects.
+PostgreSQL is an excellent and progressively refined database management system. To test its performance, the Postgres Performance Farm was born as a result of the efforts of GSOC developers in previous years. In order to improve Pgperffarm even more, this year the GSOC project focused on the following aspects:
 
 * Add new benchmarking types to the client. (like fair use derivation based on the TPC-H benchmark)
-* Refactor the front-end with Django template.
+* Refactor the front-end with Django templates.
 * Add new features to the backend. (e.g. Adding email notification feature)
 
 
@@ -27,7 +25,7 @@ The email notification is also implemented on the server so that in case the per
 
 ## Front-end
 
-The front-end is a website written in vanilla Javascript. And this year the whole website is rewritten with Django template.
+The front-end was a website written in vanilla Javascript. And this year the whole website is rewritten with Django template.
 
 Webpages for the TPC-H part are also added. For the TPC-H trend and query result, charts and digrams are added with D3.js.
 
