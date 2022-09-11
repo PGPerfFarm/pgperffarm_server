@@ -1,4 +1,4 @@
-# Google Summer of Code 2021 Report
+# Google Summer of Code 2022 Report
 
 PostgreSQL is an excellent and progressively refined database management system. To test its performance, the Postgres Performance Farm was born as a result of the efforts of GSOC developers in previous years.In order to improve Pgperffarm even more, this year the GSOC project focused on the following aspects.
 
