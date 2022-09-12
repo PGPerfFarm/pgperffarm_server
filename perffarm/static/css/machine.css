@@ -38,8 +38,5 @@ input:checked + label {
 }
 
 .machine_secret{
-    white-space: normal;
-    overflow: visible;
-    text-overflow: unset;
     word-break: break-all;
 }
