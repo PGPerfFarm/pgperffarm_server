@@ -1,11 +1,9 @@
-# Google Summer of Code 2021 Report
+# Google Summer of Code 2022 Report
 
-PostgreSQL is an excellent and progressively refined database management system. To test its performance, the Postgres Performance Farm was born as a result of the efforts of GSOC developers in previous years.In order to improve Pgperffarm even more, this year the GSOC project focused on the following aspects.
-
-In order to improve Pgperffarm even more, this year the GSOC project focused on the following aspects.
+PostgreSQL is an excellent and progressively refined database management system. To test its performance, the Postgres Performance Farm was born as a result of the efforts of GSOC developers in previous years. In order to improve Pgperffarm even more, this year the GSOC project focused on the following aspects:
 
 * Add new benchmarking types to the client. (like fair use derivation based on the TPC-H benchmark)
-* Refactor the front-end with Django template.
+* Refactor the front-end with Django templates.
 * Add new features to the backend. (e.g. Adding email notification feature)
 
 
@@ -27,7 +25,7 @@ The email notification is also implemented on the server so that in case the per
 
 ## Front-end
 
-The front-end is a website written in vanilla Javascript. And this year the whole website is rewritten with Django template.
+The front-end was a website written in vanilla Javascript. And this year the whole website is rewritten with Django template.
 
 Webpages for the TPC-H part are also added. For the TPC-H trend and query result, charts and digrams are added with D3.js.
 
@@ -36,20 +34,18 @@ Webpages for the TPC-H part are also added. For the TPC-H trend and query result
 
 ### June 13 ~ June 27
 
-- Added basic authentication to the back-end and front-end.
+- Rewrote part of the front-end with Django template
+- Added basic authentication to the server and client.
 - Deployed the project on the server.
 
 
 ### June 27 -  July 11 
 
-- Rewrote the front-end with Django template
+- Finshed writing the front-end with Django template
 
-### July 11 - 25 
+### July 11 -  Aug 12 
 
 - Added TPC-H benchmark to the back-end and front-end.
-
-### July 29 - Aug 12 
-
 - Added email notification feature to the back-end.
 - Unified chart packages to d3.js.
 
