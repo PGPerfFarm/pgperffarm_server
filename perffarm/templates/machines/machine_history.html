@@ -77,7 +77,7 @@
                             {% for item in os_data %}
                                 <tr>
                                     <td>{{item.os}}</td>
-                                    <td><a href="{{'/run?id='|add:item.run_id}}">{{item.run_id}}</a></td>
+                                    <td><a href="/run/{{item.run_id}}/">{{item.run_id}}</a></td>
                                 </tr>
                             {% endfor %}
                     </tbody>
@@ -107,7 +107,7 @@
                             {% for item in compiler_data %}
                                 <tr>
                                     <td>{{item.compiler}}</td>
-                                    <td><a href="{{'/run?id='|add:item.run_id}}">{{item.run_id}}</a></td>
+                                    <td><a href="/run/{{item.run_id}}/">{{item.run_id}}</a></td>
                                 </tr>
                             {% endfor %}
                     </tbody>
@@ -137,7 +137,7 @@
                             {% for item in sysctl_data %}
                                 <tr>
                                     <td>{{item.sysctl}}</td>
-                                    <td><a href="{{'/run?id='|add:item.run_id}}">{{item.run_id}}</a></td>
+                                    <td><a href="/run/{{item.run_id}}/">{{item.run_id}}</a></td>
                                 </tr>
                             {% endfor %}
                     </tbody>
