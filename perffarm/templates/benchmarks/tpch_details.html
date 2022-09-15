@@ -19,7 +19,7 @@
                 <th>Power score</th>
                 <th>Throughput score</th>
                 <th>Composite score</th>
-                <th>Date_submitted</th>
+                <th>Date submitted</th>
             </thead>
             <tbody>
                 {% for res in result %}
@@ -29,7 +29,7 @@
                         <td>{{res.power_score |floatformat:2}}</td>
                         <td>{{res.throughput_score |floatformat:2}}</td>
                         <td>{{res.composite_score |floatformat:2}}</td>
-                        <td>{{res.date_submitted}}</td>
+                        <td>{{res.add_time}}</td>
                     </tr>
                 {% endfor %}
             </tbody>
