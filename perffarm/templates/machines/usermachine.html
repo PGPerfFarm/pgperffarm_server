@@ -10,6 +10,9 @@
         <div>Email : <span id="value_email">{{ my_machines_list.0.owner_id__email }}</span></div>
         <div>Total reports : <span id="value_report_count">{{ run_count }}</span></div>
         <div>Number of machines : <span id="value_machine_count">{{ my_machines_list|length }}</span></div>
+        {% if user.is_staff %}
+            <div><a id="admin_panel_link" href="/admin/"><button>Admin Panel</button></a></div>
+        {% endif %}
     </div>
 
     <div class="card">
