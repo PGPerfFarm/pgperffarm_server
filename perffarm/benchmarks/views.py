@@ -226,7 +226,7 @@ def pgbench_runs_view(request, commit, machine, config):
 
     commit = '%' + commit
 
-    pgbench_runs = RunInfo.objects.raw("select runs_runinfo.run_id, pgbench_result_id, runs_runinfo.add_time from benchmarks_pgbenchbenchmark, benchmarks_pgbenchresult, runs_runinfo, runs_branch where runs_runinfo.git_branch_id = runs_branch.branch_id and benchmarks_pgbenchbenchmark.pgbench_benchmark_id = benchmarks_pgbenchresult.benchmark_config_id and benchmarks_pgbenchresult.run_id_id = runs_runinfo.run_id and git_commit like %s and machine_id_id = %s and benchmark_config_id = %s and runs_branch.git_repo_id < 5 order by add_time;", [commit, machine, config])
+    pgbench_runs = RunInfo.objects.raw("select runs_runinfo.run_id, pgbench_result_id, runs_runinfo.add_time from benchmarks_pgbenchbenchmark, benchmarks_pgbenchresult, runs_runinfo, runs_branch where runs_runinfo.git_branch_id = runs_branch.branch_id and benchmarks_pgbenchbenchmark.pgbench_benchmark_id = benchmarks_pgbenchresult.benchmark_config_id and benchmarks_pgbenchresult.run_id_id = runs_runinfo.run_id and git_commit like %s and machine_id_id = %s and benchmark_config_id = %s and runs_branch.git_repo_id < 5 order by add_time Limit 10;", [commit, machine, config])
 
     pgbench_runs_list = []
 
