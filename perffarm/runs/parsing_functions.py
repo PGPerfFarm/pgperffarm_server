@@ -122,6 +122,11 @@ def parse_pgbench_options(item, clients):
 
 
 def parse_pgbench_statement_latencies(statement_latencies, pgbench_result_id):
+
+    # NOTE: skip if statement_latencies is abnormal for master branch
+    if not statement_latencies or isinstance(statement_latencies, int) or "\n" not in statement_latencies:
+        return
+
     # extract the nonempty statements
     statements = statement_latencies.split("\n")
     statements = list(filter(None, statements))
