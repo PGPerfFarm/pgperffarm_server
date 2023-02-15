@@ -1,4 +1,4 @@
-django==3.2.15
+django==3.2.18
 requests==2.25.1
 urllib3==1.26.5
 psycopg2==2.8.5
