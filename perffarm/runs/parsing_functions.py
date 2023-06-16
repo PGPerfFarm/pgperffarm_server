@@ -4,6 +4,7 @@ import hashlib
 import io
 import re
 from datetime import datetime
+import ast
 
 from email_notification.models import EmailNotification
 from postgres.models import PostgresSettingsSet, PostgresSettings
@@ -13,7 +14,7 @@ from benchmarks.models import PgBenchBenchmark, PgBenchResult, PgBenchStatement,
 from systems.models import HardwareInfo, Compiler, Kernel, OsDistributor, OsKernelVersion, OsVersion
 from runs.models import GitRepo, Branch
 from machines.models import Machine
-from tpch.models import TpchQueryResult, TpchConfig, TpchResult
+from tpch.models import TpchQueryResult, TpchConfig, TpchResult , TpchQuery , ExplainQueryCostOnResult , ExplainQueryCostOnResultDetails , ExplainQueryCostOffResult
 
 
 def parse_sysctl(raw_data):
@@ -292,7 +293,8 @@ def parse_collectd(pgbench_result_id, result):
                 return value
 
         return None
-
+    if(result == {}):
+        return
     collectd = list(result.values())[0]
 
     cpu_average = None
@@ -442,6 +444,7 @@ def parse_collectd(pgbench_result_id, result):
 
         except TypeError:
             pass
+        
 
         try:
             for key, value in vmem.items():
@@ -808,8 +811,9 @@ def parse_postgres(json_data):
 
 def save_tpch_query_result(res, phase, tpch_result):
     for k, v in res.items():
+        tpch_query= TpchQuery.objects.filter(query_id=int(k)).first()
         query = TpchQueryResult(
-            query_idx=int(k),
+            query_idx=tpch_query,
             time=v,
             type=phase,
             tpch_result=tpch_result
@@ -818,3 +822,117 @@ def save_tpch_query_result(res, phase, tpch_result):
             query.save()
         except Exception as e:
             raise RuntimeError(e)
+
+
+
+
+
+def parse_explain_reults(data):
+    result = {}
+
+    for key in data:
+        query_data=data[key]
+        query_data1 = ast.literal_eval(query_data)
+
+        for dta in query_data1:
+            for key2 in dta:
+                for key1 in key2:
+                    new_data=key1
+                    break
+        # print(new_data['Planning'])
+        plan_data=new_data["Plan"]
+
+        # print(plan_data)
+        list11=[]
+        def solve(plan_data):
+                if(type(plan_data)==list):
+                        for x in plan_data:
+                            plan_data=x
+                            break
+            
+                temp={}
+                for x,y in plan_data.items():
+
+                        if x=="Plans":
+                        
+                                solve(y)
+                        
+                        else:
+                                temp[x]=y
+                list11.append(temp)
+
+        solve(plan_data)
+        list11.reverse()
+        list11.append({"Planning":new_data["Planning"]})
+        list11.append({"Planning Time":new_data["Planning Time"]})
+        list11.append({"Triggers":new_data["Triggers"]})
+        list11.append({"Execution Time":new_data["Execution Time"]})
+
+
+        result[key]=list11
+    with open("./parse_explain_results.json", 'w+') as results:
+        results.write(json.dumps(result, indent=4))
+ 
+
+
+
+def parse_explain_reults_costOff(data):
+    result = {}
+    if(data==None):
+        return
+    for key in data:
+        query_data=data[key]
+        query_data1 = ast.literal_eval(query_data)
+
+        for dta in query_data1:
+            for key2 in dta:
+                for key1 in key2:
+                    new_data=key1
+                    break
+        # print(new_data['Planning'])
+        plan_data=new_data["Plan"]
+
+        # print(plan_data)
+        list11=[]
+        def solve(plan_data):
+                if(type(plan_data)==list):
+                        for x in plan_data:
+                            plan_data=x
+                            break
+            
+                temp={}
+                for x,y in plan_data.items():
+
+                        if x=="Plans":
+                        
+                                solve(y)
+                        
+                        else:
+                                temp[x]=y
+                list11.append(temp)
+
+        solve(plan_data)
+        list11.reverse()
+
+
+        result[key]=list11
+    with open("./parse_explain_results_costOff.json", 'w+') as results:
+        results.write(json.dumps(result, indent=4))
+ 
+
+def parse_tpch_query_plans(data):
+   
+    tpch_query_plans = TpchQuery.objects.all()
+    print(tpch_query_plans.count());
+    if(tpch_query_plans.count()==0):
+
+        for x,y in data.items():
+            query = TpchQuery(
+                query_id=int(x),
+                query_statement=y
+            )
+            try:
+                query.save()
+            except Exception as e:
+                raise RuntimeError(e)
+      
