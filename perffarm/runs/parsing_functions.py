@@ -813,7 +813,8 @@ def save_tpch_query_result(res, phase, tpch_result):
     for k, v in res.items():
         tpch_query= TpchQuery.objects.filter(query_id=int(k)).first()
         query = TpchQueryResult(
-            query_idx=tpch_query,
+            query_idx=int(k),
+            query_id=tpch_query,
             time=v,
             type=phase,
             tpch_result=tpch_result
@@ -827,7 +828,7 @@ def save_tpch_query_result(res, phase, tpch_result):
 
 
 
-def parse_explain_reults(data):
+def parse_explain_results(data,new_run, tpch_config, qphh_score, power_score, throughput_score):
     result = {}
 
     for key in data:
@@ -863,11 +864,27 @@ def parse_explain_reults(data):
 
         solve(plan_data)
         list11.reverse()
-        list11.append({"Planning":new_data["Planning"]})
-        list11.append({"Planning Time":new_data["Planning Time"]})
-        list11.append({"Triggers":new_data["Triggers"]})
-        list11.append({"Execution Time":new_data["Execution Time"]})
+        # list11.append({"Planning":new_data["Planning"]})
+        # list11.append({"Planning Time":new_data["Planning Time"]})
+        # list11.append({"Triggers":new_data["Triggers"]})
+        # list11.append({"Execution Time":new_data["Execution Time"]})
+        tpch_config = TpchConfig.objects.filter(scale_factor=tpch_config.scale_factor).get()
+        tpch_query= TpchQuery.objects.filter(query_id=int(key)).first()
 
+        result_object = TpchResult.objects.filter(run_id=new_run, benchmark_config=tpch_config, power_score=power_score,
+                                  throughput_score=throughput_score, composite_score=qphh_score).first()
+        explain_result = ExplainQueryCostOnResult(tpch_query=tpch_query, tpch_result=result_object,planning_time=new_data["Planning Time"], execution_time=new_data["Execution Time"], planning=new_data["Planning"])
+        try:
+            explain_result.save()
+        except Exception as e:
+            raise RuntimeError(e)
+        for x in list11:
+            result_object = ExplainQueryCostOnResultDetails(explain_query_cost_on_result=explain_result, result=x)
+            try:
+                result_object.save()
+            except Exception as e:
+                raise RuntimeError(e)
+        
 
         result[key]=list11
     with open("./parse_explain_results.json", 'w+') as results:
@@ -876,7 +893,7 @@ def parse_explain_reults(data):
 
 
 
-def parse_explain_reults_costOff(data):
+def parse_explain_results_costOff(data):
     result = {}
     if(data==None):
         return
