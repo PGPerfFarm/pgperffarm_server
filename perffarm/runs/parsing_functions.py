@@ -14,7 +14,7 @@ from benchmarks.models import PgBenchBenchmark, PgBenchResult, PgBenchStatement,
 from systems.models import HardwareInfo, Compiler, Kernel, OsDistributor, OsKernelVersion, OsVersion
 from runs.models import GitRepo, Branch
 from machines.models import Machine
-from tpch.models import TpchQueryResult, TpchConfig, TpchResult , TpchQuery , ExplainQueryCostOnResult , ExplainQueryCostOnResultDetails , ExplainQueryCostOffResult
+from tpch.models import TpchQueryResult, TpchConfig, TpchResult , TpchQuery , ExplainQueryCostOnResult , ExplainQueryCostOnResultDetails , ExplainQueryCostOffResult, ExplainQueryCostOffPlan
 
 
 def parse_sysctl(raw_data):
@@ -886,14 +886,14 @@ def parse_explain_results(data,new_run, tpch_config, qphh_score, power_score, th
                 raise RuntimeError(e)
         
 
-        result[key]=list11
-    with open("./parse_explain_results.json", 'w+') as results:
-        results.write(json.dumps(result, indent=4))
+    #     result[key]=list11
+    # with open("./parse_explain_results.json", 'w+') as results:
+    #     results.write(json.dumps(result, indent=4))
  
 
 
 
-def parse_explain_results_costOff(data):
+def parse_explain_results_costOff(data,new_run, tpch_config, qphh_score, power_score, throughput_score):
     result = {}
     if(data==None):
         return
@@ -930,11 +930,38 @@ def parse_explain_results_costOff(data):
 
         solve(plan_data)
         list11.reverse()
+        tpch_config = TpchConfig.objects.filter(scale_factor=tpch_config.scale_factor).get()
+        tpch_query= TpchQuery.objects.filter(query_id=int(key)).first()
+
+        result_object = TpchResult.objects.filter(run_id=new_run, benchmark_config=tpch_config, power_score=power_score,
+                                  throughput_score=throughput_score, composite_score=qphh_score).first()
+        query_result_object= TpchQueryResult.objects.filter(query_idx=int(key), tpch_result=result_object).first()
 
 
-        result[key]=list11
-    with open("./parse_explain_results_costOff.json", 'w+') as results:
-        results.write(json.dumps(result, indent=4))
+        for x in list11:
+            hash=hashlib.sha256(str(x).encode('utf-8')).hexdigest()
+            query_plan_result=ExplainQueryCostOffPlan.objects.filter(hash=hash)
+            if(query_plan_result==None or query_plan_result.count()==0):
+                query_plan_result=ExplainQueryCostOffPlan(hash=hash, result=x)
+                try:
+                    query_plan_result.save()
+                except Exception as e:
+                    raise RuntimeError(e)
+            plan_result=ExplainQueryCostOffPlan.objects.filter(hash=hash).first()
+            result_object = ExplainQueryCostOffResult(tpch_query=query_result_object,plan_hash=plan_result)
+            try:
+                result_object.save()
+            except Exception as e:
+                raise RuntimeError(e)
+            
+            
+        
+
+        
+
+    #     result[key]=list11
+    # with open("./parse_explain_results_costOff.json", 'w+') as results:
+    #     results.write(json.dumps(result, indent=4))
  
 
 def parse_tpch_query_plans(data):
