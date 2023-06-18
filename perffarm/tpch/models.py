@@ -21,12 +21,12 @@ class TpchResult(models.Model):
 # model to store data for each query in the tpch query set executed during the run
 class TpchQueryResult(models.Model):
     id = models.BigAutoField(primary_key=True)
-    # query_idx = models.SmallIntegerField()  # idx of the query in the dataset
+    query_idx = models.SmallIntegerField(default=1)  # idx of the query in the dataset
     time = models.FloatField()  # execution time
     type = models.CharField(max_length=30)  # type of the query executed, like power, throughput, and refresh functions
     tpch_result = models.ForeignKey('tpch.TpchResult', on_delete=models.CASCADE)
 
-    query_id=models.ForeignKey('tpch.TpchQuery', on_delete=models.CASCADE)
+    query_id=models.ForeignKey('tpch.TpchQuery', on_delete=models.CASCADE, default=None)    
 
 
 
@@ -40,7 +40,7 @@ class TpchQueryResult(models.Model):
 
 
 class TpchQuery(models.Model):
-    query_id = models.SmallIntegerField(primary_key=True)
+    query_id = models.SmallIntegerField(primary_key=True,default=1)
     query_statement = models.CharField(max_length=2000,default=None)
 
 
@@ -50,6 +50,7 @@ class ExplainQueryCostOnResult(models.Model):
     tpch_result = models.ForeignKey('tpch.TpchResult', on_delete=models.CASCADE)
     planning_time = models.FloatField()
     execution_time = models.FloatField()
+    planning=JSONField(default=None)
 
 
 class ExplainQueryCostOnResultDetails(models.Model):
@@ -62,12 +63,12 @@ class ExplainQueryCostOnResultDetails(models.Model):
 
 class ExplainQueryCostOffPlan(models.Model):
     hash = models.CharField(primary_key=True, max_length=64)
-    result = JSONField(unique=True)
+    result = JSONField(default=None)
 
 
 
 class ExplainQueryCostOffResult(models.Model):
     tpch_query = models.ForeignKey('tpch.TpchQueryResult', on_delete=models.CASCADE) 
-    plan_hash = models.ForeignKey('tpch.ExplainQueryCostOffPlan', on_delete=models.CASCADE)
+    plan_hash = models.ForeignKey('tpch.ExplainQueryCostOffPlan', on_delete=models.CASCADE,default=None)
    
 
