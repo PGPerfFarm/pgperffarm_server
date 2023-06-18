@@ -6,7 +6,7 @@ from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 from runs.parsing_functions import parse_pgbench_options, parse_pgbench_results, parse_os_kernel, parse_compiler, \
-    parse_git, parse_hardware, parse_postgres, parse_tpch_results
+    parse_git, parse_hardware, parse_postgres, parse_tpch_results ,parse_explain_results,parse_explain_results_costOff,parse_tpch_query_plans
 from machines.models import Machine
 from postgres.models import PostgresSettings
 from runs.models import RunInfo, RunLog
@@ -226,9 +226,13 @@ def create_run_info(request, format=None):
 
                     except Exception as e:
                         raise RuntimeError(e)
+                    
 
+                parse_tpch_query_plans(json_data["query_plans"])
                 parse_tpch_results(new_run_info, tpch_config, json_data['qphh_size'], json_data['power_size'], json_data['throughput_size'],
                                    json_data['power'], json_data['throughput'], machine.owner_id)
+                parse_explain_results(json_data["explaine_results"],new_run_info, tpch_config, json_data['qphh_size'], json_data['power_size'], json_data['throughput_size'])
+                parse_explain_results_costOff(json_data["explaine_results_costOff"],new_run_info, tpch_config, json_data['qphh_size'], json_data['power_size'], json_data['throughput_size'])
 
     except Exception as e:
 
