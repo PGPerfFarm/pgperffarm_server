@@ -1,43 +1,137 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %} {% block styles %} {% load static %}
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="{% static 'css/benchmarks.css' %}"
+/>
 
-{% block styles %}
-    {% load static %}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/benchmarks.css' %}">
-{% endblock %}
-{% block content %}
-    <div class="card">
-        <div id="page-title">Fair use derivation of TPC-H Benchmark</div>
-    </div>
-    <div class="card">
-        <span>Shown here is the list of different benchmark configurations as well as all machines which reported a run using them. Use the machine link for history of that member on the relevant configuration.</span>
-    </div>
+{% endblock %} {% block content %}
+<div class="card">
+  <div id="page-title">Fair use derivation of TPC-H Benchmark</div>
+</div>
+<div class="card">
+  <span
+    >Shown here is the list of different benchmark configurations as well as all
+    machines which reported a run using them. Use the machine link for history
+    of that member on the relevant configuration.</span
+  >
+</div>
 
-    <div id="benchmarks__config">
-        {% for k, v in overview_json.items %}
-            <div class="card">
-                <div class="title">Results for  scale factor {{ k }}</div>
-                <div class="space-vertical"></div>
-                <table class="table-outline" border="1">
-                    <thead>
-                        <th>Alias</th>
-                        <th>Add Time</th>
-                        <th>Owner</th>
-                        <th>Count</th>
-                        <th>Trend</th>
-                    </thead>
-                    <tbody>
-                        {% for machine in v %}
-                            <tr>
-                                <td><a href="/benchmark/history/{{machine.machine_id}}/">{{machine.alias}}</a></td>
-                                <td>{{machine.add_time}}</td>
-                                <td>{{machine.username}}</td>
-                                <td>{{machine.count}}</td>
-                                <td><a href="/tpch/trends/{{machine.machine_id}}/{{k}}/">link</a></td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+<div id="benchmarks__config">
+  {% for k, v in overview_json.items %}
+  <div class="card">
+    <div class="title">Results for scale factor {{ k }}</div>
+    <div class="space-vertical"></div>
+    <table class="table-outline" border="1">
+      <thead>
+        <th>Alias</th>
+        <th>Add Time</th>
+        <th>Owner</th>
+        <th>Count</th>
+        <th>Trend</th>
+      </thead>
+      <tbody>
+        {% for machine in v %}
+        <tr>
+          <td>
+            <a href="/benchmark/history/{{machine.machine_id}}/"
+              >{{machine.alias}}</a
+            >
+          </td>
+          <td>{{machine.add_time}}</td>
+          <td>{{machine.username}}</td>
+          <td>{{machine.count}}</td>
+          <td><a href="/tpch/trends/{{machine.machine_id}}/{{k}}/">link</a></td>
+        </tr>
         {% endfor %}
-    </div>
+      </tbody>
+    </table>
+  </div>
+  {% endfor %}
+</div>
+
+<h1>TPCH Queries</h1>
+<div class="query_list"  >
+  
+  {% for query in queries %}
+  <a
+    href="#"
+    class="query-link"
+    data-toggle="modal"
+    onclick="window.dialog.showModal()"
+    data-target="#queryModal"
+    data-query-id="{{ query.query_id }}"
+  >
+    Query-: {{ query.query_id }}</a
+  >
+  {% endfor %}
+
+</div>
+
+<dialog class="dialog" id="dialog">
+  <div class="modal-body">
+    <pre><code id="queryStatement" class="query-code"></code></pre>
+    <button id="copyButton" class="copy-button">Copy</button>
+  </div>
+  <button onclick="window.dialog.close();" aria-label="close" class="x">
+    ❌
+  </button>
+</dialog>
+
+{{ queries1|json_script:"queries1" }}
+
+<script>
+  var queriesString = JSON.parse(
+    document.getElementById("queries1").textContent
+  );
+  var queries = JSON.parse(queriesString);
+  <!-- console.log(queries); -->
+  // Get the query statement element within the modal
+  var queryStatement = document.getElementById("queryStatement");
+  // Get all query links
+  var queryLinks = document.getElementsByClassName("query-link");
+
+  // Attach click event listener to each query link
+  for (var i = 0; i < queryLinks.length; i++) {
+    queryLinks[i].addEventListener("click", function (event) {
+      // Prevent the default link behavior
+      event.preventDefault();
+
+      // Get the query ID from the data attribute
+      var queryId = this.getAttribute("data-query-id");
+      // Find the query statement based on the query ID
+      console.log(queryId);
+      var query;
+      for (var j = 0; j < queries.length; j++) {
+        if (queries[j].query_id == queryId) {
+          query = queries[j];
+
+          break;
+        }
+      }
+      console.log(query.id);
+      // Set the query statement content in the modal
+      queryStatement.innerText = query.query_statement;
+    });
+  }
+
+  // Copy button functionality
+  var copyButton = document.getElementById("copyButton");
+  copyButton.addEventListener("click", function () {
+    var queryCode = document.getElementById("queryStatement");
+    var range = document.createRange();
+    range.selectNodeContents(queryCode);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(range);
+    document.execCommand("copy");
+    window.getSelection().removeAllRanges();
+
+    // Change button color
+    copyButton.style.backgroundColor = "#28a745";
+    setTimeout(function () {
+      copyButton.style.backgroundColor = "#007bff";
+    }, 5000);
+  });
+</script>
+
 {% endblock %}
