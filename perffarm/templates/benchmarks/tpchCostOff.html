@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block styles %}
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/benchmarks.css' %}">
+    <style>
+        .query {
+           
+            padding: 10px;
+
+
+            margin-left: 16rem;
+            margin-right: 16rem;
+        }
+
+        .node-type {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .properties {
+            margin-left: 20px;
+            display: table;
+            table-layout: fixed;
+            width: 100%;
+            border-bottom: 1px solid #ccc;
+          
+        }
+
+        .property {
+            display: table-row;
+        }
+
+        .property-key {
+            width: 150px;
+            color: #555;
+            display: table-cell;
+            font-weight: bold;
+            padding-right: 10px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .property-value {
+            width: 500px;
+            color: #333;
+            display: table-cell;
+            word-wrap: break-word;
+        }
+        .property-key:hover, .property-value:hover {
+            background-color: #ffffdd;
+          }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h1>TPCH Explain Query Plan Results</h1>
+    
+    {% for query_id, query_results in explain_results.items %}
+        <div class="query">
+            <h2>Query {{ query_id }}</h2>
+            
+            {% for result in query_results %}
+                <div class="properties">
+                    {% for key, value in result.items %}
+                        <div class="property">
+                            <div class="property-key">{{ key }}:</div>
+                            <div class="property-value">{{ value }}</div>
+                        </div>
+                    {% endfor %}
+                </div>
+                
+                <hr>
+            {% endfor %}
+        </div>
+    {% endfor %}
+{% endblock %}
