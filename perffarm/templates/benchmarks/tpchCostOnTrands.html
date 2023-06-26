@@ -1,0 +1,319 @@
+{% extends 'base.html' %}
+
+{% block styles %}
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/benchmarks.css' %}">
+    <style>
+        .graph-container {
+            width: 600px;
+            height: 400px;
+            margin: 20px auto;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            padding: 20px;
+            box-sizing: border-box;
+          }
+      
+          .graph-container canvas {
+            width: 100%;
+            height: 100%;
+          }
+    </style>
+    <style>
+        /* CSS styles for the result page */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .result-item {
+            display: grid;
+            grid-template-columns: 2fr 2fr ;
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        
+        .result-item-property {
+            display: flex;
+            align-items: center;
+          }
+          
+          .result-item-key {
+            font-weight: bold;
+            margin-right: 5px;
+          }
+          
+          .result-item-value {
+            flex: 1;
+          }
+
+
+          canvas {
+            border: 1px solid #ccc;
+            margin-top: 20px;
+          }
+        
+    </style>
+   
+{% endblock %}
+
+{% block content %}
+    <div class="card">
+        <span>Below is the chart showing the execution time and planning time during the run.</span>
+    </div>
+    <div id="graph-container">
+
+        <canvas id="canvas"  ></canvas>
+
+
+    </div>
+    <div id="graph-container">
+
+        <canvas id="canvas1"  ></canvas>
+
+
+    </div>
+
+  
+
+            <h1>Explain  Test Results for TCPH queries </h1>
+        <div class="query_list"  >
+        
+        {% for query in queries %}
+        <a
+            href="#"
+            class="query-link"
+            data-toggle="modal"
+            onclick="window.dialog.showModal()"
+            data-target="#queryModal"
+            data-query-id="{{ query.query_id }}"
+        >
+            Query-: {{ query.query_id }}</a
+        >
+        {% endfor %}
+
+        </div>
+
+        
+        <dialog class="dialog" id="dialog">
+            <div class="modal-body">
+              <!-- <pre><code id="queryResult" class="query-code"></code></pre> -->
+              <div id="queryResult"></div>
+            
+            </div>
+            <button onclick="window.dialog.close();" aria-label="close" class="x">
+              ❌
+            </button>
+          </dialog>
+
+
+        {{ explain_results|json_script:"explain_results" }}
+        {{ execution_time|json_script:"execution_time" }}
+        {{ planning_time|json_script:"planning_time" }}
+
+
+      
+    <script src="https://ajax.googleapis.com/ajax/libs/d3js/6.7.0/d3.min.js" integrity="sha384-ma33ZEb8L5emtidZhYJFZNIFdht2E8f5wHQMKQGom0aIx9rRKm86XXCjGxOISpM9" crossorigin="anonymous"></script>
+    <script>
+
+        var executionTimes = JSON.parse(
+          document.getElementById("execution_time").textContent
+        );
+
+
+  // Get the canvas element
+  var canvas = document.getElementById("canvas");
+  var context = canvas.getContext("2d");
+
+  // Set the canvas dimensions
+  canvas.width =1700;
+  canvas.height = 600;
+
+  // Calculate the maximum execution time
+  var maxTime = Math.max.apply(null, executionTimes);
+
+  // Calculate the bar width and gap
+  var barWidth = (canvas.width-550) / executionTimes.length;
+  var barGap =25 ;
+
+  // Set the bar colors
+  var barColor = "#007bff";
+  var barHighlightColor = "#0056b3";
+
+  // Draw the graph
+  
+  for (var i = 0; i <  executionTimes.length;i++) {
+    
+    var x = 20 + i * (barWidth + barGap);
+    var y = canvas.height - executionTimes[i] / maxTime * (canvas.height - 40);
+
+    // Draw the bar
+    context.fillStyle = barColor;
+    context.fillRect(x, y, barWidth, canvas.height - y - 20);
+
+    // Add the query number
+    context.fillStyle = "black";
+    context.fillText("Query " + (i + 1), x, canvas.height - 5);
+
+    // Add the execution time
+    context.fillText(executionTimes[i] + "ms", x, y - 10);
+    console.log(executionTimes[i],i);
+  }
+
+  // Add labels to the x-axis
+  context.fillStyle = "black";
+  context.textAlign = "center";
+
+
+// Add title to the graph
+context.fillStyle = "black";
+context.font = "20px Arial";
+context.textAlign = "center";
+context.fillText("Execution Times of Tpch  Queries", canvas.width / 2, 50);
+
+
+
+       
+    </script>
+    <script>
+
+        var planning_time = JSON.parse(
+            document.getElementById("planning_time").textContent
+          );
+  
+       
+
+  // Get the canvas element
+  var canvas = document.getElementById("canvas1");
+  var context = canvas.getContext("2d");
+
+  // Set the canvas dimensions
+  canvas.width =1700;
+  canvas.height = 600;
+
+  // Calculate the maximum execution time
+  var maxTime = Math.max.apply(null, planning_time);
+
+  // Calculate the bar width and gap
+  var barWidth = (canvas.width-550) / planning_time.length;
+  var barGap =25 ;
+
+  // Set the bar colors
+  var barColor = "#007bff";
+  var barHighlightColor = "#0056b3";
+
+  // Draw the graph
+  
+  for (var i = 0; i <  planning_time.length;i++) {
+    
+    var x = 20 + i * (barWidth + barGap);
+    var y = canvas.height - planning_time[i] / maxTime * (canvas.height - 40);
+
+    // Draw the bar
+    context.fillStyle = barColor;
+    context.fillRect(x, y, barWidth, canvas.height - y - 20);
+
+    // Add the query number
+    context.fillStyle = "black";
+    context.fillText("Query " + (i + 1), x, canvas.height - 5);
+
+    // Add the execution time
+    context.fillText(planning_time[i] + "ms", x, y - 10);
+    console.log(planning_time[i],i);
+  }
+
+  // Add labels to the x-axis
+  context.fillStyle = "black";
+  context.textAlign = "center";
+
+
+// Add title to the graph
+context.fillStyle = "black";
+context.font = "20px Arial";
+context.textAlign = "center";
+context.fillText("Planning Times of Tpch  Queries", canvas.width / 2, 50);
+
+
+
+       
+    </script>
+
+    <script>
+        var explain_results_String = JSON.parse(
+          document.getElementById("explain_results").textContent
+        );
+        <!-- var explain_results = JSON.parse(explain_results_String); -->
+        
+        // Get the query statement element within the modal
+        var queryResult = document.getElementById("queryResult");
+        // Get all query links
+        var queryLinks = document.getElementsByClassName("query-link");
+      
+        // Attach click event listener to each query link
+        for (var i = 0; i < queryLinks.length; i++) {
+          queryLinks[i].addEventListener("click", function (event) {
+            // Prevent the default link behavior
+            event.preventDefault();
+      
+            // Get the query ID from the data attribute
+            var queryId = this.getAttribute("data-query-id");
+            // Find the query statement based on the query ID
+            
+            var result=explain_results_String[queryId];
+            
+            var result11 = "";
+
+        for (var i = 0; i < result.length; i++) {
+            var x = result[i];
+            var s1 = '<div class="result-item">';
+            for (var key in x) {
+                var s2 = '<div class="result-item-property">';
+                    s2 += '<div class="result-item-key">' + key + ':</div>';
+                    s2 += '<div class="result-item-value">' + x[key] + '</div>';
+                    s2 += '</div>';
+                
+                    s1 += s2;
+                
+            }
+            s1 = s1 + '</div>';
+            result11 = result11 + s1;
+        }
+
+
+            // Set the query statement content in the modal
+            var queryResultElement = document.getElementById("queryResult");
+            queryResultElement.insertAdjacentHTML('afterend', result11);
+          });
+        }
+      
+        // Copy button functionality
+        var copyButton = document.getElementById("copyButton");
+        copyButton.addEventListener("click", function () {
+          var queryCode = document.getElementById("queryStatement");
+          var range = document.createRange();
+          range.selectNodeContents(queryCode);
+          window.getSelection().removeAllRanges();
+          window.getSelection().addRange(range);
+          document.execCommand("copy");
+          window.getSelection().removeAllRanges();
+      
+          // Change button color
+          copyButton.style.backgroundColor = "#28a745";
+          setTimeout(function () {
+            copyButton.style.backgroundColor = "#007bff";
+          }, 5000);
+        });
+      </script>
+{% endblock %}
