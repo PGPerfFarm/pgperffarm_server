@@ -53,8 +53,10 @@
 
                     <thead>
                         <th>Run</th>
-                        <th>Add time</th>
+                        <th >Add time</th>
                         <th>Query set result</th>
+                        <th> Explain Test Cost Off results</th>
+                        <th>Explain Test Cost On results</th>
                     </thead>
 
                     <tbody></tbody>
@@ -654,8 +656,10 @@
                 tableBodyContent += `
                 <tr>
                     <td>${item.run_id}</td>
-                    <td>${item.add_time}</td>
+                    <td style="font-size: 0.8rem;"  >${item.add_time}</td>
                     <td><a href="/tpch/details/${item.run_id}/">details</a></td>
+                    <td><a href="/tpch/explain-results_costOff/${item.run_id}/">details</a></td>
+                    <td><a href="/tpch/explain_results_CostOn/${item.run_id}/">details</a></td>
                 </tr>
                 `;
 

@@ -3,6 +3,8 @@ from django.shortcuts import render
 from machines.models import Machine
 from runs.models import Branch, RunInfo
 from tpch.models import TpchResult, TpchQueryResult
+from tpch.models import ExplainQueryCostOffPlan, ExplainQueryCostOnResult, ExplainQueryCostOnResultDetails,ExplainQueryCostOffResult,TpchQuery
+import json
 
 
 def index(request):
@@ -14,7 +16,10 @@ def index(request):
             overview_json[scale_g.scale_factor] = [scale_g]
         else:
             overview_json[scale_g.scale_factor].append(scale_g)
-    return render(request, 'benchmarks/tpch.html', {'overview_json': overview_json})
+
+    queries=(TpchQuery.objects.all())
+    query_list = [{'query_id': q.query_id, 'query_statement': q.query_statement} for q in queries]
+    return render(request, 'benchmarks/tpch.html', {'overview_json': overview_json, 'queries1':json.dumps(query_list),'queries':queries})
 
 
 def trend(request, machine, scale):
@@ -44,6 +49,7 @@ def details(request, id):
     power_queries = list(power_queries)
     throughput_queries = TpchQueryResult.objects.raw("select tpch_tpchqueryresult.id, tpch_tpchqueryresult.query_idx, tpch_tpchqueryresult.time from tpch_tpchqueryresult, tpch_tpchresult where tpch_tpchqueryresult.tpch_result_id = tpch_tpchresult.id AND tpch_tpchresult.run_id_id = %s AND tpch_tpchqueryresult.type=%s", [id, 'throughput'])
     throughput_queries = list(throughput_queries)
+    print(power_queries)
     models = []
     for i in range(0, len(power_queries)):
         models.append({
@@ -67,3 +73,76 @@ def runs_commit_view(request, machine, scale, commit):
         tpch_runs_list.append(single_run)
 
     return JsonResponse(tpch_runs_list, safe=False)
+
+
+
+def explain_results(request,id):
+    explain_results = {}
+
+    Run_Info=RunInfo.objects.get(run_id=id)
+    Tpch_Result=TpchResult.objects.get(run_id=Run_Info)
+
+    Tpch_Query_Result_raw=TpchQueryResult.objects.filter(tpch_result=Tpch_Result)
+    Tpch_Query_Result=[]
+    for result in Tpch_Query_Result_raw:
+       x=ExplainQueryCostOffResult.objects.filter(tpch_query=result)
+       if(x is not None and len(x)>0):
+              Tpch_Query_Result.append(result)
+    
+    # print(len(Tpch_Query_Result))
+    Tpch_Query_Result.sort(key=lambda x: x.query_idx)
+    
+
+    # pass
+   
+    # Group the results by query_id
+    for result in Tpch_Query_Result:
+        query_id = result.query_idx
+        if query_id not in explain_results:
+            explain_results[query_id] = []
+        x=ExplainQueryCostOffResult.objects.filter(tpch_query=result).all()
+        for i in x:
+          explain_results[query_id].append(i.plan_hash.result)
+
+    context = {
+        'explain_results': explain_results,
+    }
+
+    return render(request, 'benchmarks/tpchCostOff.html', context)
+
+
+
+def explain_results_CostOn(request,id):
+    Run_Info=RunInfo.objects.get(run_id=id)
+    Tpch_Result=TpchResult.objects.get(run_id=Run_Info)
+    Tpch_Querys=TpchQuery.objects.filter().all()
+    explain_results={}
+    # models = []
+    execution_time=[]
+    planning_time=[]
+    index=1;
+    for query in Tpch_Querys:
+        ExplainQuery_CostOnResult=ExplainQueryCostOnResult.objects.filter(tpch_query=query,tpch_result=Tpch_Result).first()
+        if(ExplainQuery_CostOnResult is not None):
+            execution_time.append(ExplainQuery_CostOnResult.execution_time)
+            planning_time.append(ExplainQuery_CostOnResult.planning_time)
+        index=index+1
+
+    for query in Tpch_Querys:
+        ExplainQuery_CostOnResult=ExplainQueryCostOnResult.objects.filter(tpch_query=query,tpch_result=Tpch_Result).first()
+        if(ExplainQuery_CostOnResult is not None):
+            data=ExplainQueryCostOnResultDetails.objects.filter(explain_query_cost_on_result=ExplainQuery_CostOnResult).all()
+            explain_results[query.query_id] = []
+            for x in data:
+                result = x.result
+                explain_results[query.query_id].append(result)
+                
+    
+    # print(explain_results)
+       
+
+
+
+    return render(request, 'benchmarks/tpchCostOnTrands.html', { 'id':id, 'execution_time': execution_time,'planning_time':planning_time, 'explain_results': explain_results,'queries':Tpch_Querys})
+    
+    

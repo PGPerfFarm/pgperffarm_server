@@ -4,6 +4,7 @@ from machines.models import Machine
 from runs.models import RunInfo, GitRepo, Branch, RunLog
 from systems.models import HardwareInfo, Compiler, Kernel, OsDistributor, OsKernelVersion, OsVersion
 from benchmarks.models import PgBenchBenchmark, PgBenchResult, PgBenchStatement, PgBenchLog, PgBenchRunStatement
+from tpch.models import TpchConfig, TpchResult, TpchQueryResult, TpchQuery, ExplainQueryCostOnResult, ExplainQueryCostOnResultDetails, ExplainQueryCostOffResult ,ExplainQueryCostOffPlan
 
 # Register your models here.
 admin.site.register(RunInfo)
@@ -25,3 +26,14 @@ admin.site.register(PgBenchLog)
 admin.site.register(PgBenchRunStatement)
 
 admin.site.register(Machine)
+
+admin.site.register(TpchConfig)
+admin.site.register(TpchResult)
+admin.site.register(TpchQueryResult)
+admin.site.register(TpchQuery)
+admin.site.register(ExplainQueryCostOnResult)
+admin.site.register(ExplainQueryCostOnResultDetails)
+admin.site.register(ExplainQueryCostOffResult)
+admin.site.register(ExplainQueryCostOffPlan)
+
+
