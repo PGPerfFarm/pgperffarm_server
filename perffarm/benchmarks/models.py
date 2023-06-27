@@ -21,7 +21,7 @@ class PgBenchResult(models.Model):
 
     pgbench_result_id = models.AutoField(primary_key=True)
 
-    run_id = models.ForeignKey('runs.RunInfo', related_name='pgbench_result', on_delete=models.CASCADE)
+    run_id = models.ForeignKey('runs.RunInfo', related_name='pgbench_result', on_delete=models.CASCADE,default=None)
     benchmark_config = models.ForeignKey('benchmarks.PgBenchBenchmark', on_delete=models.CASCADE, related_name='results')
 
     tps = models.FloatField(validators=[validators.MaxValueValidator(100000000), validators.MinValueValidator(0)])
