@@ -1,5 +1,5 @@
 settings_local.py
-migrations
+# migrations
 .venv
 .idea
 *.pyc
