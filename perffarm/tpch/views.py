@@ -17,7 +17,8 @@ def index(request):
         else:
             overview_json[scale_g.scale_factor].append(scale_g)
 
-    queries=(TpchQuery.objects.all())
+    queries=TpchQuery.objects.all().order_by('query_id')
+    
     query_list = [{'query_id': q.query_id, 'query_statement': q.query_statement} for q in queries]
     return render(request, 'benchmarks/tpch.html', {'overview_json': overview_json, 'queries1':json.dumps(query_list),'queries':queries})
 
@@ -104,8 +105,10 @@ def explain_results(request,id):
         for i in x:
           explain_results[query_id].append(i.plan_hash.result)
 
+    Tpch_Querys=TpchQuery.objects.filter().all().order_by('query_id')
     context = {
         'explain_results': explain_results,
+        'queries': Tpch_Querys,
     }
 
     return render(request, 'benchmarks/tpchCostOff.html', context)
@@ -115,7 +118,8 @@ def explain_results(request,id):
 def explain_results_CostOn(request,id):
     Run_Info=RunInfo.objects.get(run_id=id)
     Tpch_Result=TpchResult.objects.get(run_id=Run_Info)
-    Tpch_Querys=TpchQuery.objects.filter().all()
+    Tpch_Querys=TpchQuery.objects.filter().all().order_by('query_id')
+    
     explain_results={}
     # models = []
     execution_time=[]

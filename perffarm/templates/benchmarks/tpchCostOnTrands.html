@@ -273,7 +273,7 @@ context.fillText("Planning Times of Tpch  Queries", canvas.width / 2, 50);
             
             var result=explain_results_String[queryId];
             
-            var result11 = "";
+            var result11 = " <h2>Query-: "+queryId+"</h2>";
 
         for (var i = 0; i < result.length; i++) {
             var x = result[i];
@@ -294,7 +294,7 @@ context.fillText("Planning Times of Tpch  Queries", canvas.width / 2, 50);
 
             // Set the query statement content in the modal
             var queryResultElement = document.getElementById("queryResult");
-            queryResultElement.insertAdjacentHTML('afterend', result11);
+            queryResultElement.innerHTML = result11;
           });
         }
       
