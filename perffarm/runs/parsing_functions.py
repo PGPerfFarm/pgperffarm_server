@@ -873,7 +873,7 @@ def parse_explain_results(data,new_run, tpch_config, qphh_score, power_score, th
 
         result_object = TpchResult.objects.filter(run_id=new_run, benchmark_config=tpch_config, power_score=power_score,
                                   throughput_score=throughput_score, composite_score=qphh_score).first()
-        explain_result = ExplainQueryCostOnResult(tpch_query=tpch_query, tpch_result=result_object,planning_time=new_data["Planning Time"], execution_time=new_data["Execution Time"], planning=new_data["Planning"])
+        explain_result = ExplainQueryCostOnResult(tpch_query=tpch_query, tpch_result=result_object,planning_time=new_data["Planning Time"], execution_time=new_data["Execution Time"], planning={})
         try:
             explain_result.save()
         except Exception as e:
@@ -967,7 +967,7 @@ def parse_explain_results_costOff(data,new_run, tpch_config, qphh_score, power_s
 def parse_tpch_query_plans(data):
    
     tpch_query_plans = TpchQuery.objects.all()
-    print(tpch_query_plans.count());
+    # print(tpch_query_plans.count());
     if(tpch_query_plans.count()==0):
 
         for x,y in data.items():
