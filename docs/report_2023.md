@@ -50,6 +50,36 @@ We are not saving the expain cost off results to the database, because results m
 In the week worked on frontend part of Tpch, added a new page to show the Tpch Querys, and added a new page to show the Tpch Querys explain results, and added a new page to show the Tpch Querys explain cost on and cost off results.
 And added bar graph for excution and planning time of Tpch Querys
 
+### 29-June ~ 6-July
+
+during this week i deployed the project in the server, and fixed some bugs in the project.
+configured the project with Ngix ans Uwsgi, for the deployment.
+
+setup the Client script on the server, and configured the client script to run the Tpch benchmark.
+add a creotab job to run the client script  3 times a day.
+Doing testing
+
+Fixed the Connnection error in client script https://github.com/PGPerfFarm/pgperffarm/commit/158d846dd45dca80b6b8297ab2893a766f7f4468
+fixed the tpch projetect_path                 https://github.com/PGPerfFarm/pgperffarm/commit/2516192abb0845be316053ed6d11674580761fe2
 
 
-re
+###  New Models for Tpch
+```TpchQuery    # to save the Tpch Querys
+      query_id (Id of the query)
+      query_statement (Query statement)
+    ``````
+```ExplainQueryCostOnResult    # to save the Tpch Querys explain cost on  results
+    tpch_query  (Foreign key to TpchQuery)
+    tpch_result (foreign key to TpchResult)
+    planning_time (planning time of the query)
+    execution_time (execution time of the query)
+    ``````
+```ExplainQueryCostOnResultDetails    # to save the Tpch Querys explain cost on  results details
+   explain_query_cost_on_result (Foreign key to ExplainQueryCostOnResult)
+   result (Json field to save results)
+    ``````  
+```ExplainQueryCostOffResult  # TO save the cost on results
+     tpch_query (Foreign key to TpchQuery)
+     plan_hash (hash of the plan)
+     The results of tpch explain cost off are not changing for different benchmarks, so we are not saving them to the database, we are just saving the hash of the plan, and if the hash is already in the database we are not saving the results to the database.
+     ```
