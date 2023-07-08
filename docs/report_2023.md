@@ -64,22 +64,22 @@ fixed the tpch projetect_path                 https://github.com/PGPerfFarm/pgpe
 
 
 ###  New Models for Tpch
-```TpchQuery    # to save the Tpch Querys
-      query_id (Id of the query)
-      query_statement (Query statement)
-    ``````
-```ExplainQueryCostOnResult    # to save the Tpch Querys explain cost on  results
+    TpchQuery # to save the Tpch Querys
+    query_id (Id of the query)
+    query_statement (Query statement)
+    
+    ExplainQueryCostOnResult    # to save the Tpch Querys explain cost on  results
     tpch_query  (Foreign key to TpchQuery)
     tpch_result (foreign key to TpchResult)
     planning_time (planning time of the query)
     execution_time (execution time of the query)
-    ``````
-```ExplainQueryCostOnResultDetails    # to save the Tpch Querys explain cost on  results details
-   explain_query_cost_on_result (Foreign key to ExplainQueryCostOnResult)
-   result (Json field to save results)
-    ``````  
-```ExplainQueryCostOffResult  # TO save the cost on results
-     tpch_query (Foreign key to TpchQuery)
-     plan_hash (hash of the plan)
-     The results of tpch explain cost off are not changing for different benchmarks, so we are not saving them to the database, we are just saving the hash of the plan, and if the hash is already in the database we are not saving the results to the database.
-     ```
+   
+    ExplainQueryCostOnResultDetails    # to save the Tpch Querys explain cost on  results details
+    explain_query_cost_on_result (Foreign key to ExplainQueryCostOnResult)
+    result (Json field to save results)
+    
+    ExplainQueryCostOffResult  # TO save the cost on results
+    tpch_query (Foreign key to TpchQuery)
+    plan_hash (hash of the plan)
+    The results of tpch explain cost off are not changing for different benchmarks, so we are not saving them to the database, we are just saving the hash of the plan, and if the hash is already in the database we are not saving the results to the database.
+     
