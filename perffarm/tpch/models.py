@@ -50,7 +50,6 @@ class ExplainQueryCostOnResult(models.Model):
     tpch_result = models.ForeignKey('tpch.TpchResult', on_delete=models.CASCADE)
     planning_time = models.FloatField()
     execution_time = models.FloatField()
-    planning=JSONField(default=None)
 
 
 class ExplainQueryCostOnResultDetails(models.Model):
@@ -71,4 +70,9 @@ class ExplainQueryCostOffResult(models.Model):
     tpch_query = models.ForeignKey('tpch.TpchQueryResult', on_delete=models.CASCADE) 
     plan_hash = models.ForeignKey('tpch.ExplainQueryCostOffPlan', on_delete=models.CASCADE,default=None)
    
+
+
+
+
+
 
