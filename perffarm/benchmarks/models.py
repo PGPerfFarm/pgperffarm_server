@@ -31,6 +31,38 @@ class PgBenchResult(models.Model):
     end = models.FloatField()
     iteration = models.IntegerField(validators=[validators.MinValueValidator(0)])
     init = models.FloatField(validators=[validators.MinValueValidator(0)])
+      
+    
+    OPTIONS=(('pgbench','pgbench'),('pgbench_custom','pgbench_custom'))
+    BenchmarkType=models.CharField(max_length=100,choices=OPTIONS,default='pgbench')
+
+
+#new models
+class PgbenchCustomDetails(models.Model):
+    
+    pgbench_custom_details_id = models.AutoField(primary_key=True)
+    pgbench_result_id = models.ForeignKey('benchmarks.PgBenchResult', related_name='pgbench_custom_details', on_delete=models.CASCADE)
+    init_sql=models.ForeignKey('benchmarks.InitSql',on_delete=models.CASCADE)
+
+class InitSql(models.Model):
+    data=models.TextField(max_length=2000,default=None)
+    #hash
+    InitSql_sha256 = models.CharField(max_length=256, unique=True, null=False)
+
+
+class custom_queries(models.Model):
+    pgbench_result_id=models.ForeignKey('benchmarks.PgBenchResult',on_delete=models.CASCADE)
+    custom_query=models.ForeignKey('benchmarks.custom_query',on_delete=models.CASCADE)
+
+
+class custom_query(models.Model):
+    data=models.TextField(max_length=2000,default=None)
+    #hash
+    weight=models.IntegerField(default=0)
+    custom_querys_sha256 = models.CharField(max_length=256, unique=True, null=False)
+
+
+ 
 
 
 class PgBenchRunStatement(models.Model):
