@@ -186,8 +186,19 @@ def create_run_info(request, format=None):
                 raise RuntimeError(e)
 
             # now continue with benchmarks
+           
+            
             if benchmark_type_id == 1:
-                for item in json_data['pgbench']:
+                if(json_data.get("pgbench")==None ):
+                    benchmark_type="pgbench_custom"
+                    data_json=json_data["pgbench_custom"]
+                else:
+                    benchmark_type="pgbench"
+                    data_json=json_data["pgbench"]
+
+
+            
+                for item in data_json:
 
                     for client in item['clients']:
                         pgbench = parse_pgbench_options(item, client)
@@ -210,8 +221,8 @@ def create_run_info(request, format=None):
                             except Exception as e:
                                 raise RuntimeError(e)
 
-                for item in json_data['pgbench']:
-                    parse_pgbench_results(item, new_run_info, json_data['pgbench_log_aggregate'], machine.owner_id)
+                for item in data_json:
+                    parse_pgbench_results(item,benchmark_type, new_run_info, json_data['pgbench_log_aggregate'], machine.owner_id)
 
             elif benchmark_type_id == 2:
                 try:

@@ -10,7 +10,7 @@ from email_notification.models import EmailNotification
 from postgres.models import PostgresSettingsSet, PostgresSettings
 from benchmarks.models import PgBenchBenchmark, PgBenchResult, PgBenchStatement, PgBenchLog, PgBenchRunStatement, \
     PgStatStatementsQuery, PgStatStatements, CollectdCpu, CollectdProcess, CollectdContextswitch, CollectdIpcShm, \
-    CollectdIpcMsg, CollectdIpcSem, CollectdMemory, CollectdSwap, CollectdVmem
+    CollectdIpcMsg, CollectdIpcSem, CollectdMemory, CollectdSwap, CollectdVmem ,custom_query,InitSql,PgbenchCustomDetails,custom_queries
 from systems.models import HardwareInfo, Compiler, Kernel, OsDistributor, OsKernelVersion, OsVersion
 from runs.models import GitRepo, Branch
 from machines.models import Machine
@@ -521,7 +521,39 @@ def parse_collectd(pgbench_result_id, result):
         raise RuntimeError(e)
 
 
-def parse_pgbench_results(item, new_run, pgbench_log, user):
+
+
+def parse_pgbench_custom_results( initsql_custom,custom_query1,pgbbench_result_id):
+    
+    
+    initsql_custom=json.dumps(initsql_custom)
+    hash_initsql = hash(initsql_custom)
+    
+    try:
+        if(InitSql.objects.filter(InitSql_sha256=hash_initsql).exists()==False):
+            InitSql.objects.create(InitSql_sha256=hash_initsql,data=initsql_custom)
+
+        InitSql_obj = InitSql.objects.filter(InitSql_sha256=hash_initsql).get()
+        PgbenchCustomDetails.objects.create(init_sql=InitSql_obj,pgbench_result_id=pgbbench_result_id)
+    except Exception as e:
+        raise RuntimeError(e)
+    
+    try:
+        for query in custom_query1:
+            json_data=json.dumps(query)
+            hash_custom_querys = hash(json_data)
+            if(custom_query.objects.filter(custom_querys_sha256=hash_custom_querys).exists()==False):
+                custom_query.objects.create(custom_querys_sha256=hash_custom_querys,data=query['query'],weight=query['weight'])
+            custom_querys_obj = custom_query.objects.filter(custom_querys_sha256=hash_custom_querys).get()
+            custom_queries.objects.create(custom_query=custom_querys_obj,pgbench_result_id=pgbbench_result_id)
+    except Exception as e:
+        raise RuntimeError(e)
+    
+
+
+
+
+def parse_pgbench_results(item,benchmark_type, new_run, pgbench_log, user):
     json = item['iterations']
     iterations = 0
 
@@ -551,13 +583,15 @@ def parse_pgbench_results(item, new_run, pgbench_log, user):
 
                 # remove statement latencies
                 statement_latencies = result['statement_latencies']
-
-                result_object = PgBenchResult(run_id=new_run, benchmark_config=pgbench_config, tps=result['tps'],
+                result_object = PgBenchResult( BenchmarkType=benchmark_type, run_id=new_run, benchmark_config=pgbench_config, tps=result['tps'],
                                               mode=result['mode'], latency=result['latency'], start=result['start'],
                                               end=result['end'], iteration=result['iteration'], init=result['init'])
 
                 try:
                     result_object.save()
+                    parse_pgbench_custom_results(item['init_sql'],item['custom_queries'],result_object)
+                    
+                    
                     avg_same_config_result_raw = Machine.objects.raw(
                         "select machines_machine.machine_id, avg(tps) as avgtps, avg(latency) as avglat from benchmarks_pgbenchresult,runs_runinfo, machines_machine, runs_branch where benchmarks_pgbenchresult.run_id_id = runs_runinfo.run_id AND runs_runinfo.machine_id_id = machines_machine.machine_id AND runs_runinfo.git_branch_id = runs_branch.branch_id AND branch_id = %s AND benchmark_config_id = %s AND machines_machine.machine_id = %s AND runs_runinfo.postgres_info_id=%s group by machines_machine.machine_id",
                         [new_run.git_branch.branch_id, result_object.benchmark_config.pgbench_benchmark_id,
