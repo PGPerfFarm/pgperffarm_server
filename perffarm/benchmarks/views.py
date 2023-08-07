@@ -3,7 +3,7 @@ from math import ceil
 
 from django.http import JsonResponse
 from django.shortcuts import render
-from benchmarks.models import PgBenchBenchmark, PgBenchResult, PgBenchStatement, PgBenchRunStatement, PgBenchLog, PgStatStatements, PgStatStatementsQuery, CollectdCpu, CollectdProcess, CollectdContextswitch, CollectdIpcShm, CollectdIpcMsg, CollectdIpcSem, CollectdMemory, CollectdSwap, CollectdVmem, CollectdDisk
+from benchmarks.models import PgBenchBenchmark, PgBenchResult, PgBenchStatement, PgBenchRunStatement, PgBenchLog, PgStatStatements, PgStatStatementsQuery, CollectdCpu, CollectdProcess, CollectdContextswitch, CollectdIpcShm, CollectdIpcMsg, CollectdIpcSem, CollectdMemory, CollectdSwap, CollectdVmem, CollectdDisk,PgbenchCustomDetails,custom_queries
 from runs.models import RunInfo
 from machines.models import Machine
 
@@ -260,3 +260,20 @@ def pgbench_benchmark_trend_view(request,type, machine, config):
     benchmark_type = type
 
     return render(request, 'benchmarks/trend.html', {'results': pgbench_trends_list, 'benchmark_type': benchmark_type})
+
+
+def pgbench_customDetails_view(requets,id):
+    results = PgBenchResult.objects.filter(pgbench_result_id=id).first()
+    init_data=PgbenchCustomDetails.objects.get(pgbench_result_id=results).init_sql.data
+
+    a=list(custom_queries.objects.filter(pgbench_result_id=results).all())
+    queries=[]
+    idx=1;
+    for b in a:
+        queries.append({'id':idx,'statment':b.custom_query.data,'weight':b.custom_query.weight})
+        idx=idx+1
+    return render(requets, 'benchmarks/pgbench_customDetails.html', {'init_data': json.loads(init_data), 'queries': (queries)})
+
+
+
+

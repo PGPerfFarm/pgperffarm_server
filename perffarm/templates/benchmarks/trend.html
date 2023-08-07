@@ -71,6 +71,11 @@
                         <th>Run</th>
                         <th>Add time</th>
                         <th>Benchmark Link</th>
+                        {%  if benchmark_type == 'pgbench_custom' %}
+                          <th>Custom Details</th>
+                          {% endif %}
+
+                          
                     </thead>
 
                     <tbody></tbody>
@@ -604,7 +609,6 @@
             document.querySelector('#value_modal_commit').innerHTML = commit;
             document.querySelector('#value_modal_commit').href = 'https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=' + commit;
             benchmark_type=JSON.parse(document.getElementById('type').textContent);
-            console.log(benchmark_type)
             url=`/benchmark/pgbench_results_commit/${benchmark_type}/`
             sendRequest(url + commit + '/' + id + '/' + config + '/', (res) => {
 
@@ -616,6 +620,9 @@
                         <td><a href="/run/${item.run_id}/">${item.run_id}</a></td>
                         <td>${item.add_time}</td>
                         <td><a href="/benchmark/pgbench_results_complete/${item.pgbench_result_id}/">${item.pgbench_result_id}</a></td>
+                        
+                        ${benchmark_type==='pgbench_custom'? `<td><a href="/benchmark/pgbench_customDetails/${item.pgbench_result_id}/">${item.pgbench_result_id}</a></td>`:'' }
+                        
                     </tr>
                     `;
 
