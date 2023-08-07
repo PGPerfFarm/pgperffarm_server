@@ -114,9 +114,11 @@ def overview_view(request):
     return JsonResponse(overview_list, safe=False)
 
 
-def pgbench_benchmark_machines_view(request):
+def pgbench_benchmark_machines_view(request,type):
+    
+    benchmarks_machines = PgBenchBenchmark.objects.raw("""select pgbench_benchmark_id, scale, duration, read_only, clients, machine_id, alias, machines_machine.description, machines_machine.add_time, machine_type, username, count(pgbench_benchmark_id) from benchmarks_pgbenchbenchmark, benchmarks_pgbenchresult, runs_runinfo, machines_machine, auth_user where benchmarks_pgbenchbenchmark.pgbench_benchmark_id = benchmarks_pgbenchresult.benchmark_config_id and benchmarks_pgbenchresult.run_id_id = runs_runinfo.run_id and runs_runinfo.machine_id_id = machines_machine.machine_id and benchmarks_pgbenchresult."BenchmarkType" = %s  and machines_machine.owner_id_id = auth_user.id group by machine_id, alias, machines_machine.description, machines_machine.add_time, machine_type, username, pgbench_benchmark_id, scale, duration, read_only, clients;""",[type])
 
-    benchmarks_machines = PgBenchBenchmark.objects.raw("select pgbench_benchmark_id, scale, duration, read_only, clients, machine_id, alias, machines_machine.description, machines_machine.add_time, machine_type, username, count(pgbench_benchmark_id) from benchmarks_pgbenchbenchmark, benchmarks_pgbenchresult, runs_runinfo, machines_machine, auth_user where benchmarks_pgbenchbenchmark.pgbench_benchmark_id = benchmarks_pgbenchresult.benchmark_config_id and benchmarks_pgbenchresult.run_id_id = runs_runinfo.run_id and runs_runinfo.machine_id_id = machines_machine.machine_id and machines_machine.owner_id_id = auth_user.id group by machine_id, alias, machines_machine.description, machines_machine.add_time, machine_type, username, pgbench_benchmark_id, scale, duration, read_only, clients;")
+
 
     benchmarks_machines_list = []
 
@@ -141,11 +143,13 @@ def pgbench_benchmark_machines_view(request):
             'count': bm['count'],
             'config_id': bm['pgbench_benchmark_id'],
             'id': bm['machine_id'],
+            'benchmark_type': type,
         }
         if benchmark not in machines:
             machines[benchmark] = []
             benchmarks += 1
         machines[benchmark].append(machine)
+
     return render(request, 'benchmarks/index.html', {'machines': machines})
 
 
@@ -222,11 +226,10 @@ def machine_history_view(request, machine):
                                                              })
 
 
-def pgbench_runs_view(request, commit, machine, config):
+def pgbench_runs_view(request,type, commit, machine, config):
 
     commit = '%' + commit
-
-    pgbench_runs = RunInfo.objects.raw("select runs_runinfo.run_id, pgbench_result_id, runs_runinfo.add_time from benchmarks_pgbenchbenchmark, benchmarks_pgbenchresult, runs_runinfo, runs_branch where runs_runinfo.git_branch_id = runs_branch.branch_id and benchmarks_pgbenchbenchmark.pgbench_benchmark_id = benchmarks_pgbenchresult.benchmark_config_id and benchmarks_pgbenchresult.run_id_id = runs_runinfo.run_id and git_commit like %s and machine_id_id = %s and benchmark_config_id = %s and runs_branch.git_repo_id < 5 order by add_time Limit 10;", [commit, machine, config])
+    pgbench_runs = RunInfo.objects.raw("""select runs_runinfo.run_id, pgbench_result_id, runs_runinfo.add_time from benchmarks_pgbenchbenchmark, benchmarks_pgbenchresult, runs_runinfo, runs_branch where runs_runinfo.git_branch_id = runs_branch.branch_id and benchmarks_pgbenchbenchmark.pgbench_benchmark_id = benchmarks_pgbenchresult.benchmark_config_id and benchmarks_pgbenchresult."BenchmarkType" = %s and benchmarks_pgbenchresult.run_id_id = runs_runinfo.run_id and git_commit like %s and machine_id_id = %s and benchmark_config_id = %s and runs_branch.git_repo_id < 5 order by add_time Limit 10;""", [type,commit, machine, config])
 
     pgbench_runs_list = []
 
@@ -241,9 +244,9 @@ def pgbench_runs_view(request, commit, machine, config):
     return JsonResponse(pgbench_runs_list, safe=False)
 
 
-def pgbench_benchmark_trend_view(request, machine, config):
+def pgbench_benchmark_trend_view(request,type, machine, config):
 
-    pgbench_trends = PgBenchBenchmark.objects.raw("select avg(tps) as avgtps, avg(latency) as avglat, stddev(tps) as stdtps, stddev(latency) as stdlat, min(tps) as mintps, min(latency) as minlat, max(tps) as maxtps, max(latency) as maxlat, min(runs_runinfo.add_time) as add_time, count(git_commit), git_commit, pgbench_benchmark_id, name, scale, duration, read_only, clients, machine_id, alias, machines_machine.description, machine_type, username, email, url, min(dist_name) as dist_name, min(kernel_name) as kernel_name, max(systems_compiler.compiler) as compiler from benchmarks_pgbenchbenchmark, benchmarks_pgbenchresult, runs_gitrepo, runs_runinfo, runs_branch, machines_machine, auth_user, systems_compiler, systems_oskernelversion, systems_kernel, systems_osdistributor, systems_osversion where benchmarks_pgbenchbenchmark.pgbench_benchmark_id = benchmarks_pgbenchresult.benchmark_config_id and runs_branch.git_repo_id = runs_gitrepo.git_repo_id and benchmarks_pgbenchresult.run_id_id = runs_runinfo.run_id and runs_runinfo.git_branch_id = runs_branch.branch_id and runs_runinfo.machine_id_id = machines_machine.machine_id and runs_runinfo.compiler_id = systems_compiler.compiler_id and machines_machine.owner_id_id = auth_user.id and runs_runinfo.os_version_id_id = systems_osversion.os_version_id and runs_runinfo.os_kernel_version_id_id = systems_oskernelversion.os_kernel_version_id and systems_oskernelversion.kernel_id_id = systems_kernel.kernel_id and systems_osversion.dist_id_id = systems_osdistributor.os_distributor_id and machine_id_id = %s and benchmark_config_id = %s and runs_branch.git_repo_id < 5 group by git_commit, name, pgbench_benchmark_id, url, machine_id, alias, machines_machine.description, machine_type, username, email,scale, duration, read_only, clients order by add_time desc;", [machine, config])
+    pgbench_trends = PgBenchBenchmark.objects.raw("""select avg(tps) as avgtps, avg(latency) as avglat, stddev(tps) as stdtps, stddev(latency) as stdlat, min(tps) as mintps, min(latency) as minlat, max(tps) as maxtps, max(latency) as maxlat, min(runs_runinfo.add_time) as add_time, count(git_commit), git_commit, pgbench_benchmark_id, name, scale, duration, read_only, clients, machine_id, alias, machines_machine.description, machine_type, username, email, url, min(dist_name) as dist_name, min(kernel_name) as kernel_name, max(systems_compiler.compiler) as compiler from benchmarks_pgbenchbenchmark, benchmarks_pgbenchresult, runs_gitrepo, runs_runinfo, runs_branch, machines_machine, auth_user, systems_compiler, systems_oskernelversion, systems_kernel, systems_osdistributor, systems_osversion where benchmarks_pgbenchbenchmark.pgbench_benchmark_id = benchmarks_pgbenchresult.benchmark_config_id and runs_branch.git_repo_id = runs_gitrepo.git_repo_id and benchmarks_pgbenchresult."BenchmarkType" = %s and benchmarks_pgbenchresult.run_id_id = runs_runinfo.run_id and runs_runinfo.git_branch_id = runs_branch.branch_id and runs_runinfo.machine_id_id = machines_machine.machine_id and runs_runinfo.compiler_id = systems_compiler.compiler_id and machines_machine.owner_id_id = auth_user.id and runs_runinfo.os_version_id_id = systems_osversion.os_version_id and runs_runinfo.os_kernel_version_id_id = systems_oskernelversion.os_kernel_version_id and systems_oskernelversion.kernel_id_id = systems_kernel.kernel_id and systems_osversion.dist_id_id = systems_osdistributor.os_distributor_id and machine_id_id = %s and benchmark_config_id = %s and runs_branch.git_repo_id < 5 group by git_commit, name, pgbench_benchmark_id, url, machine_id, alias, machines_machine.description, machine_type, username, email,scale, duration, read_only, clients order by add_time desc;""", [type,machine, config])
 
     pgbench_trends_list = []
 
@@ -254,5 +257,6 @@ def pgbench_benchmark_trend_view(request, machine, config):
             pgbench_trend[column] = getattr(row, column)
 
         pgbench_trends_list.append(pgbench_trend)
+    benchmark_type = type
 
-    return render(request, 'benchmarks/trend.html', {'results': pgbench_trends_list})
+    return render(request, 'benchmarks/trend.html', {'results': pgbench_trends_list, 'benchmark_type': benchmark_type})

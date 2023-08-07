@@ -589,7 +589,8 @@ def parse_pgbench_results(item,benchmark_type, new_run, pgbench_log, user):
 
                 try:
                     result_object.save()
-                    parse_pgbench_custom_results(item['init_sql'],item['custom_queries'],result_object)
+                    if(item.get('custom_queries')!=None):
+                       parse_pgbench_custom_results(item['init_sql'],item['custom_queries'],result_object)
                     
                     
                     avg_same_config_result_raw = Machine.objects.raw(
