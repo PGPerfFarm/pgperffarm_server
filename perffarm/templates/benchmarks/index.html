@@ -29,12 +29,12 @@
                     <tbody>
                         {% for machine in value %}
                             <tr>
-                                <td><a href="/benchmark/history/{{machine.id}}/">{{machine.alias}}</a></td>
+                                <td><a href="/benchmark/history/{{machines.type}}/{{machine.id}}/">{{machine.alias}}</a></td>
                                 <td>{{machine.add_time}}</td>
                                 <td>{{machine.type}}</td>
                                 <td>{{machine.owner}}</td>
                                 <td>{{machine.count}}</td>
-                                <td><a href="/benchmark/pgbench_trends/{{machine.id}}/{{machine.config_id}}/">link</a></td>
+                                <td><a href="/benchmark/pgbench_trends/{{machine.benchmark_type}}/{{machine.id}}/{{machine.config_id}}/">link</a></td>
                             </tr>
                         {% endfor %}
                     </tbody>

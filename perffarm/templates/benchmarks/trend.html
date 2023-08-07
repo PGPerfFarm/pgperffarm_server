@@ -84,6 +84,7 @@
             </div>
         </div>
 {{ results|json_script:"my_results" }}
+{{benchmark_type|json_script:"type"}}
 <script>
             const updateTable = (branch) => {
 
@@ -602,8 +603,10 @@
 
             document.querySelector('#value_modal_commit').innerHTML = commit;
             document.querySelector('#value_modal_commit').href = 'https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=' + commit;
-
-            sendRequest('/benchmark/pgbench_results_commit/' + commit + '/' + id + '/' + config + '/', (res) => {
+            benchmark_type=JSON.parse(document.getElementById('type').textContent);
+            console.log(benchmark_type)
+            url=`/benchmark/pgbench_results_commit/${benchmark_type}/`
+            sendRequest(url + commit + '/' + id + '/' + config + '/', (res) => {
 
                 let tableBodyContent = '';
                 res.map((item) => {
