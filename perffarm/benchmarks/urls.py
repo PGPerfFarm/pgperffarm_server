@@ -12,4 +12,7 @@ urlpatterns = [
     url(r'pgbench_trends/(?P<type>\w+)/(?P<machine>.+)/(?P<config>.+)/', views.pgbench_benchmark_trend_view, name='pgbench_trends-detail'),
     url(r'pgbench_results_commit/(?P<type>\w+)/(?P<commit>.+)/(?P<machine>.+)/(?P<config>.+)/', views.pgbench_runs_view, name='pgbench_trends-commit'),
     url(r'pgbench_results_complete/(?P<id>.+)/', views.pgbench_result_complete_view),
+    url(r'pgbench_customDetails/(?P<id>.+)/', views.pgbench_customDetails_view),
+    url(r'download/(?P<id>.+)', views.download_zip),
+
 ]

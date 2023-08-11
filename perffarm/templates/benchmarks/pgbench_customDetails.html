@@ -48,7 +48,7 @@
             border: 1px solid #ccc;
             margin-top: 20px;
           }
-          .init-link {
+          .init-link  {
 	/* display: block; */
 	text-align: center;
 	text-decoration: none;
@@ -58,15 +58,40 @@
 	border-radius: 4px;
 	transition: background-color 0.3s ease;
   }
+          .download{
+	/* display: block; */
+
+	text-align: center;
+	text-decoration: none;
+	color: #333;
+	padding: 10px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	transition: background-color 0.3s ease;
+  }
   
-  .init-link:hover {
+  .download:hover {
 	background-color: #928c8c;
   }
+  .init-link:hover {
+    background-color: #928c8c;
+	
+  }
+
+  .download-btn{
+    position: fixed;
+    top: 10%;
+    right: 0%;
+    /* transform: translateX(-50%); */
+
+
+  }
+
     </style>
 {% endblock %}
 
 {% block content %}
-    <h1>Pgbench Custom </h1>
+    <h1>Pgbench Custom queries </h1>
    
     <div class="query_list"  >
     
@@ -108,7 +133,8 @@
           ❌
         </button>
       </dialog>
-
+      
+      <div  class="download-btn" style="margin:50px" ><a class="download" href="/benchmark/download/{{result_id}}">Download Config zip</a></div>
 
 
     {{ queries|json_script:"queries" }}
@@ -167,7 +193,7 @@
         init[0].addEventListener("click", function (event) {
             // Prevent the default link behavior
             event.preventDefault();
-      
+            document.getElementById("query_weight").innerHTML=''
             
              document.getElementById("queryStatement").innerHTML=init_string;
             

@@ -6,6 +6,10 @@ from django.shortcuts import render
 from benchmarks.models import PgBenchBenchmark, PgBenchResult, PgBenchStatement, PgBenchRunStatement, PgBenchLog, PgStatStatements, PgStatStatementsQuery, CollectdCpu, CollectdProcess, CollectdContextswitch, CollectdIpcShm, CollectdIpcMsg, CollectdIpcSem, CollectdMemory, CollectdSwap, CollectdVmem, CollectdDisk,PgbenchCustomDetails,custom_queries
 from runs.models import RunInfo
 from machines.models import Machine
+import io
+import zipfile
+from django.http import HttpResponse
+from django.core.files import File
 
 def pgbench_benchmark_view(request):
 
@@ -272,8 +276,63 @@ def pgbench_customDetails_view(requets,id):
     for b in a:
         queries.append({'id':idx,'statment':b.custom_query.data,'weight':b.custom_query.weight})
         idx=idx+1
-    return render(requets, 'benchmarks/pgbench_customDetails.html', {'init_data': json.loads(init_data), 'queries': (queries)})
+    return render(requets, 'benchmarks/pgbench_customDetails.html', {'result_id':id,'init_data': json.loads(init_data), 'queries': (queries)})
 
 
 
 
+# Function to create a zip file with the provided data
+def create_zip(id):
+    results = PgBenchResult.objects.filter(pgbench_result_id=id).first()
+    initData_query=PgbenchCustomDetails.objects.get(pgbench_result_id=results).init_sql.data
+    initData_query=json.loads(initData_query)
+    config=results.benchmark_config
+    client=[]
+    client.append(config.clients)   
+    PGBENCH_CUSTOM_CONFIG=[{
+        'iterations':results.iteration,
+        'duration':config.duration,
+        'scale':config.scale,
+        'read_only':config.read_only,
+        'clients':client,
+    }]
+    config_data="""
+    import multiprocessing
+    import os
+    import sys
+    from pathlib import Path
+    init_path = os.path.join(Path(__file__).resolve().parent, 'init.sql')
+    custom_queries_path=os.path.join(Path(__file__).resolve().parent,'scripts')
+    """
+    config_data+="PGBENCH_CUSTOM_CONFIG=" +str(PGBENCH_CUSTOM_CONFIG)
+
+    a=list(custom_queries.objects.filter(pgbench_result_id=results).all())
+    queries=[]
+    idx=1
+    for b in a:
+        queries.append({'id':idx,'statment':b.custom_query.data,'weight':b.custom_query.weight})
+        idx=idx+1
+
+    # Create an in-memory buffer for the zip file
+    buffer = io.BytesIO()
+
+    # Write the queries to separate SQL files in the in-memory zip
+    with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as zipf:
+        for i, query in enumerate(queries):
+            zipf.writestr(f"sripts/query{i + 1}.{query['weight']}.sql", query['statment'])
+
+        zipf.writestr("parameters.py", config_data)
+        # Write initData_query to a separate SQL file in the in-memory zip
+        zipf.writestr("init.sql", initData_query)
+
+    # Return the in-memory zip buffer
+    return buffer.getvalue()
+
+
+def download_zip(request, id):
+    # Create the in-memory zip file
+    zip_data = create_zip(id)
+    # Prepare the HTTP response with the zip data
+    response = HttpResponse(zip_data, content_type="application/zip")
+    response["Content-Disposition"] = 'attachment; filename="mybenchmark.zip"'
+    return response
