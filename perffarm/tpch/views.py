@@ -50,7 +50,6 @@ def details(request, id):
     power_queries = list(power_queries)
     throughput_queries = TpchQueryResult.objects.raw("select tpch_tpchqueryresult.id, tpch_tpchqueryresult.query_idx, tpch_tpchqueryresult.time from tpch_tpchqueryresult, tpch_tpchresult where tpch_tpchqueryresult.tpch_result_id = tpch_tpchresult.id AND tpch_tpchresult.run_id_id = %s AND tpch_tpchqueryresult.type=%s", [id, 'throughput'])
     throughput_queries = list(throughput_queries)
-    print(power_queries)
     models = []
     for i in range(0, len(power_queries)):
         models.append({

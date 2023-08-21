@@ -17,7 +17,6 @@ The client Script is modified to run the custom queries and collect the explain 
 
 The server is a Django application that provides a REST API to store and retrieve the results of the benchmarks. The server also provides a web interface to visualize the results.
 
-
 The server is modified to store the explain plans and display them in the UI. The new Models is added to store the explaine plans and the new API is added to upload the explain plans to the server. Also the new Models is add for pgbench custom queries results and the new API is added to upload the custom queries results to the server. From server we can download the explain plans and pgbench custom queries configurations.
 
 ##  Completed Tasks
@@ -27,25 +26,18 @@ The server is modified to store the explain plans and display them in the UI. Th
 added explain query to Tpch
 saving the explain query and sending to the server
 
-
 added expalin query with cost off to Tpch
 saving the explain query and sending to the server
-
-
 
 Change the some part of code on client side to save the Tpch Querys, and send them to the server, in Tpch_res.py  added a new Dictionary to save the  querys, and in Upload.py added some code  fto send the  querys to the server.
 
 On server side added a new model to save the Tpch Querys, epxlain Cost on and Cost off results, and  in parsing_function.py added a new function   to parse and  save the Tpch Querys, epxlain Cost on and Cost off results to the database.
 We are not saving the expain cost off results to the database, because results may be same for dffferent benchmarks, so i created  a hash function to check if the results are same or not, if they are same we are not saving them to the database.
 
-
-
-In the week worked on frontend part of Tpch, added a new page to show the Tpch Querys, and added a new page to show the Tpch Querys explain results, and added a new page to show the Tpch Querys explain cost on and cost off results.
+Added a new page to show the Tpch Querys, and added a new page to show the Tpch Querys explain results, and added a new page to show the Tpch Querys explain cost on and cost off results.
 And added bar graph for excution and planning time of Tpch Querys
 
-
-
-during this week i deployed the project in the server, and fixed some bugs in the project.
+Deployed the project in the server, and fixed some bugs in the project.
 configured the project with Ngix ans Uwsgi, for the deployment.
 
 setup the Client script on the server, and configured the client script to run the Tpch benchmark.
@@ -54,6 +46,10 @@ Doing testing
 
 Fixed the Connnection error in client script https://github.com/PGPerfFarm/pgperffarm/commit/158d846dd45dca80b6b8297ab2893a766f7f4468
 fixed the tpch projetect_path                 https://github.com/PGPerfFarm/pgperffarm/commit/2516192abb0845be316053ed6d11674580761fe2
+
+
+Modify the python script to run pgbench custom and collect the results and upload them to the server. user can write own queries and run them with pgbench custom. The results are saved in the database and user can see the results in the UI. Also user can download the pgbench custom queries configurations from the UI.
+
 
 
 ###  New Models for Tpch
