@@ -1,223 +1,206 @@
-{% extends 'base.html' %}
-
-{% block styles %}
-    {% load static %}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/benchmarks.css' %}">
-    <style>
-        /* CSS styles for the result page */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f2f2f2;
-        }
-        
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-        
-        .result-item {
-            display: grid;
-            grid-template-columns: 2fr 2fr ;
-            padding: 10px;
-            margin-bottom: 10px;
-            background-color: #f9f9f9;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-        
-        .result-item-property {
-            display: flex;
-            align-items: center;
-          }
-          
-          .result-item-key {
-            font-weight: bold;
-            margin-right: 5px;
-          }
-          
-          .result-item-value {
-            flex: 1;
-          }
-
-
-          canvas {
-            border: 1px solid #ccc;
-            margin-top: 20px;
-          }
-          .init-link  {
-	/* display: block; */
-	text-align: center;
-	text-decoration: none;
-	color: #333;
-	padding: 10px;
-	border: 1px solid #ccc;
-	border-radius: 4px;
-	transition: background-color 0.3s ease;
+{% extends 'base.html' %} {% block styles %} {% load static %}
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="{% static 'css/benchmarks.css' %}"
+/>
+<style>
+  /* CSS styles for the result page */
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f2f2f2;
   }
-          .download{
-	/* display: block; */
 
-	text-align: center;
-	text-decoration: none;
-	color: #333;
-	padding: 10px;
-	border: 1px solid #ccc;
-	border-radius: 4px;
-	transition: background-color 0.3s ease;
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   }
-  
+
+  .result-item {
+    display: grid;
+    grid-template-columns: 2fr 2fr;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+
+  .result-item-property {
+    display: flex;
+    align-items: center;
+  }
+
+  .result-item-key {
+    font-weight: bold;
+    margin-right: 5px;
+  }
+
+  .result-item-value {
+    flex: 1;
+  }
+
+  canvas {
+    border: 1px solid #ccc;
+    margin-top: 20px;
+  }
+  .init-link {
+    /* display: block; */
+    text-align: center;
+    text-decoration: none;
+    color: #333;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+  }
+  .download {
+    /* display: block; */
+
+    text-align: center;
+    text-decoration: none;
+    color: #333;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+  }
+
   .download:hover {
-	background-color: #928c8c;
+    background-color: #928c8c;
   }
   .init-link:hover {
     background-color: #928c8c;
-	
   }
 
-  .download-btn{
+  .download-btn {
     position: fixed;
     top: 10%;
     right: 0%;
     /* transform: translateX(-50%); */
+  }
+</style>
+{% endblock %} {% block content %}
+<h1>Pgbench Custom queries</h1>
 
+<div class="query_list">
+  {% for query in queries %}
+  <a
+    href="#"
+    class="query-link"
+    data-toggle="modal"
+    onclick="window.dialog.showModal()"
+    data-target="#queryModal"
+    data-query-id="{{ forloop.counter }}"
+  >
+    Query-: {{ forloop.counter }}</a
+  >
+  {% endfor %}
+</div>
+<h1>Init Data</h1>
+<div>
+  <a
+    href="#"
+    class="init-link"
+    data-toggle="modal"
+    onclick="window.dialog.showModal()"
+    data-target="#queryModal"
+    data-query-id=""
+  >
+    Data</a
+  >
+</div>
 
+<dialog class="dialog" id="dialog">
+  <div class="modal-body">
+    <div id="query_weight"></div>
+    <pre><code id="queryStatement" class="query-code"></code></pre>
+    <button id="copyButton" class="copy-button">Copy</button>
+  </div>
+  <button onclick="window.dialog.close();" aria-label="close" class="x">
+    ❌
+  </button>
+</dialog>
+
+<div class="download-btn" style="margin: 50px">
+  <a class="download" href="/benchmark/download/{{result_id}}"
+    >Download Config zip</a
+  >
+</div>
+
+{{ queries|json_script:"queries" }} {{ init_data|json_script:"init_data" }}
+
+<script>
+  var query_string = JSON.parse(document.getElementById("queries").textContent);
+  var init_string = JSON.parse(
+    document.getElementById("init_data").textContent
+  );
+
+  <!-- var explain_results = JSON.parse(query_string); -->
+
+  // Get the query statement element within the modal
+  var queryResult = document.getElementById("queryStatement");
+  // Get all query links
+  var queryLinks = document.getElementsByClassName("query-link");
+
+  // Attach click event listener to each query link
+  for (var i = 0; i < query_string.length; i++) {
+    queryLinks[i].addEventListener("click", function (event) {
+      // Prevent the default link behavior
+      event.preventDefault();
+
+      // Get the query ID from the data attribute
+      var queryId = this.getAttribute("data-query-id");
+      // Find the query statement based on the query ID
+      var query;
+      for (var i = 0; i < query_string.length; i++) {
+        if (query_string[i].id == queryId) {
+          query = query_string[i];
+          break;
+        }
+      }
+
+      var result11 = query.statment;
+
+      weight = query.weight;
+      var query_weight = document.getElementById("query_weight");
+      query_weight.innerHTML = "Weight: " + weight;
+
+      // Set the query statement content in the modal
+      var queryResultElement = document.getElementById("queryStatement");
+      queryResultElement.innerHTML = result11;
+    });
   }
 
-    </style>
-{% endblock %}
+  var init = document.getElementsByClassName("init-link");
+  init[0].addEventListener("click", function (event) {
+    // Prevent the default link behavior
+    event.preventDefault();
+    document.getElementById("query_weight").innerHTML = "";
 
-{% block content %}
-    <h1>Pgbench Custom queries </h1>
-   
-    <div class="query_list"  >
-    
-    {% for query in queries %}
-    <a
-        href="#"
-        class="query-link"
-        data-toggle="modal"
-        onclick="window.dialog.showModal()"
-        data-target="#queryModal"
-        data-query-id="{{ forloop.counter }}"
-    >
-        Query-: {{ forloop.counter }}</a
-    >
-    {% endfor %}
+    document.getElementById("queryStatement").innerHTML = init_string;
+  });
 
-    </div>
-    <h1>Init Data</h1>
-      <div>
-        <a
-        href="#"
-        class="init-link"
-        data-toggle="modal"
-        onclick="window.dialog.showModal()"
-        data-target="#queryModal"
-        data-query-id=""
-    >
-        Data</a>
-      </div>
+  // Copy button functionality
+  var copyButton = document.getElementById("copyButton");
+  copyButton.addEventListener("click", function () {
+    var queryCode = document.getElementById("queryStatement");
+    var range = document.createRange();
+    range.selectNodeContents(queryCode);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(range);
+    document.execCommand("copy");
+    window.getSelection().removeAllRanges();
 
-
-      <dialog class="dialog" id="dialog">
-        <div class="modal-body">
-        <div id="query_weight">  </div>
-          <pre><code id="queryStatement" class="query-code"></code></pre>
-          <button id="copyButton" class="copy-button">Copy</button>
-        </div>
-        <button onclick="window.dialog.close();" aria-label="close" class="x">
-          ❌
-        </button>
-      </dialog>
-      
-      <div  class="download-btn" style="margin:50px" ><a class="download" href="/benchmark/download/{{result_id}}">Download Config zip</a></div>
-
-
-    {{ queries|json_script:"queries" }}
-    {{ init_data|json_script:"init_data" }}
-
-
-
-    <script>
-        var query_string = JSON.parse(
-          document.getElementById("queries").textContent
-        );
-        var init_string = JSON.parse(
-          document.getElementById("init_data").textContent
-        );
-
-        <!-- var explain_results = JSON.parse(query_string); -->
-         
-        // Get the query statement element within the modal
-        var queryResult = document.getElementById("queryStatement");
-        // Get all query links
-        var queryLinks = document.getElementsByClassName("query-link");
-      
-        // Attach click event listener to each query link
-        for (var i = 0; i < query_string.length; i++) {
-          queryLinks[i].addEventListener("click", function (event) {
-            // Prevent the default link behavior
-            event.preventDefault();
-      
-            // Get the query ID from the data attribute
-            var queryId = this.getAttribute("data-query-id");
-            // Find the query statement based on the query ID
-            var query;
-           for(var i=0 ;i<query_string.length; i++){
-               if(query_string[i].id==queryId){
-                 query=query_string[i];
-                   break;
-               }
-              }
-            
-            var result11 = query.statment;
-
-            weight=query.weight;
-            var query_weight = document.getElementById("query_weight");
-            query_weight.innerHTML = "Weight: "+weight;
-
-
-
-            // Set the query statement content in the modal
-            var queryResultElement = document.getElementById("queryStatement");
-            queryResultElement.innerHTML = result11;
-          });
-        }
-         
-
-        var init=document.getElementsByClassName("init-link");
-        init[0].addEventListener("click", function (event) {
-            // Prevent the default link behavior
-            event.preventDefault();
-            document.getElementById("query_weight").innerHTML=''
-            
-             document.getElementById("queryStatement").innerHTML=init_string;
-            
-           
-            });
-
-
-
-        // Copy button functionality
-        var copyButton = document.getElementById("copyButton");
-        copyButton.addEventListener("click", function () {
-          var queryCode = document.getElementById("queryStatement");
-          var range = document.createRange();
-          range.selectNodeContents(queryCode);
-          window.getSelection().removeAllRanges();
-          window.getSelection().addRange(range);
-          document.execCommand("copy");
-          window.getSelection().removeAllRanges();
-      
-          // Change button color
-          copyButton.style.backgroundColor = "#28a745";
-          setTimeout(function () {
-            copyButton.style.backgroundColor = "#007bff";
-          }, 5000);
-        });
-      </script>
+    // Change button color
+    copyButton.style.backgroundColor = "#28a745";
+    setTimeout(function () {
+      copyButton.style.backgroundColor = "#007bff";
+    }, 5000);
+  });
+</script>
 {% endblock %}

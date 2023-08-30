@@ -6,7 +6,7 @@ from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 from runs.parsing_functions import parse_pgbench_options, parse_pgbench_results, parse_os_kernel, parse_compiler, \
-    parse_git, parse_hardware, parse_postgres, parse_tpch_results ,parse_explain_results,parse_explain_results_costOff,parse_tpch_query_plans
+    parse_git, parse_hardware, parse_postgres, parse_tpch_results, parse_explain_results, parse_explain_results_costOff, parse_tpch_query_plans
 from machines.models import Machine
 from postgres.models import PostgresSettings
 from runs.models import RunInfo, RunLog
@@ -32,10 +32,12 @@ def single_run_view(request, id):
 
     run_list = list(run)
 
-    postgres_info = PostgresSettings.objects.filter(db_settings_id_id=run_list[0]['postgres_info_id']).values()
+    postgres_info = PostgresSettings.objects.filter(
+        db_settings_id_id=run_list[0]['postgres_info_id']).values()
     postgres_info_list = list(postgres_info)
 
-    pgbench_results = PgBenchResult.objects.filter(run_id_id=run_list[0]['run_id']).values()
+    pgbench_results = PgBenchResult.objects.filter(
+        run_id_id=run_list[0]['run_id']).values()
     pgbench_results_list = list(pgbench_results)
 
     benchmarks = []
@@ -49,7 +51,8 @@ def single_run_view(request, id):
         config = 'Scale ' + str(benchmark_config_list[0]['scale']) + ', Duration ' + str(
             benchmark_config_list[0]['duration']) + ', Clients ' + str(
             benchmark_config_list[0]['clients']) + ', ' + read_only
-        date = datetime.fromtimestamp(pgbench_result['start']).strftime('%Y-%m-%d %H:%M:%S')
+        date = datetime.fromtimestamp(
+            pgbench_result['start']).strftime('%Y-%m-%d %H:%M:%S')
         benchmarks.append({
             "config": config,
             "id": pgbench_result['pgbench_result_id'],
@@ -186,18 +189,15 @@ def create_run_info(request, format=None):
                 raise RuntimeError(e)
 
             # now continue with benchmarks
-           
-            
+
             if benchmark_type_id == 1:
-                if(json_data.get("pgbench")==None ):
-                    benchmark_type="pgbench_custom"
-                    data_json=json_data["pgbench_custom"]
+                if (json_data.get("pgbench") == None):
+                    benchmark_type = "pgbench_custom"
+                    data_json = json_data["pgbench_custom"]
                 else:
-                    benchmark_type="pgbench"
-                    data_json=json_data["pgbench"]
+                    benchmark_type = "pgbench"
+                    data_json = json_data["pgbench"]
 
-
-            
                 for item in data_json:
 
                     for client in item['clients']:
@@ -222,28 +222,31 @@ def create_run_info(request, format=None):
                                 raise RuntimeError(e)
 
                 for item in data_json:
-                    parse_pgbench_results(item,benchmark_type, new_run_info, json_data['pgbench_log_aggregate'], machine.owner_id)
+                    parse_pgbench_results(
+                        item, benchmark_type, new_run_info, json_data['pgbench_log_aggregate'], machine.owner_id)
 
             elif benchmark_type_id == 2:
                 try:
-                    tpch_config = TpchConfig.objects.filter(scale_factor=json_data['scale_factor']).get()
+                    tpch_config = TpchConfig.objects.filter(
+                        scale_factor=json_data['scale_factor']).get()
 
                 except TpchConfig.DoesNotExist:
                     tpch_config = TpchConfig(scale_factor=json_data['scale_factor'],
-                                                streams=json_data['num_streams'])
+                                             streams=json_data['num_streams'])
 
                     try:
                         tpch_config.save()
 
                     except Exception as e:
                         raise RuntimeError(e)
-                    
 
                 parse_tpch_query_plans(json_data["query_plans"])
                 parse_tpch_results(new_run_info, tpch_config, json_data['qphh_size'], json_data['power_size'], json_data['throughput_size'],
                                    json_data['power'], json_data['throughput'], machine.owner_id)
-                parse_explain_results(json_data["explaine_results"],new_run_info, tpch_config, json_data['qphh_size'], json_data['power_size'], json_data['throughput_size'])
-                parse_explain_results_costOff(json_data["explaine_results_costOff"],new_run_info, tpch_config, json_data['qphh_size'], json_data['power_size'], json_data['throughput_size'])
+                parse_explain_results(json_data["explain_results"], new_run_info, tpch_config,
+                                      json_data['qphh_size'], json_data['power_size'], json_data['throughput_size'])
+                parse_explain_results_costOff(json_data["explain_results_costOff"], new_run_info, tpch_config,
+                                              json_data['qphh_size'], json_data['power_size'], json_data['throughput_size'])
 
     except Exception as e:
 
@@ -254,7 +257,6 @@ def create_run_info(request, format=None):
             error_object = RunLog(machine=machine, logmessage=str(error))
             error_object.save()
             print(error)
-
 
         except Exception as e:
 

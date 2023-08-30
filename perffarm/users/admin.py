@@ -3,8 +3,8 @@ from django.contrib import admin
 from machines.models import Machine
 from runs.models import RunInfo, GitRepo, Branch, RunLog
 from systems.models import HardwareInfo, Compiler, Kernel, OsDistributor, OsKernelVersion, OsVersion
-from benchmarks.models import PgBenchBenchmark, PgBenchResult, PgBenchStatement, PgBenchLog, PgBenchRunStatement,custom_query,InitSql,PgbenchCustomDetails,custom_queries
-from tpch.models import TpchConfig, TpchResult, TpchQueryResult, TpchQuery, ExplainQueryCostOnResult, ExplainQueryCostOnResultDetails, ExplainQueryCostOffResult ,ExplainQueryCostOffPlan
+from benchmarks.models import PgBenchBenchmark, PgBenchResult, PgBenchStatement, PgBenchLog, PgBenchRunStatement, custom_query, InitSql, PgbenchCustomDetails, custom_queries
+from tpch.models import TpchConfig, TpchResult, TpchQueryResult, TpchQuery, ExplainQueryCostOnResult, ExplainQueryCostOnResultDetails, ExplainQueryCostOffResult, ExplainQueryCostOffPlan
 
 # Register your models here.
 admin.site.register(RunInfo)
@@ -39,6 +39,3 @@ admin.site.register(ExplainQueryCostOnResult)
 admin.site.register(ExplainQueryCostOnResultDetails)
 admin.site.register(ExplainQueryCostOffResult)
 admin.site.register(ExplainQueryCostOffPlan)
-
-
-
