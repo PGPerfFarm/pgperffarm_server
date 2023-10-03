@@ -1,5 +1,5 @@
 django==3.2.13
 requests==2.25.1
-urllib3==1.26.5
+urllib3==1.26.17
 psycopg2==2.8.5
 pycryptodomex==3.4.7
